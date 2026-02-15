@@ -38,7 +38,7 @@
                     <div class="ionrift-list-header"><i class="fas fa-cube"></i> Core Mechanics</div>
 
                     {{#each tiers.tier1.paramounts as |group|}}
-                    {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" group}}
+                    {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
                     {{/each}}
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     <div class="ionrift-list-header"><i class="fas fa-hammer"></i> Action Taxonomy</div>
 
                     {{#each tiers.tier2.paramounts as |group|}}
-                    {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" group}}
+                    {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
                     {{/each}}
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     <div class="ionrift-list-header"><i class="fas fa-skull"></i> Monster Taxonomy</div>
 
                     {{#each tiers.tier3.paramounts as |group|}}
-                    {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" group}}
+                    {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
                     {{/each}}
                 </div>
             </div>
@@ -95,7 +95,8 @@
                 </div>
 
                 <div class="auditor-list">
-                    {{> "modules/ionrift-sounds/templates/partials/auditor-list.hbs" items=tiers.auditor.items.items}}
+                    {{> "modules/ionrift-resonance/templates/partials/auditor-list.hbs"
+                    items=tiers.auditor.items.items}}
                 </div>
             </div>
 

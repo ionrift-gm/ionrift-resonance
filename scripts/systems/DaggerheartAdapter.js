@@ -35,12 +35,23 @@ export class DaggerheartAdapter extends SystemAdapter {
 
         // Specific Checks based on Actor Type
         if (actor.type === "character") {
-            checks.push({ path: "system.hp.value", desc: "Character HP (Current)" });
-            checks.push({ path: "system.hp.max", desc: "Character HP (Max)" });
-            checks.push({ path: "system.hope.value", desc: "Character Hope" }); // or system.resources.hope
-            checks.push({ path: "system.fear.value", desc: "Character Fear" });
-            checks.push({ path: "system.armor.value", desc: "Character Armor Slots" });
-            checks.push({ path: "system.stress.value", desc: "Character Stress" });
+            // HP: Check for standard OR resources path
+            if (foundry.utils.getProperty(data, "system.resources.hitPoints.value") === undefined &&
+                foundry.utils.getProperty(data, "system.hp.value") === undefined) {
+                checks.push({ path: "system.resources.hitPoints.value", desc: "Character HP (Current)" });
+            }
+
+            if (foundry.utils.getProperty(data, "system.resources.hitPoints.max") === undefined &&
+                foundry.utils.getProperty(data, "system.hp.max") === undefined) {
+                checks.push({ path: "system.resources.hitPoints.max", desc: "Character HP (Max)" });
+            }
+
+            // Hope & Fear (often specialized paths)
+            // checks.push({ path: "system.hope.value", desc: "Character Hope" }); // handled by alias logic below
+            // checks.push({ path: "system.fear.value", desc: "Character Fear" }); // handled by alias logic below
+
+            // checks.push({ path: "system.armor.value", desc: "Character Armor Slots" }); // handled by alias logic below
+            // checks.push({ path: "system.stress.value", desc: "Character Stress" }); // handled by alias logic below
         } else {
             // Adversary / NPC
             // Note: Daggerheart NPCs might use different structure (hitPoints vs hp)

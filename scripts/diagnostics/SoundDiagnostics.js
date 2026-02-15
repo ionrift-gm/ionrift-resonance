@@ -39,12 +39,12 @@ export class SoundDiagnostics {
         }
 
         // Token
-        const token = game.settings.get("ionrift-sounds", "syrinToken");
+        const token = game.settings.get("ionrift-resonance", "syrinToken");
         if (token) this.log("Auth Token: Configured", "success");
         else this.log("Auth Token: Missing", "error");
 
         // Provider Setting
-        const prov = game.settings.get("ionrift-sounds", "provider");
+        const prov = game.settings.get("ionrift-resonance", "provider");
         this.log(`Active Provider Setting: ${prov}`, "success");
     }
 
@@ -52,7 +52,7 @@ export class SoundDiagnostics {
         const control = game.modules.get("syrinscape-control");
         if (!control?.active) return; // Not relevant if module isn't active
 
-        const ionToken = game.settings.get("ionrift-sounds", "syrinToken");
+        const ionToken = game.settings.get("ionrift-resonance", "syrinToken");
         const syrinToken = game.settings.get("syrinscape-control", "authToken");
 
         if (ionToken && syrinToken) {

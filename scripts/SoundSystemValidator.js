@@ -1,7 +1,7 @@
 
-export class SoundSystemValidator extends game.ionrift.lib.RuntimeValidator {
+export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator {
     constructor(handler) {
-        super("ionrift-sounds");
+        super("ionrift-resonance");
         this.handler = handler;
 
         // 1. Dependencies
@@ -19,7 +19,7 @@ export class SoundSystemValidator extends game.ionrift.lib.RuntimeValidator {
             message: "Audio Provider is invalid."
         });
 
-        if (game.settings.get("ionrift-sounds", "provider") === "syrinscape") {
+        if (game.settings.get("ionrift-resonance", "provider") === "syrinscape") {
             // Token is optional if module is present
             const hasModule = game.modules.get("syrinscape-control")?.active;
             if (!hasModule) {
@@ -59,7 +59,7 @@ export class SoundSystemValidator extends game.ionrift.lib.RuntimeValidator {
         // 3. Token Synchronization Check
         const control = game.modules.get("syrinscape-control");
         if (control?.active) {
-            const ionToken = game.settings.get("ionrift-sounds", "syrinToken");
+            const ionToken = game.settings.get("ionrift-resonance", "syrinToken");
             const syrinToken = game.settings.get("syrinscape-control", "authToken");
 
             if (ionToken && syrinToken && ionToken !== syrinToken) {

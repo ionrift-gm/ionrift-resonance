@@ -18,7 +18,7 @@ export class LocalStrategy extends BaseStrategy {
 
     getBindings() {
         // Parse User Overrides
-        const overridesStr = game.settings.get("ionrift-sounds", "customSoundBindings") || "{}";
+        const overridesStr = game.settings.get("ionrift-resonance", "customSoundBindings") || "{}";
         let overrides = {};
         try {
             overrides = JSON.parse(overridesStr);

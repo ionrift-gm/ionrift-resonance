@@ -1,3 +1,4 @@
+import { Logger } from "./Logger.js";
 import { SoundConfigApp } from "./apps/SoundConfigApp.js";
 import { AttunementApp } from "./apps/AttunementApp.js"; // Standardized Wizard
 // import { SetupGuide } from "./apps/SetupGuide.js"; // Deprecated
@@ -8,20 +9,20 @@ import { SyrinscapeProvider } from "./providers/SyrinscapeProvider.js";
 
 
 Hooks.once('init', async function () {
-    console.log("Ionrift Resonance v1.4.1 | Initializing Sound Engine");
+    Logger.log("Initializing Sound Engine");
 
     // Register Templates
     loadTemplates([
-        "modules/ionrift-sounds/templates/partials/auditor-list.hbs",
-        "modules/ionrift-sounds/templates/partials/sound-card-row.hbs",
-        "modules/ionrift-sounds/templates/partials/sound-group.hbs"
+        "modules/ionrift-resonance/templates/partials/auditor-list.hbs",
+        "modules/ionrift-resonance/templates/partials/sound-card-row.hbs",
+        "modules/ionrift-resonance/templates/partials/sound-group.hbs"
     ]);
 
     // Register Settings (CRITICAL: Must be done early)
     registerSettings();
 
     // Internal Setting for Wizard UI State
-    game.settings.register("ionrift-sounds", "soundCompleteness", {
+    game.settings.register("ionrift-resonance", "soundCompleteness", {
         name: "Sound Preset Completeness (Internal)",
         hint: "Tracks whether the user selected Core or Full library.",
         scope: "world",
@@ -45,7 +46,7 @@ Hooks.once('init', async function () {
     // console.log("Ionrift Resonance | Registering Menus...");
     // Register Setup Menu
     // Register Setup Menu
-    game.settings.registerMenu("ionrift-sounds", "setupGuide", {
+    game.settings.registerMenu("ionrift-resonance", "setupGuide", {
         name: "Attunement Protocol",
         label: "Open Attunement Protocol",
         hint: "Configure Syrinscape Token, Presets, and verify connection.",
@@ -57,7 +58,7 @@ Hooks.once('init', async function () {
     // Register Wizard Menu
     // Register Wizard Menu
     // Register Wizard Menu
-    game.settings.registerMenu('ionrift-sounds', 'soundConfigMenu', {
+    game.settings.registerMenu('ionrift-resonance', 'soundConfigMenu', {
         name: "Resonance Calibration",
         label: "Open Calibration",
         hint: "Configure custom sounds and attunement.",
@@ -73,7 +74,7 @@ Hooks.once('init', async function () {
             console.error("Ionrift Resonance | Class 'SoundAuditor' is UNDEFINED!");
         } else {
             // console.log("Ionrift Resonance | Registering SoundAuditor...");
-            game.settings.registerMenu('ionrift-sounds', 'soundAuditorMenu', {
+            game.settings.registerMenu('ionrift-resonance', 'soundAuditorMenu', {
                 name: "Sound Auditor",
                 label: "Open Auditor",
                 hint: "Audit and manage custom sound flags on items.",
@@ -107,15 +108,15 @@ Hooks.once('init', async function () {
             // Note: We need to import the class or ensure it's available. It is imported above.
 
             // Check if settings allow
-            // const currentVersion = game.modules.get("ionrift-sounds").version;
-            // if (AttunementApp.shouldShow("ionrift-sounds", "setupVersion", currentVersion)) {
+            // const currentVersion = game.modules.get("ionrift-resonance").version;
+            // if (AttunementApp.shouldShow("ionrift-resonance", "setupVersion", currentVersion)) {
             //     new AttunementApp().render(true);
             // }
 
             // Check if version mismatch requires Setup/Attunement
 
-            const currentVersion = game.modules.get("ionrift-sounds").version;
-            const lastVersion = game.settings.get("ionrift-sounds", "setupVersion");
+            const currentVersion = game.modules.get("ionrift-resonance").version;
+            const lastVersion = game.settings.get("ionrift-resonance", "setupVersion");
 
             if (currentVersion !== lastVersion) {
                 new AttunementApp().render(true);
@@ -123,12 +124,12 @@ Hooks.once('init', async function () {
         }
         // Register Status Indicator (Generic Integration)
         if (game.ionrift?.integration) {
-            game.ionrift.integration.registerApp('ionrift-sounds', {
-                settingsKey: ['ionrift-sounds.setupGuide'],
+            game.ionrift.integration.registerApp('ionrift-resonance', {
+                settingsKey: ['ionrift-resonance.setupGuide'],
                 checkStatus: async () => {
                     // console.log("Ionrift Sounds | Running Status Check...");
 
-                    const ionToken = game.settings.get('ionrift-sounds', 'syrinToken');
+                    const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
                     const controlModule = game.modules.get("syrinscape-control");
                     const controlActive = controlModule?.active || !!globalThis.syrinscapeControl;
                     const controlToken = controlActive ? game.settings.get("syrinscape-control", "authToken") : null;
@@ -139,7 +140,7 @@ Hooks.once('init', async function () {
                     const mismatch = controlActive && t1 && (t1 !== t2);
 
                     if (mismatch) {
-                        console.warn("Ionrift Sounds | Token Mismatch Detected. Falling back to Direct API.");
+                        Logger.warn("Ionrift Sounds | Token Mismatch Detected. Falling back to Direct API.");
                         // Fallback: Use Ionrift Token directly (ignoring Control Module)
                         try {
                             const url = `https://syrinscape.com/online/frontend-api/elements/1035/?format=json&auth_token=${ionToken}`;
@@ -226,7 +227,7 @@ async function waitForDependency() {
         }
         await new Promise(r => setTimeout(r, interval));
     }
-    console.warn("Ionrift Sounds | Syrinscape Control API not found after waiting. Initialization may be partial.");
+    Logger.warn("Ionrift Sounds | Syrinscape Control API not found after waiting. Initialization may be partial.");
 }
 
 
@@ -234,10 +235,10 @@ async function waitForDependency() {
 // Hook to prevent accidental preset switches if overrides exist
 // Hook to prevent accidental preset switches if overrides exist
 Hooks.on('preUpdateSetting', (setting, changes, options, userId) => {
-    if (setting.key !== 'ionrift-sounds.soundPreset') return;
+    if (setting.key !== 'ionrift-resonance.soundPreset') return;
     if (options.ionriftConfirmed) return;
 
-    const current = game.settings.get("ionrift-sounds", "soundPreset");
+    const current = game.settings.get("ionrift-resonance", "soundPreset");
     const target = changes.value;
 
     // Clean values (remove quotes and whitespace)
@@ -266,7 +267,7 @@ Hooks.on('preUpdateSetting', (setting, changes, options, userId) => {
 
             if (safe) {
                 // Re-apply the setting with the confirmation flag (and CLEANED value)
-                game.settings.set("ionrift-sounds", "soundPreset", cleanTarget, { ionriftConfirmed: true });
+                game.settings.set("ionrift-resonance", "soundPreset", cleanTarget, { ionriftConfirmed: true });
             } else {
                 ui.notifications.warn("Ionrift Sounds: Preset switch cancelled.");
             }

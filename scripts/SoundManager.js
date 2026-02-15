@@ -13,7 +13,7 @@ export class SoundManager {
     }
 
     initialize() {
-        const providerType = game.settings.get('ionrift-sounds', 'provider') || 'syrinscape';
+        const providerType = game.settings.get('ionrift-resonance', 'provider') || 'syrinscape';
 
         if (providerType === 'foundry') {
             this.provider = new FoundryAudioProvider();

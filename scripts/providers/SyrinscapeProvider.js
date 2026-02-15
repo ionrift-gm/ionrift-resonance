@@ -4,7 +4,7 @@ import { Logger } from "../Logger.js";
 export class SyrinscapeProvider extends SoundProvider {
     constructor() {
         super();
-        this.syrinToken = game.settings.get('ionrift-sounds', 'syrinToken');
+        this.syrinToken = game.settings.get('ionrift-resonance', 'syrinToken');
     }
 
     /**
@@ -30,6 +30,7 @@ export class SyrinscapeProvider extends SoundProvider {
         // 3. Determine Type
         // We defer to prefix if present, otherwise default to 'element' (safer for play calls than mood)
         let type = options.type || "element";
+        if (type === "oneshot") type = "element";
         let cleanId = String(rId);
 
         if (cleanId.startsWith("mood:")) {
@@ -52,9 +53,13 @@ export class SyrinscapeProvider extends SoundProvider {
      */
     async _executePlay(type, id, volume) {
         // CHECK TOKEN SYNC: If mismatched, we MUST fallback to Direct API
-        // CHECK TOKEN SYNC: If mismatched, we MUST fallback to Direct API
-        const ionToken = game.settings.get('ionrift-sounds', 'syrinToken');
-        const controlToken = game.settings.get("syrinscape-control", "authToken");
+        const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
+
+        let controlToken = "";
+        if (game.modules.get("syrinscape-control")?.active) {
+            controlToken = game.settings.get("syrinscape-control", "authToken");
+        }
+
         const t1 = (ionToken || "").trim();
         const t2 = (controlToken || "").trim();
         // Mismatch if Ionrift has token, but it differs from Control (even if Control is empty)
@@ -90,7 +95,7 @@ export class SyrinscapeProvider extends SoundProvider {
         }
 
         // C. Fallback to Direct API
-        const token = game.settings.get('ionrift-sounds', 'syrinToken');
+        const token = game.settings.get('ionrift-resonance', 'syrinToken');
         if (!token) {
             // Only warn if they strictly need it (no module)
             if (!globalThis.syrinscapeControl && !game.syrinscape) {
@@ -117,9 +122,13 @@ export class SyrinscapeProvider extends SoundProvider {
         let stopSent = false;
 
         // CHECK TOKEN SYNC: If mismatched, we MUST fallback to Direct API to avoid using the wrong session
-        // CHECK TOKEN SYNC: If mismatched, we MUST fallback to Direct API to avoid using the wrong session
-        const ionToken = game.settings.get('ionrift-sounds', 'syrinToken');
-        const controlToken = game.settings.get("syrinscape-control", "authToken");
+        const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
+
+        let controlToken = "";
+        if (game.modules.get("syrinscape-control")?.active) {
+            controlToken = game.settings.get("syrinscape-control", "authToken");
+        }
+
         const t1 = (ionToken || "").trim();
         const t2 = (controlToken || "").trim();
         const isMismatched = (t1 && t1 !== t2);

@@ -82,9 +82,9 @@ export function getDaggerheartMonsterSound(actorOrName) {
     if (!actorName) return SOUND_EVENTS.MONSTER_GENERIC;
 
     // Use Shared Library if available
-    if (game.ionrift?.lib?.classifyCreature) {
+    if (game.ionrift?.library?.classifyCreature) {
         // PASS THE FULL OBJECT IF AVAILABLE
-        const classification = game.ionrift.lib.classifyCreature(actorOrName);
+        const classification = game.ionrift.library.classifyCreature(actorOrName);
         if (classification.match || classification.confidence > 0.4) {
             // Map the string key from library (e.g. "MONSTER_SKELETON") to the local Constant Value
             if (SOUND_EVENTS[classification.sound]) {

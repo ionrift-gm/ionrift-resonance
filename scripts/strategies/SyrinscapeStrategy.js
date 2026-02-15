@@ -5,7 +5,7 @@ import { SYRINSCAPE_DEFAULTS } from "../data/syrinscape_defaults.js";
 export class SyrinscapeStrategy extends BaseStrategy {
 
     get isAvailable() {
-        const hasToken = !!game.settings.get("ionrift-sounds", "syrinToken");
+        const hasToken = !!game.settings.get("ionrift-resonance", "syrinToken");
         const hasModule = game.modules.get("fvtt-syrin-control")?.active || game.modules.get("syrinscape-control")?.active || !!game.syrinscape;
         return hasToken || hasModule;
     }
@@ -23,7 +23,7 @@ export class SyrinscapeStrategy extends BaseStrategy {
 
     getBindings() {
         // Parse User Overrides
-        const overridesStr = game.settings.get("ionrift-sounds", "customSoundBindings") || "{}";
+        const overridesStr = game.settings.get("ionrift-resonance", "customSoundBindings") || "{}";
         let overrides = {};
         try {
             overrides = JSON.parse(overridesStr);

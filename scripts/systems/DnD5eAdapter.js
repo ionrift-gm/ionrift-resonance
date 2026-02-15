@@ -2,7 +2,7 @@ import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 
-Logger.log("DnD5eAdapter Module Loaded");
+
 
 export class DnD5eAdapter extends SystemAdapter {
     validateSchema() {
@@ -172,7 +172,7 @@ export class DnD5eAdapter extends SystemAdapter {
 
         // 1. Try Advanced Classification (Library)
         // This checks name, race, ancestry, etc against our expanded data
-        const classification = game.ionrift.lib.classifyCreature(actor);
+        const classification = game.ionrift.library.classifyCreature(actor);
         if (classification && classification.sound) {
             // Map the classifier's sound ID (e.g. "MONSTER_GOBLIN") to our local constant if needed
             // But usually they match. Let's return strictly if it's a valid sound event.

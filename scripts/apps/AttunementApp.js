@@ -9,8 +9,8 @@ import { Logger } from "../Logger.js";
 export class AttunementApp extends AbstractWelcomeApp {
     constructor(options = {}) {
         // Parent constructor: title, settingsKey, currentVersion
-        const version = game.modules.get("ionrift-sounds").version;
-        super("Attunement Protocol", "setupVersion", version);
+        const version = game.modules.get("ionrift-resonance").version;
+        super("Ionrift Resonance: Syrinscape Configuration", "setupVersion", version);
 
         // State for Token Input
         this.pendingToken = "";
@@ -19,12 +19,12 @@ export class AttunementApp extends AbstractWelcomeApp {
 
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
-            id: "ionrift-sounds-attunement",
-            template: "modules/ionrift-sounds/templates/attunement-app.hbs", // Custom Template
+            id: "ionrift-resonance-attunement",
+            template: "modules/ionrift-resonance/templates/attunement-app.hbs", // Custom Template
             width: 720,
             height: "auto",
             classes: ["ionrift", "ionrift-window", "welcome-window"],
-            moduleId: "ionrift-sounds",
+            moduleId: "ionrift-resonance",
             title: "Attunement Protocol"
         });
     }
@@ -90,8 +90,8 @@ export class AttunementApp extends AbstractWelcomeApp {
         if (!presetData) throw new Error(`Preset data not found for ${presetType} (${presetKey})`);
 
         // Check for existing custom bindings OR config overrides
-        const existingBindings = JSON.parse(game.settings.get("ionrift-sounds", "customSoundBindings") || "{}");
-        const existingOverrides = game.settings.get("ionrift-sounds", "configOverrides") || {};
+        const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+        const existingOverrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
 
         const hasCustom = Object.keys(existingBindings).length > 0;
         const hasOverrides = Object.keys(existingOverrides).length > 0;
@@ -133,10 +133,10 @@ export class AttunementApp extends AbstractWelcomeApp {
         // Reset configuration to factory defaults
 
         // 1. Clear Overrides (Campaign Settings)
-        await game.settings.set("ionrift-sounds", "configOverrides", {});
+        await game.settings.set("ionrift-resonance", "configOverrides", {});
 
         // 2. Clear Custom Bindings (Resets to Preset Defaults via SoundHandler layering)
-        await game.settings.set("ionrift-sounds", "customSoundBindings", "{}");
+        await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
 
         // 3. Set Sound Preset
         // Since 'fantasy.json' (default) contains the core sounds, clearing custom bindings effectively 
@@ -144,13 +144,18 @@ export class AttunementApp extends AbstractWelcomeApp {
 
 
         // 4. Save Completeness Preference
-        await game.settings.set("ionrift-sounds", "soundCompleteness", presetType);
+        await game.settings.set("ionrift-resonance", "soundCompleteness", presetType);
 
         // 5. Refresh "Resonance Calibration" UI if open
         const calibrationWin = Object.values(ui.windows).find(w => w.id === "ionrift-sound-config");
         if (calibrationWin) {
             Logger.log("Resonance | Refreshing Calibration Window...");
-            calibrationWin.render(true);
+            calibrationWin.render(true, { focus: false });
+        }
+
+        // Ensure Attunement stays on top (with slight delay to beat render cycle)
+        if (this.rendered) {
+            setTimeout(() => this.bringToTop(), 100);
         }
 
         ui.notifications.info(`Resonance | Factory Reset Complete. Customizations cleared.`);
@@ -178,7 +183,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 id: "apply_preset",
                 title: "Apply Sound Preset",
                 icon: "fas fa-sliders-h",
-                description: "Select a library preset to populate default bindings. (Overwrites existing keys)",
+                description: "Select a library preset to populate default bindings.",
                 actionLabel: "Apply Preset",
                 content: () => this._getPresetStepContent()
             },
@@ -194,14 +199,14 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async _getTokenStepContent() {
-        const currentToken = this.pendingToken || game.settings.get("ionrift-sounds", "syrinToken") || "";
+        const currentToken = this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken") || "";
         const mismatch = this._checkTokenMismatch(currentToken);
 
         // Check for Control Module
         const controlMod = game.modules.get("syrinscape-control");
         const hasSyrinControl = controlMod?.active;
 
-        return await renderTemplate("modules/ionrift-sounds/templates/partials/attunement-step-token.hbs", {
+        return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-token.hbs", {
             token: currentToken,
             mismatch: mismatch,
             hasSyrinControl: hasSyrinControl
@@ -214,9 +219,9 @@ export class AttunementApp extends AbstractWelcomeApp {
         const sysLabel = game.system.title;
 
         // UI Logic: Load saved completeness preference (This stores 'full' or 'core')
-        let currentCompleteness = game.settings.get("ionrift-sounds", "soundCompleteness") || "full";
+        let currentCompleteness = game.settings.get("ionrift-resonance", "soundCompleteness") || "full";
 
-        return await renderTemplate("modules/ionrift-sounds/templates/partials/attunement-step-preset.hbs", {
+        return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-preset.hbs", {
             sysLabel: sysLabel,
             currentPreset: currentCompleteness // Pass completeness choice to UI
         });
@@ -258,7 +263,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async _verifyConnection() {
-        const token = this.pendingToken || game.settings.get("ionrift-sounds", "syrinToken");
+        const token = this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken");
         if (!token) throw new Error("Please enter an Auth Token.");
 
         // Verification Logic - Use a known element (Sword Clash 1035) instead of 'state' which can 400 if idle.
@@ -270,7 +275,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         }
 
         // Success - Save Token
-        await game.settings.set("ionrift-sounds", "syrinToken", token);
+        await game.settings.set("ionrift-resonance", "syrinToken", token);
 
         // Sync Logic (if mismatch)
         if (game.modules.get("syrinscape-control")?.active) {

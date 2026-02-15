@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const PRESET_PATH = path.resolve(__dirname, '../../scripts/presets/fantasy.json');
 
 function syncPreset() {
-    console.log(`Reading preset from: ${PRESET_PATH}`);
+    // console.log(`Reading preset from: ${PRESET_PATH}`);
 
     let preset = {};
     try {
@@ -21,7 +21,7 @@ function syncPreset() {
         process.exit(1);
     }
 
-    console.log("Syncing keys from SYRINSCAPE_DEFAULTS...");
+    // console.log("Syncing keys from SYRINSCAPE_DEFAULTS...");
     let added = 0;
 
     for (const [key, value] of Object.entries(SYRINSCAPE_DEFAULTS)) {
@@ -42,14 +42,14 @@ function syncPreset() {
 
         if (idToUse) {
             if (!preset[key]) {
-                console.log(`+ Adding ${key}: ${idToUse}`);
+                // console.log(`+ Adding ${key}: ${idToUse}`);
                 preset[key] = idToUse;
                 added++;
             } else {
                 // Optional: Update if different? 
                 // For now, let's just fill missing.
                 if (preset[key] !== idToUse) {
-                    console.log(`~ Updating ${key}: ${preset[key]} -> ${idToUse}`);
+                    // console.log(`~ Updating ${key}: ${preset[key]} -> ${idToUse}`);
                     preset[key] = idToUse;
                     added++;
                 }
@@ -69,7 +69,7 @@ function syncPreset() {
     for (const [pcKey, coreKey] of Object.entries(aliases)) {
         if (preset[coreKey]) {
             if (preset[pcKey] !== preset[coreKey]) {
-                console.log(`+ Aliasing ${pcKey} -> ${coreKey} (${preset[coreKey]})`);
+                // console.log(`+ Aliasing ${pcKey} -> ${coreKey} (${preset[coreKey]})`);
                 preset[pcKey] = preset[coreKey];
                 added++;
             }
@@ -81,9 +81,9 @@ function syncPreset() {
 
     if (added > 0) {
         fs.writeFileSync(PRESET_PATH, JSON.stringify(preset, null, 4));
-        console.log(`\nSuccessfully synced ${added} keys to fantasy.json`);
+        // console.log(`\nSuccessfully synced ${added} keys to fantasy.json`);
     } else {
-        console.log("\nNo changes needed. Preset is in sync.");
+        // console.log("\nNo changes needed. Preset is in sync.");
     }
 }
 

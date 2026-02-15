@@ -14,8 +14,10 @@ export async function checkSheetCompatibility(builder) {
         const isV3 = foundry.utils.isNewerVersion(sysVer, "3.0.0");
         const status = isV3 ? "PASS" : "WARN";
         builder.addResult(category, "System Version", status, `${sysId} v${sysVer} ${isV3 ? "" : "(Legacy - specific hooks may fail)"}`);
+    } else if (sysId === "daggerheart") {
+        builder.addResult(category, "System", "PASS", `Daggerheart v${sysVer} (Supported)`);
     } else {
-        builder.addResult(category, "System", "INFO", `${sysId} v${sysVer} (Non-D&D5e)`);
+        builder.addResult(category, "System", "INFO", `${sysId} v${sysVer}`);
     }
 
     // 2. Default Sheet Configuration
@@ -31,7 +33,7 @@ export async function checkSheetCompatibility(builder) {
             let msg = `Default: ${name}`;
 
             // Known Compatible Sheets (Loose matching)
-            const compatibleKeywords = ["ActorSheet5eCharacter", "Tidy5e", "CharacterActorSheet"];
+            const compatibleKeywords = ["ActorSheet5eCharacter", "Tidy5e", "CharacterActorSheet", "CharacterSheet"];
             const isKnown = compatibleKeywords.some(c => name.includes(c));
 
             if (!isKnown) {

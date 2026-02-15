@@ -4,8 +4,8 @@ export class SetupGuide extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             title: "Attunement Protocol",
-            id: "ionrift-sounds-setup",
-            template: "modules/ionrift-sounds/templates/setup-guide.html",
+            id: "ionrift-resonance-setup",
+            template: "modules/ionrift-resonance/templates/setup-guide.html",
             classes: ["ionrift-window", "ionrift"],
             width: 600,
             height: "auto",
@@ -18,7 +18,7 @@ export class SetupGuide extends FormApplication {
 
     getData() {
         // FIX: Use correct setting key 'syrinToken'
-        const ionToken = game.settings.get('ionrift-sounds', 'syrinToken');
+        const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
 
         // Mismatch Detection
         const controlModule = game.modules.get("syrinscape-control");
@@ -56,7 +56,7 @@ export class SetupGuide extends FormApplication {
 
         if (game.ionrift?.integration) {
             setTimeout(() => {
-                game.ionrift.integration.injectStatusBar(this, html, 'ionrift-sounds');
+                game.ionrift.integration.injectStatusBar(this, html, 'ionrift-resonance');
                 this.setPosition({ height: "auto" }); // Recalculate height to fit new bar
             }, 100); // Slight delay to ensure DOM insertion
         }
@@ -80,7 +80,7 @@ export class SetupGuide extends FormApplication {
             try {
                 if (game.modules.get("syrinscape-control")?.active) {
                     await game.settings.set("syrinscape-control", "authToken", token);
-                    await game.settings.set("ionrift-sounds", "syrinToken", token);
+                    await game.settings.set("ionrift-resonance", "syrinToken", token);
 
                     ui.notifications.info("Tokens Synchronized.");
                     html.find('.token-mismatch-warning').slideUp();
@@ -150,8 +150,8 @@ export class SetupGuide extends FormApplication {
         // FIX: Handle 'syrinToken' form data
         if (formData.syrinToken !== undefined) {
             const newToken = formData.syrinToken.trim(); // Trim on save
-            const oldToken = game.settings.get('ionrift-sounds', 'syrinToken');
-            const wasVerified = game.settings.get('ionrift-sounds', 'authVerified');
+            const oldToken = game.settings.get('ionrift-resonance', 'syrinToken');
+            const wasVerified = game.settings.get('ionrift-resonance', 'authVerified');
 
             // Strict Verification Logic
             let isVerified = false;
@@ -161,8 +161,8 @@ export class SetupGuide extends FormApplication {
                 if (newToken === oldToken && wasVerified) isVerified = true;
             }
 
-            await game.settings.set('ionrift-sounds', 'authVerified', isVerified);
-            await game.settings.set('ionrift-sounds', 'syrinToken', newToken);
+            await game.settings.set('ionrift-resonance', 'authVerified', isVerified);
+            await game.settings.set('ionrift-resonance', 'syrinToken', newToken);
 
             // Force Refresh to update UI immediately
             if (game.ionrift?.integration) {

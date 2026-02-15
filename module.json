@@ -1,12 +1,12 @@
 {
-    "id": "ionrift-sounds",
+    "id": "ionrift-resonance",
     "title": "Ionrift Resonance",
     "description": "Immersive, reactive sound automation for Daggerheart and DnD5e (part of the Ionrift Suite).",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
-    "version": "1.6.1",
+    "version": "1.6.2",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
     "manifest": "https://github.com/ionrift-gm/ionrift-resonance/releases/latest/download/module.json",
-    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v1.6.1/module.zip",
+    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v1.6.2/module.zip",
     "compatibility": {
         "minimum": "10",
         "verified": "13"

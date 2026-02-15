@@ -16,7 +16,7 @@ export class SoundConfigApp extends FormApplication {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-config",
             title: "Resonance Calibration",
-            template: "modules/ionrift-sounds/templates/sound-config.hbs",
+            template: "modules/ionrift-resonance/templates/sound-config.hbs",
             width: 900,
             height: 750,
             tabs: [{ navSelector: ".tabs", contentSelector: ".content", initial: "tier1" }],
@@ -30,7 +30,7 @@ export class SoundConfigApp extends FormApplication {
 
         // Scan Actors
         for (const actor of game.actors) {
-            const flags = actor.flags["ionrift-sounds"];
+            const flags = actor.flags["ionrift-resonance"];
             if (flags) {
                 for (const [key, val] of Object.entries(flags)) {
                     // Filter out non-sound flags
@@ -62,7 +62,7 @@ export class SoundConfigApp extends FormApplication {
 
         // Scan Items
         for (const item of game.items) {
-            const flags = item.flags["ionrift-sounds"];
+            const flags = item.flags["ionrift-resonance"];
             if (flags) {
                 for (const [key, val] of Object.entries(flags)) {
                     // Filter out non-sound flags
@@ -137,9 +137,9 @@ export class SoundConfigApp extends FormApplication {
     }
 
     getData() {
-        const customBindings = JSON.parse(game.settings.get("ionrift-sounds", "customSoundBindings") || "{}");
+        const customBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
         // configOverrides is retrieved in 'players' section separately or not needed for main structure
-        const configOverrides = game.settings.get("ionrift-sounds", "configOverrides") || {};
+        const configOverrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
 
         // --- Helpers ---
         // 1. Resolve effective value (Cascade: Custom -> Default -> Inherited)
@@ -154,7 +154,11 @@ export class SoundConfigApp extends FormApplication {
             // 1. Custom
             if (customBindings[key]) return { value: customBindings[key], source: "custom" };
 
-            // 2. Default
+            // 2. Check for None Preset
+            const preset = game.settings.get("ionrift-resonance", "soundPreset");
+            if (preset === "none") return { value: null, source: null };
+
+            // 3. Default
             const def = SYRINSCAPE_DEFAULTS[key];
             if (def) return { value: def, source: "default" };
 
@@ -494,7 +498,7 @@ export class SoundConfigApp extends FormApplication {
      */
     async _saveBinding(key, value) {
         // 1. Get Current Settings
-        const currentBindings = JSON.parse(game.settings.get("ionrift-sounds", "customSoundBindings") || "{}");
+        const currentBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
 
         // 2. Modify State
         if (value) {
@@ -504,7 +508,7 @@ export class SoundConfigApp extends FormApplication {
         }
 
         // 3. Write to Settings
-        await game.settings.set("ionrift-sounds", "customSoundBindings", JSON.stringify(currentBindings));
+        await game.settings.set("ionrift-resonance", "customSoundBindings", JSON.stringify(currentBindings));
 
         // 4. Update UI Row (Reactivity)
         // Re-render the single row using the new value.
@@ -516,7 +520,7 @@ export class SoundConfigApp extends FormApplication {
             const def = SYRINSCAPE_DEFAULTS[key];
 
             const newState = new SoundCardState(key, value, def, label, desc);
-            const html = await renderTemplate("modules/ionrift-sounds/templates/partials/sound-card-row.hbs", newState.getRenderData());
+            const html = await renderTemplate("modules/ionrift-resonance/templates/partials/sound-card-row.hbs", newState.getRenderData());
 
             // Replace and Re-Bind
             row.replaceWith(html);
@@ -570,8 +574,8 @@ export class SoundConfigApp extends FormApplication {
         // ----------------------------------------------------------------
         // Define the hook function
         this._updateHook = (doc) => {
-            // Only care if ionrift-sounds flags changed
-            const flags = doc.flags?.["ionrift-sounds"];
+            // Only care if ionrift-resonance flags changed
+            const flags = doc.flags?.["ionrift-resonance"];
             if (flags) this._debouncedRefresh();
         };
 
@@ -619,7 +623,7 @@ export class SoundConfigApp extends FormApplication {
 
     async _renderAuditorList() {
         const data = this._getAuditorData();
-        const html = await renderTemplate("modules/ionrift-sounds/templates/partials/auditor-list.hbs", data);
+        const html = await renderTemplate("modules/ionrift-resonance/templates/partials/auditor-list.hbs", data);
 
         const list = this.element.find(".auditor-list");
         list.html(html);
@@ -659,9 +663,9 @@ export class SoundConfigApp extends FormApplication {
 
         const doc = await fromUuid(uuid);
         if (doc) {
-            await doc.unsetFlag("ionrift-sounds", key);
-            await doc.unsetFlag("ionrift-sounds", key + "_name");
-            await doc.unsetFlag("ionrift-sounds", key + "_meta");
+            await doc.unsetFlag("ionrift-resonance", key);
+            await doc.unsetFlag("ionrift-resonance", key + "_name");
+            await doc.unsetFlag("ionrift-resonance", key + "_meta");
             ui.notifications.info(`Reset sound override for ${doc.name}`);
         } else {
             Logger.warn(`Auditor | Could not resolve UUID: ${uuid}`);
@@ -686,7 +690,7 @@ export class SoundConfigApp extends FormApplication {
 
     async _saveBinding(key, value) {
         // 1. Get Current Bindings
-        const currentBindings = JSON.parse(game.settings.get("ionrift-sounds", "customSoundBindings") || "{}");
+        const currentBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
 
         // 2. Update or Delete
         if (value === null || value === undefined) {
@@ -696,7 +700,7 @@ export class SoundConfigApp extends FormApplication {
         }
 
         // 3. Save Setting
-        await game.settings.set("ionrift-sounds", "customSoundBindings", JSON.stringify(currentBindings));
+        await game.settings.set("ionrift-resonance", "customSoundBindings", JSON.stringify(currentBindings));
 
         // 4. Reactive Update
         // For now, full re-render ensures consistency
@@ -776,7 +780,7 @@ export class SoundConfigApp extends FormApplication {
                 }
 
                 // Auto-Save
-                console.log(`Ionrift Config | Auto-Saving ${key}:`, storageValue);
+                Logger.log(`Auto-Saving ${key}:`, storageValue);
                 await this._saveBinding(key, storageValue);
             }, {
                 // Provide defaults for the picker context if needed
@@ -877,7 +881,7 @@ export class SoundConfigApp extends FormApplication {
     async _onAddRow(event) {
         event.preventDefault();
         const target = event.currentTarget.dataset.target; // "campaign" or "players"
-        const currentConfig = game.settings.get("ionrift-sounds", "configOverrides") || {};
+        const currentConfig = game.settings.get("ionrift-resonance", "configOverrides") || {};
 
         if (!currentConfig[target]) currentConfig[target] = [];
 
@@ -888,7 +892,7 @@ export class SoundConfigApp extends FormApplication {
         }
 
         // Save & Re-render (easiest way to update UI)
-        await game.settings.set("ionrift-sounds", "configOverrides", currentConfig);
+        await game.settings.set("ionrift-resonance", "configOverrides", currentConfig);
         this.render(true);
     }
 
@@ -897,18 +901,18 @@ export class SoundConfigApp extends FormApplication {
         const target = event.currentTarget.dataset.target;
         const index = event.currentTarget.dataset.index;
 
-        const currentConfig = game.settings.get("ionrift-sounds", "configOverrides") || {};
+        const currentConfig = game.settings.get("ionrift-resonance", "configOverrides") || {};
         if (currentConfig[target]) {
             currentConfig[target].splice(index, 1);
-            await game.settings.set("ionrift-sounds", "configOverrides", currentConfig);
+            await game.settings.set("ionrift-resonance", "configOverrides", currentConfig);
             this.render(true);
         }
     }
 
     _onExportConfig(event) {
         event.preventDefault();
-        const bindings = game.settings.get("ionrift-sounds", "customSoundBindings");
-        const overrides = game.settings.get("ionrift-sounds", "configOverrides");
+        const bindings = game.settings.get("ionrift-resonance", "customSoundBindings");
+        const overrides = game.settings.get("ionrift-resonance", "configOverrides");
 
         const exportData = {
             timestamp: Date.now(),
@@ -918,7 +922,7 @@ export class SoundConfigApp extends FormApplication {
         };
 
         const data = JSON.stringify(exportData, null, 2);
-        saveDataToFile(data, "text/json", "ionrift-sounds-config.json");
+        saveDataToFile(data, "text/json", "ionrift-resonance-config.json");
     }
 
     async _onLoadPreset(event) {
@@ -979,10 +983,10 @@ export class SoundConfigApp extends FormApplication {
 
                             // Validation checks
                             if (data.bindings) {
-                                await game.settings.set("ionrift-sounds", "customSoundBindings", JSON.stringify(data.bindings));
+                                await game.settings.set("ionrift-resonance", "customSoundBindings", JSON.stringify(data.bindings));
                             }
                             if (data.overrides) {
-                                await game.settings.set("ionrift-sounds", "configOverrides", data.overrides);
+                                await game.settings.set("ionrift-resonance", "configOverrides", data.overrides);
                             }
 
                             ui.notifications.info("Ionrift Sounds | Configuration Imported Successfully.");
@@ -1019,7 +1023,7 @@ export class SoundConfigApp extends FormApplication {
             // Only update if override is present. Otherwise fallback to dataset.sound (Default Key)
             if (val && val.trim() !== "") {
                 soundKeyOrId = val;
-                console.log(`Ionrift | Previewing from Override: ${soundKeyOrId}`);
+                Logger.log(`Previewing from Override: ${soundKeyOrId}`);
             }
         } else if (inputValue && inputValue.trim() !== "") {
             // Fallback to simpler getter
@@ -1034,9 +1038,9 @@ export class SoundConfigApp extends FormApplication {
             }
         } catch (e) { }
 
-        console.log(`Ionrift | Previewing:`, idToPlay);
 
-        console.log(`Ionrift | Previewing:`, idToPlay);
+
+        Logger.log(`Previewing:`, idToPlay);
 
         // Unified Playback via SoundManager
         // If ID is a Key (e.g. "ATTACK_SWORD"), we should try to resolve it first via Handler

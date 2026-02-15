@@ -3,7 +3,7 @@ export class SoundAuditor extends FormApplication {
         return mergeObject(super.defaultOptions, {
             id: "ionrift-sound-auditor",
             title: "Ionrift Sound Auditor",
-            template: "modules/ionrift-sounds/templates/sound-auditor.hbs",
+            template: "modules/ionrift-resonance/templates/sound-auditor.hbs",
             width: 700,
             height: 600,
             classes: ["ionrift-window", "glass-ui"],
@@ -19,7 +19,7 @@ export class SoundAuditor extends FormApplication {
     }
 
     _hasAudioFlags(item) {
-        const flags = item.flags["ionrift-sounds"];
+        const flags = item.flags["ionrift-resonance"];
         if (!flags) return false;
 
         // Check for specific functional flags
@@ -52,7 +52,7 @@ export class SoundAuditor extends FormApplication {
     }
 
     _formatEntry(item, source, actor) {
-        const flags = item.flags["ionrift-sounds"];
+        const flags = item.flags["ionrift-resonance"];
         return {
             id: item.id,
             uuid: item.uuid,
@@ -87,10 +87,10 @@ export class SoundAuditor extends FormApplication {
                 title: "Clear Audio Flags?",
                 content: `<p>Remove all Ionrift Sound flags from <strong>${doc.name}</strong>?</p>`,
                 yes: async () => {
-                    await doc.unsetFlag("ionrift-sounds", "sound_attack");
-                    await doc.unsetFlag("ionrift-sounds", "sound_use");
-                    await doc.unsetFlag("ionrift-sounds", "sound_equip");
-                    await doc.unsetFlag("ionrift-sounds", "sound_unequip");
+                    await doc.unsetFlag("ionrift-resonance", "sound_attack");
+                    await doc.unsetFlag("ionrift-resonance", "sound_use");
+                    await doc.unsetFlag("ionrift-resonance", "sound_equip");
+                    await doc.unsetFlag("ionrift-resonance", "sound_unequip");
                     this.render();
                     ui.notifications.info(`Cleared audio from ${doc.name}`);
                 }

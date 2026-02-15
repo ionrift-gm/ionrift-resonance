@@ -1,6 +1,6 @@
 export class PresetSafetyCheck {
     static async confirmSwitch(currentPreset, newPreset) {
-        const overrides = game.settings.get("ionrift-sounds", "configOverrides");
+        const overrides = game.settings.get("ionrift-resonance", "configOverrides");
         const hasOverrides = overrides && (
             Object.keys(overrides.players || {}).length > 0 ||
             Object.keys(overrides.campaign || {}).length > 0 ||

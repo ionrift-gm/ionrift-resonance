@@ -72,9 +72,9 @@ export class SoundHandler {
             // Dynamic import to avoid load-time dependency issues if lib isn't ready
             const { SoundSystemValidator } = await import("./SoundSystemValidator.js");
 
-            // Ensure RuntimeValidator is available (it's on game.ionrift.lib)
-            if (!game.ionrift?.lib?.RuntimeValidator) {
-                Logger.warn("RuntimeValidator not found in ionrift-lib. Skipping checks.");
+            // Ensure RuntimeValidator is available (it's on game.ionrift.library)
+            if (!game.ionrift.library?.RuntimeValidator) {
+                Logger.warn("RuntimeValidator not found in ionrift-library. Skipping checks.");
                 return;
             }
 
@@ -123,7 +123,7 @@ export class SoundHandler {
     }
 
     reloadStrategy() {
-        const provider = game.settings.get("ionrift-sounds", "provider") || "syrinscape";
+        const provider = game.settings.get("ionrift-resonance", "provider") || "syrinscape";
         Logger.log(`Loading Strategy: ${provider}`);
 
         if (provider === "syrinscape") {
@@ -139,11 +139,13 @@ export class SoundHandler {
 
         try {
             // 1. Determine Preset File
-            let preset = game.settings.get("ionrift-sounds", "soundPreset") || "fantasy";
+            let preset = game.settings.get("ionrift-resonance", "soundPreset") || "fantasy";
             // Defensive Clean (remove quotes if corrupted)
             if (typeof preset === 'string') preset = preset.replace(/^["']|["']$/g, '').trim();
 
-            const fileUrl = `/modules/ionrift-sounds/scripts/presets/${preset}.json`;
+            this.activePreset = preset;
+
+            const fileUrl = `/modules/ionrift-resonance/scripts/presets/${preset}.json`;
 
             Logger.log(`Loading Preset: ${preset} from ${fileUrl}`);
 
@@ -166,7 +168,7 @@ export class SoundHandler {
             Logger.log("DEBUG: JSON Parsed.");
 
             // 2. Load User Overrides
-            const overrides = game.settings.get("ionrift-sounds", "configOverrides") || {};
+            const overrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
 
             // 3. Merge Strategies
             // Start with deep copy of defaults
@@ -263,7 +265,7 @@ export class SoundHandler {
 
         buttons.unshift({
             label: "Sounds",
-            class: "ionrift-sounds",
+            class: "ionrift-resonance",
             icon: "fas fa-music",
             onclick: () => this.openSoundConfig(app.document)
         });
@@ -276,8 +278,8 @@ export class SoundHandler {
         controls.push({
             label: "Configure Sounds",
             icon: "fas fa-music",
-            class: "ionrift-sounds",
-            action: "ionrift-sounds",
+            class: "ionrift-resonance",
+            action: "ionrift-resonance",
             onClick: () => this.openSoundConfig(app.document)
         });
     }
@@ -326,7 +328,7 @@ export class SoundHandler {
                 const soundType = isEquipped ? "sound_equip" : "sound_unequip";
 
                 // Check for Flag
-                const soundKey = item.getFlag("ionrift-sounds", soundType);
+                const soundKey = item.getFlag("ionrift-resonance", soundType);
                 if (soundKey) {
                     this.playItemSound(soundKey, item);
                 }
@@ -335,7 +337,7 @@ export class SoundHandler {
     }
 
     async configureVoice(actor) {
-        const current = actor.getFlag("ionrift-sounds", "identity") || "None";
+        const current = actor.getFlag("ionrift-resonance", "identity") || "None";
 
         new Dialog({
             title: `Sound Config: ${actor.name}`,
@@ -356,7 +358,7 @@ export class SoundHandler {
                     icon: "<i class='fas fa-save'></i>",
                     callback: async (html) => {
                         const identity = html.find("[name='identity']").val();
-                        await actor.setFlag("ionrift-sounds", "identity", identity);
+                        await actor.setFlag("ionrift-resonance", "identity", identity);
                         ui.notifications.info(`Ionrift Resonance: Set ${actor.name} Identity to ${identity}`);
                     }
                 }
@@ -368,7 +370,7 @@ export class SoundHandler {
 
     async checkConfiguration() {
         // 1. Check for Token existence
-        const token = game.settings.get("ionrift-sounds", "syrinToken");
+        const token = game.settings.get("ionrift-resonance", "syrinToken");
 
         if (!token) {
             this.promptForToken();
@@ -384,11 +386,11 @@ export class SoundHandler {
 
             if (response.ok) {
                 Logger.log("Syrinscape Connection Verified.");
-                await game.settings.set("ionrift-sounds", "authVerified", true);
+                await game.settings.set("ionrift-resonance", "authVerified", true);
                 // ui.notifications.info("Ionrift Sounds: Connected to Syrinscape.");
             } else {
                 Logger.warn(`Connection Failed: ${response.status} ${response.statusText}`);
-                await game.settings.set("ionrift-sounds", "authVerified", false);
+                await game.settings.set("ionrift-resonance", "authVerified", false);
                 ui.notifications.error(`Ionrift Resonance: Connection Failed (${response.status}). Check your Auth Token.`, { permanent: true });
 
                 // If 403/401, maybe prompt again?
@@ -398,21 +400,21 @@ export class SoundHandler {
             }
         } catch (e) {
             Logger.error("Validation Network Error", e);
-            await game.settings.set("ionrift-sounds", "authVerified", false);
+            await game.settings.set("ionrift-resonance", "authVerified", false);
             ui.notifications.warn("Ionrift Resonance: Could not reach Syrinscape (Network Error).");
         }
     }
 
     async promptForToken() {
         // 1. Check Ionrift Token
-        let token = game.settings.get("ionrift-sounds", "syrinToken");
+        let token = game.settings.get("ionrift-resonance", "syrinToken");
 
         // 2. Check Other Modules (Syrinscape Control)
         if (!token && game.modules.get("syrinscape-control")?.active) {
             const externalToken = game.settings.get("syrinscape-control", "authToken");
             if (externalToken) {
                 Logger.log("Found existing token in Syrinscape Control. Syncing...");
-                await game.settings.set("ionrift-sounds", "syrinToken", externalToken);
+                await game.settings.set("ionrift-resonance", "syrinToken", externalToken);
                 ui.notifications.info("Ionrift Resonance: Synced authentication from Syrinscape Control.");
                 this.checkConfiguration();
                 return; // Skip setup wizard
@@ -420,8 +422,10 @@ export class SoundHandler {
         }
 
         // 3. Launch Setup App if still missing
+        // [FIX] Disabled redundant legacy popup. Attunement Protocol (module.js) handles this.
         if (!token) {
-            new SetupApp({}, { isWelcome: true }).render(true);
+            // new SetupApp({}, { isWelcome: true }).render(true);
+            Logger.log("No Token found. improved Attunement Protocol should be open.");
         }
     }
 
@@ -597,7 +601,13 @@ export class SoundHandler {
      * Merges Defaults -> Preset (Config) -> User Bindings
      */
     _getEffectiveBindings() {
-        const userBindings = JSON.parse(game.settings.get("ionrift-sounds", "customSoundBindings") || "{}");
+        const userBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+
+        // If preset is 'none', strictly observe it by skipping defaults
+        if (this.activePreset === "none") {
+            return { ...this.config, ...userBindings };
+        }
+
         // Ensure this.config is treated as a source of truth for keys
         // Note: this.config contains 'mappings', 'players' etc which are ignored by simple key lookups
         return { ...SYRINSCAPE_DEFAULTS, ...this.config, ...userBindings };
@@ -643,12 +653,12 @@ export class SoundHandler {
             // Try to find actor by name if possible, though passing object is better
             const actor = game.actors.getName(actorName);
             if (actor) {
-                identity = actor.getFlag("ionrift-sounds", "identity");
+                identity = actor.getFlag("ionrift-resonance", "identity");
             }
         } else {
             // It's an Actor object
             actorName = actorOrName.name;
-            identity = actorOrName.getFlag("ionrift-sounds", "identity");
+            identity = actorOrName.getFlag("ionrift-resonance", "identity");
         }
 
         // Fallback to Config
@@ -685,7 +695,7 @@ export class SoundHandler {
     }
 
     openSetupDialog() {
-        const token = game.settings.get("ionrift-sounds", "syrinToken");
+        const token = game.settings.get("ionrift-resonance", "syrinToken");
         new Dialog({
             title: "Ionrift Resonance: Setup",
             content: `

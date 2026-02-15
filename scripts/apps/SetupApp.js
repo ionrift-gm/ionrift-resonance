@@ -5,7 +5,7 @@ export class SetupApp extends FormApplication {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-setup",
             title: "Resonance Calibration",
-            template: "modules/ionrift-sounds/templates/setup-app.hbs",
+            template: "modules/ionrift-resonance/templates/setup-app.hbs",
             width: 750,
             height: "auto",
             classes: ["ionrift", "ionrift-window", "glass-ui"],
@@ -17,7 +17,7 @@ export class SetupApp extends FormApplication {
         const controlModule = game.modules.get("syrinscape-control");
         const controlActive = controlModule?.active;
 
-        const ionToken = game.settings.get("ionrift-sounds", "syrinToken") || "";
+        const ionToken = game.settings.get("ionrift-resonance", "syrinToken") || "";
         const controlToken = controlActive ? game.settings.get("syrinscape-control", "authToken") : null;
 
         const t1 = (ionToken || "").trim();
@@ -40,7 +40,7 @@ export class SetupApp extends FormApplication {
         const setupContainer = html.find('.window-header'); // Or wherever appropriate
         // Use Library Manager if available
         if (game.ionrift?.integration) {
-            game.ionrift.integration.injectStatusBar(this, html, 'ionrift-sounds');
+            game.ionrift.integration.injectStatusBar(this, html, 'ionrift-resonance');
         }
 
 
@@ -64,7 +64,7 @@ export class SetupApp extends FormApplication {
             try {
                 if (game.modules.get("syrinscape-control")?.active) {
                     await game.settings.set("syrinscape-control", "authToken", token);
-                    await game.settings.set("ionrift-sounds", "syrinToken", token); // Ensure Ionrift is also set/saved
+                    await game.settings.set("ionrift-resonance", "syrinToken", token); // Ensure Ionrift is also set/saved
 
                     ui.notifications.info("Tokens Synchronized.");
 
@@ -112,8 +112,8 @@ export class SetupApp extends FormApplication {
                     btn.find('i').attr('class', 'fas fa-check');
 
                     // Auto-save on verify
-                    await game.settings.set("ionrift-sounds", "syrinToken", token);
-                    await game.settings.set("ionrift-sounds", "authVerified", true); // Validation Success
+                    await game.settings.set("ionrift-resonance", "syrinToken", token);
+                    await game.settings.set("ionrift-resonance", "authVerified", true); // Validation Success
 
                     // Sync to Syrinscape Control (if installed)
                     if (game.modules.get("syrinscape-control")?.active) {
@@ -155,7 +155,7 @@ export class SetupApp extends FormApplication {
     async _updateObject(event, formData) {
         const token = formData.token.trim();
         if (token) {
-            await game.settings.set("ionrift-sounds", "syrinToken", token);
+            await game.settings.set("ionrift-resonance", "syrinToken", token);
             ui.notifications.info("Ionrift Sounds: Configuration Saved.");
 
             // Re-run checks

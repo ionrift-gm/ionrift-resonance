@@ -1,6 +1,16 @@
 export const registerSettings = function () {
+    // Debug Mode
+    game.settings.register('ionrift-resonance', 'debug', {
+        name: "Enable Debug Logging",
+        hint: "Visible only in console. Useful for troubleshooting.",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false
+    });
+
     // Auth Token
-    game.settings.register('ionrift-sounds', 'syrinToken', {
+    game.settings.register('ionrift-resonance', 'syrinToken', {
         name: "Auth Token",
         hint: "Your Syrinscape Online Authentication Token.",
         scope: "world",
@@ -10,7 +20,7 @@ export const registerSettings = function () {
     });
 
     // Auth Verified Status (Legacy)
-    game.settings.register('ionrift-sounds', 'authVerified', {
+    game.settings.register('ionrift-resonance', 'authVerified', {
         scope: "world",
         config: false,
         type: Boolean,
@@ -18,7 +28,7 @@ export const registerSettings = function () {
     });
 
     // Setup Wizard Version Tracking (New)
-    game.settings.register("ionrift-sounds", "setupVersion", {
+    game.settings.register("ionrift-resonance", "setupVersion", {
         name: "Setup Version",
         hint: "Tracks the last setup version run.",
         scope: "world",
@@ -28,7 +38,7 @@ export const registerSettings = function () {
     });
 
     // Custom Bindings Map (JSON)
-    game.settings.register("ionrift-sounds", "customSoundBindings", {
+    game.settings.register("ionrift-resonance", "customSoundBindings", {
         scope: "world",
         config: false,
         type: String,
@@ -36,7 +46,7 @@ export const registerSettings = function () {
     });
 
     // Config Overrides (Campaign/Audit)
-    game.settings.register("ionrift-sounds", "configOverrides", {
+    game.settings.register("ionrift-resonance", "configOverrides", {
         scope: "world",
         config: false,
         type: Object,
@@ -44,7 +54,7 @@ export const registerSettings = function () {
     });
 
     // Hidden Oneshot Cache (Local Library)
-    game.settings.register('ionrift-sounds', 'oneshotCache', {
+    game.settings.register('ionrift-resonance', 'oneshotCache', {
         scope: "world",
         config: false,
         type: Object, // Store JSON object { timestamp: 0, results: [] }
@@ -52,7 +62,7 @@ export const registerSettings = function () {
     });
 
     // Audio Provider Choice
-    game.settings.register('ionrift-sounds', 'provider', {
+    game.settings.register('ionrift-resonance', 'provider', {
         name: "Audio Provider",
         hint: "Choose between Syrinscape (Streaming) or Local Audio (Foundry Playlists/Files)",
         scope: "world",
@@ -60,7 +70,7 @@ export const registerSettings = function () {
         type: String,
         choices: {
             "syrinscape": "Syrinscape (Online)",
-            "foundry": "Local Audio (Core)"
+            "foundry": "Local Audio (Experimental/Untested)"
         },
         onChange: () => {
             // Re-initialize manager on change to switch providers
@@ -77,7 +87,7 @@ export const registerSettings = function () {
     });
 
     // Active Sound Preset
-    game.settings.register("ionrift-sounds", "soundPreset", {
+    game.settings.register("ionrift-resonance", "soundPreset", {
         name: "Sound Preset",
         hint: "Choose the default library of sounds.",
         scope: "world",

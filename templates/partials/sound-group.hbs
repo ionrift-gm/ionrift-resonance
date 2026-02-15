@@ -32,18 +32,18 @@
             {{#if key}}
             <div class="parent-sound-card"
                 style="margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;">
-                {{> "modules/ionrift-sounds/templates/partials/sound-card-row.hbs" this}}
+                {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" this}}
             </div>
             {{/if}}
 
             <!-- 2. Child Groups (Recursive) -->
             {{#each children as |child|}}
-            {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" child}}
+            {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" child}}
             {{/each}}
 
             <!-- 3. Leaf Nodes (Individual Sounds in this group) -->
             {{#each fields as |field|}}
-            {{> "modules/ionrift-sounds/templates/partials/sound-card-row.hbs" field}}
+            {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" field}}
             {{/each}}
         </div>
     </details>
