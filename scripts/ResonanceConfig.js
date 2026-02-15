@@ -84,7 +84,33 @@ export class ResonanceConfig {
      * Defaults -> Preset -> User Overrides
      */
     getEffectiveBindings() {
-        const userBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+        const rawBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+
+        // Parse user bindings: Extract IDs from complex JSON structures
+        const userBindings = {};
+        for (const [key, value] of Object.entries(rawBindings)) {
+            if (!value) continue;
+
+            // If value is a JSON string, parse it and extract ID
+            if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
+                try {
+                    const parsed = JSON.parse(value);
+                    // Extract ID from parsed object
+                    if (parsed.id) {
+                        userBindings[key] = parsed.id;
+                    } else if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id) {
+                        // Multi-select: comma-separated IDs
+                        userBindings[key] = parsed.map(item => item.id).join(',');
+                    } else {
+                        userBindings[key] = value; // Fallback: use as-is
+                    }
+                } catch (e) {
+                    userBindings[key] = value; // Parse failed, use raw value
+                }
+            } else {
+                userBindings[key] = value; // Simple ID string
+            }
+        }
 
         if (this.activePreset === "none") {
             return { ...this.config, ...userBindings };

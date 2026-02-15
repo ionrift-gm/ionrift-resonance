@@ -893,7 +893,7 @@ export class SoundConfigApp extends FormApplication {
                             }];
 
                         } catch (e) {
-                            console.warn("Ionrift Config | Error parsing current value for picker:", e);
+                            Logger.warn("Error parsing current value for picker:", e);
                         }
                     }
 

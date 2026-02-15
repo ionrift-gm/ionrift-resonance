@@ -1,6 +1,8 @@
 # Ionrift Resonance
-![Downloads](https://img.shields.io/github/downloads/ionrift-gm/ionrift-sounds/total?color=violet&label=Downloads)
-![Latest Release](https://img.shields.io/github/v/release/ionrift-gm/ionrift-sounds?color=violet&label=Latest%20Version)
+![Downloads](https://img.shields.io/github/downloads/ionrift-gm/ionrift-resonance/total?color=violet&label=Downloads)
+![Latest Release](https://img.shields.io/github/v/release/ionrift-gm/ionrift-resonance?color=violet&label=Latest%20Version)
+![Foundry Version](https://img.shields.io/badge/Foundry-v12-333333?style=flat&logo=foundryvirtualtabletop)
+![Systems](https://img.shields.io/badge/systems-dnd5e%20%7C%20daggerheart-blue)
 
 **Automated audio triggers for Foundry VTT.**
 

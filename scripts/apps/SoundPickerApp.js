@@ -1,3 +1,5 @@
+import { Logger } from "../Logger.js";
+
 export class SoundPickerApp extends Application {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
@@ -75,27 +77,27 @@ export class SoundPickerApp extends Application {
     }
 
     async _render(force, options) {
-        console.log("Ionrift Picker | _render called with force:", force);
+        Logger.log("_render called with force:", force);
 
         // Guarantee partial registration before render
         const partialPath = "modules/ionrift-resonance/templates/partials/sound-picker-row.hbs";
         if (!Handlebars.partials[partialPath]) {
-            console.warn("Ionrift Picker | PARTIAL MISSING at render time. Attempting late load:", partialPath);
+            Logger.warn("PARTIAL MISSING at render time. Attempting late load:", partialPath);
             try {
                 await loadTemplates([partialPath]);
-                console.log("Ionrift Picker | Late load finished.");
+                Logger.log("Late load finished.");
             } catch (e) {
-                console.error("Ionrift Picker | Late load FAILED:", e);
+                Logger.error("Late load FAILED:", e);
             }
         } else {
-            console.log("Ionrift Picker | Partial already registered.");
+            Logger.log("Partial already registered.");
         }
 
         return super._render(force, options);
     }
 
     getData() {
-        console.log("Ionrift Picker | getData() Called.");
+        Logger.log("getData() Called.");
 
         // Read Cache Status - Prefer override if we just synced
         let count = 0;
@@ -108,11 +110,11 @@ export class SoundPickerApp extends Application {
 
         // Fallback: If count is 0 but we have results loaded in "Cache Mode", use that.
         if (count === 0 && !this.searchTerm && this.filterOneshots && this.results.length > 0) {
-            console.log("Ionrift Picker | Fallback: Using results length for cache count.");
+            Logger.log("Fallback: Using results length for cache count.");
             count = this.results.length;
         }
 
-        console.log(`Ionrift Picker | Data Prepared: Bindings=${this.currentBindings.length}, Results=${this.results.length}, Search=${this.searchTerm}`);
+        Logger.log(`Data Prepared: Bindings=${this.currentBindings.length}, Results=${this.results.length}, Search=${this.searchTerm}`);
 
         return {
             currentBindings: this.currentBindings,
@@ -133,13 +135,13 @@ export class SoundPickerApp extends Application {
 
     activateListeners(html) {
         super.activateListeners(html);
-        console.log("Ionrift Picker | activateListeners() Called - DOM Ready");
+        Logger.log("activateListeners() Called - DOM Ready");
 
         const $footer = html.find(".footer-area");
         if ($footer.length === 0) {
-            console.error("Ionrift Picker | CRITICAL: .footer-area NOT FOUND in DOM! Template render likely crashed.");
+            Logger.error("CRITICAL: .footer-area NOT FOUND in DOM! Template render likely crashed.");
         } else {
-            console.log("Ionrift Picker | Footer found in DOM.");
+            Logger.log("Footer found in DOM.");
         }
 
         // Search Input
@@ -269,7 +271,7 @@ export class SoundPickerApp extends Application {
             this.render();
 
         } catch (e) {
-            console.error(e);
+            Logger.error(e);
             ui.notifications.error("Update Failed.");
             btn.html(originalContent);
             btn.prop('disabled', false);
@@ -284,7 +286,7 @@ export class SoundPickerApp extends Application {
         if (!query && this.filterOneshots) {
             const cache = game.settings.get('ionrift-resonance', 'oneshotCache');
             if (cache && cache.results && cache.results.length > 0) {
-                console.log(`Ionrift Picker | Loading ${cache.results.length} cached one-shots.`);
+                Logger.log(`Loading ${cache.results.length} cached one-shots.`);
                 this.results = cache.results;
                 this.searchTerm = ""; // Ensure empty
             } else {
@@ -304,7 +306,7 @@ export class SoundPickerApp extends Application {
         const urlMatch = query.match(/elements\/(\d+)/);
         if (urlMatch) {
             const id = urlMatch[1];
-            console.log(`Ionrift Picker | Extracted ID ${id} from URL`);
+            Logger.log(`Extracted ID ${id} from URL`);
 
             // Manual Entry
             this.results = [{
@@ -340,7 +342,7 @@ export class SoundPickerApp extends Application {
                 }
             }
         } catch (err) {
-            console.error(err);
+            Logger.error(err);
             ui.notifications.warn("Search failed.");
         } finally {
             this.isLoading = false;
@@ -407,7 +409,7 @@ export class SoundPickerApp extends Application {
         $min.val(min);
         $max.val(max);
 
-        console.log(`Ionrift Picker | Updated Delay for [${binding.id}]: Min=${min}, Max=${max}`);
+        Logger.log(`Updated Delay for [${binding.id}]: Min=${min}, Max=${max}`);
     }
 
     _onSave(event) {
