@@ -10,6 +10,10 @@ export class SoundConfigApp extends FormApplication {
         this._auditorLimit = 25;
         // Debounce refresh to prevent UI thrashing during bulk updates (e.g. combat/initiative)
         this._debouncedRefresh = foundry.utils.debounce(() => this.render(true), 250);
+
+        // UI State Tracking
+        this._expandedGroups = new Set(); // Stores labels of open details
+        this._scrollPositions = {}; // Stores scroll top by selector
     }
 
     static get defaultOptions() {
@@ -20,8 +24,9 @@ export class SoundConfigApp extends FormApplication {
             width: 900,
             height: 750,
             tabs: [{ navSelector: ".tabs", contentSelector: ".content", initial: "tier1" }],
-            classes: ["ionrift", "sheet", "ionrift-window", "glass-ui", "resonance-app"], // Added resonance-app class
-            dragDrop: [{ dropSelector: null }]
+            classes: ["ionrift", "sheet", "ionrift-window", "glass-ui", "resonance-app"],
+            dragDrop: [{ dropSelector: null }],
+            scrollY: [".content", ".auditor-list"] // Enable built-in scroll preservation
         });
     }
 
@@ -210,7 +215,8 @@ export class SoundConfigApp extends FormApplication {
                 description: node.description,
                 children: [],
                 fields: [], // Leaf nodes
-                headerCard: node.id ? myState.getRenderData() : null
+                headerCard: node.id ? myState.getRenderData() : null,
+                isOpen: this._expandedGroups.has(node.label) || false
             };
 
             // B. Process Children
@@ -413,10 +419,10 @@ export class SoundConfigApp extends FormApplication {
                 label: "Vocals",
                 description: "Pain and death sounds.",
                 children: [
-                    { id: "CORE_PAIN_MASCULINE", label: "Core Pain (Masculine)", description: "Generic pain grunt for male humanoid actors." },
-                    { id: "CORE_PAIN_FEMININE", label: "Core Pain (Feminine)", description: "Generic pain grunt for female humanoid actors." },
-                    { id: "CORE_DEATH_MASCULINE", label: "Core Death (Masculine)", description: "Death cry for male humanoid actors." },
-                    { id: "CORE_DEATH_FEMININE", label: "Core Death (Feminine)", description: "Death cry for female humanoid actors." },
+                    { id: "CORE_PAIN_MASCULINE", label: "Core Pain (Masculine)", description: "Generic pain grunt for masculine humanoid actors." },
+                    { id: "CORE_PAIN_FEMININE", label: "Core Pain (Feminine)", description: "Generic pain grunt for feminine humanoid actors." },
+                    { id: "CORE_DEATH_MASCULINE", label: "Core Death (Masculine)", description: "Death cry for masculine humanoid actors." },
+                    { id: "CORE_DEATH_FEMININE", label: "Core Death (Feminine)", description: "Death cry for feminine humanoid actors." },
                     { id: "MONSTER_ROAR", label: "Core Monster Pain", description: "Generic growl/pain for non-humanoid monsters." },
                     { id: "MONSTER_GENERIC", label: "Core Monster Death", description: "Generic death sound for non-humanoid monsters." }
                 ]
@@ -436,20 +442,42 @@ export class SoundConfigApp extends FormApplication {
         }
 
         if (game.system.id === 'daggerheart') {
+            // Group 1: Core Mechanics (Rolls, Hope, Stress, Armor)
             coreTaxonomy.push({
                 label: "Daggerheart Mechanics",
-                description: "Hope, Fear, and Stress mechanics.",
+                description: "Rolls, Hope, Stress, and Equipment.",
                 children: [
-                    { id: "DAGGERHEART_HOPE", label: "Gain Hope", description: "Played when a player gains Hope." },
-                    { id: "DAGGERHEART_HOPE_USE", label: "Use Hope", description: "Played when a player spends Hope." },
-                    { id: "DAGGERHEART_FEAR", label: "Gain Fear", description: "Played when the GM gains Fear." },
-                    { id: "DAGGERHEART_FEAR_USE", label: "Use Fear", description: "Played when the GM spends Fear." },
-                    { id: "DAGGERHEART_STRESS", label: "Take Stress", description: "Played when a character takes Stress." },
+                    // Rolls
+                    { id: "DAGGERHEART_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice." },
+                    { id: "DAGGERHEART_ROLL_HOPE", label: "Roll with Hope", description: "Action Result: Hope Die > Fear Die." },
+                    { id: "DAGGERHEART_ROLL_FEAR", label: "Roll with Fear", description: "Action Result: Fear Die > Hope Die." },
+
+                    // Resources (Hope)
+                    { id: "DAGGERHEART_HOPE", label: "Hope Resource (Gain)", description: "Triggered when a player gains a Hope token." },
+                    { id: "DAGGERHEART_HOPE_USE", label: "Hope Resource (Use)", description: "Triggered when a player spends a Hope token." },
+
+                    // Stress / Armor
+                    { id: "DAGGERHEART_STRESS", label: "Take Stress", description: "Played when a character marks Stress." },
+                    { id: "DAGGERHEART_STRESS_CLEAR", label: "Clear Stress", description: "Played when a character recovers Stress." },
                     { id: "DAGGERHEART_ARMOR_USE", label: "Armor Block/Deplete", description: "Played when Armor slots are reduced." },
-                    { id: "DAGGERHEART_ARMOR_REPAIR", label: "Armor Repair", description: "Played when Armor slots are restored." },
-                    { id: "DAGGERHEART_FEAR_LOW", label: "Fear Tracker (Low)", description: "Atmosphere: Fear Tracker 1-2." },
-                    { id: "DAGGERHEART_FEAR_MED", label: "Fear Tracker (Med)", description: "Atmosphere: Fear Tracker 3-4." },
-                    { id: "DAGGERHEART_FEAR_HIGH", label: "Fear Tracker (High)", description: "Atmosphere: Fear Tracker 5+." }
+                    { id: "DAGGERHEART_ARMOR_REPAIR", label: "Armor Repair", description: "Played when Armor slots are restored." }
+                ]
+            });
+
+            // Group 2: Fear System (GM Only)
+            coreTaxonomy.push({
+                label: "Daggerheart Fear Tracker",
+                description: "GM Fear mechanics (Spending & Gaining).",
+                children: [
+                    // Fear Spend
+                    { id: "DAGGERHEART_FEAR_USE_LOW", label: "GM Fear Spend (1)", description: "Triggered when GM spends 1 Fear." },
+                    { id: "DAGGERHEART_FEAR_USE_MED", label: "GM Fear Spend (2-4)", description: "Triggered when GM spends 2-4 Fear." },
+                    { id: "DAGGERHEART_FEAR_USE_HIGH", label: "GM Fear Spend (5+)", description: "Triggered when GM spends 5+ Fear." },
+
+                    // Fear Gain (Tracker Thresholds)
+                    { id: "DAGGERHEART_FEAR_LOW", label: "GM Fear Increases (to 1-4)", description: "Triggered when GM Fear pool reaches 1-4." },
+                    { id: "DAGGERHEART_FEAR_MED", label: "GM Fear Increases (to 5-8)", description: "Triggered when GM Fear pool reaches 5-8." },
+                    { id: "DAGGERHEART_FEAR_HIGH", label: "GM Fear Increases (to 9+)", description: "Triggered when GM Fear pool reaches 9 or more." }
                 ]
             });
         }
@@ -584,6 +612,19 @@ export class SoundConfigApp extends FormApplication {
             Hooks.on("updateItem", this._updateHook);
             this._hooksRegistered = true;
         }
+
+        // State Tracking for Details
+        html.find("details").on("toggle", (event) => {
+            const details = event.currentTarget;
+            const label = details.dataset.groupLabel;
+            if (!label) return;
+
+            if (details.open) {
+                this._expandedGroups.add(label);
+            } else {
+                this._expandedGroups.delete(label);
+            }
+        });
     }
 
     async close(options) {
@@ -640,14 +681,14 @@ export class SoundConfigApp extends FormApplication {
 
         try {
             if (doc.documentName === "Actor") {
-                const { ActorSoundConfig } = await import("../../../ionrift-workshop/scripts/apps/ActorSoundConfig.js");
+                const { ActorSoundConfig } = await import("./ActorSoundConfig.js");
                 new ActorSoundConfig(doc).render(true);
             } else if (doc.documentName === "Item") {
-                const { ItemSoundConfig } = await import("../../../ionrift-workshop/scripts/apps/ItemSoundConfig.js");
+                const { ItemSoundConfig } = await import("./ItemSoundConfig.js");
                 new ItemSoundConfig(doc).render(true);
             }
         } catch (e) {
-            ui.notifications.error("Ionrift: Could not load Workshop module for editing.");
+            ui.notifications.error("Ionrift: Could not load Sound Config for editing.");
         }
     }
 
@@ -723,16 +764,33 @@ export class SoundConfigApp extends FormApplication {
             return;
         }
 
-        // Find current value for context
+        // Find current value (Source of Truth: Settings > DOM)
         let currentValue = "";
-        const row = this.element.find(`.entity-row[data-key="${key}"]`);
-        if (row.length) {
-            const input = row.find("input");
-            currentValue = input.val();
+
+        const preset = game.settings.get("ionrift-resonance", "soundPreset");
+        const customBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+
+        if (preset === "none") {
+            // Manual Mode: Strictly use settings. If deleted, it's empty.
+            // This prevents stale DOM inputs from ghosting deleted values.
+            currentValue = customBindings[key] || "";
+        } else {
+            // Default/Inheritance Mode: 
+            // 1. Check Custom first (fastest)
+            if (customBindings[key]) {
+                currentValue = customBindings[key];
+            } else {
+                // 2. Fallback to DOM to catch Defaults/Inherited values rendered by Handlebars
+                const row = this.element.find(`.entity-row[data-key="${key}"]`);
+                if (row.length) {
+                    const input = row.find("input");
+                    currentValue = input.val();
+                }
+            }
         }
 
         try {
-            const { SoundPickerApp } = await import("../../../ionrift-workshop/scripts/apps/SoundPickerApp.js");
+            const { SoundPickerApp } = await import("./SoundPickerApp.js");
 
             new SoundPickerApp(async (result) => {
                 // CASE A: User Cleared Sounds (result === null)
@@ -840,7 +898,9 @@ export class SoundConfigApp extends FormApplication {
                     }
 
                     // 2. Fallback to Default only if no custom value
-                    if (key && SYRINSCAPE_DEFAULTS[key]) {
+                    // BUT: If in Manual Mode (None), defaults are disabled.
+                    // We only want defaults if we are in a preset mode (Fantasy/Core)
+                    if (preset !== "none" && key && SYRINSCAPE_DEFAULTS[key]) {
                         const def = SYRINSCAPE_DEFAULTS[key];
                         if (Array.isArray(def)) {
                             // Map to confirm structure
@@ -874,7 +934,7 @@ export class SoundConfigApp extends FormApplication {
 
         } catch (e) {
             console.error("Ionrift Sound Config | Failed to load SoundPickerApp:", e);
-            ui.notifications.error("Ionrift Workshop module required for Search.");
+            ui.notifications.error("Ionrift Sound Config required for Search.");
         }
     }
 
@@ -1012,10 +1072,11 @@ export class SoundConfigApp extends FormApplication {
         event.preventDefault(); // Stop default button behavior
         const target = event.currentTarget;
         let soundKeyOrId = target.dataset.sound;
+        let soundType = target.dataset.type; // NEW: Capture type from DOM if present
 
         // NEW: Try to read the current input value from the row to support "Preview before Save"
-        const row = target.closest("tr"); // If in table
-        const input = row?.querySelector("input") || target.closest(".sound-input-group")?.querySelector("input");
+        const row = target.closest("tr") || target.closest(".entity-row"); // Support both Table and Div layouts
+        const input = row?.querySelector("input");
         let inputValue = input ? input.value : null;
 
         if (input) {
@@ -1023,7 +1084,7 @@ export class SoundConfigApp extends FormApplication {
             // Only update if override is present. Otherwise fallback to dataset.sound (Default Key)
             if (val && val.trim() !== "") {
                 soundKeyOrId = val;
-                Logger.log(`Previewing from Override: ${soundKeyOrId}`);
+                // Logger.log(`Previewing from Override: ${soundKeyOrId}`);
             }
         } else if (inputValue && inputValue.trim() !== "") {
             // Fallback to simpler getter
@@ -1032,40 +1093,52 @@ export class SoundConfigApp extends FormApplication {
 
         // Check if value is JSON (new binding format)
         let idToPlay = soundKeyOrId;
+        let playOptions = {};
+
         try {
             if (typeof soundKeyOrId === 'string' && soundKeyOrId.trim().startsWith("{")) {
-                idToPlay = JSON.parse(soundKeyOrId);
+                const obj = JSON.parse(soundKeyOrId);
+                idToPlay = obj.id;
+                if (obj.type) soundType = obj.type; // Extract type from JSON
             }
         } catch (e) { }
 
-
-
-        Logger.log(`Previewing:`, idToPlay);
+        // Type Mapping (Copied from SoundPickerApp for consistency)
+        if (soundType) {
+            if (soundType === "global-oneshot") playOptions.type = "global-element";
+            else if (soundType === "mood") playOptions.type = "mood";
+            else if (soundType === "music-element") playOptions.type = "element";
+            else playOptions.type = "element"; // Default fallback
+        }
 
         // Unified Playback via SoundManager
-        // If ID is a Key (e.g. "ATTACK_SWORD"), we should try to resolve it first via Handler
-        // BUT we must ensure we only pass strings to resolveSound.
-        // If `idToPlay` is a complex object (Global Element), we use its ID directly.
         if (game.ionrift.handler) {
-            let keyToResolve = idToPlay;
+            // If it's a Semantic Key (e.g. "ATTACK_SWORD"), resolve it first
+            // But if it's a numeric ID or complex object, treat as direct.
+            const resolved = game.ionrift.handler.resolveSound(idToPlay);
 
-            // If object, use its ID for playback, but don't try to resolve it as a semantic key
-            if (typeof idToPlay === 'object' && idToPlay.id) {
-                // It's already resolved/explicit. Don't call handler.resolveSound with the object.
-                // We just rely on the object being passed to manager.play
-            } else if (typeof idToPlay === 'string') {
-                // It's a string, might be a Semantic Key (ATTACK_SWORD) or a concrete ID (global:123)
-                // resolveSound handles strings.
-                const resolved = game.ionrift.handler.resolveSound(idToPlay);
-                if (resolved) {
-                    // If resolved is an object/string, usage overrides key
+            if (resolved) {
+                if (typeof resolved === 'string') {
+                    // It resolved to a string ID
                     idToPlay = resolved;
+                } else if (typeof resolved === 'object') {
+                    // It resolved to a full object (e.g. { id: 123, type: 'global-oneshot' })
+                    idToPlay = resolved.id;
+                    if (resolved.type) {
+                        // Re-map type if resolved object has it
+                        soundType = resolved.type;
+                        if (soundType === "global-oneshot") playOptions.type = "global-element";
+                        else if (soundType === "mood") playOptions.type = "mood";
+                        else playOptions.type = "element";
+                    }
                 }
             }
         }
 
+        Logger.log(`Previewing: ${idToPlay}`, playOptions);
+
         if (game.ionrift.sounds?.manager) {
-            game.ionrift.sounds.manager.play(idToPlay);
+            game.ionrift.sounds.manager.play(idToPlay, playOptions);
         }
     }
 
@@ -1106,14 +1179,14 @@ export class SoundConfigApp extends FormApplication {
                 // Fallback (re-implement logic if handler method is missing)
                 try {
                     if (doc.documentName === "Actor") {
-                        const { ActorSoundConfig } = await import("../../../ionrift-workshop/scripts/apps/ActorSoundConfig.js");
+                        const { ActorSoundConfig } = await import("./ActorSoundConfig.js");
                         new ActorSoundConfig(doc).render(true);
                     } else {
-                        const { ItemSoundConfig } = await import("../../../ionrift-workshop/scripts/apps/ItemSoundConfig.js");
+                        const { ItemSoundConfig } = await import("./ItemSoundConfig.js");
                         new ItemSoundConfig(doc).render(true);
                     }
                 } catch (e) {
-                    ui.notifications.error("Ionrift: Could not load Workshop module.");
+                    ui.notifications.error("Ionrift: Could not load Sound Config.");
                 }
             }
         }

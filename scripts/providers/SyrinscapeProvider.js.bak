@@ -81,10 +81,7 @@ export class SyrinscapeProvider extends SoundProvider {
                 }
                 return;
             } catch (err) {
-                Logger.error("Syrinscape Module V2 Error (Fallback to Direct):", err);
-                // Fallback to Direct API immediately
-                this._playDirect(type, id);
-                return;
+                Logger.error("Syrinscape Module V2 Error:", err);
             }
         }
 
@@ -98,13 +95,6 @@ export class SyrinscapeProvider extends SoundProvider {
         }
 
         // C. Fallback to Direct API
-        await this._playDirect(type, id);
-    }
-
-    /**
-     * Direct API Playback (No Module)
-     */
-    async _playDirect(type, id) {
         const token = game.settings.get('ionrift-resonance', 'syrinToken');
         if (!token) {
             // Only warn if they strictly need it (no module)

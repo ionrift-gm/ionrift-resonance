@@ -15,6 +15,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         // State for Token Input
         this.pendingToken = "";
         this.testResult = null;
+        this.reloadRequired = false;
     }
 
     static get defaultOptions() {
@@ -75,10 +76,10 @@ export class AttunementApp extends AbstractWelcomeApp {
         const form = this.element.find("form");
         let presetType = form.find("input[name='preset']:checked").val();
 
-        // Default to 'full' if no selection made
+        // Default to 'empty' if no selection made (Safety)
         if (!presetType) {
-            Logger.warn("Attunement | No preset selected, defaulting to 'full'.");
-            presetType = "full";
+            Logger.warn("Attunement | No preset selected, defaulting to 'empty'.");
+            presetType = "empty";
         }
 
         // Import Defaults
@@ -139,8 +140,9 @@ export class AttunementApp extends AbstractWelcomeApp {
         await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
 
         // 3. Set Sound Preset
-        // Since 'fantasy.json' (default) contains the core sounds, clearing custom bindings effectively 
-        // resets the module to the selected preset state.
+        // Map 'empty' to 'none', others to 'fantasy' (default)
+        const targetPreset = (presetType === "empty") ? "none" : "fantasy";
+        await game.settings.set("ionrift-resonance", "soundPreset", targetPreset, { ionriftConfirmed: true });
 
 
         // 4. Save Completeness Preference
@@ -280,7 +282,30 @@ export class AttunementApp extends AbstractWelcomeApp {
         // Sync Logic (if mismatch)
         if (game.modules.get("syrinscape-control")?.active) {
             await game.settings.set("syrinscape-control", "authToken", token);
+            this.reloadRequired = true; // Flag for reload on close
         }
+    }
+
+    async close(options = {}) {
+        // If we synced with Syrinscape Control, we MUST reload to ensure it picks up the new token.
+        if (this.reloadRequired) {
+            const confirm = await Dialog.confirm({
+                title: "Reload Required",
+                content: `<p><strong>Syrinscape Control</strong> requires a reload to synchronize your new Auth Token.</p><p>Reload the world now?</p>`,
+                defaultYes: true
+            });
+
+            if (confirm) {
+                // Save version tracking manually to ensure wizard doesn't pop up again
+                const version = game.modules.get("ionrift-resonance").version;
+                await game.settings.set("ionrift-resonance", "setupVersion", version);
+
+                await super.close(options);
+                window.location.reload();
+                return;
+            }
+        }
+        return super.close(options);
     }
 
 

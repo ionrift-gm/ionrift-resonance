@@ -7,28 +7,21 @@
     <div style="display: flex; flex-direction: column; gap: 10px;">
         <label
             style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="full" {{#if (eq currentPreset "full" )}}checked{{/if}}
+            <input type="radio" name="preset" value="empty" checked
                 style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
             <div style="flex: 1;">
-                <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Syrinscape Full
-                    Library</strong>
+                <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Standard Setup
+                    (Manual)</strong>
                 <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
-                    Complete set of high-quality sounds. Requires a <strong style="color: #fff;">Syrinscape
-                        Subscription</strong>.
+                    Initialize with a clean slate. You can curate your own sound board using the Library.
                 </span>
             </div>
         </label>
-        <label
-            style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="core" {{#if (eq currentPreset "core" )}}checked{{/if}}
-                style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
-            <div style="flex: 1;">
-                <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Syrinscape Core
-                    Library</strong>
-                <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
-                    Limited set of essential sounds. Compatible with <strong style="color: #fff;">free usage</strong>.
-                </span>
-            </div>
-        </label>
+
+        <!-- Placeholder for Future Presets -->
+        <div
+            style="padding: 10px; opacity: 0.5; font-style: italic; color: #aaa; text-align: center; border: 1px dashed rgba(255,255,255,0.1); border-radius: 4px;">
+            Curated presets are currently disabled.
+        </div>
     </div>
 </div>

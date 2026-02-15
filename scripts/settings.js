@@ -94,10 +94,10 @@ export const registerSettings = function () {
         config: false,
         type: String,
         choices: {
-            "fantasy": "Fantasy / Core (DnD, Daggerheart)",
-            "scifi": "Sci-Fi / Future (Warhammer, Starfinder)"
+            "none": "Standard Setup (Manual)",
+            // "fantasy": "Fantasy / Core (DnD, Daggerheart)" // Disabled for Initial Release
         },
         onChange: () => game.ionrift.handler?.loadConfig(),
-        default: "fantasy"
+        default: "none"
     });
 };

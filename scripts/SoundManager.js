@@ -32,6 +32,8 @@ export class SoundManager {
     async play(soundData, options = {}) {
         if (!soundData) return;
 
+        Logger.log("SoundManager | Play Request:", { soundData, options });
+
         // 1. Resolve Input (Handle Arrays -> Random Selection here, or let Provider do it?)
         // Provider has logic for it, but let's do it here to standardize behavior before logging.
         let target = soundData;

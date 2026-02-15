@@ -2,7 +2,7 @@
     style="margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
 
     <!-- Group Header (Collapsible) -->
-    <details {{#if (or active (not fields.length))}}open{{/if}}>
+    <details {{#if isOpen}}open{{/if}} data-group-label="{{label}}">
         <summary
             style="padding: 8px; background: rgba(0,0,0,0.3); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 8px; font-weight: bold;">

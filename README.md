@@ -20,6 +20,8 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 ## Resonance Calibration
 Ionrift Resonance features a comprehensive configuration UI used to map game events to specific Syrinscape Sound IDs.
 
+> **Note:** This release focuses on manual configuration ("Standard Setup"). Curated presets are currently disabled and will be available in future updates.
+
 Open it via **Module Settings -> Ionrift Resonance -> Resonance Calibration**.
 
 ### Tier 1: Core Events
@@ -56,6 +58,8 @@ Define specific pain and death sounds for your Player Characters, overriding gen
 ### 1. Daggerheart
 **Native Support**. No external modules required (other than core dependencies).
 *   Sound triggers on Duality Dice rolls (Fear/Hope/Crit).
+*   **Fear Tracker**: Dynamic sounds for GM Fear Gain (Thresholds 1-4, 5-8, 9+) and variable Spends.
+*   **Resources**: Triggers for Hope Gain/Use and Stress Take/Clear.
 *   Automatic chat card parsing.
 
 ### 2. DnD 5e

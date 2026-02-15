@@ -107,7 +107,12 @@ export class DaggerheartAdapter extends SystemAdapter {
 
         // Listen for chat messages to detect rolls
         Hooks.on("createChatMessage", (message) => {
-            if (!game.user.isGM) return; // Only GM processes sounds to prevent duplicates
+            Logger.log("HOOK FIRED", message); // Spammy but necessary now
+            if (!game.user.isGM) return;
+
+            // Debug: Log basic info to confirm we are seeing messages
+            // Logger.log(`Hook | Message type: ${message.type}, isRoll: ${message.isRoll}, Rolls: ${message.rolls?.length}`);
+
             this.handleInfo(message);
         });
 
@@ -122,30 +127,6 @@ export class DaggerheartAdapter extends SystemAdapter {
         Hooks.on("preUpdateItem", (item, changes, options, userId) => {
             if (!game.user.isGM) return;
             this.handlePreUpdateItem(item, changes);
-        });
-
-        // Listen for Fear Tracker Renders (Multiple Strategies)
-        // 1. Try specific hook (if it exists)
-        Hooks.on("renderFearTracker", (app, html, data) => {
-            if (!game.user.isGM) return;
-            this.handleFearRender(app, html, data);
-        });
-
-        // 2. Generic Application hook (Fallback) - Filter by ID 'resources'
-        Hooks.on("renderApplicationV2", (app, html, data) => {
-            if (app.id === "resources" || app?.options?.id === "resources") {
-                if (!game.user.isGM) return;
-                this.handleFearRender(app, html, data || app); // Data might be app itself in V2 events
-            }
-        });
-
-        // 3. Legacy Application hook
-        Hooks.on("renderApplication", (app, html, data) => {
-            if (app.id === "resources") {
-                if (!game.user.isGM) return;
-                // Inspect 'data' for current value (V1 pattern) or fall back to app context
-                this.handleFearRender(app, html, data);
-            }
         });
     }
 
@@ -275,10 +256,25 @@ export class DaggerheartAdapter extends SystemAdapter {
             const oldFear = getProperty(actor, "system.fear.value") ?? getProperty(actor, "system.resources.fear.value") ?? 0;
             if (newFear > oldFear) {
                 Logger.log(`Fear Gained(${oldFear} -> ${newFear})`);
-                this.handler.play("DAGGERHEART_FEAR");
+                // Threshold Logic (Replacing generic Fear Gain)
+                if (newFear >= 9) {
+                    this.handler.play("DAGGERHEART_FEAR_HIGH");
+                } else if (newFear >= 5) {
+                    this.handler.play("DAGGERHEART_FEAR_MED");
+                } else {
+                    this.handler.play("DAGGERHEART_FEAR_LOW");
+                }
             } else if (newFear < oldFear) {
-                Logger.log(`Fear Used(${oldFear} -> ${newFear})`);
-                this.handler.play("DAGGERHEART_FEAR_USE");
+                const delta = oldFear - newFear;
+                Logger.log(`Fear Used(${oldFear} -> ${newFear} | Delta: ${delta})`);
+
+                if (delta >= 5) {
+                    this.handler.play("DAGGERHEART_FEAR_USE_HIGH");
+                } else if (delta >= 2) {
+                    this.handler.play("DAGGERHEART_FEAR_USE_MED");
+                } else {
+                    this.handler.play("DAGGERHEART_FEAR_USE_LOW");
+                }
             } else {
                 Logger.log(`Fear Logic Skipped: Old ${oldFear} == New ${newFear} `);
             }
@@ -320,6 +316,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                 this.handler.play("DAGGERHEART_STRESS");
             } else if (newStress < realOldStress) {
                 Logger.log(`Stress Cleared / Reduced(${realOldStress} -> ${newStress})`);
+                this.handler.play("DAGGERHEART_STRESS_CLEAR");
             }
         } else {
             // Log keys if stress update suspect but not found
@@ -396,7 +393,12 @@ export class DaggerheartAdapter extends SystemAdapter {
     }
 
     handleInfo(message) {
-        if (!message.isRoll && !message.rolls?.length) return;
+        Logger.log("handleInfo called", { isRoll: message.isRoll, rolls: message.rolls?.length });
+
+        if (!message.isRoll && !message.rolls?.length) {
+            Logger.log("handleInfo | Ignored (Not a Roll)");
+            return;
+        }
 
         const roll = message.rolls[0];
         Logger.log("Daggerheart Chat/Roll Detected:", {
@@ -448,17 +450,17 @@ export class DaggerheartAdapter extends SystemAdapter {
             if (hopeValue === fearValue) {
                 Logger.log(`CRITICAL! Doubles(${hopeValue})`);
                 this.handler.playItemSound(attackSoundKey, item, 700);
-                this.play(SOUND_EVENTS.CORE_CRIT, 700);
+                this.play("DAGGERHEART_CRIT", 700); // New dedicated Crit key
 
             } else if (hopeValue > fearValue) {
                 Logger.log(`Action with HOPE`);
                 this.handler.playItemSound(attackSoundKey, item, 700);
-                this.play("DAGGERHEART_HOPE", 700); // Play Hope Sound on Roll Result
+                this.play("DAGGERHEART_ROLL_HOPE", 700); // Distinct from Resource Gain
 
             } else {
                 Logger.log(`Action with FEAR`);
                 this.handler.playItemSound(attackSoundKey, item, 700);
-                this.play("DAGGERHEART_FEAR", 700); // Play Fear Sound on Roll Result
+                this.play("DAGGERHEART_ROLL_FEAR", 700); // Distinct from Resource Gain
             }
         } else {
             // Standard Roll

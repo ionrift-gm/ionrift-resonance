@@ -65,6 +65,11 @@ export class SoundDiagnostics {
     }
 
     async _checkResolution() {
+        if (this.handler.activePreset === "none") {
+            this.log("Resolution Test: Skipped (Manual Mode Active)", "success");
+            return;
+        }
+
         const key = "ATTACK_SWORD";
         const res = this.handler.resolveSound(key);
         if (res === key) {

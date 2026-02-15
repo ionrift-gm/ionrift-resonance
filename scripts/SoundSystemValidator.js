@@ -31,6 +31,8 @@ export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator 
     }
 
     async customTests() {
+        if (this.handler.activePreset === "none") return;
+
         // 1. Strategy Resolution Test
         const testKey = "ATTACK_SWORD"; // Should resolve to CORE_MELEE -> ID
         const resolved = this.handler.resolveSound(testKey);

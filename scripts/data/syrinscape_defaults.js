@@ -304,10 +304,13 @@ export const SYRINSCAPE_PRESETS = {
     "dnd5e_core": DND5E_CORE,
     "daggerheart_full": DAGGERHEART_FULL,
     "daggerheart_core": DAGGERHEART_CORE,
+    "daggerheart_empty": {},
+    "dnd5e_empty": {},
 
     // Fallbacks
     "full": DATA_FULL,
-    "core": DATA_CORE
+    "core": DATA_CORE,
+    "empty": {}
 };
 
 // Legacy Export
