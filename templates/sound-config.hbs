@@ -1,0 +1,199 @@
+<form autocomplete="off" class="ionrift-sound-config"
+    style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+
+    <!-- Main Layout Container -->
+    <div style="display: flex; flex: 1; overflow: hidden;">
+
+        <!-- Sidebar Navigation -->
+        <nav class="ionrift-sidebar tabs" style="flex: 0 0 220px; display: flex; flex-direction: column;">
+
+            <!-- Top Group: Tiers -->
+            <div class="sidebar-group tiers" style="flex: 0 0 auto;">
+                <div class="header">Calibration Tiers</div>
+                <div class="group-items" style="display: flex; flex-direction: column; gap: 2px;">
+                    <a class="item" data-tab="tier1"><i class="fas fa-cube"></i> Core Mechanics</a>
+                    <a class="item" data-tab="tier2"><i class="fas fa-hammer"></i> Combat Actions</a>
+                    <a class="item" data-tab="tier3"><i class="fas fa-skull"></i> Monsters</a>
+                    <!-- <a class="item" data-tab="tier4"><i class="fas fa-cloud-showers-heavy"></i> Weather</a> -->
+                </div>
+            </div>
+
+            <div style="flex: 1;"></div> <!-- Spacer -->
+
+            <!-- Bottom Group: Tools -->
+            <div class="sidebar-group tools" style="flex: 0 0 auto; margin-bottom: 10px;">
+                <div class="header">Tools</div>
+                <div class="group-items">
+                    <a class="item auditor-tab" data-tab="auditor"><i class="fas fa-search"></i> Sound Auditor</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <section class="content" style="flex: 1; padding: 10px; overflow-y: auto; background: rgba(0,0,0,0.2);">
+
+            <!-- TIER 1: CORE (Hierarchical) -->
+            <div class="tab" data-tab="tier1">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-cube"></i> Core Mechanics</div>
+
+                    {{#each tiers.tier1.paramounts as |group|}}
+                    {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" group}}
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- TIER 2: ACTIONS (Hierarchical) -->
+            <div class="tab" data-tab="tier2">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-hammer"></i> Action Taxonomy</div>
+
+                    {{#each tiers.tier2.paramounts as |group|}}
+                    {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" group}}
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- TIER 3: MONSTERS (Hierarchical) -->
+            <div class="tab" data-tab="tier3">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-skull"></i> Monster Taxonomy</div>
+
+                    {{#each tiers.tier3.paramounts as |group|}}
+                    {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" group}}
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- AUDITOR -->
+            <div class="tab" data-tab="auditor">
+                <p class="auditor-description"
+                    style="margin: 0 0 10px 0; font-style: italic; opacity: 0.7; font-size: 0.9em; padding: 0 4px;">
+                    <i class="fas fa-info-circle"></i> <strong>Central Registry:</strong> Manage all individual sound
+                    overrides
+                    applied directly to specific Actors or Items.
+                </p>
+                <div class="auditor-controls"
+                    style="display: flex; gap: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; align-items: center;">
+                    <div style="flex: 1; position: relative;">
+                        <i class="fas fa-search"
+                            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                        <input type="text" class="auditor-search-input" placeholder="Search by Name, Sound, or Slot..."
+                            value="{{tiers.auditor.items.search}}"
+                            style="padding-left: 30px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; width: 100%;">
+                    </div>
+                    <div class="pagination" style="display: flex; align-items: center; gap: 5px;">
+                        <button type="button" class="auditor-control-btn" data-action="prev" title="Previous Page"
+                            style="width: 30px; line-height: 24px;"><i class="fas fa-chevron-left"></i></button>
+                        <span class="auditor-page-info"
+                            style="font-family: monospace; white-space: nowrap; font-size: 0.9em; min-width: 80px; text-align: center;">
+                            Page {{tiers.auditor.items.page}} of {{tiers.auditor.items.totalPages}}
+                        </span>
+                        <button type="button" class="auditor-control-btn" data-action="next" title="Next Page"
+                            style="width: 30px; line-height: 24px;"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="auditor-list">
+                    {{> "modules/ionrift-sounds/templates/partials/auditor-list.hbs" items=tiers.auditor.items.items}}
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="sheet-footer"
+        style="flex: 0 0 auto; background: rgba(20, 20, 30, 0.95); padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <div class="flexrow" style="gap: 8px; align-items: center;">
+            <button type="button" class="stop-all-sounds" title="Signal Syrinscape to Stop All playing sounds."
+                style="background: rgba(185, 28, 28, 0.2); border: 1px solid rgba(185, 28, 28, 0.5); color: #fca5a5; width: auto; font-size: 0.9em; white-space: nowrap; padding: 0 12px;">
+                <i class="fas fa-stop-circle"></i> Stop All
+            </button>
+            <!-- Removed floaty separator -->
+            <div style="width: 10px;"></div>
+            <button type="button" class="load-preset" title="Load Preset"
+                style="background: transparent; border: none; color: #888; width: auto; font-size: 0.9em; transition: color 0.2s;">
+                <i class="fas fa-book"></i> Presets
+            </button>
+            <button type="button" class="import-config" title="Import"
+                style="background: transparent; border: none; color: #888; width: auto; font-size: 0.9em; transition: color 0.2s;">
+                <i class="fas fa-file-import"></i> Import
+            </button>
+            <button type="button" class="export-config" title="Export"
+                style="background: transparent; border: none; color: #888; width: auto; font-size: 0.9em; transition: color 0.2s;">
+                <i class="fas fa-file-export"></i> Export
+            </button>
+        </div>
+        <button type="submit" class="ionrift-save-btn" style="width: auto; white-space: nowrap;">
+            <i class="fas fa-check"></i> Close
+        </button>
+    </footer>
+</form>
+
+<style>
+    /* Hierarchy Styles */
+    .sound-group-container details {
+        margin-bottom: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sound-group-container summary {
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        list-style: none;
+        /* Hide default arrow */
+    }
+
+    .sound-group-container summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .sound-group-container summary:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .sound-group-container summary .ionrift-badge {
+        font-size: 0.7em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        opacity: 0.8;
+    }
+
+    .sound-group-container summary .ionrift-badge.success {
+        background: rgba(50, 200, 100, 0.2);
+        color: #8f8;
+        border: 1px solid rgba(50, 200, 100, 0.3);
+    }
+
+    .sound-group-container summary .ionrift-badge.warning {
+        background: rgba(200, 150, 50, 0.2);
+        color: #fd8;
+        border: 1px solid rgba(200, 150, 50, 0.3);
+    }
+
+    .sound-group-container summary .ionrift-badge.info {
+        background: rgba(100, 100, 100, 0.2);
+        color: #ccc;
+        border: 1px solid rgba(100, 100, 100, 0.3);
+    }
+
+    .sound-group-container .group-content {
+        padding: 4px 0 4px 12px;
+        /* Indent content */
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Recursive Shading: Each nested group gets slightly darker/lighter? */
+    .sound-group-container .group-content .sound-group-container details {
+        background: rgba(0, 0, 0, 0.15);
+        /* Slightly darker for nested */
+        border-color: rgba(255, 255, 255, 0.03);
+    }
+</style>

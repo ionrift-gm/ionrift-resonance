@@ -1,0 +1,63 @@
+<div class="custom-step-container"
+    style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+    <label style="display:block; font-weight:bold;">Auth Token</label>
+    <div style="display: flex; gap: 5px;">
+        <input type="password" name="authToken" class="attunement-token-input" value="{{token}}"
+            placeholder="Paste from Syrinscape Control Panel..."
+            style="flex: 1; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px;">
+        <button type="button" class="toggle-visibility" style="flex: 0 0 30px; padding: 0;"><i
+                class="fas fa-eye"></i></button>
+    </div>
+
+    {{#if mismatch}}
+    <div class="token-mismatch-warning"
+        style="padding: 8px; background: rgba(234, 179, 8, 0.15); border: 1px solid #facc15; border-radius: 4px; color: #facc15; font-size: 0.9em;">
+        <i class="fas fa-exclamation-triangle"></i> <strong>Token Mismatch Detected</strong><br>
+        <div style="opacity:0.9; margin-top:4px;">
+            The token in <strong>Resonance</strong> differs from the <strong>Control Module</strong>.
+            Verification will synchronize them.
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if hasSyrinControl}}
+    <div class="integration-status active"
+        style="padding: 10px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.4); border-radius: 4px; color: #fff;">
+        <h4 style="margin: 0 0 5px 0; color: #22d3ee; font-weight: bold;"><i class="fas fa-link"></i> Integration
+            Active: Syrinscape Control</h4>
+        <p style="margin: 0; font-size: 0.9em; opacity: 0.9;">
+            Resonance will use the <strong>Syrinscape Control</strong> module to play sounds.
+            <br><br>
+            <i class="fas fa-info-circle"></i> <strong>Why do I need a Token?</strong><br>
+            Resonance still requires your Auth Token to read the Syrinscape Library (Metadata) so it knows <em>what</em>
+            sounds are available.
+        </p>
+    </div>
+    {{else}}
+    <div class="integration-status direct"
+        style="padding: 10px; background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; color: #fff;">
+        <h4 style="margin: 0 0 5px 0; color: #facc15; font-weight: bold;"><i class="fas fa-globe"></i> Direct Connection
+            Mode</h4>
+        <p style="margin: 0; font-size: 0.9em; opacity: 0.9;">
+            Resonance will play sounds directly via the Syrinscape Online API.
+            <br><br>
+            <i class="fas fa-exclamation-triangle" style="color: #facc15;"></i> <strong>Crucial
+                Requirement:</strong><br>
+            <strong>ALL Players (including GM)</strong> must have the <a href="https://syrinscape.com/online/"
+                target="_blank" style="color:#facc15; text-decoration: underline;">Syrinscape Online Player</a> app open
+            and linked to listen.
+            <br><br>
+            <i class="fas fa-lightbulb" style="color: #fff;"></i> <strong>Want the Embedded Player?</strong><br>
+            Install the <strong>Syrinscape Control</strong> module to enable the web-based player and remove the app
+            requirement.
+        </p>
+    </div>
+    {{/if}}
+
+    <p class="notes" style="font-size: 0.85em; opacity: 0.7; margin: 0;">
+        Open the <a href="https://syrinscape.com/online/cp/" target="_blank"
+            style="color: #a29bfe; text-decoration: underline; font-weight: bold;">Syrinscape Control Panel</a>, find
+        "Your
+        Game", click "Show Auth Token", and copy it here.
+    </p>
+</div>

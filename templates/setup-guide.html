@@ -1,0 +1,86 @@
+<form class="ionrift-setup-guide" style="padding: 0; color: #e0e0e0;">
+    <div style="padding: 15px;">
+        <h2
+            style="border-bottom: 2px solid #8b5cf6; margin-bottom:15px; color: #fff; text-transform:uppercase; letter-spacing:1px; font-weight:700;">
+            <i class="fas fa-file-audio"></i> Attune to Syrinscape
+        </h2>
+
+        {{#if tokenMismatch}}
+        <div class="token-mismatch-warning"
+            style="margin-bottom: 15px; padding: 10px; background: rgba(234, 179, 8, 0.15); border: 1px solid #facc15; border-radius: 4px; color: #facc15; font-size: 0.9em;">
+            <i class="fas fa-exclamation-triangle"></i> <strong>Token Mismatch Detected</strong><br>
+            <p style="margin: 5px 0; font-size: 0.9em; color: #e0e0e0;">
+                The tokens in <strong>Resonance</strong> and <strong>Syrinscape Control</strong> are out of sync.
+            </p>
+            <p
+                style="margin: 5px 0; font-size: 0.85em; color: #ffcc00; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 3px;">
+                <strong>Fallback Mode Active:</strong> System is bypassing the Control module to prevent crash. Audio is
+                routed via Direct API using the Resonance token.
+            </p>
+            <div style="margin-top: 8px; display: flex; align-items: center; gap: 10px;">
+                <span>Update Syrinscape Control with this token?</span>
+                <button type="button" data-action="sync"
+                    style="padding: 4px 12px; font-size: 0.9em; background: #333; border: 1px solid #555; color: #fff; cursor: pointer; border-radius: 4px;">
+                    <i class="fas fa-file-export"></i> Sync to Control
+                </button>
+            </div>
+        </div>
+        {{/if}}
+
+        <div
+            style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+            <h3 style="margin-top:0; color:#fff; border-bottom:none;"><i class="fas fa-step-forward"></i> Step 1: Get
+                Token</h3>
+
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <p style="margin-bottom:10px;">To enable automation, copy your <strong>Auth Token</strong> from the
+                        Control Panel.</p>
+                    <ol style="line-height: 1.8; padding-left: 20px; color: #ccc;">
+                        <li>Open <a href="https://syrinscape.com/online/cp/" target="_blank"
+                                style="color: #a78bfa; font-weight:bold; text-decoration:none;">Syrinscape Control Panel
+                                <i class="fas fa-external-link-alt" style="font-size:0.8em;"></i></a>.</li>
+                        <li>Find the <strong>"Your Game"</strong> section.</li>
+                        <li>Click <span
+                                style="background:#444; padding:2px 6px; border-radius:4px; font-size:0.9em; border:1px solid #666;"><i
+                                    class="fas fa-key"></i> Show Auth Token</span>.</li>
+                        <li>Click <strong>Copy</strong>.</li>
+                    </ol>
+                </div>
+                <!-- Image Preview -->
+                <div style="flex: 0 0 220px;">
+                    <img src="modules/ionrift-sounds/assets/syrinscape_token_guide.png"
+                        style="width: 100%; min-height: 400px; object-fit: cover; border-radius: 6px; border: 1px solid #8b5cf6; box-shadow: 0 0 10px rgba(0,0,0,0.5);"
+                        alt="Guide">
+                </div>
+            </div>
+        </div>
+
+        <div
+            style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-top:0; color:#fff; border-bottom:none;"><i class="fas fa-paste"></i> Step 2: Paste Token
+            </h3>
+            <div class="form-group">
+                <label for="syrinToken" style="font-weight:700; display:block; margin-bottom:8px; color:#fff;">Auth
+                    Token:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="password" name="syrinToken" value="{{syrinToken}}"
+                        style="flex: 1; box-sizing: border-box; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #555; padding: 8px; font-family: monospace;"
+                        placeholder="Paste token here...">
+                    <button type="button" id="test-connection"
+                        style="flex: 0 0 120px; background: #333; border: 1px solid #555; color: #ddd;">
+                        <i class="fas fa-plug"></i> Test
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        style="background: rgba(0,0,0,0.4); padding: 12px 15px; text-align: right; border-top: 1px solid rgba(255,255,255,0.05); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+        <button type="submit" name="submit"
+            style="background: linear-gradient(to bottom, #8b5cf6, #6d28d9); border: 1px solid #5b21b6; color: white; padding: 6px 20px; box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);">
+            <i class="fas fa-save"></i> Save & Close
+        </button>
+    </div>
+</form>

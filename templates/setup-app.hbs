@@ -1,0 +1,148 @@
+<form class="{{cssClass}}" autocomplete="off" style="max-height: 800px; overflow-y: auto;">
+    <!-- Header -->
+    <header class="sheet-header" style="margin-bottom: 10px;">
+        {{#if isWelcome}}
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h1 style="border: none; font-size: 1.5em; margin-bottom: 5px;">Ionrift Resonance</h1>
+            <p style="font-style: italic; color: #ccc;">Let's get your audio environment ready.</p>
+        </div>
+        {{else}}
+        <h1><i class="fas fa-cogs"></i> Resonance Calibration</h1>
+        {{/if}}
+    </header>
+
+    <style>
+        .ionrift-setup-input {
+            background: rgba(0, 0, 0, 0.5) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .ionrift-setup-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .status-pill {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: none;
+            /* Hidden by default */
+            border: 1px solid transparent;
+        }
+
+        .status-pill.success {
+            background: rgba(77, 255, 255, 0.1);
+            border-color: #4ff;
+            color: #4ff;
+            box-shadow: 0 0 10px rgba(77, 255, 255, 0.2);
+        }
+
+        .status-pill.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+        }
+    </style>
+
+    <!-- Main Content -->
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+
+        <!-- COLUMN 1: Connection (Left) -->
+        <div style="flex: 1;">
+            <h2>1. Connect Syrinscape</h2>
+            <p class="notes">
+                Please enter your <strong>Syrinscape Online Auth Token</strong> to enable sound control.
+            </p>
+            <p class="notes" style="margin-bottom: 5px;">
+                Found at <a href="https://syrinscape.com/online/cp/" target="_blank">syrinscape.com/online/cp/</a>
+                ("Remote Control Links").
+            </p>
+
+            <div
+                style="width: 100%; background: rgba(0,0,0,0.2); border-radius: 5px; padding: 5px; margin-bottom: 10px; text-align: center;">
+                <img src="modules/ionrift-sounds/assets/syrinscape_token_guide.png"
+                    style="width: 100%; height: auto; border: 1px solid var(--color-border-light-2); border-radius: 4px;">
+            </div>
+
+            <div style="display: flex; width: 100%; gap: 5px; align-items: center;">
+                <input type="password" name="token" value="{{token}}" placeholder="e.g. 1234567890abcdef"
+                    class="ionrift-setup-input" style="flex: 1;" />
+                <button type="button" data-action="verify" style="flex: 0 0 80px;">
+                    <i class="fas fa-check"></i> Verify
+                </button>
+            </div>
+
+            {{#if willSync}}
+            <p style="font-size: 0.8em; color: var(--ionrift-accent, #9b59b6); margin-top: 5px; font-style: italic;">
+                <i class="fas fa-sync-alt"></i> Will also configure "Syrinscape Control" module.
+            </p>
+            {{/if}}
+
+            {{#if tokenMismatch}}
+            <div class="token-mismatch-warning"
+                style="margin-top: 10px; padding: 8px; background: rgba(234, 179, 8, 0.15); border: 1px solid #facc15; border-radius: 4px; color: #facc15; font-size: 0.9em;">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Token Mismatch Detected</strong><br>
+                <p style="margin: 5px 0; font-size: 0.9em; color: #e0e0e0;">
+                    The tokens in <strong>Resonance</strong> and <strong>Syrinscape Control</strong> are out of sync.
+                </p>
+                <p
+                    style="margin: 5px 0; font-size: 0.85em; color: #ffcc00; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 3px;">
+                    <strong>Fallback Mode Active:</strong> System is bypassing the Control module to prevent crash.
+                    Audio is routed via Direct API using the Resonance token.
+                </p>
+                <div style="margin-top: 5px; display: flex; align-items: center; gap: 5px;">
+                    <span>Update Syrinscape Control with this token?</span>
+                    <button type="button" data-action="sync" style="padding: 2px 8px; font-size: 0.9em;">
+                        <i class="fas fa-file-export"></i> Sync to Control
+                    </button>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="status-pill"></div>
+        </div>
+
+        <!-- Vertical Divider -->
+        <div style="width: 1px; background: rgba(255,255,255,0.1); align-self: stretch;"></div>
+
+        <!-- COLUMN 2: Education (Right) -->
+        <div style="flex: 1;">
+            <h2>2. Audio Broadcasting</h2>
+            <p class="notes">How will your players hear the audio?</p>
+
+            <div
+                style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid var(--ionrift-accent, #9b59b6);">
+                <h3><i class="fas fa-plug"></i> Option A: Embedded (Recommended)</h3>
+                <p style="font-size: 0.9em; margin: 5px 0;">
+                    Install the <strong><a href="https://foundryvtt.com/packages/syrinscape-control"
+                            target="_blank">Syrinscape Control</a></strong> module.
+                </p>
+                <p style="font-size: 0.85em; color: #ccc;">
+                    <em>Note: This is the modern community-maintained module for embedded control.</em>
+                </p>
+            </div>
+
+            <div
+                style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1);">
+                <h3><i class="fas fa-external-link-alt"></i> Option B: Web Player</h3>
+                <p style="font-size: 0.9em; margin-top: 5px;">
+                    If not using the module, <strong>every player</strong> must open the <a
+                        href="https://syrinscape.com/download/" target="_blank">Syrinscape Web Player</a> in their
+                    browser manually.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="sheet-footer flexrow" style="margin-top: 20px;">
+        <button type="submit" name="submit">
+            <i class="fas fa-save"></i> Save & Close
+        </button>
+    </footer>
+</form>

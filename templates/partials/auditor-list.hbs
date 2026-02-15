@@ -1,0 +1,59 @@
+{{#if items.length}}
+<div class="ionrift-list" style="gap: 5px;">
+    <!-- Headers (Visual Only) -->
+    <div
+        style="display: flex; padding: 0 10px; color: #666; font-size: 0.75em; font-weight: 700; text-transform: uppercase;">
+        <div style="flex: 2;">Entity</div>
+        <div style="flex: 1;">Type / Slot</div>
+        <div style="flex: 2;">Assigned Sound</div>
+        <div style="width: 100px; text-align: right;">Actions</div>
+    </div>
+
+    {{#each items}}
+    <div class="ionrift-list-item entity-row" style="padding: 8px 10px;">
+        <!-- Entity -->
+        <div class="entity-info" style="flex: 2; display: flex; align-items: center; gap: 10px;">
+            <img src="{{this.img}}" width="28" height="28" style="border: none; border-radius: 4px;" />
+            <div style="min-width: 0;">
+                <div class="entity-name" style="font-size: 0.95em;">{{this.name}}</div>
+                <!-- <div class="entity-meta">{{this.uuid}}</div> -->
+            </div>
+        </div>
+
+        <!-- Type / Slot -->
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <span style="font-size: 0.8em; color: #aaa;">{{this.type}}</span>
+            <span style="font-size: 0.8em; color: #8b5cf6;">{{this.slot}}</span>
+        </div>
+
+        <!-- Sound Info -->
+        <div class="entity-badges" style="flex: 2; display: flex; align-items: center;">
+            <span class="ionrift-badge {{#if this.soundType}}success{{else}}loading{{/if}}" title="{{this.val}}">
+                {{#if this.soundType}}<span style="opacity: 0.7; margin-right: 4px;">[{{this.soundType}}]</span>{{/if}}
+                <i class="fas fa-music"></i> {{this.sound}}
+            </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="entity-actions" style="width: 100px; display: flex; gap: 5px; justify-content: flex-end;">
+            <button type="button" class="play-preview" data-sound="{{this.rawId}}" title="Test Play">
+                <i class="fas fa-play"></i>
+            </button>
+            <button type="button" class="auditor-edit" data-uuid="{{this.uuid}}" title="Edit Config">
+                <i class="fas fa-pen"></i>
+            </button>
+            <button type="button" class="auditor-delete" data-uuid="{{this.uuid}}" data-key="{{this.key}}"
+                title="Remove Override" style="color: #ef4444;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{else}}
+<div class="empty-state"
+    style="text-align: center; padding: 40px; color: #666; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <i class="fas fa-search" style="font-size: 32px; margin-bottom: 10px; opacity: 0.3;"></i>
+    <p>No custom sound overrides found matching your criteria.</p>
+</div>
+{{/if}}

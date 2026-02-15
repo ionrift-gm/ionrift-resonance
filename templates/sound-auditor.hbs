@@ -1,0 +1,87 @@
+<div class="sound-auditor-container">
+    <header class="auditor-header">
+        <p class="notes">
+            Below is a list of all Items in your world (and on Actors) that have custom <strong>Ionrift Sound</strong>
+            flags attached.
+        </p>
+        <button class="action-refresh"><i class="fas fa-sync"></i> Refresh List</button>
+    </header>
+
+    <div class="table-container">
+        <table class="ionrift-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Owner (Actor)</th>
+                    <th title="Attack Sound">Atk</th>
+                    <th title="Use Sound">Use</th>
+                    <th title="Equip Sound">Eqp</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <td class="cell-name">
+                        <img src="{{this.img}}" width="24" height="24"
+                            style="vertical-align: middle; margin-right: 5px;" />
+                        <strong>{{this.name}}</strong>
+                    </td>
+                    <td>{{this.actorName}}</td>
+
+                    <td class="cell-center">{{#if this.attack}}<i class="fas fa-check text-green"></i>{{/if}}</td>
+                    <td class="cell-center">{{#if this.use}}<i class="fas fa-check text-green"></i>{{/if}}</td>
+                    <td class="cell-center">{{#if this.equip}}<i class="fas fa-check text-green"></i>{{/if}}</td>
+
+                    <td class="cell-actions">
+                        <a class="action-open" data-uuid="{{this.uuid}}" title="Open Item Sheet"><i
+                                class="fas fa-edit"></i></a>
+                        <a class="action-clear" data-uuid="{{this.uuid}}" title="Clear Flags"
+                            style="color: #ef4444; margin-left: 8px;"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #888; padding: 20px;">
+                        No custom sound flags found. Use the Workshop or Sheet Injector to forge audio items.
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .ionrift-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ionrift-table th {
+        text-align: left;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        border-bottom: 2px solid var(--color-border-light-2);
+    }
+
+    .ionrift-table td {
+        padding: 6px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .cell-center {
+        text-align: center;
+    }
+
+    .text-green {
+        color: #4ade80;
+    }
+
+    .auditor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+</style>

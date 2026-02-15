@@ -1,0 +1,32 @@
+/* Ionrift Sounds - Module Specific Styles */
+/* Core Window & UI styles are loaded from ionrift-lib */
+
+/* Distinct Auditor Tab (Specific to Sound Config) */
+.ionrift-window nav.tabs .item.auditor-tab {
+    background: rgba(255, 255, 255, 0.85);
+    color: #222;
+    border-radius: 4px;
+    margin-left: 10px;
+    text-shadow: none;
+    font-weight: bold;
+    flex: 0 0 auto;
+    border: none;
+}
+
+.ionrift-window nav.tabs .item.auditor-tab:hover {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.ionrift-window nav.tabs .item.auditor-tab.active {
+    background: #fff;
+    color: #000;
+    box-shadow: inset 0 0 0 2px var(--ionrift-accent, #8b5cf6);
+}
+
+/* Notes specific to sounds */
+.notes {
+    font-size: 0.85em;
+    color: #aaa;
+}

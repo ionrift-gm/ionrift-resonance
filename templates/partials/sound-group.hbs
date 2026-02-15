@@ -1,0 +1,68 @@
+<div class="sound-group-container"
+    style="margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+
+    <!-- Group Header (Collapsible) -->
+    <details {{#if (or active (not fields.length))}}open{{/if}}>
+        <summary
+            style="padding: 8px; background: rgba(0,0,0,0.3); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: bold;">
+                <i class="fas fa-chevron-right summary-arrow"></i>
+                <span>{{label}}</span>
+                {{#if description}}
+                <i class="fas fa-info-circle" title="{{description}}" style="color: #666; font-size: 0.8em;"></i>
+                {{/if}}
+            </div>
+
+            <!-- Group Level Sound (Optional Inheritance Source) -->
+            {{#if key}}
+            <div style="font-size: 0.9em; opacity: 0.8;">
+                {{#if value}}
+                <span class="ionrift-badge success">Overridden</span>
+                {{else}}
+                <span class="ionrift-badge" style="opacity: 0.5;">Inherited</span>
+                {{/if}}
+            </div>
+            {{/if}}
+        </summary>
+
+        <!-- Group Content -->
+        <div class="group-content" style="padding: 5px 0 5px 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+
+            <!-- 1. The "Parent" Sound Card (if this group has a sound of its own) -->
+            {{#if key}}
+            <div class="parent-sound-card"
+                style="margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;">
+                {{> "modules/ionrift-sounds/templates/partials/sound-card-row.hbs" this}}
+            </div>
+            {{/if}}
+
+            <!-- 2. Child Groups (Recursive) -->
+            {{#each children as |child|}}
+            {{> "modules/ionrift-sounds/templates/partials/sound-group.hbs" child}}
+            {{/each}}
+
+            <!-- 3. Leaf Nodes (Individual Sounds in this group) -->
+            {{#each fields as |field|}}
+            {{> "modules/ionrift-sounds/templates/partials/sound-card-row.hbs" field}}
+            {{/each}}
+        </div>
+    </details>
+</div>
+
+<style>
+    details>summary {
+        list-style: none;
+    }
+
+    details>summary::-webkit-details-marker {
+        display: none;
+    }
+
+    details[open]>summary .summary-arrow {
+        transform: rotate(90deg);
+    }
+
+    .summary-arrow {
+        transition: transform 0.2s;
+    }
+</style>
