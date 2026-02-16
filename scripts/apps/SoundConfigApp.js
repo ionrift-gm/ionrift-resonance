@@ -355,7 +355,10 @@ export class SoundConfigApp extends FormApplication {
                         label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK" }]
                     },
-                    { label: "Insects / Spiders", id: "SFX_INSECT" }
+                    {
+                        label: "Insects / Spiders", id: "SFX_INSECT", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "SFX_INSECT_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -376,7 +379,10 @@ export class SoundConfigApp extends FormApplication {
                 description: "Chromatics, Metallics, Wyverns.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_DRAGON_ATTACK" },
-                    { label: "Wyvern", id: "dragon_wyvern" }
+                    {
+                        label: "Wyvern", id: "dragon_wyvern", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "dragon_wyvern_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -393,8 +399,14 @@ export class SoundConfigApp extends FormApplication {
                 description: "Golems, Animated Objects.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_CONSTRUCT_ATTACK" },
-                    { label: "Golems (Generic)", id: "construct_golem" },
-                    { label: "Animated Objects", id: "construct_animated_object" }
+                    {
+                        label: "Golems (Generic)", id: "construct_golem", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "construct_golem_ATTACK" }]
+                    },
+                    {
+                        label: "Animated Objects", id: "construct_animated_object", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "construct_animated_object_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -403,10 +415,22 @@ export class SoundConfigApp extends FormApplication {
                 description: "Beings of raw elemental matter.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_ELEMENTAL_ATTACK" },
-                    { label: "Fire Elemental", id: "SFX_FIRE" },
-                    { label: "Water Elemental", id: "SFX_WATER_ENTITY" },
-                    { label: "Air Elemental", id: "SFX_WIND" },
-                    { label: "Earth Elemental", id: "elemental_earth" }
+                    {
+                        label: "Fire Elemental", id: "SFX_FIRE", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "SFX_FIRE_ATTACK" }]
+                    },
+                    {
+                        label: "Water Elemental", id: "SFX_WATER_ENTITY", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "SFX_WATER_ENTITY_ATTACK" }]
+                    },
+                    {
+                        label: "Air Elemental", id: "SFX_WIND", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "SFX_WIND_ATTACK" }]
+                    },
+                    {
+                        label: "Earth Elemental", id: "elemental_earth", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "elemental_earth_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -415,9 +439,18 @@ export class SoundConfigApp extends FormApplication {
                 description: "Beholders, Mind Flayers, Aliens.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_ALIEN_ATTACK" },
-                    { label: "Beholder", id: "aberration_beholder" },
-                    { label: "Mind Flayer", id: "aberration_mind_flayer" },
-                    { label: "Chuul / Aquatic", id: "aberration_chuul" }
+                    {
+                        label: "Beholder", id: "aberration_beholder", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "aberration_beholder_ATTACK" }]
+                    },
+                    {
+                        label: "Mind Flayer", id: "aberration_mind_flayer", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "aberration_mind_flayer_ATTACK" }]
+                    },
+                    {
+                        label: "Chuul / Aquatic", id: "aberration_chuul", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "aberration_chuul_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -426,16 +459,27 @@ export class SoundConfigApp extends FormApplication {
                 description: "Treants, Myconids.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_PLANT_ATTACK" },
-                    { label: "Treants", id: "plant_treant" },
-                    { label: "Myconids / Fungi", id: "plant_myconid" },
-                    { label: "Shambling Mound", id: "plant_shambling_mound" }
+                    {
+                        label: "Treants", id: "plant_treant", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "plant_treant_ATTACK" }]
+                    },
+                    {
+                        label: "Myconids / Fungi", id: "plant_myconid", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "plant_myconid_ATTACK" }]
+                    },
+                    {
+                        label: "Shambling Mound", id: "plant_shambling_mound", cardLabel: "Default Vocal",
+                        children: [{ label: "Default Attack", id: "plant_shambling_mound_ATTACK" }]
+                    }
                 ]
             },
             {
                 label: "Oozes & Slimes",
-                id: "SFX_SLIME",
+                id: "SFX_SLIME", cardLabel: "Default Vocal",
                 description: "Gelatinous Cubes, Puddings.",
-                children: []
+                children: [
+                    { label: "Default Attack", id: "SFX_SLIME_ATTACK" }
+                ]
             }
         ];
 
