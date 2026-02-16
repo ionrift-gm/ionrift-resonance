@@ -188,7 +188,7 @@ export class SoundConfigApp extends FormApplication {
                     myState = new SoundCardState(node.id,
                         (check.source === "custom" ? check.value : null),
                         SYRINSCAPE_DEFAULTS[node.id],
-                        node.label,
+                        node.cardLabel || node.label,
                         node.description
                     );
                 } else {
@@ -196,12 +196,12 @@ export class SoundConfigApp extends FormApplication {
                     if (parentState && parentState.value) {
                         // Inherit from parent
                         myResolved = { value: parentState.value, source: "inherited" };
-                        myState = new SoundCardState(node.id, null, SYRINSCAPE_DEFAULTS[node.id], node.label, node.description, parentState.label);
+                        myState = new SoundCardState(node.id, null, SYRINSCAPE_DEFAULTS[node.id], node.cardLabel || node.label, node.description, parentState.label);
                         myState.value = myResolved.value; // Force value for playback/display
                         myState.isInherited = true;
                     } else {
                         // No parent value either -> Empty
-                        myState = new SoundCardState(node.id, null, null, node.label, node.description);
+                        myState = new SoundCardState(node.id, null, null, node.cardLabel || node.label, node.description);
                     }
                 }
             } else {
@@ -291,65 +291,68 @@ export class SoundConfigApp extends FormApplication {
         const monsterTaxonomy = [
             {
                 label: "Humanoids",
-                id: "MONSTER_HUMANOID",
+                id: "MONSTER_HUMANOID", cardLabel: "Default Vocal",
                 description: "Standard bipedal folk (Humans, Elves, Dwarves).",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_HUMANOID_ATTACK" },
                     {
-                        label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN", description: "Vocal / Pain",
+                        label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_GOBLIN_ATTACK" }]
                     },
                     {
-                        label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE", description: "Vocal / Pain",
+                        label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_LYCANTHROPE_ATTACK" }]
                     }
                 ]
             },
             {
                 label: "Undead",
-                id: "MONSTER_UNDEAD",
+                id: "MONSTER_UNDEAD", cardLabel: "Default Vocal",
                 description: "Zombies, Skeletons, Ghosts.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_UNDEAD_ATTACK" },
                     {
-                        label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE", description: "Vocal / Pain",
+                        label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_ZOMBIE_ATTACK" }]
                     },
                     {
-                        label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON", description: "Vocal / Pain",
+                        label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_SKELETON_ATTACK" }]
                     },
                     {
-                        label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST", description: "Vocal / Pain",
+                        label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_GHOST_ATTACK" }]
                     }
                 ]
             },
             {
                 label: "Beasts & Animals",
-                id: "MONSTER_BEAST",
+                id: "MONSTER_BEAST", cardLabel: "Default Vocal",
                 description: "Natural creatures.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_BEAST_ATTACK" },
                     {
-                        label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR", description: "Vocal / Pain",
+                        label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_BEAR_ATTACK" }]
                     },
                     {
-                        label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF", description: "Vocal / Pain",
+                        label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_WOLF_ATTACK" }]
                     },
                     {
-                        label: "Feline (Cat / Lion)", id: "MONSTER_CAT", description: "Vocal / Pain",
+                        label: "Feline (Cat / Lion)", id: "MONSTER_CAT", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_CAT_ATTACK" }]
                     },
                     {
-                        label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD", description: "Vocal / Pain",
+                        label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_BIRD_ATTACK" }]
                     },
                     {
-                        label: "Equine (Horse)", id: "MONSTER_HORSE", description: "Vocal / Pain",
+                        label: "Equine (Horse)", id: "MONSTER_HORSE", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_HORSE_ATTACK" }]
                     },
                     {
-                        label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", description: "Vocal / Pain",
+                        label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK" }]
                     },
                     { label: "Insects / Spiders", id: "SFX_INSECT" }
@@ -357,43 +360,49 @@ export class SoundConfigApp extends FormApplication {
             },
             {
                 label: "Fiends (Demons & Devils)",
-                id: "MONSTER_FIEND",
+                id: "MONSTER_FIEND", cardLabel: "Default Vocal",
                 description: "Extraplanar evil entities.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_FIEND_ATTACK" },
                     {
-                        label: "Demon (Chaotic)", id: "MONSTER_DEMON", description: "Vocal / Pain",
+                        label: "Demon (Chaotic)", id: "MONSTER_DEMON", cardLabel: "Default Vocal",
                         children: [{ label: "Default Attack", id: "MONSTER_DEMON_ATTACK" }]
                     }
                 ]
             },
             {
                 label: "Dragons",
-                id: "MONSTER_DRAGON",
+                id: "MONSTER_DRAGON", cardLabel: "Default Vocal",
                 description: "Chromatics, Metallics, Wyverns.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_DRAGON_ATTACK" },
                     { label: "Wyvern", id: "dragon_wyvern" }
                 ]
             },
             {
                 label: "Giants",
-                id: "MONSTER_GIANT",
+                id: "MONSTER_GIANT", cardLabel: "Default Vocal",
                 description: "Ogres, Trolls, Giants.",
-                children: []
+                children: [
+                    { label: "Default Attack", id: "MONSTER_GIANT_ATTACK" }
+                ]
             },
             {
                 label: "Constructs",
-                id: "MONSTER_CONSTRUCT",
+                id: "MONSTER_CONSTRUCT", cardLabel: "Default Vocal",
                 description: "Golems, Animated Objects.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_CONSTRUCT_ATTACK" },
                     { label: "Golems (Generic)", id: "construct_golem" },
                     { label: "Animated Objects", id: "construct_animated_object" }
                 ]
             },
             {
                 label: "Elementals",
-                id: "MONSTER_ELEMENTAL",
+                id: "MONSTER_ELEMENTAL", cardLabel: "Default Vocal",
                 description: "Beings of raw elemental matter.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_ELEMENTAL_ATTACK" },
                     { label: "Fire Elemental", id: "SFX_FIRE" },
                     { label: "Water Elemental", id: "SFX_WATER_ENTITY" },
                     { label: "Air Elemental", id: "SFX_WIND" },
@@ -402,9 +411,10 @@ export class SoundConfigApp extends FormApplication {
             },
             {
                 label: "Aberrations",
-                id: "MONSTER_ALIEN",
+                id: "MONSTER_ALIEN", cardLabel: "Default Vocal",
                 description: "Beholders, Mind Flayers, Aliens.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_ALIEN_ATTACK" },
                     { label: "Beholder", id: "aberration_beholder" },
                     { label: "Mind Flayer", id: "aberration_mind_flayer" },
                     { label: "Chuul / Aquatic", id: "aberration_chuul" }
@@ -412,9 +422,10 @@ export class SoundConfigApp extends FormApplication {
             },
             {
                 label: "Plants & Fungi",
-                id: "MONSTER_PLANT",
+                id: "MONSTER_PLANT", cardLabel: "Default Vocal",
                 description: "Treants, Myconids.",
                 children: [
+                    { label: "Default Attack", id: "MONSTER_PLANT_ATTACK" },
                     { label: "Treants", id: "plant_treant" },
                     { label: "Myconids / Fungi", id: "plant_myconid" },
                     { label: "Shambling Mound", id: "plant_shambling_mound" }
