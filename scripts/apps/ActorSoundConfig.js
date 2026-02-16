@@ -31,14 +31,29 @@ export class ActorSoundConfig extends FormApplication {
         // Ensure legacy "female" converts to "feminine" just in case
         const identityLabel = (currentIdentity === "feminine" || currentIdentity === "female") ? "Feminine" : "Masculine";
 
-        // Define Actor-specific sound slots
-        const slots = [
+        // Define Actor-specific sound slots (system-aware)
+        const sharedSlots = [
             { key: "sound_pain", label: "Pain / Hit", icon: "fas fa-heart-broken" },
-            { key: "sound_death", label: "Death", icon: "fas fa-skull" },
-            { key: "sound_crit_given", label: "Critical Hit (Dealt)", icon: "fas fa-bullseye" },
-            { key: "sound_crit_received", label: "Critical Hit (Received)", icon: "fas fa-shield-alt" },
-            { key: "sound_battle_theme", label: "Combat Theme", icon: "fas fa-music", hint: "Music played when this actor enters combat (Entity Start)." }
+            { key: "sound_death", label: "Death", icon: "fas fa-skull" }
         ];
+
+        let systemSlots = [];
+        if (game.system.id === "daggerheart") {
+            systemSlots = [
+                { key: "sound_hope_gain", label: "Hope Gained", icon: "fas fa-sun", hint: "Override the sound when this character gains Hope." },
+                { key: "sound_hope_use", label: "Hope Spent", icon: "fas fa-hand-holding-heart", hint: "Override the sound when this character spends Hope." },
+                { key: "sound_stress", label: "Stress Marked", icon: "fas fa-bolt", hint: "Override the sound when this character takes Stress." },
+                { key: "sound_stress_clear", label: "Stress Cleared", icon: "fas fa-feather-alt", hint: "Override the sound when this character recovers Stress." },
+                { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
+            ];
+        } else {
+            // DnD 5e and other systems
+            systemSlots = [
+                { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
+            ];
+        }
+
+        const slots = [...sharedSlots, ...systemSlots];
 
         return {
             actorName: this.actor.name,
@@ -117,20 +132,21 @@ export class ActorSoundConfig extends FormApplication {
 
         // Resolve Default
         let defaultSoundId = null;
-        let defaultSoundName = "System Default";
+        let defaultSoundName = "Default (System)";
 
         if (game.ionrift?.handler) {
             const h = game.ionrift.handler;
+            const identity = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
+            const identityLabel = identity === "feminine" ? "Feminine" : "Masculine";
+
             if (key === "sound_pain") {
                 const keyId = h.getPCSound(this.actor, "PAIN");
                 defaultSoundId = h.resolveSound(keyId);
-                const i = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
-                defaultSoundName = `Default (${i === "feminine" ? "Feminine" : "Masculine"} Pain)`;
+                defaultSoundName = `Default (${identityLabel} Pain)`;
             } else if (key === "sound_death") {
                 const keyId = h.getPCSound(this.actor, "DEATH");
                 defaultSoundId = h.resolveSound(keyId);
-                const i = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
-                defaultSoundName = `Default (${i === "feminine" ? "Feminine" : "Masculine"} Death)`;
+                defaultSoundName = `Default (${identityLabel} Death)`;
             }
         }
 
