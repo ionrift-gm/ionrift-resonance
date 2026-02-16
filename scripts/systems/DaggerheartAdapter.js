@@ -539,7 +539,7 @@ export class DaggerheartAdapter extends SystemAdapter {
             return { isSuccess, hopeValue, fearValue, attackSoundKey, item, roll, isDuality: true };
         } else {
             // Non-duality roll
-            return { isDuality: false, attackSoundKey, item };
+            return { isDuality: false, attackSoundKey, item, messageContent: message.content || "" };
         }
     }
 
@@ -574,13 +574,14 @@ export class DaggerheartAdapter extends SystemAdapter {
 
         if (!data) {
             Logger.log(`⏱️ [${Date.now()}] Phase 2: No stored data for ${message.id}, re-extracting`);
-            // Fallback: re-extract (shouldn't happen normally)
             const freshData = this.handleInfo(message);
             if (!freshData) return;
             this._playResultSounds(freshData);
             return;
         }
 
+        // Override messageContent with fresh content (Phase 1 content may have been empty)
+        data.messageContent = message.content || "";
         this._playResultSounds(data);
     }
 
@@ -592,7 +593,16 @@ export class DaggerheartAdapter extends SystemAdapter {
         const { isSuccess, hopeValue, fearValue, isDuality } = data;
 
         if (!isDuality) {
-            // Non-duality: no result decorations to play
+            // Non-duality roll (NPC attacks, d20 rolls)
+            // Hit impact is handled by preUpdateActor damage hook
+            // Miss needs to be caught here via content keywords
+            const content = data.messageContent || "";
+            if (msgContains(content, ["MISS", "FAILURE", "FAIL"])) {
+                Logger.log(`⏱️ [${ts}]   NON-DUALITY: Miss detected from content`);
+                this.play(SOUND_EVENTS.MISS);
+            } else {
+                Logger.log(`⏱️ [${ts}]   NON-DUALITY: No miss keywords, hit handled by damage hook`);
+            }
             return;
         }
 
