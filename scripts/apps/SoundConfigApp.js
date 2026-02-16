@@ -275,7 +275,7 @@ export class SoundConfigApp extends FormApplication {
             {
                 label: "Magic (Spells)",
                 id: "CORE_MAGIC",
-                description: "Master setting for all Spells.",
+                description: "What the spell does — match by damage or effect type (fire, ice, healing). Unset entries fall back to this master sound.",
                 children: [
                     { label: "Fire / Heat", id: "SPELL_FIRE" },
                     { label: "Ice / Cold", id: "SPELL_ICE" },
@@ -293,7 +293,7 @@ export class SoundConfigApp extends FormApplication {
             actionTaxonomy.push({
                 label: "Spell Schools",
                 id: "CORE_MAGIC",
-                description: "DnD5e Arcane Traditions. Falls back to generic Magic if unset.",
+                description: "Where the magic comes from — match by arcane tradition. Use these for school-specific atmospherics. Unset schools fall back to the Magic (Spells) master sound.",
                 children: [
                     { label: "Abjuration", id: "SCHOOL_ABJURATION", description: "Protective wards and barriers." },
                     { label: "Conjuration", id: "SCHOOL_CONJURATION", description: "Summoning creatures and objects." },
@@ -311,7 +311,7 @@ export class SoundConfigApp extends FormApplication {
             actionTaxonomy.push({
                 label: "Domains",
                 id: "CORE_MAGIC",
-                description: "Daggerheart magic traditions. Falls back to generic Magic if unset.",
+                description: "Where the magic comes from — match by domain tradition. Use these for domain-specific atmospherics. Unset domains fall back to the Magic (Spells) master sound.",
                 children: [
                     { label: "Arcana", id: "DOMAIN_ARCANA", description: "Innate, instinctual magic." },
                     { label: "Blade", id: "DOMAIN_BLADE", description: "Mastery of weapons." },
