@@ -52,13 +52,31 @@ export class SoundResolver {
         const lower = itemName.toLowerCase();
 
         // 3.5. Daggerheart Domain Resolution
-        // Items (domainCard, feature) store their domain at system.domain (e.g. "splendor")
-        if (item?.system?.domain && game.system.id === "daggerheart") {
-            const domainKey = `DOMAIN_${item.system.domain.toUpperCase()}`;
-            const resolved = this.resolveKey(domainKey);
-            if (resolved) {
-                Logger.log(`pickSound | Daggerheart domain match: ${item.system.domain} → ${domainKey}`);
-                return domainKey;
+        // Priority: item.system.domain (domainCards) → actor.system.domains (class fallback)
+        if (game.system.id === "daggerheart" && item?.system) {
+            // A) Direct domain on item (domainCard type items have this)
+            const itemDomain = item.system.domain;
+            if (itemDomain) {
+                const domainKey = `DOMAIN_${itemDomain.toUpperCase()}`;
+                const resolved = this.resolveKey(domainKey);
+                if (resolved) {
+                    Logger.log(`pickSound | Daggerheart item domain: ${itemDomain} → ${domainKey}`);
+                    return domainKey;
+                }
+            }
+
+            // B) Fallback: actor's class domains (features don't carry domain metadata)
+            //    Try each domain — first one with a bound sound wins
+            const actorDomains = actor?.system?.domains;
+            if (actorDomains?.length && !itemDomain) {
+                for (const domain of actorDomains) {
+                    const domainKey = `DOMAIN_${domain.toUpperCase()}`;
+                    const resolved = this.resolveKey(domainKey);
+                    if (resolved) {
+                        Logger.log(`pickSound | Daggerheart actor domain fallback: ${domain} → ${domainKey}`);
+                        return domainKey;
+                    }
+                }
             }
         }
 
