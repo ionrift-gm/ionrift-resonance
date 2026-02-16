@@ -217,8 +217,8 @@ export class DnD5eAdapter extends SystemAdapter {
             const vocalTargets = shuffled.slice(0, MAX_AOE_VOCALS);
 
             vocalTargets.forEach((target) => {
-                // Random micro-stagger (0–150ms) so vocals overlap like a chorus
-                const stagger = Math.floor(Math.random() * 150);
+                // Random micro-stagger (0–400ms) so vocals overlap like a chorus
+                const stagger = Math.floor(Math.random() * 400);
                 this._playVocalForTarget(target.actor, target.isPC, target.isDead, stagger);
             });
 
