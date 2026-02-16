@@ -37,14 +37,15 @@ export class DnD5eAdapter extends SystemAdapter {
     registerHooks() {
         Logger.log("DnD5e Adapter Active");
 
+        // Phase 1: Weapon sound fires at the moment the player clicks attack
+        // Native DnD5e v4 hook — fires before Midi-QOL workflow starts
+        Hooks.on("dnd5e.preUseActivity", (activity, config, dialog) => {
+            const item = activity?.item;
+            if (item) this.handleWeaponSound(item, activity);
+        });
+
         if (game.modules.get("midi-qol")?.active) {
             Logger.log("Hooking into Midi-QOL...");
-
-            // Phase 1: Weapon sound fires at the moment the player clicks attack
-            Hooks.on("midi-qol.preItemRoll", (workflow) => {
-                this.handleWeaponSound(workflow);
-                return true; // Do not abort the workflow
-            });
 
             // Phase 2: Result stinger fires after the attack roll resolves
             Hooks.on("midi-qol.AttackRollComplete", (workflow) => {
@@ -74,12 +75,10 @@ export class DnD5eAdapter extends SystemAdapter {
     }
 
     // Phase 1: Weapon swing — fires BEFORE dice roll (the "ask")
-    handleWeaponSound(workflow) {
-        const item = workflow.item;
-        if (!item) return;
-
+    handleWeaponSound(item, activity) {
         Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
-        const soundKey = this.handler.pickSound(item, workflow.actor?.name, workflow.actor);
+        const actor = item.actor || activity?.actor;
+        const soundKey = this.handler.pickSound(item, actor?.name, actor);
         this.handler.playItemSound(soundKey, item);
     }
 
