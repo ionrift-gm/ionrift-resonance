@@ -275,25 +275,28 @@ export class SoundConfigApp extends FormApplication {
             {
                 label: "Magic (Spells)",
                 id: "CORE_MAGIC",
-                description: "What the spell does — match by damage or effect type (fire, ice, healing). Unset entries fall back to this master sound.",
-                children: [
-                    { label: "Fire / Heat", id: "SPELL_FIRE" },
-                    { label: "Ice / Cold", id: "SPELL_ICE" },
-                    { label: "Lightning / Storm", id: "SPELL_LIGHTNING" },
-                    { label: "Acid / Poison", id: "SPELL_ACID" },
-                    { label: "Healing / Radiant", id: "SPELL_HEAL" },
-                    { label: "Psychic / Divination", id: "SPELL_PSYCHIC" },
-                    { label: "Necrotic / Void", id: "SPELL_VOID" }
-                ]
+                description: "Master catch-all for all spell sounds. Schools, domains, and effect types fall back here if unset.",
+                children: []
             }
         ];
 
-        // System-specific spell traditions (sibling to effect-based Magic group)
+        // System-specific spell traditions
         if (game.system.id === 'dnd5e') {
+            // Effect-type children (DnD5e has explicit damage types)
+            actionTaxonomy[actionTaxonomy.length - 1].children = [
+                { label: "Fire / Heat", id: "SPELL_FIRE" },
+                { label: "Ice / Cold", id: "SPELL_ICE" },
+                { label: "Lightning / Storm", id: "SPELL_LIGHTNING" },
+                { label: "Acid / Poison", id: "SPELL_ACID" },
+                { label: "Healing / Radiant", id: "SPELL_HEAL" },
+                { label: "Psychic / Divination", id: "SPELL_PSYCHIC" },
+                { label: "Necrotic / Void", id: "SPELL_VOID" }
+            ];
+
             actionTaxonomy.push({
                 label: "Spell Schools",
-                id: "CORE_MAGIC",
-                description: "Where the magic comes from — match by arcane tradition. Use these for school-specific atmospherics. Unset schools fall back to the Magic (Spells) master sound.",
+                id: "CORE_SCHOOL",
+                description: "Where the magic comes from — match by arcane tradition. Unset schools fall back to Magic (Spells).",
                 children: [
                     { label: "Abjuration", id: "SCHOOL_ABJURATION", description: "Protective wards and barriers." },
                     { label: "Conjuration", id: "SCHOOL_CONJURATION", description: "Summoning creatures and objects." },
@@ -310,8 +313,8 @@ export class SoundConfigApp extends FormApplication {
         if (game.system.id === 'daggerheart') {
             actionTaxonomy.push({
                 label: "Domains",
-                id: "CORE_MAGIC",
-                description: "Where the magic comes from — match by domain tradition. Use these for domain-specific atmospherics. Unset domains fall back to the Magic (Spells) master sound.",
+                id: "CORE_DOMAIN",
+                description: "Where the magic comes from — match by domain tradition. Unset domains fall back to Magic (Spells).",
                 children: [
                     { label: "Arcana", id: "DOMAIN_ARCANA", description: "Innate, instinctual magic." },
                     { label: "Blade", id: "DOMAIN_BLADE", description: "Mastery of weapons." },
