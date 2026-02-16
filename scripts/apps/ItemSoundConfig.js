@@ -23,6 +23,7 @@ export class ItemSoundConfig extends FormApplication {
             { key: "sound_attack", label: "Attack / Cast", icon: "fas fa-khanda", hint: "Swing or cast sound (Phase 1)" },
             { key: "sound_hit", label: "Hit / Impact", icon: "fas fa-burst", hint: "Replaces the default blood splat on a landed hit" },
             { key: "sound_miss", label: "Miss / Dodge", icon: "fas fa-wind", hint: "Replaces the default whoosh on a miss" },
+            { key: "sound_use", label: "Use / Generic", icon: "fas fa-hand-sparkles", hint: "Non-attack item use (potions, scrolls)" },
             { key: "sound_equip", label: "Equip", icon: "fas fa-tshirt", hint: "Played when item is equipped" },
             { key: "sound_unequip", label: "Unequip", icon: "fas fa-box-open", hint: "Played when item is unequipped" }
         ];
