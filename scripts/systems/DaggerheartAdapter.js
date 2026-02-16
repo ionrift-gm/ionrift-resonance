@@ -686,6 +686,7 @@ export class DaggerheartAdapter extends SystemAdapter {
             // Hit impact is handled by preUpdateActor damage hook
             // Miss needs to be caught here via content keywords
             const content = data.messageContent || "";
+            Logger.log(`⏱️ [${ts}]   NON-DUALITY content (first 200): ${content.substring(0, 200)}`);
             if (msgContains(content, ["MISS", "FAILURE", "FAIL"])) {
                 Logger.log(`⏱️ [${ts}]   NON-DUALITY: Miss detected from content`);
                 const missOverride = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
