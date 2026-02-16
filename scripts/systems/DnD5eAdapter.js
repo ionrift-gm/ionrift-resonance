@@ -37,9 +37,9 @@ export class DnD5eAdapter extends SystemAdapter {
     registerHooks() {
         Logger.log("DnD5e Adapter Active");
 
-        // Phase 1: Weapon sound fires at the moment the player clicks attack
-        // Native DnD5e v4 hook — fires before Midi-QOL workflow starts
-        Hooks.on("dnd5e.preUseActivity", (activity, config, dialog) => {
+        // Phase 1: Weapon/cast sound fires after the player confirms the dialog
+        // dnd5e.useActivity fires AFTER the confirmation dialog (spell level, consumption, etc.)
+        Hooks.on("dnd5e.useActivity", (activity, config, results) => {
             const item = activity?.item;
             if (item) this.handleWeaponSound(item, activity);
         });
