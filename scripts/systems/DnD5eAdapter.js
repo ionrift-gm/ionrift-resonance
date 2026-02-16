@@ -84,30 +84,42 @@ export class DnD5eAdapter extends SystemAdapter {
         this.handler.playItemSound(soundKey, item);
 
         if (workflow.isCritical) {
-            this.play(SOUND_EVENTS.CRIT_DECORATION, 500);
+            this.play(SOUND_EVENTS.CRIT_DECORATION);
         }
     }
 
     handleDamage(workflow) {
+        Logger.log(`5e Damage: ${workflow.hitTargets.size} targets hit`);
+
         // Check for Death of Targets
         for (const token of workflow.hitTargets) {
             const actor = token.actor;
-            if (!actor) continue;
+            if (!actor) {
+                Logger.log("DnD5e | No actor for token, skipping");
+                continue;
+            }
 
             const hp = actor.system?.attributes?.hp;
+            Logger.log(`DnD5e | ${actor.name} HP: ${hp?.value}/${hp?.max}`);
+
             if (hp?.value <= 0) {
+                Logger.log(`DnD5e | ${actor.name} died! Playing death sound`);
                 if (actor.hasPlayerOwner) {
                     this.play(this.handler.getPCSound(actor, "DEATH"));
                 } else {
                     this.play(SOUND_EVENTS.PC_DEATH);
                 }
             } else {
+                Logger.log(`DnD5e | ${actor.name} took damage, playing hit + pain`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
 
                 if (actor.hasPlayerOwner) {
-                    this.play(this.handler.getPCSound(actor, "PAIN"));
+                    const pcPain = this.handler.getPCSound(actor, "PAIN");
+                    Logger.log(`DnD5e | PC Pain sound: ${pcPain}`);
+                    this.play(pcPain);
                 } else {
                     const painSound = this.detectMonsterPain(actor);
+                    Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
                     if (painSound) this.play(painSound);
                 }
             }
@@ -115,7 +127,15 @@ export class DnD5eAdapter extends SystemAdapter {
     }
 
     detectMonsterPain(actor) {
+        // Null check for library
+        if (!game.ionrift?.library?.classifyCreature) {
+            Logger.warn("DnD5e | Library not loaded, using generic monster sound");
+            return SOUND_EVENTS.MONSTER_GENERIC;
+        }
+
         const classification = game.ionrift.library.classifyCreature(actor);
+        Logger.log(`DnD5e | Classification for ${actor.name}:`, classification);
+
         if (classification && classification.sound) {
             if (Object.values(SOUND_EVENTS).includes(classification.sound)) return classification.sound;
             if (SOUND_EVENTS[classification.sound]) return SOUND_EVENTS[classification.sound];

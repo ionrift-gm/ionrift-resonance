@@ -5,6 +5,10 @@ import { msgContains } from "../utils.js";
 import { getDaggerheartMonsterSound } from "../data/daggerheart_mappings.js";
 
 export class DaggerheartAdapter extends SystemAdapter {
+    constructor(handler) {
+        super(handler);
+        this.renderPhases = new Map(); // Track render phases: { timestamp, phase: 1|2 }
+    }
     validateSchema() {
         const issues = [];
 
@@ -105,26 +109,42 @@ export class DaggerheartAdapter extends SystemAdapter {
     registerHooks() {
         Logger.log("Daggerheart Adapter Active");
 
-        // Listen for chat messages to detect rolls
-        Hooks.on("createChatMessage", (message) => {
-            Logger.log("HOOK FIRED", message); // Spammy but necessary now
+        // Two-phase sound playback for Daggerheart:
+        // Phase 1 (first render): Attack sound only (sword swing, spell cast)
+        // Phase 2 (re-render, ~4s later): Result decorations (miss/hit/stingers)
+        // This syncs result sounds with when the visual result appears on screen.
+        Hooks.on("renderChatMessage", (message, html, data) => {
+            Logger.log(`⏱️ [${Date.now()}] renderChatMessage HOOK FIRED (msg: ${message.id})`);
             if (!game.user.isGM) return;
+            if (!message.isRoll || !message.rolls?.length) return;
 
-            // Debug: Log basic info to confirm we are seeing messages
-            // Logger.log(`Hook | Message type: ${message.type}, isRoll: ${message.isRoll}, Rolls: ${message.rolls?.length}`);
+            const phase = this.renderPhases.get(message.id);
 
-            this.handleInfo(message);
+            if (!phase) {
+                // Phase 1: First render → attack sound only
+                Logger.log(`⏱️ [${Date.now()}] PHASE 1 (Attack) for msg: ${message.id}`);
+                this.renderPhases.set(message.id, { timestamp: Date.now(), phase: 1 });
+                this.handleAttackSound(message);
+            } else if (phase.phase === 1 && (Date.now() - phase.timestamp) > 500) {
+                // Phase 2: Re-render after 500ms+ → result decorations
+                Logger.log(`⏱️ [${Date.now()}] PHASE 2 (Result) for msg: ${message.id} (${Date.now() - phase.timestamp}ms since Phase 1)`);
+                this.renderPhases.set(message.id, { ...phase, phase: 2 });
+                this.handleResultSound(message);
+            } else {
+                Logger.log(`⏱️ [${Date.now()}] Skipping render for msg: ${message.id} (phase: ${phase.phase}, elapsed: ${Date.now() - phase.timestamp}ms)`);
+            }
         });
 
         // Listen for pre-updates to compare Old vs New HP
         Hooks.on("preUpdateActor", (actor, changes, options, userId) => {
+            Logger.log(`⏱️ [${Date.now()}] preUpdateActor HOOK FIRED (actor: ${actor.name})`);
             if (!game.user.isGM) return;
-            // console.log(`Ionrift Sounds | Daggerheart preUpdateActor Triggered`);
             this.handlePreUpdate(actor, changes);
         });
 
         // Listen for Item updates (Armor Slots)
         Hooks.on("preUpdateItem", (item, changes, options, userId) => {
+            Logger.log(`⏱️ [${Date.now()}] preUpdateItem HOOK FIRED`);
             if (!game.user.isGM) return;
             this.handlePreUpdateItem(item, changes);
         });
@@ -197,17 +217,28 @@ export class DaggerheartAdapter extends SystemAdapter {
                 : (getProperty(actor, "system.hp.max") || 0);
 
             if (newHp > oldHp) {
-                Logger.log(`Damage Taken(Value Increased).Playing 'Blood Splat'`);
+                Logger.log(`⏱️ [${Date.now()}] Damage Taken (Value Increased). Playing 'Blood Splat'`);
+                Logger.log(`⏱️ [${Date.now()}] DH | HP Change: ${oldHp} -> ${newHp} (Max: ${maxHp})`);
+
+                // Hit Sound
+                Logger.log(`⏱️ [${Date.now()}] DH | Playing BLOODY_HIT: ${SOUND_EVENTS.BLOODY_HIT}`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
 
                 // Pain Sound
                 if (actor.hasPlayerOwner) {
-                    this.play(this.handler.getPCSound(actor, "PAIN"));
+                    const pcPain = this.handler.getPCSound(actor, "PAIN");
+                    Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain}`);
+                    this.play(pcPain);
                 } else {
                     // Play Monster Pain Sound
                     const painSound = getDaggerheartMonsterSound(actor);
+                    Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || 'none'}`);
                     if (painSound && painSound !== SOUND_EVENTS.MONSTER_GENERIC) {
-                        this.play(painSound, 200);
+                        this.play(painSound);
+                    } else {
+                        // Fall back to generic
+                        Logger.log(`DH | Using generic monster pain: ${SOUND_EVENTS.MONSTER_GENERIC}`);
+                        this.play(SOUND_EVENTS.MONSTER_GENERIC);
                     }
                 }
 
@@ -401,7 +432,7 @@ export class DaggerheartAdapter extends SystemAdapter {
         }
 
         const roll = message.rolls[0];
-        Logger.log("Daggerheart Chat/Roll Detected:", {
+        Logger.log(`⏱️ [${Date.now()}] Daggerheart Chat/Roll Detected:`, {
             flavor: message.flavor,
             content: message.content,
             rollData: roll
@@ -447,29 +478,168 @@ export class DaggerheartAdapter extends SystemAdapter {
             const hopeValue = hopeDie.results.find(r => r.active)?.result || 0;
             const fearValue = fearDie.results.find(r => r.active)?.result || 0;
 
-            if (hopeValue === fearValue) {
-                Logger.log(`CRITICAL! Doubles(${hopeValue})`);
-                this.handler.playItemSound(attackSoundKey, item, 700);
-                this.play("DAGGERHEART_CRIT", 700); // New dedicated Crit key
+            // Determine success/fail
+            // Try to find DC in roll options, flags, or chat content
+            const total = roll.total;
+            let isSuccess = null; // null = unknown
 
-            } else if (hopeValue > fearValue) {
-                Logger.log(`Action with HOPE`);
-                this.handler.playItemSound(attackSoundKey, item, 700);
-                this.play("DAGGERHEART_ROLL_HOPE", 700); // Distinct from Resource Gain
+            // Check for DC in roll options or flags
+            Logger.log("DC Debug - roll.options:", JSON.stringify(roll.options || {}, null, 2));
+            Logger.log("DC Debug - roll.formula:", roll.formula);
+            Logger.log("DC Debug - message.flags.daggerheart:", JSON.stringify(message.flags?.daggerheart || {}, null, 2));
+
+            // DC can be in multiple locations - check all known paths
+            const dc = roll.options?.targetValue
+                || roll.options?.dc
+                || roll.options?.targets?.[0]?.difficulty  // Daggerheart stores here!
+                || message.flags?.daggerheart?.dc;
+
+            if (dc !== undefined) {
+                isSuccess = total >= dc;
+                Logger.log(`DC Found: ${dc}, Total: ${total}, Success: ${isSuccess}`);
+            } else {
+                // Fallback: Check roll flags or message flags for hit/miss
+                Logger.log("Checking flags for hit/miss:", JSON.stringify(message.flags?.daggerheart || {}, null, 2));
+
+                const hitCount = message.flags?.daggerheart?.hits || 0;
+                const missCount = message.flags?.daggerheart?.misses || 0;
+
+                if (missCount > 0) {
+                    isSuccess = false;
+                    Logger.log(`Miss detected from flags: ${missCount} misses`);
+                } else if (hitCount > 0) {
+                    isSuccess = true;
+                    Logger.log(`Hit detected from flags: ${hitCount} hits`);
+                } else {
+                    // Last resort: Check chat content (may not be fully formed in preCreate)
+                    const content = message.content || "";
+                    if (content.includes("MISS") || content.includes("FAILURE") || content.includes("FAIL")) {
+                        isSuccess = false;
+                        Logger.log(`Miss inferred from content keywords`);
+                    } else if (content.includes("SUCCESS") || content.includes("HITS") || content.includes("HIT")) {
+                        isSuccess = true;
+                        Logger.log(`Hit inferred from content keywords`);
+                    }
+                }
+
+                if (isSuccess !== null) {
+                    Logger.log(`Success/fail determined from flags/content: ${isSuccess}`);
+                } else {
+                    Logger.log(`No DC found, no flags, content incomplete - using legacy`);
+                }
+            }
+
+            // Timestamp baseline for timing analysis
+            const hookFiredAt = Date.now();
+            const timestamp = () => `[T+${Date.now() - hookFiredAt}ms]`;
+
+            // Phase-aware: store data for Phase 2, but only play attack now if called from handleInfo
+            // This method is now called from handleAttackSound/handleResultSound via the hook phases
+            Logger.log(`${timestamp()} handleInfo computed: isSuccess=${isSuccess}, hopeValue=${hopeValue}, fearValue=${fearValue}, attackSoundKey=${attackSoundKey}`);
+            return { isSuccess, hopeValue, fearValue, attackSoundKey, item, roll, isDuality: true };
+        } else {
+            // Non-duality roll
+            return { isDuality: false, attackSoundKey, item };
+        }
+    }
+
+    /**
+     * Phase 1: Play ONLY the attack sound (sword swing, spell cast)
+     * Fires on the first renderChatMessage when the card shell appears.
+     */
+    handleAttackSound(message) {
+        const data = this.handleInfo(message);
+        if (!data) return;
+
+        const ts = Date.now();
+        Logger.log(`⏱️ [${ts}] ══ PHASE 1: ATTACK SOUND ══`);
+        Logger.log(`⏱️ [${ts}]   Playing: ${data.attackSoundKey}`);
+        this.handler.playItemSound(data.attackSoundKey, data.item);
+        Logger.log(`⏱️ [${ts}] ══ END PHASE 1 ══`);
+
+        // Store data for Phase 2
+        this.renderPhases.set(message.id, {
+            ...this.renderPhases.get(message.id),
+            data: data
+        });
+    }
+
+    /**
+     * Phase 2: Play result decorations (hit/miss/stingers)
+     * Fires when the chat message re-renders with the visual result (~4s later).
+     */
+    handleResultSound(message) {
+        const phase = this.renderPhases.get(message.id);
+        const data = phase?.data;
+
+        if (!data) {
+            Logger.log(`⏱️ [${Date.now()}] Phase 2: No stored data for ${message.id}, re-extracting`);
+            // Fallback: re-extract (shouldn't happen normally)
+            const freshData = this.handleInfo(message);
+            if (!freshData) return;
+            this._playResultSounds(freshData);
+            return;
+        }
+
+        this._playResultSounds(data);
+    }
+
+    /**
+     * Play the result decoration sounds based on roll outcome.
+     */
+    _playResultSounds(data) {
+        const ts = Date.now();
+        const { isSuccess, hopeValue, fearValue, isDuality } = data;
+
+        if (!isDuality) {
+            // Non-duality: no result decorations to play
+            return;
+        }
+
+        Logger.log(`⏱️ [${ts}] ══ PHASE 2: RESULT SOUNDS ══`);
+
+        if (hopeValue === fearValue) {
+            // Critical Hit (Doubles) — CORE_HIT already played by preUpdateActor damage hook
+            Logger.log(`⏱️ [${ts}]   CRITICAL HIT (Doubles) Hope=${hopeValue}, Fear=${fearValue}`);
+            this.play(SOUND_EVENTS.DAGGERHEART_CRIT); // Stinger only
+
+        } else if (isSuccess !== null) {
+            const hopeWins = hopeValue > fearValue;
+
+            if (isSuccess && hopeWins) {
+                // Hit — CORE_HIT already played by damage hook
+                Logger.log(`⏱️ [${ts}]   SUCCESS WITH HOPE - Stinger only (hit handled by damage hook)`);
+                this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS_WITH_HOPE);
+
+            } else if (isSuccess && !hopeWins) {
+                // Hit — CORE_HIT already played by damage hook
+                Logger.log(`⏱️ [${ts}]   SUCCESS WITH FEAR - Stinger only (hit handled by damage hook)`);
+                this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS_WITH_FEAR);
+
+            } else if (!isSuccess && hopeWins) {
+                // Miss — no damage hook fires, so play miss whoosh here
+                Logger.log(`⏱️ [${ts}]   FAIL WITH HOPE - Miss + Hope stinger`);
+                this.play(SOUND_EVENTS.MISS);
+                this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_HOPE);
 
             } else {
-                Logger.log(`Action with FEAR`);
-                this.handler.playItemSound(attackSoundKey, item, 700);
-                this.play("DAGGERHEART_ROLL_FEAR", 700); // Distinct from Resource Gain
+                // Miss — no damage hook fires, so play miss whoosh here
+                Logger.log(`⏱️ [${ts}]   FUMBLE (Fail+Fear) - Miss + Fumble stinger`);
+                this.play(SOUND_EVENTS.MISS);
+                this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_FEAR);
             }
+
         } else {
-            // Standard Roll
-            this.handler.playItemSound(attackSoundKey, item, 700);
+            // Legacy fallback — assume miss (safe default)
+            Logger.log(`⏱️ [${ts}]   LEGACY - Miss + Hope/Fear stinger`);
+            this.play(SOUND_EVENTS.MISS);
+            if (hopeValue > fearValue) {
+                this.play(SOUND_EVENTS.DAGGERHEART_ROLL_HOPE);
+            } else {
+                this.play(SOUND_EVENTS.DAGGERHEART_ROLL_FEAR);
+            }
         }
 
-        // Check for Miss
-        if (msgContains(message.content, ["MISS", "FAILURE"])) {
-            this.play(SOUND_EVENTS.MISS, 700);
-        }
+        Logger.log(`⏱️ [${Date.now()}] ══ END PHASE 2 ══`);
     }
 }

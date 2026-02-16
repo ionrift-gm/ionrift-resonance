@@ -112,11 +112,17 @@ export class ResonanceConfig {
             }
         }
 
+        let effectiveBindings;
         if (this.activePreset === "none") {
-            return { ...this.config, ...userBindings };
+            effectiveBindings = { ...this.config, ...userBindings };
+            Logger.log(`ResonanceConfig | Preset: "none", Keys: ${Object.keys(effectiveBindings).length}`);
+        } else {
+            effectiveBindings = { ...SYRINSCAPE_DEFAULTS, ...this.config, ...userBindings };
+            Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Default Keys: ${Object.keys(SYRINSCAPE_DEFAULTS).length}, Total Keys: ${Object.keys(effectiveBindings).length}`);
+            Logger.log(`ResonanceConfig | Has BLOODY_HIT: ${!!effectiveBindings.BLOODY_HIT}, Has MONSTER_WOLF: ${!!effectiveBindings.MONSTER_WOLF}`);
         }
 
-        return { ...SYRINSCAPE_DEFAULTS, ...this.config, ...userBindings };
+        return effectiveBindings;
     }
 
     /**

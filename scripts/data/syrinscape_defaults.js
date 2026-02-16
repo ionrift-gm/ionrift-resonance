@@ -131,6 +131,20 @@ const DATA_FULL = {
             "type": "oneshot"
         }
     ],
+    "BLOODY_HIT": [
+        {
+            "id": "3743656",
+            "name": "Flesh Impact (Bloody)",
+            "type": "oneshot"
+        }
+    ],
+    "MONSTER_GENERIC": [
+        {
+            "id": "3743632",
+            "name": "Monster Generic",
+            "type": "oneshot"
+        }
+    ],
     "CORE_HEAL": [
         {
             "id": "3652",

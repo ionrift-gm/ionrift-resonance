@@ -167,13 +167,16 @@ export class SoundHandler {
     }
 
     playItemSound(key, item = null, delay = 0, cooldownMs = 5000) {
-        if (!key) return;
+        if (!key) {
+            Logger.log("playItemSound | No key provided, skipping");
+            return;
+        }
 
         if (item) {
             const now = Date.now();
             const lastTime = this.cooldowns.get(item.id) || 0;
             if (now - lastTime < cooldownMs) {
-                Logger.log(`Cooldown Active for ${item.name}`);
+                Logger.log(`playItemSound | Cooldown Active for ${item.name} (${now - lastTime}ms < ${cooldownMs}ms)`);
                 return;
             }
             this.cooldowns.set(item.id, now);
@@ -188,14 +191,18 @@ export class SoundHandler {
                 if (delayMax > 0 && delayMax >= delayMin) {
                     const randomSeconds = Math.random() * (delayMax - delayMin) + delayMin;
                     addedDelay = randomSeconds * 1000;
+                    Logger.log(`playItemSound | Added delay: ${addedDelay}ms (${delayMin}-${delayMax}s)`);
                 }
             }
         }
 
+        Logger.log(`playItemSound | Playing ${key} with delay ${delay + addedDelay}ms`);
         this.play(key, delay + addedDelay);
     }
 
     play(key, delay = 0) {
+        Logger.log(`SoundHandler.play | Key: ${key}, Delay: ${delay}ms`);
+
         // 1. Resolve Key -> ID/Object via Resolver
         const soundKey = this.resolver.resolveKey(key);
         // If resolver returned an object/id, good. If it returned null, maybe it is a raw ID?
@@ -210,16 +217,21 @@ export class SoundHandler {
             // Semantic Check
             const isSemantic = /^[A-Z][A-Z0-9_]+$/.test(key);
             if (!isSemantic) {
+                Logger.log(`SoundHandler.play | No binding found, treating as raw ID: ${key}`);
                 finalData = key; // Assume raw ID
             } else {
-                Logger.warn(`play | No Binding for Semantic Key: ${key}`);
+                Logger.warn(`SoundHandler.play | No Binding for Semantic Key: ${key}`);
                 return;
             }
+        } else {
+            Logger.log(`SoundHandler.play | Resolved to: ${finalData}`);
         }
 
         // 2. Delegate to SoundManager
         if (game.ionrift.sounds?.manager) {
             game.ionrift.sounds.manager.play(finalData, { delay: delay });
+        } else {
+            Logger.error("SoundHandler.play | Manager not available!");
         }
     }
 

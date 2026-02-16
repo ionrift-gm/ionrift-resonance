@@ -29,10 +29,10 @@
         <div class="group-content" style="padding: 5px 0 5px 10px; border-top: 1px solid rgba(255,255,255,0.05);">
 
             <!-- 1. The "Parent" Sound Card (if this group has a sound of its own) -->
-            {{#if key}}
+            {{#if headerCard}}
             <div class="parent-sound-card"
                 style="margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;">
-                {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" this}}
+                {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" headerCard}}
             </div>
             {{/if}}
 

@@ -394,37 +394,27 @@ export class SoundConfigApp extends FormApplication {
             }
         ];
 
-        // --- CORE TAXONOMY (Tier 1) ---
+        // --- CORE TAXONOMY (Tier 1: Results Only) ---
         const coreTaxonomy = [
             {
-                label: "Combat Actions",
-                description: "Core melee and ranged attack sounds.",
-                children: [
-                    { id: "CORE_MELEE", label: "Core Melee (Sword/Clash)", description: "Standard melee weapon attacks (Sword, Axe, Mace)." },
-                    { id: "CORE_RANGED", label: "Core Ranged (Bow/Shot)", description: "Standard ranged attacks (Bow, Crossbow, Thrown)." },
-                    { id: "CORE_BRAWL", label: "Core Brawl (Punch/Slam)", description: "Unarmed strikes and natural attacks." },
-                    { id: "CORE_MAGIC", label: "Core Magic (Spell)", description: "Generic spell casting sound." }
-                ]
-            },
-            {
-                label: "Combat Results",
+                label: "Combat Outcomes",
                 description: "Hits, misses, and impacts.",
                 children: [
-                    { id: "CORE_HIT", label: "Core Hit (Flesh)", description: "Impact sound when an attack hits a target." },
-                    { id: "CORE_MISS", label: "Core Miss (Whiff)", description: "Plays when an attack roll fails (Miss)." },
-                    { id: "CORE_WHOOSH", label: "Core Whoosh (Generic)", description: "Fallback swing sound for unknown items/weapons." }
+                    { id: "CORE_HIT", label: "Strike Landed", description: "Flesh impact when an attack result is a hit." },
+                    { id: "CORE_MISS", label: "Strike Missed", description: "Whoosh/whiff when an attack result is a miss." },
+                    { id: "CORE_WHOOSH", label: "Swing (Fallback)", description: "Generic swing for weapons without a specific attack sound." }
                 ]
             },
             {
                 label: "Vocals",
                 description: "Pain and death sounds.",
                 children: [
-                    { id: "CORE_PAIN_MASCULINE", label: "Core Pain (Masculine)", description: "Generic pain grunt for masculine humanoid actors." },
-                    { id: "CORE_PAIN_FEMININE", label: "Core Pain (Feminine)", description: "Generic pain grunt for feminine humanoid actors." },
-                    { id: "CORE_DEATH_MASCULINE", label: "Core Death (Masculine)", description: "Death cry for masculine humanoid actors." },
-                    { id: "CORE_DEATH_FEMININE", label: "Core Death (Feminine)", description: "Death cry for feminine humanoid actors." },
-                    { id: "MONSTER_ROAR", label: "Core Monster Pain", description: "Generic growl/pain for non-humanoid monsters." },
-                    { id: "MONSTER_GENERIC", label: "Core Monster Death", description: "Generic death sound for non-humanoid monsters." }
+                    { id: "CORE_PAIN_MASCULINE", label: "Pain Cry (Masculine)", description: "Grunt when a masculine humanoid takes damage." },
+                    { id: "CORE_PAIN_FEMININE", label: "Pain Cry (Feminine)", description: "Grunt when a feminine humanoid takes damage." },
+                    { id: "CORE_DEATH_MASCULINE", label: "Death Cry (Masculine)", description: "Death sound for masculine humanoid actors." },
+                    { id: "CORE_DEATH_FEMININE", label: "Death Cry (Feminine)", description: "Death sound for feminine humanoid actors." },
+                    { id: "CORE_MONSTER_PAIN", label: "Monster Pain", description: "Growl/pain reaction for non-humanoid creatures." },
+                    { id: "CORE_MONSTER_DEATH", label: "Monster Death", description: "Death sound for non-humanoid creatures." }
                 ]
             }
         ];
@@ -442,31 +432,46 @@ export class SoundConfigApp extends FormApplication {
         }
 
         if (game.system.id === 'daggerheart') {
-            // Group 1: Core Mechanics (Rolls, Hope, Stress, Armor)
+            // Group 1: Duality Dice (Roll Outcomes)
             coreTaxonomy.push({
-                label: "Daggerheart Mechanics",
-                description: "Rolls, Hope, Stress, and Equipment.",
+                label: "Daggerheart: Duality Dice",
+                description: "Sounds for 2d12 roll outcomes.",
                 children: [
-                    // Rolls
-                    { id: "DAGGERHEART_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice." },
-                    { id: "DAGGERHEART_ROLL_HOPE", label: "Roll with Hope", description: "Action Result: Hope Die > Fear Die." },
-                    { id: "DAGGERHEART_ROLL_FEAR", label: "Roll with Fear", description: "Action Result: Fear Die > Hope Die." },
+                    // Granular Roll Outcomes
+                    { id: "DAGGERHEART_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice (automatic success)." },
+                    { id: "DAGGERHEART_SUCCESS_WITH_HOPE", label: "Success with Hope", description: "Action succeeded, Hope die won." },
+                    { id: "DAGGERHEART_SUCCESS_WITH_FEAR", label: "Success with Fear", description: "Action succeeded, but with a complication (Fear die won)." },
+                    { id: "DAGGERHEART_FAIL_WITH_HOPE", label: "Fail with Hope", description: "Action failed, but Hope die won (silver lining)." },
+                    { id: "DAGGERHEART_FAIL_WITH_FEAR", label: "Fail with Fear (Fumble)", description: "Action failed catastrophically (Fear die won)." },
 
-                    // Resources (Hope)
+                    // Legacy (fallback if DC not available)
+                    { id: "DAGGERHEART_ROLL_HOPE", label: "Roll with Hope (Legacy)", description: "Hope die > Fear die (use if DC unknown)." },
+                    { id: "DAGGERHEART_ROLL_FEAR", label: "Roll with Fear (Legacy)", description: "Fear die > Hope die (use if DC unknown)." }
+                ]
+            });
+
+            // Group 2: Player Resources
+            coreTaxonomy.push({
+                label: "Daggerheart: Player Resources",
+                description: "Hope, Stress, and Armor mechanics.",
+                children: [
+                    // Hope
                     { id: "DAGGERHEART_HOPE", label: "Hope Resource (Gain)", description: "Triggered when a player gains a Hope token." },
                     { id: "DAGGERHEART_HOPE_USE", label: "Hope Resource (Use)", description: "Triggered when a player spends a Hope token." },
 
-                    // Stress / Armor
+                    // Stress
                     { id: "DAGGERHEART_STRESS", label: "Take Stress", description: "Played when a character marks Stress." },
                     { id: "DAGGERHEART_STRESS_CLEAR", label: "Clear Stress", description: "Played when a character recovers Stress." },
+
+                    // Armor
                     { id: "DAGGERHEART_ARMOR_USE", label: "Armor Block/Deplete", description: "Played when Armor slots are reduced." },
                     { id: "DAGGERHEART_ARMOR_REPAIR", label: "Armor Repair", description: "Played when Armor slots are restored." }
                 ]
             });
 
-            // Group 2: Fear System (GM Only)
+            // Group 3: Fear System (GM Only)
             coreTaxonomy.push({
-                label: "Daggerheart Fear Tracker",
+                label: "Daggerheart: Fear Tracker (GM)",
                 description: "GM Fear mechanics (Spending & Gaining).",
                 children: [
                     // Fear Spend

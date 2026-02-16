@@ -25,15 +25,11 @@ export class SystemAdapter {
      * @param {string} key - Abstract Sound Key (SOUND_EVENTS)
      * @param {number} [volume]
      */
-    play(key, volume, delay = 0) {
-        // Delegate directly to the active Strategy
-        // This ensures consistent logic (URL parsing, token handling, etc.)
-        if (this.handler.strategy) {
-            if (delay > 0) {
-                setTimeout(() => this.handler.strategy.play(key, volume), delay);
-            } else {
-                this.handler.strategy.play(key, volume);
-            }
+    play(key, delay = 0, volume) {
+        // Delegate to SoundHandler for proper resolution chain
+        // Handler -> Resolver -> Manager -> Provider
+        if (this.handler) {
+            this.handler.play(key, delay);
         }
     }
 

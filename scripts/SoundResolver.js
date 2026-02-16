@@ -136,16 +136,38 @@ export class SoundResolver {
     resolveKey(key) {
         // 1. Check if Key exists in effective bindings
         const bindings = this.configService.getEffectiveBindings();
-        if (bindings[key]) return bindings[key];
+        let resolved = bindings[key];
+
+        // Unpack arrays from SYRINSCAPE_DEFAULTS structure: [{id, name, type}]
+        if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
+            resolved = resolved[0].id; // Extract first sound's ID
+        }
+
+        if (resolved) return resolved;
 
         // 2. Check Fallback
         const fallback = this.getFallbackKey(key);
-        if (fallback && bindings[fallback]) return bindings[fallback];
+        if (fallback && bindings[fallback]) {
+            resolved = bindings[fallback];
+
+            // Unpack arrays from fallback too
+            if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
+                resolved = resolved[0].id;
+            }
+
+            Logger.log(`SoundResolver | ${key} → fallback → ${fallback} → ${resolved}`);
+            return resolved;
+        }
 
         return null;
     }
 
     getFallbackKey(specificKey) {
+        // Guard against undefined/null keys
+        if (!specificKey || typeof specificKey !== 'string') {
+            return null;
+        }
+
         // Core Groups
         if (["ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE", "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM", "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"].includes(specificKey)) return "CORE_MELEE";
 
