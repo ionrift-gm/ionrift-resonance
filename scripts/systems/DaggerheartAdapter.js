@@ -143,11 +143,29 @@ export class DaggerheartAdapter extends SystemAdapter {
             this.handlePreUpdate(actor, changes);
         });
 
-        // Listen for Item updates (Armor Slots)
+        // Listen for Item updates (Armor Slots, Equip/Unequip)
         Hooks.on("preUpdateItem", (item, changes, options, userId) => {
             Logger.log(`⏱️ [${Date.now()}] preUpdateItem HOOK FIRED`);
             if (!game.user.isGM) return;
             this.handlePreUpdateItem(item, changes);
+        });
+
+        // Listen for Daggerheart Item/Action usage (Use Item button)
+        Hooks.on("daggerheart.preUseAction", (action, config) => {
+            if (!game.user.isGM) return;
+            const item = action?.item;
+            Logger.log(`⏱️ [${Date.now()}] daggerheart.preUseAction | Item: ${item?.name}, Type: ${item?.type}`);
+
+            if (item) {
+                const useOverride = item.getFlag("ionrift-resonance", "sound_use");
+                if (useOverride) {
+                    Logger.log(`Item Override: Use ${item.name} -> ${useOverride}`);
+                    this.handler.play(useOverride);
+                } else {
+                    Logger.log(`DH | Use: ${item.name} (no override, generic)`);
+                    this.handler.play("ITEM_USE");
+                }
+            }
         });
 
         // Fear Tracker: Daggerheart stores fear as a world setting, not an actor property.
