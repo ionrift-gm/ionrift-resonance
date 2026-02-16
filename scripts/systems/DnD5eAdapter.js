@@ -79,7 +79,34 @@ export class DnD5eAdapter extends SystemAdapter {
         Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
         const actor = item.actor || activity?.actor;
         const soundKey = this.handler.pickSound(item, actor?.name, actor);
+
+        // For spells: also try the school key if the effect key has no direct binding
+        if (item.type === "spell" && item.system?.school) {
+            const schoolKey = this._getSchoolKey(item.system.school);
+            if (schoolKey) {
+                Logger.log(`5e Weapon Sound: spell school ${item.system.school} → ${schoolKey}`);
+                // Try effect key first, then school key, both via playItemSound
+                this.handler.playItemSoundWithFallback(soundKey, schoolKey, item);
+                return;
+            }
+        }
+
         this.handler.playItemSound(soundKey, item);
+    }
+
+    _getSchoolKey(school) {
+        const schoolMap = {
+            abj: "SCHOOL_ABJURATION",
+            con: "SCHOOL_CONJURATION",
+            div: "SCHOOL_DIVINATION",
+            enc: "SCHOOL_ENCHANTMENT",
+            evo: "SCHOOL_EVOCATION",
+            evoc: "SCHOOL_EVOCATION",
+            ill: "SCHOOL_ILLUSION",
+            nec: "SCHOOL_NECROMANCY",
+            tra: "SCHOOL_TRANSMUTATION"
+        };
+        return schoolMap[school] || null;
     }
 
     // Phase 2: Result stinger — fires AFTER dice roll (the "answer")

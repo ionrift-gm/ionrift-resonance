@@ -200,6 +200,22 @@ export class SoundHandler {
         this.play(key, delay + addedDelay);
     }
 
+    /**
+     * Try primaryKey first. If it doesn't resolve to a bound sound,
+     * fall back to fallbackKey. Used for spells: effect key → school key.
+     */
+    playItemSoundWithFallback(primaryKey, fallbackKey, item = null, delay = 0) {
+        // Check if primary key resolves to a bound sound
+        const primaryResult = this.resolver.resolveKey(primaryKey);
+        if (primaryResult) {
+            Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} resolved → using it`);
+            this.playItemSound(primaryKey, item, delay);
+        } else {
+            Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} unbound → trying ${fallbackKey}`);
+            this.playItemSound(fallbackKey, item, delay);
+        }
+    }
+
     play(key, delay = 0) {
         Logger.log(`SoundHandler.play | Key: ${key}, Delay: ${delay}ms`);
 
