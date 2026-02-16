@@ -38,8 +38,8 @@ export class DnD5eAdapter extends SystemAdapter {
         Logger.log("DnD5e Adapter Active");
 
         // Phase 1: Weapon/cast sound fires after the player confirms the dialog
-        // dnd5e.useActivity fires AFTER the confirmation dialog (spell level, consumption, etc.)
-        Hooks.on("dnd5e.useActivity", (activity, config, results) => {
+        // dnd5e.postUseActivity fires AFTER confirmation dialog + activity processing
+        Hooks.on("dnd5e.postUseActivity", (activity, config, results) => {
             const item = activity?.item;
             if (item) this.handleWeaponSound(item, activity);
         });
