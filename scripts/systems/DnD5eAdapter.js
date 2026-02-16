@@ -39,50 +39,61 @@ export class DnD5eAdapter extends SystemAdapter {
 
         if (game.modules.get("midi-qol")?.active) {
             Logger.log("Hooking into Midi-QOL...");
-            Hooks.on("midi-qol.AttackRollComplete", (workflow) => {
-                this.handleAttack(workflow);
+
+            // Phase 1: Weapon sound fires at the moment the player clicks attack
+            Hooks.on("midi-qol.preItemRoll", (workflow) => {
+                this.handleWeaponSound(workflow);
+                return true; // Do not abort the workflow
             });
+
+            // Phase 2: Result stinger fires after the attack roll resolves
+            Hooks.on("midi-qol.AttackRollComplete", (workflow) => {
+                this.handleAttackResult(workflow);
+            });
+
+            // Phase 3: Damage sounds fire after the damage roll
             Hooks.on("midi-qol.DamageRollComplete", (workflow) => {
                 this.handleDamage(workflow);
             });
         } else {
-            Logger.log("Midi-QOL inactive. Usage native dnd5e hooks.");
-            if (!game.modules.get("midi-qol")?.active) {
-                Logger.log("Hooking into Native DnD5e...");
+            Logger.log("Midi-QOL inactive. Using native dnd5e hooks.");
 
-                // V2 Hooks
-                Hooks.on("dnd5e.rollAttackV2", (roll, data) => {
-                    let item = data.subject || data.item;
-                    if (item && item.item) item = item.item;
-                    this.handleNativeAttack(item, roll);
-                });
+            // V2 Hooks
+            Hooks.on("dnd5e.rollAttackV2", (roll, data) => {
+                let item = data.subject || data.item;
+                if (item && item.item) item = item.item;
+                this.handleNativeAttack(item, roll);
+            });
 
-                Hooks.on("dnd5e.rollDamageV2", (roll, data) => {
-                    let item = data.subject || data.item;
-                    if (item && item.item) item = item.item;
-                    // Native damage currently no-op until mapped
-                });
-            }
+            Hooks.on("dnd5e.rollDamageV2", (roll, data) => {
+                let item = data.subject || data.item;
+                if (item && item.item) item = item.item;
+                // Native damage currently no-op until mapped
+            });
         }
     }
 
-    handleAttack(workflow) {
+    // Phase 1: Weapon swing — fires BEFORE dice roll (the "ask")
+    handleWeaponSound(workflow) {
         const item = workflow.item;
         if (!item) return;
 
-        Logger.log(`5e Attack: ${item.name} (${item.type})`);
-
-        // Phase 1: Weapon sound (always plays — this is the "ask")
+        Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
         const soundKey = this.handler.pickSound(item, workflow.actor?.name, workflow.actor);
         this.handler.playItemSound(soundKey, item);
+    }
 
-        const RESULT_STAGGER = 400;
+    // Phase 2: Result stinger — fires AFTER dice roll (the "answer")
+    handleAttackResult(workflow) {
+        const item = workflow.item;
+        if (!item) return;
 
-        // Phase 2: Result decoration (the "answer")
+        Logger.log(`5e Attack Result: ${item.name} — hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}`);
+
         if (workflow.hitTargets.size === 0) {
-            this.play(SOUND_EVENTS.MISS, RESULT_STAGGER);
+            this.play(SOUND_EVENTS.MISS);
         } else if (workflow.isCritical) {
-            this.play(SOUND_EVENTS.CRIT_DECORATION, RESULT_STAGGER);
+            this.play(SOUND_EVENTS.CRIT_DECORATION);
         }
         // Normal hits: damage hook handles CORE_HIT + pain/death
     }
@@ -95,9 +106,6 @@ export class DnD5eAdapter extends SystemAdapter {
             ?? workflow.damageDetail?.reduce((sum, d) => sum + (d.damage || 0), 0)
             ?? 0;
 
-        // DamageRollComplete fires immediately after AttackRollComplete.
-        // Delay all damage sounds so the weapon swing ("ask") is heard first.
-        const ATTACK_GAP = 600;
         const VOCAL_STAGGER = 400;
 
         for (const token of workflow.hitTargets) {
@@ -119,31 +127,31 @@ export class DnD5eAdapter extends SystemAdapter {
 
             if (isDead) {
                 Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
-                this.play(SOUND_EVENTS.BLOODY_HIT, ATTACK_GAP);
+                this.play(SOUND_EVENTS.BLOODY_HIT);
 
                 const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                 if (deathOverride) {
-                    this.handler.play(deathOverride, ATTACK_GAP + VOCAL_STAGGER);
+                    this.handler.play(deathOverride, VOCAL_STAGGER);
                 } else if (isPC) {
-                    this.play(this.handler.getPCSound(actor, "DEATH"), ATTACK_GAP + VOCAL_STAGGER);
+                    this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
                 } else {
-                    this.play(SOUND_EVENTS.PC_DEATH, ATTACK_GAP + VOCAL_STAGGER);
+                    this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
                 }
             } else {
                 Logger.log(`DnD5e | ${actor.name} took damage, playing hit + pain`);
-                this.play(SOUND_EVENTS.BLOODY_HIT, ATTACK_GAP);
+                this.play(SOUND_EVENTS.BLOODY_HIT);
 
                 const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
                 if (painOverride) {
-                    this.handler.play(painOverride, ATTACK_GAP + VOCAL_STAGGER);
+                    this.handler.play(painOverride, VOCAL_STAGGER);
                 } else if (isPC) {
                     const pcPain = this.handler.getPCSound(actor, "PAIN");
-                    Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${ATTACK_GAP + VOCAL_STAGGER}ms)`);
-                    this.play(pcPain, ATTACK_GAP + VOCAL_STAGGER);
+                    Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
+                    this.play(pcPain, VOCAL_STAGGER);
                 } else {
                     const painSound = this.detectMonsterPain(actor);
                     Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
-                    if (painSound) this.play(painSound, ATTACK_GAP + VOCAL_STAGGER);
+                    if (painSound) this.play(painSound, VOCAL_STAGGER);
                 }
             }
         }
