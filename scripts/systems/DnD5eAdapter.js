@@ -90,6 +90,11 @@ export class DnD5eAdapter extends SystemAdapter {
     handleDamage(workflow) {
         Logger.log(`5e Damage: ${workflow.hitTargets.size} targets hit`);
 
+        // Midi-QOL provides damage totals on the workflow
+        const totalDamage = workflow.damageTotal
+            ?? workflow.damageDetail?.reduce((sum, d) => sum + (d.damage || 0), 0)
+            ?? 0;
+
         for (const token of workflow.hitTargets) {
             const actor = token.actor;
             if (!actor) {
@@ -99,10 +104,16 @@ export class DnD5eAdapter extends SystemAdapter {
 
             const hp = actor.system?.attributes?.hp;
             const isPC = actor.type === 'character';
-            Logger.log(`DnD5e | ${actor.name} HP: ${hp?.value}/${hp?.max} (PC: ${isPC})`);
 
-            if (hp?.value <= 0) {
-                Logger.log(`DnD5e | ${actor.name} died! Playing death sound`);
+            // DamageRollComplete fires BEFORE damage is applied — HP is still pre-damage
+            const currentHp = hp?.value ?? 0;
+            const estimatedHp = currentHp - totalDamage;
+            Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} → est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
+
+            const isDead = estimatedHp <= 0;
+
+            if (isDead) {
+                Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
                 const VOCAL_STAGGER = 400;
 
