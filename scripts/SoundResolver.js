@@ -51,6 +51,17 @@ export class SoundResolver {
 
         const lower = itemName.toLowerCase();
 
+        // 3.5. Daggerheart Domain Resolution
+        // Items (domainCard, feature) store their domain at system.domain (e.g. "splendor")
+        if (item?.system?.domain && game.system.id === "daggerheart") {
+            const domainKey = `DOMAIN_${item.system.domain.toUpperCase()}`;
+            const resolved = this.resolveKey(domainKey);
+            if (resolved) {
+                Logger.log(`pickSound | Daggerheart domain match: ${item.system.domain} → ${domainKey}`);
+                return domainKey;
+            }
+        }
+
         // 4. Classifier Logic (Ionrift Library)
         if (actor && game.ionrift?.library?.classifyCreature) {
             const classifierResult = game.ionrift.library.classifyCreature(actor);
