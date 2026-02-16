@@ -6,7 +6,7 @@ import { Logger } from "./Logger.js";
 import { ResonanceConfig } from "./ResonanceConfig.js";
 import { SoundResolver } from "./SoundResolver.js";
 
-// console.log("Ionrift Resonance | SoundHandler Loaded");
+
 
 export class SoundHandler {
     constructor() {
@@ -221,8 +221,7 @@ export class SoundHandler {
 
         // 1. Resolve Key -> ID/Object via Resolver
         const soundKey = this.resolver.resolveKey(key);
-        // If resolver returned an object/id, good. If it returned null, maybe it is a raw ID?
-        // Let's defer to Manager or handle legacy check here.
+        // Fallback: If resolver returned null, treat as raw ID if non-semantic.
 
         // Legacy Resolver fallback embedded in SoundHandler previously:
         // "return key if it looks like an ID"

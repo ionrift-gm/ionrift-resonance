@@ -253,9 +253,7 @@ export class SoundResolver {
             const players = this.configService.getPlayers();
             if (players[actor.name]) {
                 const cfg = players[actor.name];
-                // Simplify: Map override to identity or return keys directly?
-                // Let's assume override provides keys, but standard flow uses identity.
-                // For now, let's assume identity priority.
+                // Override provides keys; standard flow uses identity flag.
             }
         }
 

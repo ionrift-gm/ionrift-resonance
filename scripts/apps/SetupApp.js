@@ -115,12 +115,8 @@ export class SetupApp extends FormApplication {
                     await game.settings.set("ionrift-resonance", "syrinToken", token);
                     await game.settings.set("ionrift-resonance", "authVerified", true); // Validation Success
 
-                    // Sync to Syrinscape Control (if installed)
+                    // Sync to Syrinscape Control if installed
                     if (game.modules.get("syrinscape-control")?.active) {
-                        // Sync only if token was empty or explicit sync requested
-                        // Logic in getData suggests 'willSync' only if empty. 
-                        // Here we might just want to be safe, but let's stick to existing logic or user intent.
-                        // Existing logic:
                         await game.settings.set("syrinscape-control", "authToken", token);
                         ui.notifications.info("Token verified and synced to Syrinscape Control.");
 

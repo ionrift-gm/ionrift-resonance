@@ -386,7 +386,7 @@ export class DaggerheartAdapter extends SystemAdapter {
             // Re-fetch old stress accurately based on found path
             const realOldStress = Number(getProperty(actor, foundPath) || 0);
 
-            // console.log(`Ionrift Sounds | Stress Debug[Path: ${ foundPath }]: New = ${ newStress }, Old = ${ realOldStress } `);
+
 
             if (newStress > realOldStress) {
                 Logger.log(`Stress Gained(${realOldStress} -> ${newStress})`);

@@ -26,3 +26,10 @@ audit_*.json
 audit_*.txt
 debug_*.js
 debug_*.log
+
+# Development/Internal docs (excluded from releases)
+TEST_SCENARIOS.md
+SETUP_GUIDE.md
+free_tier_candidates.md
+docs/MIGRATION_STRATEGY.md
+docs/GUIDE.md

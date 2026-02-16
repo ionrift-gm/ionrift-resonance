@@ -39,7 +39,7 @@ export class SoundConfigApp extends FormApplication {
             if (flags) {
                 for (const [key, val] of Object.entries(flags)) {
                     // Filter out non-sound flags
-                    if (key === "gender" || key === "soundPreset" || key === "sound_config" || key.endsWith("_name") || key.endsWith("_meta")) continue;
+                    if (key === "identity" || key === "soundPreset" || key === "sound_config" || key.endsWith("_name") || key.endsWith("_meta")) continue;
                     if (!val) continue;
 
                     // Debug Log for troubleshooting

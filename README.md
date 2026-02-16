@@ -4,9 +4,50 @@
 ![Foundry Version](https://img.shields.io/badge/Foundry-v12-333333?style=flat&logo=foundryvirtualtabletop)
 ![Systems](https://img.shields.io/badge/systems-dnd5e%20%7C%20daggerheart-blue)
 
+💜 **[Support on Patreon](https://www.patreon.com/ionrift)**
+
 **Automated audio triggers for Foundry VTT.**
 
-Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **Daggerheart** (Native) and **DnD5e** (via Midi-QOL). Integrates with Syrinscape (via `fvtt-syrin-control`) to handle the audio.
+Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (official system, native support) and **DnD5e** (via Midi-QOL). Integrates with Syrinscape to handle the audio.
+
+<table>
+<tr>
+<td width="50%">
+<h3>DnD5e Combat</h3>
+<img src="docs/dnd5e_combat.gif" alt="DnD5e automated combat sounds">
+<em>🎵 Attack → Hit → Pain vocal (automatic)</em>
+</td>
+<td width="50%">
+<h3>Daggerheart Combat</h3>
+<img src="docs/daggerheart_combat.gif" alt="Daggerheart Hope/Fear mechanics">
+<em>🎵 Attack → Hope stinger → Damage → Fear tick</em>
+</td>
+</tr>
+</table>
+
+## Quick Start
+
+1. Install from Foundry VTT package manager
+2. Install **Ionrift Library** (required dependency)
+3. Configure your Syrinscape auth token via **Module Settings → Ionrift Resonance → Attunement Protocol**
+4. Select a sound preset or start with a blank configuration
+
+
+## Per-Actor & Per-Item Sound Overrides
+
+Every actor and item sheet includes a **🎵 Sounds** button (header or overflow menu). Click it to:
+
+- **Assign custom attack/spell sounds** to specific items (e.g., "Flaming Longsword" → fire impact)
+- **Override PC pain/death vocals** per character (Masculine/Feminine identity selection)
+- **Configure monster-specific sounds** (e.g., Dragon breath attack)
+- **Set actor-wide defaults** that apply to all their items
+
+**Examples:**
+- Assign a unique roar to a specific Dragon NPC
+- Give "Elric's Stormblade" a custom thunder impact sound
+- Override generic pain sounds with character-specific voice lines
+
+This feature works independently of global presets—your custom bindings always take priority.
 
 ## Features
 *   **Duality Dice Support**: Recognizes Daggerheart roll mechanics.
@@ -20,6 +61,17 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 *   **Smart Matching**: Automatically picks sounds based on weapon names (Sword, Dagger, Bow) or spell keywords (Fire, Ice, Void).
 
 ## Resonance Calibration
+
+### Sound Picker
+
+![Sound Picker](docs/sound_picker.gif)  
+*Search Syrinscape library → preview → select*
+
+### Tier Navigation
+
+![Tier Navigation](docs/tier_navigation.gif)  
+*Browse tier tabs → expand categories → assign sounds to semantic keys*
+
 Ionrift Resonance features a comprehensive configuration UI used to map game events to specific Syrinscape Sound IDs.
 
 > **Note:** This release focuses on manual configuration ("Standard Setup"). Curated presets are currently disabled and will be available in future updates.
@@ -28,19 +80,13 @@ Open it via **Module Settings -> Ionrift Resonance -> Resonance Calibration**.
 
 ### Tier 1: Core Events
 Override the fundamental sounds of the system, such as Critical Hits, Misses, and Generic PC Death sounds.
-*   **Tip**: Enter multiple IDs separated by commas (e.g. `1234, 5678`) to randomize playback.
+*   **Tip**: Use the picker's multi-select (Ctrl+Click) to assign multiple sounds for randomized playback.
 
 ### Tier 2: Categories
 Configure sounds for broad categories like specific Weapon types (Axes, Bows, Swords) and Magic Schools (Fire, Ice, Necrotic).
 
 ### Tier 3: Monsters
 Assign default sounds to entire families of creatures. The system attempts to classify actors (e.g. "Zombie Shambler" -> Zombie) and play the appropriate family sound.
-
-### Tier 4: Campaign Overrides
-Create highly specific mappings for unique Campaign Actors or Items.
-*   **Actor Name**: Restricts the sound to a specific Actor (e.g. "Strahd"). Leave blank for any actor.
-*   **Item Name**: The specific weapon or attack name (e.g. "Sunsword").
-*   **Sound ID**: The Syrinscape element to play.
 
 ### Players Tab
 Define specific pain and death sounds for your Player Characters, overriding generic gender defaults.
@@ -60,12 +106,20 @@ These are not required but significantly improve the experience:
 
 *   **[Dice So Nice](https://foundryvtt.com/packages/dice-so-nice)** — 3D dice animations add a natural pause between the attack roll and result, giving Resonance's two-beat sound sequence (weapon swing → hit/miss) room to breathe. Works well with both Daggerheart and DnD 5e.
 *   **[Automated Animations](https://foundryvtt.com/packages/autoanimations)** — Attack and spell animations create timing gaps that let weapon and impact sounds play distinctly rather than overlapping.
-*   **[fvtt-syrin-control](https://foundryvtt.com/packages/fvtt-syrin-control)** — Legacy Syrinscape integration fallback. Not needed if using a Syrinscape auth token directly.
+*   **[fvtt-syrin-control](https://github.com/frondeus/fvtt-syrin-control)** — Syrinscape integration module (optional if using auth token directly).
+
 
 ## Supported Systems
 
 ### 1. Daggerheart
 **Native Support**. No external modules required (other than core dependencies).
+
+**Setup:** Enable automation in Daggerheart system settings for sound triggers to work properly:
+- Open **Game Settings → Daggerheart → Roll Tab → Automation Settings**
+- Enable the **Roll** automation for GM and Players
+- Enable **Apply Damage/Healing** automation for GM and Players
+
+**Features:**
 *   Sound triggers on Duality Dice rolls (Fear/Hope/Crit).
 *   **Fear Tracker**: Dynamic sounds for GM Fear Gain (Thresholds 1-4, 5-8, 9+) and variable Spends.
 *   **Resources**: Triggers for Hope Gain/Use and Stress Take/Clear.
@@ -99,6 +153,18 @@ For the best experience, Resonance works with Midi-QOL's **automated workflow**.
 3.  Enable **Auto Apply Damage** (or "Apply Damage to Target") so that HP changes fire the damage hook and trigger pain/death vocals.
 
 > **Tip:** Dice So Nice and Automated Animations are particularly effective with DnD 5e, as they insert natural pauses between the weapon swing sound and the hit/miss result.
+
+---
+
+## Bug Reports
+
+This is an early public release. If you encounter unexpected behavior:
+
+1.  Open the **F12 Developer Console** and check for errors prefixed with `Ionrift`.
+2.  Open a **GitHub Issue** at [ionrift-resonance/issues](https://github.com/ionrift-gm/ionrift-resonance/issues).
+3.  Include your **Foundry version**, **system** (DnD5e or Daggerheart), and a **screenshot or console log**.
+
+Your feedback directly improves the module. Thank you.
 
 ---
 

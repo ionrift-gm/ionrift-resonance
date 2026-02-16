@@ -34,8 +34,7 @@ export class SoundManager {
 
         Logger.log("SoundManager | Play Request:", { soundData, options });
 
-        // 1. Resolve Input (Handle Arrays -> Random Selection here, or let Provider do it?)
-        // Provider has logic for it, but let's do it here to standardize behavior before logging.
+        // Resolve arrays to random selection before logging.
         let target = soundData;
         if (Array.isArray(target)) {
             target = target[Math.floor(Math.random() * target.length)];

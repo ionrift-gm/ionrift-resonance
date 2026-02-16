@@ -43,8 +43,7 @@ Hooks.once('init', async function () {
     const { registerDiagnostics } = await import("./DiagnosticIntegration.js");
     registerDiagnostics();
 
-    // console.log("Ionrift Resonance | Registering Menus...");
-    // Register Setup Menu
+
     // Register Setup Menu
     game.settings.registerMenu("ionrift-resonance", "setupGuide", {
         name: "Attunement Protocol",
@@ -55,9 +54,7 @@ Hooks.once('init', async function () {
         restricted: true
     });
 
-    // Register Wizard Menu
-    // Register Wizard Menu
-    // Register Wizard Menu
+    // Register Calibration Menu
     game.settings.registerMenu('ionrift-resonance', 'soundConfigMenu', {
         name: "Resonance Calibration",
         label: "Open Calibration",
@@ -67,28 +64,9 @@ Hooks.once('init', async function () {
         restricted: true
     });
 
-    /* 
-    // Register Sound Auditor Menu (Moved to Wizard)
-    try {
-        if (!SoundAuditor) {
-            console.error("Ionrift Resonance | Class 'SoundAuditor' is UNDEFINED!");
-        } else {
-            // console.log("Ionrift Resonance | Registering SoundAuditor...");
-            game.settings.registerMenu('ionrift-resonance', 'soundAuditorMenu', {
-                name: "Sound Auditor",
-                label: "Open Auditor",
-                hint: "Audit and manage custom sound flags on items.",
-                icon: "fas fa-search-dollar", // or fa-list-alt
-                type: SoundAuditor,
-                restricted: true
-            });
-        }
-    } catch (err) {
-        console.error("Ionrift Resonance | Failed to register Sound Auditor:", err);
-    }
-    */
 
-    // console.log("Ionrift Resonance | Settings Registered via settings.js");
+
+
 
     // Start Engine (After Settings Registered & Modules Ready)
     Hooks.once('ready', async () => {
@@ -173,7 +151,6 @@ Hooks.once('init', async function () {
                             return { status: game.ionrift.integration.STATUS.OFFLINE, label: 'Error', message: 'Syrinscape Control Error' };
                         }
                         // Verify connectivity via Direct API if Control state is ambiguous (Idle/Other)
-                        // console.log(`Ionrift Sounds | Control State: ${state}. Verifying via Direct API...`);
                         try {
                             const url = `https://syrinscape.com/online/frontend-api/elements/1035/?format=json&auth_token=${ionToken}`;
                             const response = await fetch(url, { method: 'GET' });
@@ -222,7 +199,6 @@ async function waitForDependency() {
         const v2 = globalThis.syrinscapeControl;
 
         if (v1 || v2) {
-            // if (i > 0) console.log(`Ionrift Sounds | Dependency found after ${i * interval}ms.`);
             return;
         }
         await new Promise(r => setTimeout(r, interval));
@@ -232,8 +208,7 @@ async function waitForDependency() {
 
 
 
-// Hook to prevent accidental preset switches if overrides exist
-// Hook to prevent accidental preset switches if overrides exist
+// Prevent accidental preset switches if overrides exist
 Hooks.on('preUpdateSetting', (setting, changes, options, userId) => {
     if (setting.key !== 'ionrift-resonance.soundPreset') return;
     if (options.ionriftConfirmed) return;
@@ -286,9 +261,7 @@ Hooks.on('preUpdateSetting', (setting, changes, options, userId) => {
 
 // Hook into Settings Config to display status icon on load
 Hooks.on('renderSettingsConfig', (app, html, data) => {
-    // Check if we have the library helper
-    // Check if we have the library helper
-    // Check if we have the centralized status interface
+    // Inject status icon via centralized interface
     if (game.ionrift?.integration) {
         game.ionrift.integration.renderSettingsIndicator(html, app);
     }
