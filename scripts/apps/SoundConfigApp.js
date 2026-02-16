@@ -294,8 +294,14 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_HUMANOID",
                 description: "Standard bipedal folk (Humans, Elves, Dwarves).",
                 children: [
-                    { label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN" },
-                    { label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE" }
+                    {
+                        label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN",
+                        children: [{ label: "Default Attack", id: "MONSTER_GOBLIN_ATTACK" }]
+                    },
+                    {
+                        label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE",
+                        children: [{ label: "Default Attack", id: "MONSTER_LYCANTHROPE_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -303,9 +309,18 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_UNDEAD",
                 description: "Zombies, Skeletons, Ghosts.",
                 children: [
-                    { label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE" },
-                    { label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON" },
-                    { label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST" }
+                    {
+                        label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE",
+                        children: [{ label: "Default Attack", id: "MONSTER_ZOMBIE_ATTACK" }]
+                    },
+                    {
+                        label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON",
+                        children: [{ label: "Default Attack", id: "MONSTER_SKELETON_ATTACK" }]
+                    },
+                    {
+                        label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST",
+                        children: [{ label: "Default Attack", id: "MONSTER_GHOST_ATTACK" }]
+                    }
                 ]
             },
             {
@@ -313,12 +328,30 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_BEAST",
                 description: "Natural creatures.",
                 children: [
-                    { label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR" },
-                    { label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF" },
-                    { label: "Feline (Cat / Lion)", id: "MONSTER_CAT" },
-                    { label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD" },
-                    { label: "Equine (Horse)", id: "MONSTER_HORSE" },
-                    { label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE" },
+                    {
+                        label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR",
+                        children: [{ label: "Default Attack", id: "MONSTER_BEAR_ATTACK" }]
+                    },
+                    {
+                        label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF",
+                        children: [{ label: "Default Attack", id: "MONSTER_WOLF_ATTACK" }]
+                    },
+                    {
+                        label: "Feline (Cat / Lion)", id: "MONSTER_CAT",
+                        children: [{ label: "Default Attack", id: "MONSTER_CAT_ATTACK" }]
+                    },
+                    {
+                        label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD",
+                        children: [{ label: "Default Attack", id: "MONSTER_BIRD_ATTACK" }]
+                    },
+                    {
+                        label: "Equine (Horse)", id: "MONSTER_HORSE",
+                        children: [{ label: "Default Attack", id: "MONSTER_HORSE_ATTACK" }]
+                    },
+                    {
+                        label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE",
+                        children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK" }]
+                    },
                     { label: "Insects / Spiders", id: "SFX_INSECT" }
                 ]
             },
@@ -327,9 +360,10 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_FIEND",
                 description: "Extraplanar evil entities.",
                 children: [
-                    { label: "Demon (Chaotic)", id: "MONSTER_DEMON" },
-                    // Devil often shares Demon or Generic Fiend, can add specific if needed
-                    // { label: "Devil (Lawful)", id: "MONSTER_DEVIL" } 
+                    {
+                        label: "Demon (Chaotic)", id: "MONSTER_DEMON",
+                        children: [{ label: "Default Attack", id: "MONSTER_DEMON_ATTACK" }]
+                    }
                 ]
             },
             {

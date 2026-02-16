@@ -131,32 +131,30 @@ export class SoundResolver {
     }
 
     /**
-     * Maps an Abstract Key (e.g. ATTACK_SWORD) to a Concrete ID, handling fallback keys.
-     */
-    resolveKey(key) {
-        // 1. Check if Key exists in effective bindings
+ * Maps an Abstract Key (e.g. ATTACK_SWORD) to a Concrete ID, handling fallback keys.
+ * Recursively traverses the fallback chain until a binding is found or max depth is reached.
+ */
+    resolveKey(key, depth = 0) {
+        if (depth > 5) return null; // Prevent infinite loops
+
         const bindings = this.configService.getEffectiveBindings();
         let resolved = bindings[key];
 
         // Unpack arrays from SYRINSCAPE_DEFAULTS structure: [{id, name, type}]
         if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
-            resolved = resolved[0].id; // Extract first sound's ID
+            resolved = resolved[0].id;
         }
 
-        if (resolved) return resolved;
-
-        // 2. Check Fallback
-        const fallback = this.getFallbackKey(key);
-        if (fallback && bindings[fallback]) {
-            resolved = bindings[fallback];
-
-            // Unpack arrays from fallback too
-            if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
-                resolved = resolved[0].id;
-            }
-
-            Logger.log(`SoundResolver | ${key} → fallback → ${fallback} → ${resolved}`);
+        if (resolved) {
+            if (depth > 0) Logger.log(`SoundResolver | ${key} → resolved at depth ${depth} → ${resolved}`);
             return resolved;
+        }
+
+        // Chase the fallback chain recursively
+        const fallback = this.getFallbackKey(key);
+        if (fallback) {
+            Logger.log(`SoundResolver | ${key} → fallback → ${fallback}`);
+            return this.resolveKey(fallback, depth + 1);
         }
 
         return null;
@@ -190,12 +188,23 @@ export class SoundResolver {
         if (specificKey === "PC_DEATH_MALE") return "CORE_DEATH_MASCULINE";
         if (specificKey === "PC_DEATH_FEMALE") return "CORE_DEATH_FEMININE";
 
-        // Vocals - Monster (weapon suffix extraction before generic catch-all)
-        // MONSTER_BEAR_CLAW → ATTACK_CLAW, MONSTER_WOLF_BITE → ATTACK_BITE
+        // Vocals - Monster (weapon suffix → monster attack → weapon type → catch-all)
+        // MONSTER_BEAR_CLAW → MONSTER_BEAR_ATTACK → ATTACK_CLAW → CORE_MELEE
         if (specificKey.startsWith("MONSTER_")) {
-            if (specificKey.endsWith("_CLAW")) return "ATTACK_CLAW";
-            if (specificKey.endsWith("_BITE")) return "ATTACK_BITE";
-            if (specificKey.endsWith("_SLAM")) return "ATTACK_SLAM";
+            // Step 1: Weapon-specific composite → Monster Default Attack
+            if (specificKey.endsWith("_CLAW") || specificKey.endsWith("_BITE") || specificKey.endsWith("_SLAM")) {
+                // Extract monster base: MONSTER_BEAR_CLAW → MONSTER_BEAR
+                const suffix = specificKey.endsWith("_CLAW") ? "_CLAW" : specificKey.endsWith("_BITE") ? "_BITE" : "_SLAM";
+                const monsterBase = specificKey.slice(0, -suffix.length);
+                return `${monsterBase}_ATTACK`;
+            }
+
+            // Step 2: Monster Default Attack → Generic weapon type
+            if (specificKey.endsWith("_ATTACK")) {
+                return "CORE_MELEE"; // Broadest weapon catch-all
+            }
+
+            // Pain vocals
             if (specificKey.includes("DEATH")) return "CORE_MONSTER_DEATH";
             return "CORE_MONSTER_PAIN";
         }
