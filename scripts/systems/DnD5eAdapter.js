@@ -90,7 +90,6 @@ export class DnD5eAdapter extends SystemAdapter {
     handleDamage(workflow) {
         Logger.log(`5e Damage: ${workflow.hitTargets.size} targets hit`);
 
-        // Check for Death of Targets
         for (const token of workflow.hitTargets) {
             const actor = token.actor;
             if (!actor) {
@@ -99,7 +98,8 @@ export class DnD5eAdapter extends SystemAdapter {
             }
 
             const hp = actor.system?.attributes?.hp;
-            Logger.log(`DnD5e | ${actor.name} HP: ${hp?.value}/${hp?.max}`);
+            const isPC = actor.type === 'character';
+            Logger.log(`DnD5e | ${actor.name} HP: ${hp?.value}/${hp?.max} (PC: ${isPC})`);
 
             if (hp?.value <= 0) {
                 Logger.log(`DnD5e | ${actor.name} died! Playing death sound`);
@@ -109,7 +109,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                 if (deathOverride) {
                     this.handler.play(deathOverride, VOCAL_STAGGER);
-                } else if (actor.hasPlayerOwner) {
+                } else if (isPC) {
                     this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
                 } else {
                     this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
@@ -122,7 +122,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
                 if (painOverride) {
                     this.handler.play(painOverride, PAIN_STAGGER);
-                } else if (actor.hasPlayerOwner) {
+                } else if (isPC) {
                     const pcPain = this.handler.getPCSound(actor, "PAIN");
                     Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${PAIN_STAGGER}ms)`);
                     this.play(pcPain, PAIN_STAGGER);
