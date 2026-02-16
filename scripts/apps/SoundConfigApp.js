@@ -288,6 +288,44 @@ export class SoundConfigApp extends FormApplication {
             }
         ];
 
+        // System-specific spell traditions (sibling to effect-based Magic group)
+        if (game.system.id === 'dnd5e') {
+            actionTaxonomy.push({
+                label: "Spell Schools",
+                id: "CORE_MAGIC",
+                description: "DnD5e Arcane Traditions. Falls back to generic Magic if unset.",
+                children: [
+                    { label: "Abjuration", id: "SCHOOL_ABJURATION", description: "Protective wards and barriers." },
+                    { label: "Conjuration", id: "SCHOOL_CONJURATION", description: "Summoning creatures and objects." },
+                    { label: "Divination", id: "SCHOOL_DIVINATION", description: "Perceiving hidden truths." },
+                    { label: "Enchantment", id: "SCHOOL_ENCHANTMENT", description: "Influencing minds." },
+                    { label: "Evocation", id: "SCHOOL_EVOCATION", description: "Raw elemental energy." },
+                    { label: "Illusion", id: "SCHOOL_ILLUSION", description: "Deceptive phantasms." },
+                    { label: "Necromancy", id: "SCHOOL_NECROMANCY", description: "Death and undeath magic." },
+                    { label: "Transmutation", id: "SCHOOL_TRANSMUTATION", description: "Altering physical properties." }
+                ]
+            });
+        }
+
+        if (game.system.id === 'daggerheart') {
+            actionTaxonomy.push({
+                label: "Domains",
+                id: "CORE_MAGIC",
+                description: "Daggerheart magic traditions. Falls back to generic Magic if unset.",
+                children: [
+                    { label: "Arcana", id: "DOMAIN_ARCANA", description: "Innate, instinctual magic." },
+                    { label: "Blade", id: "DOMAIN_BLADE", description: "Mastery of weapons." },
+                    { label: "Bone", id: "DOMAIN_BONE", description: "Swiftness and tactical agility." },
+                    { label: "Codex", id: "DOMAIN_CODEX", description: "Intensive magical study." },
+                    { label: "Grace", id: "DOMAIN_GRACE", description: "Charisma and persuasion." },
+                    { label: "Midnight", id: "DOMAIN_MIDNIGHT", description: "Shadows and secrecy." },
+                    { label: "Sage", id: "DOMAIN_SAGE", description: "Natural world magic." },
+                    { label: "Splendor", id: "DOMAIN_SPLENDOR", description: "Life, healing, and death." },
+                    { label: "Valor", id: "DOMAIN_VALOR", description: "Protection and defense." }
+                ]
+            });
+        }
+
         const monsterTaxonomy = [
             {
                 label: "Humanoids",
