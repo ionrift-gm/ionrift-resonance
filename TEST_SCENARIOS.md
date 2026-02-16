@@ -173,18 +173,20 @@ Each scenario documents the expected sound event chain and the logic it validate
 
 ---
 
-## 11. AoE Spell — Fireball (Multi-Target Mitigation)
+## 11. AoE Spell — Fireball (Save-Based Multi-Target Mitigation)
 
-**Action:** PC casts Fireball hitting 8+ targets.
+**Action:** PC casts Fireball targeting 8+ creatures. Fireball is a **save-based** spell — it uses `workflow.saves` and `workflow.targets`, not `AttackRollComplete`.
 
 | Targets Hit | Hit Sound | Vocals |
 |---|---|---|
 | 1–3 | Individual `CORE_HIT` per target | Individual pain/death per target (400ms stagger) |
-| 4+ (AoE) | **Single** `CORE_HIT` | Up to **5** random vocals with micro-stagger (0–150ms overlap) |
+| 4+ (AoE) | **Single** `CORE_HIT` | Up to **5** random vocals with micro-stagger (0–400ms overlap) |
 | 20+ | **Capped at 20** targets processed | Same as 4+ AoE |
 
 **Validates:**
-- `handleDamage` detects AoE when `hitTargets.size > 3`
+- `handleDamage` detects AoE using `workflow.targets.size` (full AoE scope), not just `hitTargets`
+- Combines `workflow.hitTargets` (failed saves) + `workflow.saves` (made saves, half dmg) into one target pool
+- Workflow deduplication via `workflow.id` prevents multiple `DamageRollComplete` fires from cascading sounds
 - Single hit impact for AoE (not N individual hits)
 - Vocals capped at `MAX_AOE_VOCALS = 5` random targets
 - Micro-stagger creates natural chorus overlap, not sequential machine-gun
@@ -192,19 +194,60 @@ Each scenario documents the expected sound event chain and the logic it validate
 
 ---
 
+## 12. NPC Death Vocal — Monster Death (Not PC Death)
+
+**Action:** Kill a Skeleton (NPC) with any damage source.
+
+| Phase | Expected Key | Sound |
+|-------|-------------|-------|
+| Death | `CORE_MONSTER_DEATH` | Monster death sound (e.g. Wilhelm Scream) |
+| ~~Not~~ | ~~`PC_DEATH`~~ | ~~Should NOT play PC death~~ |
+
+**Validates:**
+- `_playVocalForTarget` routes NPC deaths to `CORE_MONSTER_DEATH` (not `PC_DEATH`)
+- `CORE_MONSTER_DEATH` is defined in `SOUND_EVENTS` constants
+- Monster death sound plays when NPC HP drops to 0
+
+---
+
+## 13. Daggerheart Domain Resolution — Sparing Touch
+
+**Action:** (Daggerheart) Healy uses "Sparing Touch" (a `feature` type item, Splendor domain).
+
+| Resolution Step | Check | Result |
+|---|---|---|
+| Item flags | `ionrift-resonance.sound_attack` | None set → continue |
+| Item domain | `item.system.domain` | `undefined` (features don't carry domain) → continue |
+| Actor domains | `actor.system.domains` = `["valor","splendor"]` | Tries each; `DOMAIN_SPLENDOR` has binding → **plays healing sound** |
+
+**Validates:**
+- Domain resolution checks `item.system.domain` first (for `domainCard` items)
+- Falls back to `actor.system.domains` for features without domain metadata
+- First domain with a bound sound wins
+- Known limitation: all features from same class use same domain sound (documented in README)
+
+---
+
 ## Resolution Chain Reference
 
 ### Spell Resolution
 ```
-Item flag → Adversary map → Weapon/Spell map → Classifier →
-detectSoundKey (school → effect) → string match →
-playItemSoundWithFallback(effectKey, schoolKey)
+Item flag → Adversary map → Weapon/Spell map →
+  [Daggerheart] Domain (item → actor fallback) →
+  Classifier → detectSoundKey (school → effect) → string match →
+  playItemSoundWithFallback(effectKey, schoolKey)
 ```
 
 ### Monster Vocal Resolution
 ```
 Actor flag (sound_pain) → detectMonsterPain →
   subtypeKey (SFX_FIRE) → categoryKey (MONSTER_ELEMENTAL) → MONSTER_GENERIC
+```
+
+### NPC Death Resolution
+```
+Actor flag (sound_death) → PC? → getPCSound(DEATH)
+                          → NPC? → CORE_MONSTER_DEATH
 ```
 
 ### Miss Resolution
@@ -218,4 +261,6 @@ SPELL_FIRE → CORE_MAGIC (spells do NOT fall to CORE_WHOOSH)
 ATTACK_BOW → CORE_RANGED → CORE_WHOOSH
 ATTACK_SWORD → CORE_MELEE → CORE_WHOOSH
 MONSTER_ELEMENTAL → CORE_MONSTER_PAIN
+DOMAIN_SPLENDOR → (no fallback — returns null if unbound)
 ```
+
