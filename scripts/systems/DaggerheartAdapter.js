@@ -293,10 +293,22 @@ export class DaggerheartAdapter extends SystemAdapter {
 
             if (newHope > oldHope) {
                 Logger.log(`Hope Gained(${oldHope} -> ${newHope})`);
-                this.handler.play("DAGGERHEART_HOPE");
+                const hopeGainOverride = actor.getFlag("ionrift-resonance", "sound_hope_gain");
+                if (hopeGainOverride) {
+                    Logger.log(`Actor Override: Hope Gain -> ${hopeGainOverride}`);
+                    this.handler.play(hopeGainOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_HOPE");
+                }
             } else if (newHope < oldHope) {
                 Logger.log(`Hope Used(${oldHope} -> ${newHope})`);
-                this.handler.play("DAGGERHEART_HOPE_USE");
+                const hopeUseOverride = actor.getFlag("ionrift-resonance", "sound_hope_use");
+                if (hopeUseOverride) {
+                    Logger.log(`Actor Override: Hope Use -> ${hopeUseOverride}`);
+                    this.handler.play(hopeUseOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_HOPE_USE");
+                }
             } else {
                 Logger.log(`Hope Logic Skipped: Old ${oldHope} == New ${newHope} `);
             }
@@ -337,10 +349,22 @@ export class DaggerheartAdapter extends SystemAdapter {
 
             if (newStress > realOldStress) {
                 Logger.log(`Stress Gained(${realOldStress} -> ${newStress})`);
-                this.handler.play("DAGGERHEART_STRESS");
+                const stressOverride = actor.getFlag("ionrift-resonance", "sound_stress");
+                if (stressOverride) {
+                    Logger.log(`Actor Override: Stress -> ${stressOverride}`);
+                    this.handler.play(stressOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_STRESS");
+                }
             } else if (newStress < realOldStress) {
                 Logger.log(`Stress Cleared / Reduced(${realOldStress} -> ${newStress})`);
-                this.handler.play("DAGGERHEART_STRESS_CLEAR");
+                const stressClearOverride = actor.getFlag("ionrift-resonance", "sound_stress_clear");
+                if (stressClearOverride) {
+                    Logger.log(`Actor Override: Stress Clear -> ${stressClearOverride}`);
+                    this.handler.play(stressClearOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_STRESS_CLEAR");
+                }
             }
         } else {
             // Log keys if stress update suspect but not found
