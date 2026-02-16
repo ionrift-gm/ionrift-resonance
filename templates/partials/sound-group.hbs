@@ -36,14 +36,14 @@
             </div>
             {{/if}}
 
-            <!-- 2. Child Groups (Recursive) -->
-            {{#each children as |child|}}
-            {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" child}}
-            {{/each}}
-
-            <!-- 3. Leaf Nodes (Individual Sounds in this group) -->
+            <!-- 2. Leaf Nodes (Individual Sounds in this group) -->
             {{#each fields as |field|}}
             {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" field}}
+            {{/each}}
+
+            <!-- 3. Child Groups (Recursive) -->
+            {{#each children as |child|}}
+            {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" child}}
             {{/each}}
         </div>
     </details>
