@@ -76,10 +76,13 @@ export class DnD5eAdapter extends SystemAdapter {
 
     // Phase 1: Weapon swing — fires BEFORE dice roll (the "ask")
     handleWeaponSound(item, activity) {
-        // Only weapons and spells produce attack sounds
+        // Skip non-combat items unless they have an explicit sound binding
         if (item.type !== "weapon" && item.type !== "spell") {
-            Logger.log(`5e Weapon Sound: Skipping ${item.name} (${item.type}) — not a weapon or spell`);
-            return;
+            const hasBinding = item.getFlag("ionrift-resonance", "sound_attack");
+            if (!hasBinding) {
+                Logger.log(`5e Weapon Sound: Skipping ${item.name} (${item.type}) — no binding`);
+                return;
+            }
         }
 
         Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
