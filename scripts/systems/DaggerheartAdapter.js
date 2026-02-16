@@ -8,6 +8,7 @@ export class DaggerheartAdapter extends SystemAdapter {
     constructor(handler) {
         super(handler);
         this.renderPhases = new Map(); // Track render phases: { timestamp, phase: 1|2 }
+        this.lastAttackItem = null; // Cache the last attacking item for hit override lookup
     }
     validateSchema() {
         const issues = [];
@@ -243,9 +244,15 @@ export class DaggerheartAdapter extends SystemAdapter {
                 Logger.log(`⏱️ [${Date.now()}] Damage Taken (Value Increased). Playing 'Blood Splat'`);
                 Logger.log(`⏱️ [${Date.now()}] DH | HP Change: ${oldHp} -> ${newHp} (Max: ${maxHp})`);
 
-                // Hit Sound (immediate)
-                Logger.log(`⏱️ [${Date.now()}] DH | Playing BLOODY_HIT: ${SOUND_EVENTS.BLOODY_HIT}`);
-                this.play(SOUND_EVENTS.BLOODY_HIT);
+                // Hit Sound (immediate) — check weapon override first
+                const hitOverride = this.lastAttackItem?.getFlag?.("ionrift-resonance", "sound_hit");
+                if (hitOverride) {
+                    Logger.log(`⏱️ [${Date.now()}] DH | Item Override: Hit -> ${hitOverride}`);
+                    this.handler.play(hitOverride);
+                } else {
+                    Logger.log(`⏱️ [${Date.now()}] DH | Playing BLOODY_HIT: ${SOUND_EVENTS.BLOODY_HIT}`);
+                    this.play(SOUND_EVENTS.BLOODY_HIT);
+                }
 
                 const VOCAL_STAGGER = 400;
                 const isDeath = maxHp > 0 && newHp >= maxHp && oldHp < maxHp;
@@ -418,7 +425,34 @@ export class DaggerheartAdapter extends SystemAdapter {
         // DEBUG: Probe ALL item updates to see what Armor looks like
         Logger.log(`PreUpdateItem: Name = '${item.name}', Type = '${item.type}'`, changes);
 
-        // Armor Slot Detection (Item-based)
+        // --- Equip / Unequip Detection (weapons, armor, any item) ---
+        const equippedChange = getProperty(changes, "system.equipped");
+        if (equippedChange !== undefined) {
+            const wasEquipped = item.system?.equipped ?? false;
+            if (equippedChange && !wasEquipped) {
+                // Equipping
+                const equipOverride = item.getFlag("ionrift-resonance", "sound_equip");
+                if (equipOverride) {
+                    Logger.log(`Item Override: Equip ${item.name} -> ${equipOverride}`);
+                    this.handler.play(equipOverride);
+                } else {
+                    Logger.log(`DH | Equip: ${item.name} (no override, generic)`);
+                    this.handler.play("ITEM_EQUIP");
+                }
+            } else if (!equippedChange && wasEquipped) {
+                // Unequipping
+                const unequipOverride = item.getFlag("ionrift-resonance", "sound_unequip");
+                if (unequipOverride) {
+                    Logger.log(`Item Override: Unequip ${item.name} -> ${unequipOverride}`);
+                    this.handler.play(unequipOverride);
+                } else {
+                    Logger.log(`DH | Unequip: ${item.name} (no override, generic)`);
+                    this.handler.play("ITEM_UNEQUIP");
+                }
+            }
+        }
+
+        // --- Armor Slot Detection (Item-based) ---
         if (item.type === "armor") {
             // Check for 'marks' (Damage) or 'value' (Remaining Slots)
             const changesMarks = getProperty(changes, "system.marks.value");
@@ -582,6 +616,9 @@ export class DaggerheartAdapter extends SystemAdapter {
         this.handler.playItemSound(data.attackSoundKey, data.item);
         Logger.log(`⏱️ [${ts}] ══ END PHASE 1 ══`);
 
+        // Cache attacking item for damage handler hit override lookup
+        this.lastAttackItem = data.item || null;
+
         // Store data for Phase 2
         this.renderPhases.set(message.id, {
             ...this.renderPhases.get(message.id),
@@ -624,7 +661,13 @@ export class DaggerheartAdapter extends SystemAdapter {
             const content = data.messageContent || "";
             if (msgContains(content, ["MISS", "FAILURE", "FAIL"])) {
                 Logger.log(`⏱️ [${ts}]   NON-DUALITY: Miss detected from content`);
-                this.play(SOUND_EVENTS.MISS);
+                const missOverride = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
+                if (missOverride) {
+                    Logger.log(`⏱️ [${ts}]   Item Override: Miss -> ${missOverride}`);
+                    this.handler.play(missOverride);
+                } else {
+                    this.play(SOUND_EVENTS.MISS);
+                }
             } else {
                 Logger.log(`⏱️ [${ts}]   NON-DUALITY: No miss keywords, hit handled by damage hook`);
             }
@@ -654,13 +697,15 @@ export class DaggerheartAdapter extends SystemAdapter {
             } else if (!isSuccess && hopeWins) {
                 // Miss — no damage hook fires, so play miss whoosh here
                 Logger.log(`⏱️ [${ts}]   FAIL WITH HOPE - Miss + Hope stinger`);
-                this.play(SOUND_EVENTS.MISS);
+                const missOverride1 = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
+                this.handler.play(missOverride1 || SOUND_EVENTS.MISS);
                 this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_HOPE);
 
             } else {
                 // Miss — no damage hook fires, so play miss whoosh here
                 Logger.log(`⏱️ [${ts}]   FUMBLE (Fail+Fear) - Miss + Fumble stinger`);
-                this.play(SOUND_EVENTS.MISS);
+                const missOverride2 = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
+                this.handler.play(missOverride2 || SOUND_EVENTS.MISS);
                 this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_FEAR);
             }
 

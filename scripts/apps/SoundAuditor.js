@@ -23,7 +23,7 @@ export class SoundAuditor extends FormApplication {
         if (!flags) return false;
 
         // Check for specific functional flags
-        const keys = ["sound_attack", "sound_use", "sound_equip", "sound_unequip"];
+        const keys = ["sound_attack", "sound_hit", "sound_miss", "sound_use", "sound_equip", "sound_unequip"];
         return keys.some(k => flags[k] && flags[k] !== "");
     }
 
@@ -63,6 +63,8 @@ export class SoundAuditor extends FormApplication {
             source: source,
             // Flag Details (Concise)
             attack: flags.sound_attack ? "Yes" : "",
+            hit: flags.sound_hit ? "Yes" : "",
+            miss: flags.sound_miss ? "Yes" : "",
             use: flags.sound_use ? "Yes" : "",
             equip: flags.sound_equip ? "Yes" : "",
             rawFlags: JSON.stringify(flags)
@@ -88,6 +90,8 @@ export class SoundAuditor extends FormApplication {
                 content: `<p>Remove all Ionrift Sound flags from <strong>${doc.name}</strong>?</p>`,
                 yes: async () => {
                     await doc.unsetFlag("ionrift-resonance", "sound_attack");
+                    await doc.unsetFlag("ionrift-resonance", "sound_hit");
+                    await doc.unsetFlag("ionrift-resonance", "sound_miss");
                     await doc.unsetFlag("ionrift-resonance", "sound_use");
                     await doc.unsetFlag("ionrift-resonance", "sound_equip");
                     await doc.unsetFlag("ionrift-resonance", "sound_unequip");
