@@ -76,10 +76,17 @@ export class AttunementApp extends AbstractWelcomeApp {
         const form = this.element.find("form");
         let presetType = form.find("input[name='preset']:checked").val();
 
-        // Default to 'empty' if no selection made (Safety)
+        // Default to 'keep' if no selection made (Safety — preserve existing config)
         if (!presetType) {
-            Logger.warn("Attunement | No preset selected, defaulting to 'empty'.");
-            presetType = "empty";
+            Logger.warn("Attunement | No preset selected, defaulting to 'keep'.");
+            presetType = "keep";
+        }
+
+        // Keep Current: Pass through without touching any settings
+        if (presetType === "keep") {
+            Logger.log("Attunement | Keeping current configuration. No changes applied.");
+            ui.notifications.info("Resonance | Existing configuration preserved.");
+            return true;
         }
 
         // Import Defaults

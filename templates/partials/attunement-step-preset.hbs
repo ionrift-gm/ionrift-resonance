@@ -7,7 +7,20 @@
     <div style="display: flex; flex-direction: column; gap: 10px;">
         <label
             style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="empty" checked
+            <input type="radio" name="preset" value="keep" checked
+                style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
+            <div style="flex: 1;">
+                <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Keep Current
+                    Configuration</strong>
+                <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
+                    Preserve your existing sound bindings and overrides. Use this if you have already configured your sound board.
+                </span>
+            </div>
+        </label>
+
+        <label
+            style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
+            <input type="radio" name="preset" value="empty"
                 style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
             <div style="flex: 1;">
                 <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Standard Setup
