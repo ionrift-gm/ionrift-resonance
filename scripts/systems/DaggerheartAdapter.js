@@ -155,7 +155,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                 // Phase 2: Re-render after 500ms+ → result decorations
                 Logger.log(`⏱️ [${Date.now()}] PHASE 2 (Result) for msg: ${message.id} (${Date.now() - phase.timestamp}ms since Phase 1)`);
                 this.renderPhases.set(message.id, { ...phase, phase: 2 });
-                this.handleResultSound(message);
+                this.handleResultSound(message, html);
             } else {
                 Logger.log(`⏱️ [${Date.now()}] Skipping render for msg: ${message.id} (phase: ${phase.phase}, elapsed: ${Date.now() - phase.timestamp}ms)`);
             }
@@ -657,7 +657,7 @@ export class DaggerheartAdapter extends SystemAdapter {
      * Phase 2: Play result decorations (hit/miss/stingers)
      * Fires when the chat message re-renders with the visual result (~4s later).
      */
-    handleResultSound(message) {
+    handleResultSound(message, html) {
         const phase = this.renderPhases.get(message.id);
         const data = phase?.data;
 
@@ -665,19 +665,19 @@ export class DaggerheartAdapter extends SystemAdapter {
             Logger.log(`⏱️ [${Date.now()}] Phase 2: No stored data for ${message.id}, re-extracting`);
             const freshData = this.handleInfo(message);
             if (!freshData) return;
-            this._playResultSounds(freshData);
+            this._playResultSounds(freshData, html);
             return;
         }
 
         // Override messageContent with fresh content (Phase 1 content may have been empty)
         data.messageContent = message.content || "";
-        this._playResultSounds(data);
+        this._playResultSounds(data, html);
     }
 
     /**
      * Play the result decoration sounds based on roll outcome.
      */
-    _playResultSounds(data) {
+    _playResultSounds(data, html) {
         const ts = Date.now();
         const { isSuccess, hopeValue, fearValue, isDuality } = data;
 
@@ -685,7 +685,17 @@ export class DaggerheartAdapter extends SystemAdapter {
             // Non-duality roll (NPC attacks, d20 rolls)
             // Hit impact is handled by preUpdateActor damage hook
             // Miss needs to be caught here via content keywords
-            const content = data.messageContent || "";
+            // Use rendered HTML text (message.content is often empty for D20 rolls)
+            let content = data.messageContent || "";
+            if ((!content || content.trim() === "") && html) {
+                try {
+                    // html may be jQuery or HTMLElement
+                    const el = html instanceof HTMLElement ? html : html[0];
+                    content = el?.textContent || "";
+                } catch (e) {
+                    Logger.log(`⏱️ [${ts}]   Error extracting HTML text: ${e.message}`);
+                }
+            }
             Logger.log(`⏱️ [${ts}]   NON-DUALITY content (first 200): ${content.substring(0, 200)}`);
             if (msgContains(content, ["MISS", "FAILURE", "FAIL"])) {
                 Logger.log(`⏱️ [${ts}]   NON-DUALITY: Miss detected from content`);
