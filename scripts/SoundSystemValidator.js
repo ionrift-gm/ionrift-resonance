@@ -6,10 +6,6 @@ export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator 
 
         // 1. Dependencies
         this.addDependency("ionrift-library");
-        this.addDependency("syrinscape-control", {
-            optional: true,
-            reason: "Required for Embedded Mode"
-        });
 
         // 2. Settings
         this.addSetting("soundPreset", { type: "string" });
