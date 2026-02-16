@@ -71,6 +71,9 @@ These are not required but significantly improve the experience:
 *   **Resources**: Triggers for Hope Gain/Use and Stress Take/Clear.
 *   Automatic chat card parsing.
 
+#### Known Limitations (Daggerheart v0.5.x)
+*   **Domain Resolution for Features**: The current Daggerheart data model does not store per-feature domain metadata. When a class feature (e.g. "Sparing Touch") is used, Resonance cannot determine which domain it belongs to. As a fallback, it tries the **actor's class domains** in order — the first domain with a bound sound is used. If you have multiple domains configured, all features will default to whichever domain has a sound bound first. You can override individual features using Tier 4 (Campaign Overrides) for precise control.
+
 ### 2. DnD 5e
 **Requires [Midi-QOL](https://foundryvtt.com/packages/midi-qol)** for combat automation.
 
