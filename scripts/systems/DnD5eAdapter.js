@@ -104,23 +104,33 @@ export class DnD5eAdapter extends SystemAdapter {
 
             if (hp?.value <= 0) {
                 Logger.log(`DnD5e | ${actor.name} died! Playing death sound`);
-                if (actor.hasPlayerOwner) {
-                    this.play(this.handler.getPCSound(actor, "DEATH"));
+                this.play(SOUND_EVENTS.BLOODY_HIT);
+                const DEATH_STAGGER = 600;
+
+                const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
+                if (deathOverride) {
+                    this.handler.play(deathOverride, DEATH_STAGGER);
+                } else if (actor.hasPlayerOwner) {
+                    this.play(this.handler.getPCSound(actor, "DEATH"), DEATH_STAGGER);
                 } else {
-                    this.play(SOUND_EVENTS.PC_DEATH);
+                    this.play(SOUND_EVENTS.PC_DEATH, DEATH_STAGGER);
                 }
             } else {
                 Logger.log(`DnD5e | ${actor.name} took damage, playing hit + pain`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
 
-                if (actor.hasPlayerOwner) {
+                const PAIN_STAGGER = 400;
+                const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
+                if (painOverride) {
+                    this.handler.play(painOverride, PAIN_STAGGER);
+                } else if (actor.hasPlayerOwner) {
                     const pcPain = this.handler.getPCSound(actor, "PAIN");
-                    Logger.log(`DnD5e | PC Pain sound: ${pcPain}`);
-                    this.play(pcPain);
+                    Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${PAIN_STAGGER}ms)`);
+                    this.play(pcPain, PAIN_STAGGER);
                 } else {
                     const painSound = this.detectMonsterPain(actor);
                     Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
-                    if (painSound) this.play(painSound);
+                    if (painSound) this.play(painSound, PAIN_STAGGER);
                 }
             }
         }
