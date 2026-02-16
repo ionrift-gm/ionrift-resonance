@@ -89,7 +89,7 @@ Configure sounds for broad categories like specific Weapon types (Axes, Bows, Sw
 Assign default sounds to entire families of creatures. The system attempts to classify actors (e.g. "Zombie Shambler" -> Zombie) and play the appropriate family sound.
 
 ### Players Tab
-Define specific pain and death sounds for your Player Characters, overriding generic gender defaults.
+Define specific pain and death sounds for your Player Characters.
 *   **Pain ID**: Plays when the character takes damage.
 *   **Death ID**: Plays when the character drops to 0 HP / dies.
 
