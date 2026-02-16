@@ -310,6 +310,7 @@ export class SoundHandler {
 
     _getAppHeaderButtons(app, buttons) {
         if (!game.user.isGM) return;
+        if (buttons.some(b => b.class === "ionrift-resonance")) return;
         buttons.unshift({
             label: "Sounds",
             class: "ionrift-resonance",
@@ -320,6 +321,7 @@ export class SoundHandler {
 
     _getAppHeaderControls(controls, app) {
         if (!game.user.isGM) return;
+        if (controls.some(c => c.action === "ionrift-resonance")) return;
         controls.push({
             label: "Configure Sounds",
             icon: "fas fa-music",
