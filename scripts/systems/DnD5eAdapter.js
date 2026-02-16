@@ -76,6 +76,12 @@ export class DnD5eAdapter extends SystemAdapter {
 
     // Phase 1: Weapon swing — fires BEFORE dice roll (the "ask")
     handleWeaponSound(item, activity) {
+        // Only weapons and spells produce attack sounds
+        if (item.type !== "weapon" && item.type !== "spell") {
+            Logger.log(`5e Weapon Sound: Skipping ${item.name} (${item.type}) — not a weapon or spell`);
+            return;
+        }
+
         Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
         const actor = item.actor || activity?.actor;
         const soundKey = this.handler.pickSound(item, actor?.name, actor);
@@ -85,7 +91,6 @@ export class DnD5eAdapter extends SystemAdapter {
             const schoolKey = this._getSchoolKey(item.system.school);
             if (schoolKey) {
                 Logger.log(`5e Weapon Sound: spell school ${item.system.school} → ${schoolKey}`);
-                // Try effect key first, then school key, both via playItemSound
                 this.handler.playItemSoundWithFallback(soundKey, schoolKey, item);
                 return;
             }
@@ -126,6 +131,22 @@ export class DnD5eAdapter extends SystemAdapter {
 
     handleDamage(workflow) {
         Logger.log(`5e Damage: ${workflow.hitTargets.size} targets hit`);
+
+        // Skip non-harmful items (potions, healing spells, utility consumables)
+        const item = workflow.item;
+        if (item?.type === "consumable") {
+            Logger.log(`DnD5e | Skipping damage sounds for consumable: ${item.name}`);
+            return;
+        }
+
+        // Check for healing damage types — healing is not damage
+        const isHealing = workflow.defaultDamageType === "healing"
+            || workflow.defaultDamageType === "temphp"
+            || workflow.damageDetail?.every(d => d.type === "healing" || d.type === "temphp");
+        if (isHealing) {
+            Logger.log(`DnD5e | Skipping damage sounds — healing effect`);
+            return;
+        }
 
         // Midi-QOL provides damage totals on the workflow
         const totalDamage = workflow.damageTotal
