@@ -148,47 +148,70 @@ export class DaggerheartAdapter extends SystemAdapter {
             if (!game.user.isGM) return;
             this.handlePreUpdateItem(item, changes);
         });
+
+        // Fear Tracker: Daggerheart stores fear as a world setting, not an actor property.
+        // The FearTracker UI calls game.settings.set() which fires updateSetting.
+        Hooks.on("updateSetting", (setting) => {
+            if (!game.user.isGM) return;
+            // Match the Daggerheart fear setting key (format: "daggerheart.<key>")
+            if (setting.key?.includes("Fear") || setting.key?.includes("fear")) {
+                Logger.log(`⏱️ [${Date.now()}] updateSetting HOOK FIRED for: ${setting.key}`);
+                this.handleFearSettingChange(setting);
+            }
+        });
     }
 
-    handleFearRender(app, html, data) {
-        // Guard against missing data
-        if (!data) return;
-
-        // Try to find 'current' fear value
-        // V2 apps might keep it in app.context or data
-        let currentFear = data.current;
-
-        // If not directly in data, check common patterns
-        if (currentFear === undefined && data.app) currentFear = data.app.current;
-
-        // Valid number check
-        if (typeof currentFear !== "number") return;
-
-        // Initialize last count if undefined
-        if (this.lastFearCount === undefined) {
-            this.lastFearCount = currentFear;
+    /**
+     * Handle fear changes from the DM Fear Tracker.
+     * Daggerheart stores fear as a world setting (game.settings.set), not on an actor.
+     * The updateSetting hook fires when the GM changes the fear value.
+     */
+    handleFearSettingChange(setting) {
+        let newFear;
+        try {
+            // Setting value may be a raw number or JSON-encoded
+            const raw = setting.value;
+            newFear = typeof raw === "number" ? raw : Number(JSON.parse(raw));
+        } catch {
+            Logger.log(`Fear setting parse failed: ${setting.value}`);
             return;
         }
 
-        if (currentFear !== this.lastFearCount) {
-            Logger.log(`Fear Tracker Update: ${this.lastFearCount} -> ${currentFear} `);
+        if (typeof newFear !== "number" || isNaN(newFear)) return;
 
-            if (currentFear > this.lastFearCount) {
-                // Fear Gained
-                if (currentFear >= 5) {
-                    this.handler.play("DAGGERHEART_FEAR_HIGH");
-                } else if (currentFear >= 3) {
-                    this.handler.play("DAGGERHEART_FEAR_MED");
-                } else {
-                    this.handler.play("DAGGERHEART_FEAR_LOW");
-                }
-            } else if (currentFear < this.lastFearCount) {
-                // Fear Used
-                this.handler.play("DAGGERHEART_FEAR_USE");
-            }
-
-            this.lastFearCount = currentFear;
+        // Initialize baseline on first fire
+        if (this.lastFearCount === undefined) {
+            Logger.log(`Fear Tracker: Initializing baseline at ${newFear}`);
+            this.lastFearCount = newFear;
+            return;
         }
+
+        if (newFear === this.lastFearCount) return;
+
+        Logger.log(`Fear Tracker Update: ${this.lastFearCount} -> ${newFear}`);
+
+        if (newFear > this.lastFearCount) {
+            // Fear Gained — threshold-based intensity
+            if (newFear >= 9) {
+                this.handler.play("DAGGERHEART_FEAR_HIGH");
+            } else if (newFear >= 5) {
+                this.handler.play("DAGGERHEART_FEAR_MED");
+            } else {
+                this.handler.play("DAGGERHEART_FEAR_LOW");
+            }
+        } else {
+            // Fear Used — delta-based intensity
+            const delta = this.lastFearCount - newFear;
+            if (delta >= 5) {
+                this.handler.play("DAGGERHEART_FEAR_USE_HIGH");
+            } else if (delta >= 2) {
+                this.handler.play("DAGGERHEART_FEAR_USE_MED");
+            } else {
+                this.handler.play("DAGGERHEART_FEAR_USE_LOW");
+            }
+        }
+
+        this.lastFearCount = newFear;
     }
 
     handlePreUpdate(actor, changes) {
@@ -279,37 +302,7 @@ export class DaggerheartAdapter extends SystemAdapter {
             }
         }
 
-        // 3. Fear Detection
-        // Candidate Paths: 'system.fear.value', 'system.gmtracker.fear', 'system.resources.fear.value'
-        const newFear = getProperty(changes, "system.fear.value") ?? getProperty(changes, "system.resources.fear.value");
-
-        if (newFear !== undefined) {
-            const oldFear = getProperty(actor, "system.fear.value") ?? getProperty(actor, "system.resources.fear.value") ?? 0;
-            if (newFear > oldFear) {
-                Logger.log(`Fear Gained(${oldFear} -> ${newFear})`);
-                // Threshold Logic (Replacing generic Fear Gain)
-                if (newFear >= 9) {
-                    this.handler.play("DAGGERHEART_FEAR_HIGH");
-                } else if (newFear >= 5) {
-                    this.handler.play("DAGGERHEART_FEAR_MED");
-                } else {
-                    this.handler.play("DAGGERHEART_FEAR_LOW");
-                }
-            } else if (newFear < oldFear) {
-                const delta = oldFear - newFear;
-                Logger.log(`Fear Used(${oldFear} -> ${newFear} | Delta: ${delta})`);
-
-                if (delta >= 5) {
-                    this.handler.play("DAGGERHEART_FEAR_USE_HIGH");
-                } else if (delta >= 2) {
-                    this.handler.play("DAGGERHEART_FEAR_USE_MED");
-                } else {
-                    this.handler.play("DAGGERHEART_FEAR_USE_LOW");
-                }
-            } else {
-                Logger.log(`Fear Logic Skipped: Old ${oldFear} == New ${newFear} `);
-            }
-        }
+        // Fear Detection: Handled by updateSetting hook (fear is a world setting, not an actor property).
 
         // 4. Stress Detection
         // Extensive Probing for different data structures
