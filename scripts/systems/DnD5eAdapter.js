@@ -72,20 +72,19 @@ export class DnD5eAdapter extends SystemAdapter {
 
         Logger.log(`5e Attack: ${item.name} (${item.type})`);
 
-        if (workflow.hitTargets.size === 0) {
-            this.play(SOUND_EVENTS.MISS);
-            return;
-        }
-
-        // Use Resolver via Handler
-        // pickSound now handles 5e Metadata fallback natively via SoundResolver
-        let soundKey = this.handler.pickSound(item, workflow.actor?.name, workflow.actor);
-
+        // Phase 1: Weapon sound (always plays — this is the "ask")
+        const soundKey = this.handler.pickSound(item, workflow.actor?.name, workflow.actor);
         this.handler.playItemSound(soundKey, item);
 
-        if (workflow.isCritical) {
-            this.play(SOUND_EVENTS.CRIT_DECORATION);
+        const RESULT_STAGGER = 400;
+
+        // Phase 2: Result decoration (the "answer")
+        if (workflow.hitTargets.size === 0) {
+            this.play(SOUND_EVENTS.MISS, RESULT_STAGGER);
+        } else if (workflow.isCritical) {
+            this.play(SOUND_EVENTS.CRIT_DECORATION, RESULT_STAGGER);
         }
+        // Normal hits: damage hook handles CORE_HIT + pain/death
     }
 
     handleDamage(workflow) {
