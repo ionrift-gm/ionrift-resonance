@@ -247,8 +247,12 @@ export class DaggerheartAdapter extends SystemAdapter {
                 Logger.log(`⏱️ [${Date.now()}] DH | Playing BLOODY_HIT: ${SOUND_EVENTS.BLOODY_HIT}`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
 
-                // Pain Sound
-                if (actor.hasPlayerOwner) {
+                // Pain Sound — check actor override first
+                const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
+                if (painOverride) {
+                    Logger.log(`Actor Override: Pain -> ${painOverride}`);
+                    this.handler.play(painOverride);
+                } else if (actor.hasPlayerOwner) {
                     const pcPain = this.handler.getPCSound(actor, "PAIN");
                     Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain}`);
                     this.play(pcPain);
@@ -269,10 +273,14 @@ export class DaggerheartAdapter extends SystemAdapter {
                 if (maxHp > 0 && newHp >= maxHp && oldHp < maxHp) {
                     Logger.log("Actor Died (Damage >= Max)!");
 
-                    if (actor.hasPlayerOwner) {
+                    const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
+                    if (deathOverride) {
+                        Logger.log(`Actor Override: Death -> ${deathOverride}`);
+                        this.handler.play(deathOverride);
+                    } else if (actor.hasPlayerOwner) {
                         this.play(this.handler.getPCSound(actor, "DEATH"));
                     } else {
-                        this.play(SOUND_EVENTS.PC_DEATH); // Default for now
+                        this.play(SOUND_EVENTS.PC_DEATH);
                     }
                 }
             }
