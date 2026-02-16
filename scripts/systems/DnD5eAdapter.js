@@ -151,7 +151,15 @@ export class DnD5eAdapter extends SystemAdapter {
     }
 
     handleDamage(workflow) {
-        Logger.log(`5e Damage: ${workflow.hitTargets.size} targets hit`);
+        // Deduplicate: Midi-QOL may fire DamageRollComplete multiple times per workflow
+        const wfId = workflow.id ?? workflow.uuid ?? workflow.itemCardId;
+        if (wfId && this._lastDamageWorkflowId === wfId) {
+            Logger.log(`DnD5e | Duplicate DamageRollComplete for workflow ${wfId}, skipping`);
+            return;
+        }
+        if (wfId) this._lastDamageWorkflowId = wfId;
+
+        Logger.log(`5e Damage: hitTargets=${workflow.hitTargets?.size}, targets=${workflow.targets?.size}, saves=${workflow.saves?.size}`);
 
         // Skip non-harmful items (potions, healing spells, utility consumables)
         const item = workflow.item;
@@ -180,11 +188,21 @@ export class DnD5eAdapter extends SystemAdapter {
         const MAX_AOE_VOCALS = 5;     // Max distinct vocals in AoE mode
         const VOCAL_STAGGER = 400;    // Stagger for single-target sequential vocals
 
-        const allTargets = [...workflow.hitTargets].slice(0, MAX_TARGETS);
-        const isAoE = allTargets.length > AOE_THRESHOLD;
+        // Build complete target set: hitTargets (failed saves) + saves (made saves, half dmg)
+        // For save-based AoE, workflow.targets has the full scope
+        const targetSet = new Set();
+        if (workflow.hitTargets) for (const t of workflow.hitTargets) targetSet.add(t);
+        if (workflow.saves) for (const t of workflow.saves) targetSet.add(t);
+
+        // Use workflow.targets (full AoE scope) for threshold detection if available
+        const scopeSize = workflow.targets?.size ?? targetSet.size;
+        const allTargets = [...targetSet].slice(0, MAX_TARGETS);
+        const isAoE = scopeSize > AOE_THRESHOLD;
+
+        Logger.log(`DnD5e | Damage scope: ${scopeSize} total targets, ${allTargets.length} to process, AoE=${isAoE}`);
 
         if (isAoE) {
-            Logger.log(`DnD5e | AoE detected: ${allTargets.length} targets (capped at ${MAX_TARGETS}). Playing single hit + ${MAX_AOE_VOCALS} vocals.`);
+            Logger.log(`DnD5e | AoE detected. Playing single hit + up to ${MAX_AOE_VOCALS} vocals.`);
 
             // Single impact sound for the entire AoE
             this.play(SOUND_EVENTS.BLOODY_HIT);
