@@ -278,11 +278,13 @@ export class SoundHandler {
         Hooks.on("getActorSheetHeaderButtons", (app, buttons) => this._getAppHeaderButtons(app, buttons));
         Hooks.on("getItemSheetHeaderButtons", (app, buttons) => this._getAppHeaderButtons(app, buttons));
 
-        // App V2
+        // App V2 — System-specific and generic hooks
         const injectV2 = (app, controls) => this._getAppHeaderControls(controls, app);
         Hooks.on("getHeaderControlsActorSheetV2", injectV2);
         Hooks.on("getActorSheetV2HeaderControls", injectV2);
         Hooks.on("getHeaderControlsItemSheet5e", injectV2);
+        Hooks.on("getHeaderControlsItemSheetV2", injectV2);
+        Hooks.on("getHeaderControlsDHBaseItemSheet", injectV2);
 
         // Context Menu
         const contextOption = {
