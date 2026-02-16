@@ -95,6 +95,11 @@ export class DnD5eAdapter extends SystemAdapter {
             ?? workflow.damageDetail?.reduce((sum, d) => sum + (d.damage || 0), 0)
             ?? 0;
 
+        // DamageRollComplete fires immediately after AttackRollComplete.
+        // Delay all damage sounds so the weapon swing ("ask") is heard first.
+        const ATTACK_GAP = 600;
+        const VOCAL_STAGGER = 400;
+
         for (const token of workflow.hitTargets) {
             const actor = token.actor;
             if (!actor) {
@@ -114,33 +119,31 @@ export class DnD5eAdapter extends SystemAdapter {
 
             if (isDead) {
                 Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
-                this.play(SOUND_EVENTS.BLOODY_HIT);
-                const VOCAL_STAGGER = 400;
+                this.play(SOUND_EVENTS.BLOODY_HIT, ATTACK_GAP);
 
                 const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                 if (deathOverride) {
-                    this.handler.play(deathOverride, VOCAL_STAGGER);
+                    this.handler.play(deathOverride, ATTACK_GAP + VOCAL_STAGGER);
                 } else if (isPC) {
-                    this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
+                    this.play(this.handler.getPCSound(actor, "DEATH"), ATTACK_GAP + VOCAL_STAGGER);
                 } else {
-                    this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
+                    this.play(SOUND_EVENTS.PC_DEATH, ATTACK_GAP + VOCAL_STAGGER);
                 }
             } else {
                 Logger.log(`DnD5e | ${actor.name} took damage, playing hit + pain`);
-                this.play(SOUND_EVENTS.BLOODY_HIT);
+                this.play(SOUND_EVENTS.BLOODY_HIT, ATTACK_GAP);
 
-                const PAIN_STAGGER = 400;
                 const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
                 if (painOverride) {
-                    this.handler.play(painOverride, PAIN_STAGGER);
+                    this.handler.play(painOverride, ATTACK_GAP + VOCAL_STAGGER);
                 } else if (isPC) {
                     const pcPain = this.handler.getPCSound(actor, "PAIN");
-                    Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${PAIN_STAGGER}ms)`);
-                    this.play(pcPain, PAIN_STAGGER);
+                    Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${ATTACK_GAP + VOCAL_STAGGER}ms)`);
+                    this.play(pcPain, ATTACK_GAP + VOCAL_STAGGER);
                 } else {
                     const painSound = this.detectMonsterPain(actor);
                     Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
-                    if (painSound) this.play(painSound, PAIN_STAGGER);
+                    if (painSound) this.play(painSound, ATTACK_GAP + VOCAL_STAGGER);
                 }
             }
         }
