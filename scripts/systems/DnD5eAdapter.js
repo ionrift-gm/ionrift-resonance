@@ -173,7 +173,20 @@ export class DnD5eAdapter extends SystemAdapter {
             const estimatedHp = currentHp - totalDamage;
             Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} → est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
 
-            const isDead = estimatedHp <= 0;
+            // DnD 5e death rules:
+            // - NPCs die at 0 HP
+            // - PCs go UNCONSCIOUS at 0 HP (death saves), NOT dead
+            // - PCs only die instantly from massive damage (overflow >= max HP)
+            const maxHp = hp?.max ?? 1;
+            let isDead;
+            if (isPC) {
+                // Massive damage = remaining damage after 0 HP >= max HP
+                const overflow = Math.abs(Math.min(0, estimatedHp));
+                isDead = overflow >= maxHp;
+                Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} → ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
+            } else {
+                isDead = estimatedHp <= 0;
+            }
 
             if (isDead) {
                 Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
