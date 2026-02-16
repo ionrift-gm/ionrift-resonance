@@ -52,18 +52,19 @@ export class SyrinscapeProvider extends SoundProvider {
      * Internal execution to determine best method (Module vs API)
      */
     async _executePlay(type, id, volume) {
-        // CHECK TOKEN SYNC: If mismatched, we MUST fallback to Direct API
+        // CHECK TOKEN SYNC: Only relevant if Syrinscape Control module is active
         const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
 
         let controlToken = "";
-        if (game.modules.get("syrinscape-control")?.active) {
+        const controlActive = game.modules.get("syrinscape-control")?.active;
+        if (controlActive) {
             controlToken = game.settings.get("syrinscape-control", "authToken");
         }
 
         const t1 = (ionToken || "").trim();
         const t2 = (controlToken || "").trim();
-        // Mismatch if Ionrift has token, but it differs from Control (even if Control is empty)
-        const isMismatched = (t1 && t1 !== t2);
+        // Mismatch only if Control is active AND tokens differ
+        const isMismatched = controlActive && t1 && (t1 !== t2);
 
         if (isMismatched) {
             Logger.warn("Token Mismatch: Bypassing Control Module for Playback.");
@@ -131,17 +132,18 @@ export class SyrinscapeProvider extends SoundProvider {
     async stopAll() {
         let stopSent = false;
 
-        // CHECK TOKEN SYNC: If mismatched, we MUST fallback to Direct API to avoid using the wrong session
+        // CHECK TOKEN SYNC: Only relevant if Syrinscape Control module is active
         const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
 
         let controlToken = "";
-        if (game.modules.get("syrinscape-control")?.active) {
+        const controlActive = game.modules.get("syrinscape-control")?.active;
+        if (controlActive) {
             controlToken = game.settings.get("syrinscape-control", "authToken");
         }
 
         const t1 = (ionToken || "").trim();
         const t2 = (controlToken || "").trim();
-        const isMismatched = (t1 && t1 !== t2);
+        const isMismatched = controlActive && t1 && (t1 !== t2);
 
         if (isMismatched) {
             Logger.warn("Token Mismatch: Bypassing Control Module for StopAll.");
