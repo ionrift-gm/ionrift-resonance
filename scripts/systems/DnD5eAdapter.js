@@ -125,11 +125,29 @@ export class DnD5eAdapter extends SystemAdapter {
         Logger.log(`5e Attack Result: ${item.name} — hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}`);
 
         if (workflow.hitTargets.size === 0) {
-            this.play(SOUND_EVENTS.MISS);
+            // Weapon-type-aware miss sound
+            const missKey = this._getMissKey(item);
+            Logger.log(`DnD5e | Miss type: ${missKey}`);
+            this.play(missKey);
         } else if (workflow.isCritical) {
             this.play(SOUND_EVENTS.CRIT_DECORATION);
         }
         // Normal hits: damage hook handles CORE_HIT + pain/death
+    }
+
+    _getMissKey(item) {
+        if (item.type === "spell") return SOUND_EVENTS.CORE_MISS_MAGIC;
+
+        if (item.type === "weapon") {
+            const lower = item.name.toLowerCase();
+            const isRanged = lower.includes("bow") || lower.includes("crossbow")
+                || lower.includes("sling") || lower.includes("javelin")
+                || lower.includes("dart") || lower.includes("gun")
+                || item.system?.range?.long > 0;
+            if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
+        }
+
+        return SOUND_EVENTS.MISS;
     }
 
     handleDamage(workflow) {
