@@ -190,9 +190,15 @@ export class SoundResolver {
         if (specificKey === "PC_DEATH_MALE") return "CORE_DEATH_MASCULINE";
         if (specificKey === "PC_DEATH_FEMALE") return "CORE_DEATH_FEMININE";
 
-        // Vocals - Monster
-        if (specificKey.startsWith("MONSTER_") && !specificKey.includes("DEATH")) return "CORE_MONSTER_PAIN";
-        if (specificKey.startsWith("MONSTER_") && specificKey.includes("DEATH")) return "CORE_MONSTER_DEATH";
+        // Vocals - Monster (weapon suffix extraction before generic catch-all)
+        // MONSTER_BEAR_CLAW → ATTACK_CLAW, MONSTER_WOLF_BITE → ATTACK_BITE
+        if (specificKey.startsWith("MONSTER_")) {
+            if (specificKey.endsWith("_CLAW")) return "ATTACK_CLAW";
+            if (specificKey.endsWith("_BITE")) return "ATTACK_BITE";
+            if (specificKey.endsWith("_SLAM")) return "ATTACK_SLAM";
+            if (specificKey.includes("DEATH")) return "CORE_MONSTER_DEATH";
+            return "CORE_MONSTER_PAIN";
+        }
 
         return null;
     }
