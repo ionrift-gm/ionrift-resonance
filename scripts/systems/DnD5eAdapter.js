@@ -283,7 +283,7 @@ export class DnD5eAdapter extends SystemAdapter {
             } else if (isPC) {
                 this.play(this.handler.getPCSound(actor, "DEATH"), delay);
             } else {
-                this.play(SOUND_EVENTS.PC_DEATH, delay);
+                this.play(SOUND_EVENTS.CORE_MONSTER_DEATH, delay);
             }
         } else {
             Logger.log(`DnD5e | ${actor.name} took damage, playing pain`);
