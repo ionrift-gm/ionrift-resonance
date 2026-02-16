@@ -401,17 +401,17 @@ export class SoundConfigApp extends FormApplication {
                 description: "Hits, misses, and impacts.",
                 children: [
                     {
-                        id: "CORE_HIT", label: "Strike Landed (Melee)", description: "Flesh impact for melee attacks (default).",
+                        id: "CORE_HIT", label: "Strike Landed", description: "Default impact sound when an attack hits.",
                         children: [
-                            { id: "CORE_HIT_RANGED", label: "Strike Landed (Ranged)", description: "Arrow/bolt impact. Falls back to melee hit if unset." },
-                            { id: "CORE_HIT_MAGIC", label: "Strike Landed (Spell)", description: "Magical burst on spell hit. Falls back to melee hit if unset." }
+                            { id: "CORE_HIT_RANGED", label: "Strike Landed (Ranged)", description: "Arrow/bolt impact. Falls back to default hit if unset." },
+                            { id: "CORE_HIT_MAGIC", label: "Strike Landed (Spell)", description: "Magical burst on spell hit. Falls back to default hit if unset." }
                         ]
                     },
                     {
-                        id: "CORE_MISS", label: "Strike Missed (Melee)", description: "Whoosh/whiff for melee misses (default).",
+                        id: "CORE_MISS", label: "Strike Missed", description: "Default whoosh/whiff when an attack misses.",
                         children: [
-                            { id: "CORE_MISS_RANGED", label: "Strike Missed (Ranged)", description: "Arrow whiff/ricochet. Falls back to melee miss if unset." },
-                            { id: "CORE_MISS_MAGIC", label: "Strike Missed (Spell)", description: "Fizzle/dissipate on spell miss. Falls back to melee miss if unset." }
+                            { id: "CORE_MISS_RANGED", label: "Strike Missed (Ranged)", description: "Arrow whiff/ricochet. Falls back to default miss if unset." },
+                            { id: "CORE_MISS_MAGIC", label: "Strike Missed (Spell)", description: "Fizzle/dissipate on spell miss. Falls back to default miss if unset." }
                         ]
                     },
                     { id: "CORE_WHOOSH", label: "Swing (Fallback)", description: "Generic swing for weapons without a specific attack sound." }
