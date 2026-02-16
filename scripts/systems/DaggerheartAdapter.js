@@ -9,6 +9,31 @@ export class DaggerheartAdapter extends SystemAdapter {
         super(handler);
         this.renderPhases = new Map(); // Track render phases: { timestamp, phase: 1|2 }
         this.lastAttackItem = null; // Cache the last attacking item for hit override lookup
+        this.lastAttackKey = null; // Cache the attack sound key for category derivation
+    }
+
+    /**
+     * Derive a category-aware hit or miss key from the attack sound key.
+     * Priority: RANGED (bow/crossbow/sling) > MAGIC (spell_*) > generic fallback.
+     * @param {string} attackKey - The attack sound key from Phase 1
+     * @param {"HIT"|"MISS"} type - Whether we want a hit or miss variant
+     * @returns {string} The category-aware SOUND_EVENTS key
+     */
+    _deriveCategoryKey(attackKey, type) {
+        if (!attackKey) return type === "HIT" ? SOUND_EVENTS.BLOODY_HIT : SOUND_EVENTS.MISS;
+        const key = attackKey.toUpperCase();
+        const isRanged = key.includes("BOW") || key.includes("CROSSBOW") || key.includes("SLING") || key.includes("RANGED");
+        const isMagic = key.includes("SPELL_") || key.includes("MAGIC");
+
+        if (type === "HIT") {
+            if (isRanged) return SOUND_EVENTS.CORE_HIT_RANGED;
+            if (isMagic) return SOUND_EVENTS.CORE_HIT_MAGIC;
+            return SOUND_EVENTS.BLOODY_HIT;
+        } else {
+            if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
+            if (isMagic) return SOUND_EVENTS.CORE_MISS_MAGIC;
+            return SOUND_EVENTS.MISS;
+        }
     }
     validateSchema() {
         const issues = [];
@@ -244,14 +269,15 @@ export class DaggerheartAdapter extends SystemAdapter {
                 Logger.log(`⏱️ [${Date.now()}] Damage Taken (Value Increased). Playing 'Blood Splat'`);
                 Logger.log(`⏱️ [${Date.now()}] DH | HP Change: ${oldHp} -> ${newHp} (Max: ${maxHp})`);
 
-                // Hit Sound (immediate) — check weapon override first
+                // Hit Sound (immediate) — priority: item override > category > generic
                 const hitOverride = this.lastAttackItem?.getFlag?.("ionrift-resonance", "sound_hit");
                 if (hitOverride) {
                     Logger.log(`⏱️ [${Date.now()}] DH | Item Override: Hit -> ${hitOverride}`);
                     this.handler.play(hitOverride);
                 } else {
-                    Logger.log(`⏱️ [${Date.now()}] DH | Playing BLOODY_HIT: ${SOUND_EVENTS.BLOODY_HIT}`);
-                    this.play(SOUND_EVENTS.BLOODY_HIT);
+                    const hitKey = this._deriveCategoryKey(this.lastAttackKey, "HIT");
+                    Logger.log(`⏱️ [${Date.now()}] DH | Playing HIT: ${hitKey} (from attack: ${this.lastAttackKey})`);
+                    this.play(hitKey);
                 }
 
                 const VOCAL_STAGGER = 400;
@@ -616,8 +642,9 @@ export class DaggerheartAdapter extends SystemAdapter {
         this.handler.playItemSound(data.attackSoundKey, data.item);
         Logger.log(`⏱️ [${ts}] ══ END PHASE 1 ══`);
 
-        // Cache attacking item for damage handler hit override lookup
+        // Cache attacking item and key for damage handler
         this.lastAttackItem = data.item || null;
+        this.lastAttackKey = data.attackSoundKey || null;
 
         // Store data for Phase 2
         this.renderPhases.set(message.id, {
@@ -666,7 +693,9 @@ export class DaggerheartAdapter extends SystemAdapter {
                     Logger.log(`⏱️ [${ts}]   Item Override: Miss -> ${missOverride}`);
                     this.handler.play(missOverride);
                 } else {
-                    this.play(SOUND_EVENTS.MISS);
+                    const missKey = this._deriveCategoryKey(data.attackSoundKey, "MISS");
+                    Logger.log(`⏱️ [${ts}]   Playing MISS: ${missKey} (from attack: ${data.attackSoundKey})`);
+                    this.play(missKey);
                 }
             } else {
                 Logger.log(`⏱️ [${ts}]   NON-DUALITY: No miss keywords, hit handled by damage hook`);
@@ -698,14 +727,16 @@ export class DaggerheartAdapter extends SystemAdapter {
                 // Miss — no damage hook fires, so play miss whoosh here
                 Logger.log(`⏱️ [${ts}]   FAIL WITH HOPE - Miss + Hope stinger`);
                 const missOverride1 = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
-                this.handler.play(missOverride1 || SOUND_EVENTS.MISS);
+                const missKey1 = missOverride1 || this._deriveCategoryKey(data.attackSoundKey, "MISS");
+                this.handler.play(missKey1);
                 this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_HOPE);
 
             } else {
                 // Miss — no damage hook fires, so play miss whoosh here
                 Logger.log(`⏱️ [${ts}]   FUMBLE (Fail+Fear) - Miss + Fumble stinger`);
                 const missOverride2 = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
-                this.handler.play(missOverride2 || SOUND_EVENTS.MISS);
+                const missKey2 = missOverride2 || this._deriveCategoryKey(data.attackSoundKey, "MISS");
+                this.handler.play(missKey2);
                 this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_FEAR);
             }
 

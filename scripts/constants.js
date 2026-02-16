@@ -13,6 +13,12 @@ export const SOUND_EVENTS = {
     CORE_CRIT: "CORE_CRIT",
     MISS: "CORE_MISS",
 
+    // Category-Aware Hit/Miss (auto-selected by attack type)
+    CORE_HIT_RANGED: "CORE_HIT_RANGED",
+    CORE_HIT_MAGIC: "CORE_HIT_MAGIC",
+    CORE_MISS_RANGED: "CORE_MISS_RANGED",
+    CORE_MISS_MAGIC: "CORE_MISS_MAGIC",
+
     // Spells
     SPELL_FIRE: "SPELL_FIRE",
     SPELL_ICE: "SPELL_ICE",

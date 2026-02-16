@@ -175,7 +175,9 @@ export class SoundResolver {
 
         if (specificKey.startsWith("SPELL_")) return "CORE_MAGIC";
 
-        // Hits & Results
+        // Hits & Results (Category-Aware → Generic)
+        if (specificKey === "CORE_HIT_RANGED" || specificKey === "CORE_HIT_MAGIC") return "CORE_HIT";
+        if (specificKey === "CORE_MISS_RANGED" || specificKey === "CORE_MISS_MAGIC") return "CORE_MISS";
         if (specificKey.endsWith("_HIT") || specificKey === "BLOODY_HIT") return "CORE_HIT";
         if (["MISS", "ATTACK_MISS"].includes(specificKey)) return "CORE_MISS";
         if (specificKey === "WHOOSH") return "CORE_WHOOSH";
