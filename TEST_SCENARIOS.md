@@ -173,6 +173,25 @@ Each scenario documents the expected sound event chain and the logic it validate
 
 ---
 
+## 11. AoE Spell — Fireball (Multi-Target Mitigation)
+
+**Action:** PC casts Fireball hitting 8+ targets.
+
+| Targets Hit | Hit Sound | Vocals |
+|---|---|---|
+| 1–3 | Individual `CORE_HIT` per target | Individual pain/death per target (400ms stagger) |
+| 4+ (AoE) | **Single** `CORE_HIT` | Up to **5** random vocals with micro-stagger (0–150ms overlap) |
+| 20+ | **Capped at 20** targets processed | Same as 4+ AoE |
+
+**Validates:**
+- `handleDamage` detects AoE when `hitTargets.size > 3`
+- Single hit impact for AoE (not N individual hits)
+- Vocals capped at `MAX_AOE_VOCALS = 5` random targets
+- Micro-stagger creates natural chorus overlap, not sequential machine-gun
+- Hard cap (`MAX_TARGETS = 20`) prevents degenerate performance
+
+---
+
 ## Resolution Chain Reference
 
 ### Spell Resolution

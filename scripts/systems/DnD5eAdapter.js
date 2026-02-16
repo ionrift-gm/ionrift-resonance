@@ -174,66 +174,112 @@ export class DnD5eAdapter extends SystemAdapter {
             ?? workflow.damageDetail?.reduce((sum, d) => sum + (d.damage || 0), 0)
             ?? 0;
 
-        const VOCAL_STAGGER = 400;
+        // AoE mitigation constants
+        const MAX_TARGETS = 20;       // Hard cap — never process more than this
+        const AOE_THRESHOLD = 3;      // 4+ targets = AoE mode
+        const MAX_AOE_VOCALS = 5;     // Max distinct vocals in AoE mode
+        const VOCAL_STAGGER = 400;    // Stagger for single-target sequential vocals
 
-        for (const token of workflow.hitTargets) {
-            const actor = token.actor;
-            if (!actor) {
-                Logger.log("DnD5e | No actor for token, skipping");
-                continue;
+        const allTargets = [...workflow.hitTargets].slice(0, MAX_TARGETS);
+        const isAoE = allTargets.length > AOE_THRESHOLD;
+
+        if (isAoE) {
+            Logger.log(`DnD5e | AoE detected: ${allTargets.length} targets (capped at ${MAX_TARGETS}). Playing single hit + ${MAX_AOE_VOCALS} vocals.`);
+
+            // Single impact sound for the entire AoE
+            this.play(SOUND_EVENTS.BLOODY_HIT);
+
+            // Classify each target (dead/alive) for vocal selection
+            const vocalCandidates = [];
+            for (const token of allTargets) {
+                const actor = token.actor;
+                if (!actor) continue;
+
+                const hp = actor.system?.attributes?.hp;
+                const isPC = actor.type === 'character';
+                const currentHp = hp?.value ?? 0;
+                const estimatedHp = currentHp - totalDamage;
+                const maxHp = hp?.max ?? 1;
+
+                let isDead;
+                if (isPC) {
+                    const overflow = Math.abs(Math.min(0, estimatedHp));
+                    isDead = overflow >= maxHp;
+                } else {
+                    isDead = estimatedHp <= 0;
+                }
+
+                vocalCandidates.push({ token, actor, isPC, isDead });
             }
 
-            const hp = actor.system?.attributes?.hp;
-            const isPC = actor.type === 'character';
+            // Pick up to MAX_AOE_VOCALS random targets for vocals
+            const shuffled = vocalCandidates.sort(() => Math.random() - 0.5);
+            const vocalTargets = shuffled.slice(0, MAX_AOE_VOCALS);
 
-            // DamageRollComplete fires BEFORE damage is applied — HP is still pre-damage
-            const currentHp = hp?.value ?? 0;
-            const estimatedHp = currentHp - totalDamage;
-            Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} → est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
+            vocalTargets.forEach((target) => {
+                // Random micro-stagger (0–150ms) so vocals overlap like a chorus
+                const stagger = Math.floor(Math.random() * 150);
+                this._playVocalForTarget(target.actor, target.isPC, target.isDead, stagger);
+            });
 
-            // DnD 5e death rules:
-            // - NPCs die at 0 HP
-            // - PCs go UNCONSCIOUS at 0 HP (death saves), NOT dead
-            // - PCs only die instantly from massive damage (overflow >= max HP)
-            const maxHp = hp?.max ?? 1;
-            let isDead;
-            if (isPC) {
-                // Massive damage = remaining damage after 0 HP >= max HP
-                const overflow = Math.abs(Math.min(0, estimatedHp));
-                isDead = overflow >= maxHp;
-                Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} → ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
-            } else {
-                isDead = estimatedHp <= 0;
+        } else {
+            // Standard per-target handling (1–3 targets)
+            for (const token of allTargets) {
+                const actor = token.actor;
+                if (!actor) {
+                    Logger.log("DnD5e | No actor for token, skipping");
+                    continue;
+                }
+
+                const hp = actor.system?.attributes?.hp;
+                const isPC = actor.type === 'character';
+                const currentHp = hp?.value ?? 0;
+                const estimatedHp = currentHp - totalDamage;
+                Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} → est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
+
+                const maxHp = hp?.max ?? 1;
+                let isDead;
+                if (isPC) {
+                    const overflow = Math.abs(Math.min(0, estimatedHp));
+                    isDead = overflow >= maxHp;
+                    Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} → ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
+                } else {
+                    isDead = estimatedHp <= 0;
+                }
+
+                this.play(SOUND_EVENTS.BLOODY_HIT);
+                this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER);
             }
+        }
+    }
 
-            if (isDead) {
-                Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
-                this.play(SOUND_EVENTS.BLOODY_HIT);
-
-                const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
-                if (deathOverride) {
-                    this.handler.play(deathOverride, VOCAL_STAGGER);
-                } else if (isPC) {
-                    this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
-                } else {
-                    this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
-                }
+    /**
+     * Play the appropriate pain or death vocal for a single target.
+     */
+    _playVocalForTarget(actor, isPC, isDead, delay) {
+        if (isDead) {
+            Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
+            const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
+            if (deathOverride) {
+                this.handler.play(deathOverride, delay);
+            } else if (isPC) {
+                this.play(this.handler.getPCSound(actor, "DEATH"), delay);
             } else {
-                Logger.log(`DnD5e | ${actor.name} took damage, playing hit + pain`);
-                this.play(SOUND_EVENTS.BLOODY_HIT);
-
-                const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
-                if (painOverride) {
-                    this.handler.play(painOverride, VOCAL_STAGGER);
-                } else if (isPC) {
-                    const pcPain = this.handler.getPCSound(actor, "PAIN");
-                    Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
-                    this.play(pcPain, VOCAL_STAGGER);
-                } else {
-                    const painSound = this.detectMonsterPain(actor);
-                    Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
-                    if (painSound) this.play(painSound, VOCAL_STAGGER);
-                }
+                this.play(SOUND_EVENTS.PC_DEATH, delay);
+            }
+        } else {
+            Logger.log(`DnD5e | ${actor.name} took damage, playing pain`);
+            const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
+            if (painOverride) {
+                this.handler.play(painOverride, delay);
+            } else if (isPC) {
+                const pcPain = this.handler.getPCSound(actor, "PAIN");
+                Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${delay}ms)`);
+                this.play(pcPain, delay);
+            } else {
+                const painSound = this.detectMonsterPain(actor);
+                Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
+                if (painSound) this.play(painSound, delay);
             }
         }
     }
