@@ -247,41 +247,40 @@ export class DaggerheartAdapter extends SystemAdapter {
                 Logger.log(`⏱️ [${Date.now()}] DH | Playing BLOODY_HIT: ${SOUND_EVENTS.BLOODY_HIT}`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
 
-                // Pain Sound — staggered after hit impact (400ms default)
-                const PAIN_STAGGER = 400;
-                const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
-                if (painOverride) {
-                    Logger.log(`Actor Override: Pain -> ${painOverride} (delay: ${PAIN_STAGGER}ms)`);
-                    this.handler.play(painOverride, PAIN_STAGGER);
-                } else if (actor.hasPlayerOwner) {
-                    const pcPain = this.handler.getPCSound(actor, "PAIN");
-                    Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain} (delay: ${PAIN_STAGGER}ms)`);
-                    this.play(pcPain, PAIN_STAGGER);
-                } else {
-                    // Play Monster Pain Sound
-                    const painSound = getDaggerheartMonsterSound(actor);
-                    Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || 'none'} (delay: ${PAIN_STAGGER}ms)`);
-                    if (painSound && painSound !== SOUND_EVENTS.MONSTER_GENERIC) {
-                        this.play(painSound, PAIN_STAGGER);
-                    } else {
-                        Logger.log(`DH | Using generic monster pain: ${SOUND_EVENTS.MONSTER_GENERIC}`);
-                        this.play(SOUND_EVENTS.MONSTER_GENERIC, PAIN_STAGGER);
-                    }
-                }
+                const VOCAL_STAGGER = 400;
+                const isDeath = maxHp > 0 && newHp >= maxHp && oldHp < maxHp;
 
-                // Death Check — staggered after hit impact
-                if (maxHp > 0 && newHp >= maxHp && oldHp < maxHp) {
+                if (isDeath) {
+                    // Killing blow — skip pain, go straight to death cry
                     Logger.log("Actor Died (Damage >= Max)!");
-                    const DEATH_STAGGER = 600;
-
                     const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                     if (deathOverride) {
-                        Logger.log(`Actor Override: Death -> ${deathOverride} (delay: ${DEATH_STAGGER}ms)`);
-                        this.handler.play(deathOverride, DEATH_STAGGER);
+                        Logger.log(`Actor Override: Death -> ${deathOverride} (delay: ${VOCAL_STAGGER}ms)`);
+                        this.handler.play(deathOverride, VOCAL_STAGGER);
                     } else if (actor.hasPlayerOwner) {
-                        this.play(this.handler.getPCSound(actor, "DEATH"), DEATH_STAGGER);
+                        this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
                     } else {
-                        this.play(SOUND_EVENTS.PC_DEATH, DEATH_STAGGER);
+                        this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
+                    }
+                } else {
+                    // Non-lethal — pain sound after impact
+                    const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
+                    if (painOverride) {
+                        Logger.log(`Actor Override: Pain -> ${painOverride} (delay: ${VOCAL_STAGGER}ms)`);
+                        this.handler.play(painOverride, VOCAL_STAGGER);
+                    } else if (actor.hasPlayerOwner) {
+                        const pcPain = this.handler.getPCSound(actor, "PAIN");
+                        Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
+                        this.play(pcPain, VOCAL_STAGGER);
+                    } else {
+                        const painSound = getDaggerheartMonsterSound(actor);
+                        Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || 'none'} (delay: ${VOCAL_STAGGER}ms)`);
+                        if (painSound && painSound !== SOUND_EVENTS.MONSTER_GENERIC) {
+                            this.play(painSound, VOCAL_STAGGER);
+                        } else {
+                            Logger.log(`DH | Using generic monster pain: ${SOUND_EVENTS.MONSTER_GENERIC}`);
+                            this.play(SOUND_EVENTS.MONSTER_GENERIC, VOCAL_STAGGER);
+                        }
                     }
                 }
             }

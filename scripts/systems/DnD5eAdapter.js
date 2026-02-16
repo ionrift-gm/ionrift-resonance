@@ -105,15 +105,15 @@ export class DnD5eAdapter extends SystemAdapter {
             if (hp?.value <= 0) {
                 Logger.log(`DnD5e | ${actor.name} died! Playing death sound`);
                 this.play(SOUND_EVENTS.BLOODY_HIT);
-                const DEATH_STAGGER = 600;
+                const VOCAL_STAGGER = 400;
 
                 const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                 if (deathOverride) {
-                    this.handler.play(deathOverride, DEATH_STAGGER);
+                    this.handler.play(deathOverride, VOCAL_STAGGER);
                 } else if (actor.hasPlayerOwner) {
-                    this.play(this.handler.getPCSound(actor, "DEATH"), DEATH_STAGGER);
+                    this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
                 } else {
-                    this.play(SOUND_EVENTS.PC_DEATH, DEATH_STAGGER);
+                    this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
                 }
             } else {
                 Logger.log(`DnD5e | ${actor.name} took damage, playing hit + pain`);
