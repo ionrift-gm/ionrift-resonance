@@ -4,7 +4,6 @@
 ![Foundry Version](https://img.shields.io/badge/Foundry-v12-333333?style=flat&logo=foundryvirtualtabletop)
 ![Systems](https://img.shields.io/badge/systems-dnd5e%20%7C%20daggerheart-blue)
 
-💜 **[Support on Patreon](https://www.patreon.com/ionrift)**
 
 **Automated audio triggers for Foundry VTT.**
 
@@ -171,5 +170,3 @@ Your feedback directly improves the module. Thank you.
 ## License
 MIT License. See [LICENSE](./LICENSE) for details.
 
----
-*Part of the [Ionrift Module Suite](https://github.com/ionrift-gm).*
