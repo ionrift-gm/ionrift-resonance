@@ -493,7 +493,7 @@ export class SoundPickerApp extends Application {
         event.preventDefault();
         const fp = new FilePicker({
             type: "audio",
-            current: "modules/ionrift-resonance/sounds/",
+            current: "sfx/ionrift-resonance/",
             callback: (path) => {
                 // Derive a display name from the filename
                 const filename = path.split('/').pop();
