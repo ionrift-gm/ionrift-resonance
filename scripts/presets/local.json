@@ -28,12 +28,12 @@
                 "type": "local"
             },
             "Handaxe": {
-                "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+                "id": "sfx/ionrift-resonance/melee/sword_clang_03.wav",
                 "name": "Axe Impact (Local)",
                 "type": "local"
             },
             "Greataxe": {
-                "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+                "id": "sfx/ionrift-resonance/melee/sword_clang_07.wav",
                 "name": "Greataxe Impact (Local)",
                 "type": "local"
             },
@@ -91,8 +91,48 @@
     "players": {},
     "CORE_HIT": [
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
-            "name": "Swords Clashing",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_01.wav",
+            "name": "Sword Clang 1",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_02.wav",
+            "name": "Sword Clang 2",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_03.wav",
+            "name": "Sword Clang 3",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_04.wav",
+            "name": "Sword Clang 4",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_05.wav",
+            "name": "Sword Clang 5",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_06.wav",
+            "name": "Sword Clang 6",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_07.wav",
+            "name": "Sword Clang 7",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_08.wav",
+            "name": "Sword Clang 8",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_09.wav",
+            "name": "Sword Clang 9",
             "type": "local"
         },
         {
@@ -108,8 +148,13 @@
     ],
     "CORE_CRIT": [
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
-            "name": "Crit Impact",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_08.wav",
+            "name": "Crit Impact 1",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/sword_clang_07.wav",
+            "name": "Crit Impact 2",
             "type": "local"
         }
     ],
@@ -254,7 +299,7 @@
     ],
     "ATTACK_BLUDGEON_HIT": [
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_04.wav",
             "name": "Heavy Impact 1",
             "type": "local"
         },
@@ -278,14 +323,14 @@
             "type": "local"
         },
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_06.wav",
             "name": "Slam Clash",
             "type": "local"
         }
     ],
     "SFX_ARMOR_CLANK": [
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_02.wav",
             "name": "Armor Clank 1",
             "type": "local"
         },
@@ -685,14 +730,14 @@
     ],
     "DAGGERHEART_STRESS": [
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_05.wav",
             "name": "Stress Impact",
             "type": "local"
         }
     ],
     "DAGGERHEART_ARMOR_USE": [
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_01.wav",
             "name": "Armor Block",
             "type": "local"
         },
@@ -716,7 +761,7 @@
             "type": "local"
         },
         {
-            "id": "sfx/ionrift-resonance/melee/611765__sam300productions__swords-clashing.wav",
+            "id": "sfx/ionrift-resonance/melee/sword_clang_09.wav",
             "name": "Brawl Impact",
             "type": "local"
         }
