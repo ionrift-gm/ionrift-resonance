@@ -109,7 +109,7 @@ export class ItemSoundConfig extends FormApplication {
         if (val) {
             const manager = game.ionrift?.sounds?.manager;
             if (manager) {
-                manager.provider.playSound(val);
+                manager.play(val);
             }
         }
     }

@@ -9,19 +9,33 @@ export class SoundManager {
         }
         SoundManager.instance = this;
 
+        this.syrinscapeProvider = null;
+        this.localProvider = null;
+        // Legacy compat — points to syrinscape by default
         this.provider = null;
     }
 
     initialize() {
-        const providerType = game.settings.get('ionrift-resonance', 'provider') || 'syrinscape';
+        this.syrinscapeProvider = new SyrinscapeProvider();
+        this.localProvider = new FoundryAudioProvider();
+        // Legacy compat
+        this.provider = this.syrinscapeProvider;
 
-        if (providerType === 'foundry') {
-            this.provider = new FoundryAudioProvider();
-        } else {
-            this.provider = new SyrinscapeProvider();
+        Logger.log("SoundManager Initialized with dual-provider routing (Syrinscape + Local)");
+    }
+
+    /**
+     * Determines the correct provider based on the sound ID format.
+     * File paths (containing "/" or common audio extensions) → Local provider.
+     * Everything else (numeric Syrinscape IDs) → Syrinscape provider.
+     * @param {string} soundId
+     * @returns {SoundProvider}
+     */
+    _getProvider(soundId) {
+        if (typeof soundId === 'string' && (soundId.includes('/') || /\.(wav|mp3|ogg|flac|webm)$/i.test(soundId))) {
+            return this.localProvider;
         }
-
-        Logger.log(`SoundManager Initialized with provider: ${this.provider.constructor.name}`);
+        return this.syrinscapeProvider;
     }
 
     /**
@@ -36,6 +50,10 @@ export class SoundManager {
 
         // Resolve arrays to random selection before logging.
         let target = soundData;
+        // Expand comma-separated strings into arrays (from resolveKey multi-sound)
+        if (typeof target === 'string' && target.includes(',')) {
+            target = target.split(',').map(s => s.trim());
+        }
         if (Array.isArray(target)) {
             target = target[Math.floor(Math.random() * target.length)];
         }
@@ -73,14 +91,17 @@ export class SoundManager {
             finalId = target;
         }
 
-        // 3. Handle Delays (Manager handles waiting)
+        // 3. Route to correct provider based on ID format
+        const provider = this._getProvider(finalId);
+
+        // 4. Handle Delays (Manager handles waiting)
         const delay = finalOptions.delay || 0;
         if (delay > 0) {
             setTimeout(() => {
-                this.provider?.playSound(finalId, finalOptions);
+                provider.playSound(finalId, finalOptions);
             }, delay);
         } else {
-            this.provider?.playSound(finalId, finalOptions);
+            provider.playSound(finalId, finalOptions);
         }
     }
 
@@ -98,14 +119,20 @@ export class SoundManager {
     }
 
     stopAll() {
-        if (this.provider && typeof this.provider.stopAll === 'function') {
-            this.provider.stopAll();
+        // Stop both providers
+        if (this.syrinscapeProvider && typeof this.syrinscapeProvider.stopAll === 'function') {
+            this.syrinscapeProvider.stopAll();
+        }
+        if (this.localProvider && typeof this.localProvider.stopAll === 'function') {
+            this.localProvider.stopAll();
         }
     }
+
     async search(query, options = {}) {
-        if (!this.provider) return [];
-        Logger.log(`SoundManager | Searching via Provider: ${this.provider.constructor.name}`);
-        return await this.provider.search(query, options);
+        // Search always uses Syrinscape provider (local files use FilePicker)
+        if (!this.syrinscapeProvider) return [];
+        Logger.log(`SoundManager | Searching via Syrinscape Provider`);
+        return await this.syrinscapeProvider.search(query, options);
     }
 }
 

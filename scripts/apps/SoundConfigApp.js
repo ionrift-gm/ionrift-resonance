@@ -1247,6 +1247,14 @@ export class SoundConfigApp extends FormApplication {
                 const obj = JSON.parse(soundKeyOrId);
                 idToPlay = obj.id;
                 if (obj.type) soundType = obj.type; // Extract type from JSON
+            } else if (typeof soundKeyOrId === 'string' && soundKeyOrId.trim().startsWith("[")) {
+                // Multi-sound array: pick one randomly for preview
+                const arr = JSON.parse(soundKeyOrId);
+                if (Array.isArray(arr) && arr.length > 0) {
+                    const pick = arr[Math.floor(Math.random() * arr.length)];
+                    idToPlay = pick.id;
+                    if (pick.type) soundType = pick.type;
+                }
             }
         } catch (e) { }
 

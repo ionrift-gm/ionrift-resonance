@@ -203,7 +203,7 @@ export class ActorSoundConfig extends FormApplication {
                 if (game.ionrift.handler) {
                     game.ionrift.handler.play(val);
                 } else {
-                    manager.provider.playSound(val);
+                    manager.play(val);
                 }
             }
         }

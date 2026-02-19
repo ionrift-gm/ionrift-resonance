@@ -180,12 +180,15 @@ export class SoundPickerApp extends Application {
         // Add Binding (Search Result)
         html.find(".result-row").click(this._onAddSound.bind(this));
 
-        // Play Default
+        // Browse Local Files
+        html.find(".action-browse-local").click(this._onBrowseLocal.bind(this));
+
+        // Play Default — route through manager.play() for per-sound dispatch
         html.find(".action-test-default").click((ev) => {
             ev.preventDefault();
             if (this.opts.defaultSoundId) {
                 const manager = game.ionrift?.sounds?.manager;
-                if (manager) manager.provider.playSound(this.opts.defaultSoundId);
+                if (manager) manager.play(this.opts.defaultSoundId);
             }
         });
 
@@ -253,7 +256,7 @@ export class SoundPickerApp extends Application {
 
         try {
             ui.notifications.info("Ionrift: Syncing Global One-Shots...");
-            const results = await manager.provider.cacheLibrary({
+            const results = await manager.syrinscapeProvider.cacheLibrary({
                 onProgress: (count) => {
                     // console.log(`Fetched ${count} items...`);
                 }
@@ -467,6 +470,7 @@ export class SoundPickerApp extends Application {
 
         if (id) {
             const manager = game.ionrift?.sounds?.manager;
+            // Routes automatically: local paths → FoundryAudio, numeric IDs → Syrinscape
             if (manager) manager.play(id, { type: type });
         }
     }
@@ -476,7 +480,40 @@ export class SoundPickerApp extends Application {
         const id = ev.currentTarget.dataset.id;
         if (id) {
             const manager = game.ionrift?.sounds?.manager;
-            if (manager) manager.playElement(id);
+            // Routes automatically based on ID format
+            if (manager) manager.play(id);
         }
+    }
+
+    /**
+     * Opens Foundry's native FilePicker to browse local audio files.
+     * Selected files are added to the current bindings list.
+     */
+    _onBrowseLocal(event) {
+        event.preventDefault();
+        const fp = new FilePicker({
+            type: "audio",
+            current: "modules/ionrift-resonance/sounds/",
+            callback: (path) => {
+                // Derive a display name from the filename
+                const filename = path.split('/').pop();
+                const name = filename.replace(/\.[^.]+$/, '').replace(/[_-]/g, ' ');
+
+                // Check for duplicates
+                if (this.currentBindings.some(b => b.id === path)) {
+                    ui.notifications.warn("Sound already in list.");
+                    return;
+                }
+
+                this.currentBindings.push({
+                    id: path,
+                    name: name,
+                    type: "local",
+                    meta: "Local File"
+                });
+                this.render();
+            }
+        });
+        fp.browse();
     }
 }

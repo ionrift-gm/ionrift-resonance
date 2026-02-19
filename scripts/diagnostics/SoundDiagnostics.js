@@ -43,9 +43,8 @@ export class SoundDiagnostics {
         if (token) this.log("Auth Token: Configured", "success");
         else this.log("Auth Token: Missing", "error");
 
-        // Provider Setting
-        const prov = game.settings.get("ionrift-resonance", "provider");
-        this.log(`Active Provider Setting: ${prov}`, "success");
+        // Provider Setting (deprecated — routing is per-sound)
+        this.log("Routing: Per-Sound (Dual-Provider)", "success");
     }
 
     async _checkTokenSync() {
@@ -85,33 +84,24 @@ export class SoundDiagnostics {
             return;
         }
 
-        if (this.manager.provider) {
-            const name = this.manager.provider.constructor.name;
-            this.log(`Provider Loaded: ${name}`, "success");
-
-            // Check if Provider has stopAll
-            if (typeof this.manager.provider.stopAll === 'function') {
-                this.log("Provider supports stopAll()", "success");
-            } else {
-                this.log("Provider missing stopAll()", "warn");
-            }
-
+        // Check Syrinscape provider
+        if (this.manager.syrinscapeProvider) {
+            this.log("Syrinscape Provider: Loaded", "success");
         } else {
-            this.log("Provider: Missing!", "error");
+            this.log("Syrinscape Provider: Missing", "warn");
+        }
+
+        // Check Local provider
+        if (this.manager.localProvider) {
+            this.log("Local Provider (Foundry Audio): Loaded", "success");
+        } else {
+            this.log("Local Provider: Missing", "warn");
         }
     }
 
     async _checkGlobalHandling() {
-        // Verify that the provider logic for global elements is sound
-        // We can't easily mock the fetch, but we can check if the method exists
-        if (this.manager?.provider) {
-            // Heuristic: check if play function handles prefixes
-            // This is a "Code Logic/Config" check more than a runtime one
-            const provider = this.manager.provider;
-            if (provider.constructor.name === "SyrinscapeProvider") {
-                this.log("Global Element Protocol: Provider Active", "success");
-                // We rely on the recent fix: bypassing module for 'global-element'
-            }
+        if (this.manager?.syrinscapeProvider) {
+            this.log("Global Element Protocol: Syrinscape Provider Active", "success");
         }
     }
 

@@ -1,0 +1,827 @@
+{
+    "mappings": {
+        "adversaries": {},
+        "weapons": {
+            "Longsword": {
+                "id": "modules/ionrift-resonance/sounds/melee/30245__streety__sword2.wav",
+                "name": "Sword Hit (Local)",
+                "type": "local"
+            },
+            "Dagger": {
+                "id": "modules/ionrift-resonance/sounds/melee/844255__foxfire__sword-draw-fast-and-low.wav",
+                "name": "Dagger Draw (Local)",
+                "type": "local"
+            },
+            "Bow": {
+                "id": "modules/ionrift-resonance/sounds/ranged/511489__lydmakeren__fx_bowarrow2.wav",
+                "name": "Bow Fire (Local)",
+                "type": "local"
+            },
+            "Shortbow": {
+                "id": "modules/ionrift-resonance/sounds/ranged/511489__lydmakeren__fx_bowarrow2.wav",
+                "name": "Shortbow (Local)",
+                "type": "local"
+            },
+            "Longbow": {
+                "id": "modules/ionrift-resonance/sounds/ranged/511489__lydmakeren__fx_bowarrow2.wav",
+                "name": "Longbow (Local)",
+                "type": "local"
+            },
+            "Handaxe": {
+                "id": "modules/ionrift-resonance/sounds/melee/axe_hit_01.wav",
+                "name": "Axe (Local)",
+                "type": "local"
+            },
+            "Greataxe": {
+                "id": "modules/ionrift-resonance/sounds/melee/axe_hit_01.wav",
+                "name": "Greataxe (Local)",
+                "type": "local"
+            },
+            "Dawnbringer": {
+                "id": "modules/ionrift-resonance/sounds/magic/dawnbringer/591431__ryankingart__laser-sword-turn-on-1.wav",
+                "name": "Dawnbringer Ignite (Local)",
+                "type": "local"
+            }
+        },
+        "spells": {
+            "Fireball": {
+                "id": "modules/ionrift-resonance/sounds/explosions/186932__readeonly__fire_explosion.wav",
+                "name": "Fireball (Local)",
+                "type": "local"
+            },
+            "Acid Splash": {
+                "id": "modules/ionrift-resonance/sounds/magic/758633__andrastos87__acid_splash.wav",
+                "name": "Acid Splash (Local)",
+                "type": "local"
+            }
+        },
+        "generic": {
+            "bite": {
+                "id": "modules/ionrift-resonance/sounds/gore/bone_crack_01.wav",
+                "name": "Bite (Local)",
+                "type": "local"
+            },
+            "claw": {
+                "id": "modules/ionrift-resonance/sounds/gore/bone_crack_02.wav",
+                "name": "Claw (Local)",
+                "type": "local"
+            },
+            "slam": {
+                "id": "modules/ionrift-resonance/sounds/melee/punch_combo.wav",
+                "name": "Slam (Local)",
+                "type": "local"
+            },
+            "sword": {
+                "id": "modules/ionrift-resonance/sounds/melee/30245__streety__sword2.wav",
+                "name": "Sword (Local)",
+                "type": "local"
+            },
+            "bow": {
+                "id": "modules/ionrift-resonance/sounds/ranged/511489__lydmakeren__fx_bowarrow2.wav",
+                "name": "Bow (Local)",
+                "type": "local"
+            }
+        }
+    },
+    "default": {
+        "id": "modules/ionrift-resonance/sounds/gore/bone_crack_01.wav",
+        "name": "Generic Impact (Local)",
+        "type": "local"
+    },
+    "players": {},
+    "CORE_HIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_01.wav",
+            "name": "Bone Crack 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_02.wav",
+            "name": "Bone Crack 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_03.wav",
+            "name": "Bone Crack 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_04.wav",
+            "name": "Bone Crack 4",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_05.wav",
+            "name": "Bone Crack 5",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_06.wav",
+            "name": "Bone Crack 6",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_07.wav",
+            "name": "Bone Crack 7",
+            "type": "local"
+        }
+    ],
+    "CORE_CRIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_01.wav",
+            "name": "Crit Impact",
+            "type": "local"
+        }
+    ],
+    "CORE_MISS": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/420670__sypherzent__strong-melee-swing.wav",
+            "name": "Melee Whoosh",
+            "type": "local"
+        }
+    ],
+    "CORE_WHOOSH": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/420670__sypherzent__strong-melee-swing.wav",
+            "name": "Weapon Swing",
+            "type": "local"
+        }
+    ],
+    "CORE_MONSTER_DEATH": [
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_01.wav",
+            "name": "Gore Splatter 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_02.wav",
+            "name": "Gore Splatter 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_03.wav",
+            "name": "Gore Splatter 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_04.wav",
+            "name": "Gore Splatter 4",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_05.wav",
+            "name": "Gore Splatter 5",
+            "type": "local"
+        }
+    ],
+    "CORE_MONSTER_PAIN": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/567998__leadstarson__monster_sound_medium_pain.wav",
+            "name": "Monster Pain",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/204912__noxdl__didgeridoo-monster-roar.wav",
+            "name": "Monster Roar",
+            "type": "local"
+        }
+    ],
+    "CORE_PAIN_MASCULINE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/464486__elynch0901__male-grunting-in-pain.wav",
+            "name": "Pain Grunt 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/668351__deltacode__pain2.wav",
+            "name": "Pain 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/668352__deltacode__pain1.wav",
+            "name": "Pain 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/720757__peter_scream__pain-1.wav",
+            "name": "Pain Scream",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/786287__dvdiso__mangrunting.wav",
+            "name": "Grunt",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/839522__iampatrick__video-game-character-grunt.wav",
+            "name": "Character Grunt",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/813303__qubodup__wilhelm-scream-alternative-1.wav",
+            "name": "Wilhelm Alt 1",
+            "type": "local"
+        }
+    ],
+    "CORE_PAIN_FEMININE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/219659__annatabernero__pain-scream-girl.wav",
+            "name": "Pain Scream (Feminine)",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/679748__werwqerewqr__scream.wav",
+            "name": "Scream",
+            "type": "local"
+        }
+    ],
+    "CORE_DEATH_MASCULINE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/416838__tonsil5__grunt2-death-pain.wav",
+            "name": "Death Grunt 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/416839__tonsil5__grunt1-death-pain.wav",
+            "name": "Death Grunt 2",
+            "type": "local"
+        }
+    ],
+    "CORE_DEATH_FEMININE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/pain/219659__annatabernero__pain-scream-girl.wav",
+            "name": "Death Scream (Feminine)",
+            "type": "local"
+        }
+    ],
+    "PC_DEATH": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/death/578550__nomiqbomi__church-bell-11.wav",
+            "name": "Death Door Bell",
+            "type": "local"
+        }
+    ],
+    "ATTACK_SWORD_HIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/30245__streety__sword2.wav",
+            "name": "Sword Hit",
+            "type": "local"
+        }
+    ],
+    "ATTACK_SWORD_SLASH": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/844255__foxfire__sword-draw-fast-and-low.wav",
+            "name": "Sword Draw",
+            "type": "local"
+        }
+    ],
+    "ATTACK_DAGGER_SLASH": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/844255__foxfire__sword-draw-fast-and-low.wav",
+            "name": "Blade Draw",
+            "type": "local"
+        }
+    ],
+    "ATTACK_BLUDGEON_HIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/axe_hit_01.wav",
+            "name": "Axe Hit 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/axe_hit_02.wav",
+            "name": "Axe Hit 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/axe_hit_03.wav",
+            "name": "Axe Hit 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/axe_hit_04.wav",
+            "name": "Axe Hit 4",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/axe_hit_05.wav",
+            "name": "Axe Hit 5",
+            "type": "local"
+        }
+    ],
+    "ATTACK_BLUDGEON_SWING": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/420670__sypherzent__strong-melee-swing.wav",
+            "name": "Bludgeon Swing",
+            "type": "local"
+        }
+    ],
+    "ATTACK_SLAM": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/punch_combo.wav",
+            "name": "Punch Combo",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/punch_single.wav",
+            "name": "Punch Single",
+            "type": "local"
+        }
+    ],
+    "SFX_ARMOR_CLANK": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/shield_block_01.wav",
+            "name": "Shield Block 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/shield_block_02.wav",
+            "name": "Shield Block 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/shield_block_03.wav",
+            "name": "Shield Block 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/shield_block_04.wav",
+            "name": "Shield Block 4",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/shield_block_05.wav",
+            "name": "Shield Block 5",
+            "type": "local"
+        }
+    ],
+    "CORE_MELEE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/30245__streety__sword2.wav",
+            "name": "Melee Generic",
+            "type": "local"
+        }
+    ],
+    "ATTACK_BOW_FIRE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/ranged/511489__lydmakeren__fx_bowarrow2.wav",
+            "name": "Bow Fire",
+            "type": "local"
+        }
+    ],
+    "ATTACK_BOW_HIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/ranged/574044__thecrow_br__arrow.wav",
+            "name": "Arrow Hit",
+            "type": "local"
+        }
+    ],
+    "CORE_RANGED": [
+        {
+            "id": "modules/ionrift-resonance/sounds/ranged/511489__lydmakeren__fx_bowarrow2.wav",
+            "name": "Ranged Generic",
+            "type": "local"
+        }
+    ],
+    "MONSTER_WOLF": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_01.wav",
+            "name": "Wolf Snarl 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_02.wav",
+            "name": "Wolf Snarl 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_03.wav",
+            "name": "Wolf Snarl 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_04.wav",
+            "name": "Wolf Snarl 4",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_05.wav",
+            "name": "Wolf Snarl 5",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_06.wav",
+            "name": "Wolf Snarl 6",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_07.wav",
+            "name": "Wolf Snarl 7",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_08.wav",
+            "name": "Wolf Snarl 8",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_09.wav",
+            "name": "Wolf Snarl 9",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/wolf_attack_snarl_10.wav",
+            "name": "Wolf Snarl 10",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/420450__mrthenoronha__barking-1.wav",
+            "name": "Wolf Bark 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/420452__mrthenoronha__barking-5.wav",
+            "name": "Wolf Bark 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/wolf/443404__darsycho__monster-snarls-4.wav",
+            "name": "Wolf Growl",
+            "type": "local"
+        }
+    ],
+    "MONSTER_ZOMBIE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/115887__rendensh__zmb_pain5.wav",
+            "name": "Zombie Pain",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/133974__mrpokephile__horrific-zombie-growl.wav",
+            "name": "Zombie Growl 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/143999__arrigd__zombie-roar-3.wav",
+            "name": "Zombie Roar",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/217270__jarredgibb__deep-zombie-4.wav",
+            "name": "Deep Zombie",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/555417__tonsil5__zombie-growl-5.wav",
+            "name": "Zombie Growl 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/555425__tonsil5__zombie-pain-6.wav",
+            "name": "Zombie Pain 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/565792__lewisbm__zombie-growl-noise-02.wav",
+            "name": "Zombie Growl 3",
+            "type": "local"
+        }
+    ],
+    "MONSTER_SKELETON": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/skeleton/420252__redroxpeterpepper__step-skeleton.wav",
+            "name": "Skeleton Step",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/skeleton/202091__spookymodem__falling-bones.wav",
+            "name": "Falling Bones",
+            "type": "local"
+        }
+    ],
+    "MONSTER_DRAGON": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/dragon_roar_01.wav",
+            "name": "Dragon Roar 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/dragon_roar_02.wav",
+            "name": "Dragon Roar 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/467228__vladimirpetrakov__dragon-roar-short.wav",
+            "name": "Dragon Roar Short",
+            "type": "local"
+        }
+    ],
+    "MONSTER_BEAR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/728102__piddipop__synthetic-bear-growl-2.wav",
+            "name": "Bear Growl",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/718658__shangasdfguy123__large-carnivore-roar-4.wav",
+            "name": "Carnivore Roar",
+            "type": "local"
+        }
+    ],
+    "MONSTER_REPTILE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/837799__bikkit99__sea-creature-roar.wav",
+            "name": "Sea Creature Roar",
+            "type": "local"
+        }
+    ],
+    "MONSTER_BEAST": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/567998__leadstarson__monster_sound_medium_pain.wav",
+            "name": "Beast Pain",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/413826__henlord__chicken-scream-roar.wav",
+            "name": "Beast Screech",
+            "type": "local"
+        }
+    ],
+    "MONSTER_UNDEAD": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/zombie/143999__arrigd__zombie-roar-3.wav",
+            "name": "Undead Roar",
+            "type": "local"
+        }
+    ],
+    "MONSTER_ROAR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/420466__tahirahg1991__roar.wav",
+            "name": "Generic Roar",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/204912__noxdl__didgeridoo-monster-roar.wav",
+            "name": "Deep Roar",
+            "type": "local"
+        }
+    ],
+    "SPELL_FIRE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/explosions/186932__readeonly__fire_explosion.wav",
+            "name": "Fire Explosion",
+            "type": "local"
+        }
+    ],
+    "SPELL_HEAL": [
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_01.wav",
+            "name": "Heal Pluck 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_02.wav",
+            "name": "Heal Pluck 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_03.wav",
+            "name": "Heal Pluck 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_04.wav",
+            "name": "Heal Pluck 4",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_05.wav",
+            "name": "Heal Pluck 5",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_06.wav",
+            "name": "Heal Pluck 6",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_07.wav",
+            "name": "Heal Pluck 7",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_08.wav",
+            "name": "Heal Pluck 8",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_09_long.wav",
+            "name": "Heal Pluck 9 (Long)",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_10_long.wav",
+            "name": "Heal Pluck 10 (Long)",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_11_long.wav",
+            "name": "Heal Pluck 11 (Long)",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_12_long.wav",
+            "name": "Heal Pluck 12 (Long)",
+            "type": "local"
+        }
+    ],
+    "CORE_HEAL": [
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_01.wav",
+            "name": "Heal Generic",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_02.wav",
+            "name": "Heal Generic 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_03.wav",
+            "name": "Heal Generic 3",
+            "type": "local"
+        }
+    ],
+    "SPELL_ACID": [
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/758633__andrastos87__acid_splash.wav",
+            "name": "Acid Splash",
+            "type": "local"
+        }
+    ],
+    "CORE_MAGIC": [
+        {
+            "id": "modules/ionrift-resonance/sounds/magic/magic_pluck_01.wav",
+            "name": "Magic Generic",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_HOPE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/hope/487375__phonosupf__female-voice-choral-14.wav",
+            "name": "Hope Gained",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_CRIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/hope/444491__breviceps__short-choir.wav",
+            "name": "Critical Success",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_SUCCESS_WITH_HOPE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/hope/682633__bastianhallo__level-up.wav",
+            "name": "Success w/ Hope",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_HOPE_USE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/hope/487375__phonosupf__female-voice-choral-14.wav",
+            "name": "Hope Token",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_ROLL_HOPE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/hope/487375__phonosupf__female-voice-choral-14.wav",
+            "name": "Roll Hope",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_FEAR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/fear/748869__rahulsawla__sudden-unbearable-weight-of-creep.wav",
+            "name": "Fear Gained",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_FEAR_USE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/fear/372008__cabled_mess__end-or-beginning_processed-gong.wav",
+            "name": "Fear Gong",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_FAIL_WITH_FEAR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/fear/814048__qubodup__horror-surprise.wav",
+            "name": "Fail w/ Fear",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_ROLL_FEAR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/fear/748869__rahulsawla__sudden-unbearable-weight-of-creep.wav",
+            "name": "Roll Fear",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_SUCCESS_WITH_FEAR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/fear/372008__cabled_mess__end-or-beginning_processed-gong.wav",
+            "name": "Success w/ Fear",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_FAIL_WITH_HOPE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/stingers/hope/487375__phonosupf__female-voice-choral-14.wav",
+            "name": "Fail w/ Hope",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_STRESS": [
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/bone_crack_01.wav",
+            "name": "Stress Crack",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_ARMOR_USE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/shield_block_01.wav",
+            "name": "Armor Block",
+            "type": "local"
+        }
+    ],
+    "DAGGERHEART_ARMOR_REPAIR": [
+        {
+            "id": "modules/ionrift-resonance/sounds/explosions/powerup_01.wav",
+            "name": "Power Up 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/explosions/powerup_02.wav",
+            "name": "Power Up 2",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/explosions/powerup_03.wav",
+            "name": "Power Up 3",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/explosions/powerup_04.wav",
+            "name": "Power Up 4",
+            "type": "local"
+        }
+    ],
+    "CORE_BRAWL": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/punch_combo.wav",
+            "name": "Brawl Combo",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/punch_single.wav",
+            "name": "Brawl Single",
+            "type": "local"
+        }
+    ],
+    "CORE_FUMBLE": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/420670__sypherzent__strong-melee-swing.wav",
+            "name": "Fumble Whiff",
+            "type": "local"
+        }
+    ],
+    "BLOODY_HIT": [
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_01.wav",
+            "name": "Bloody Hit 1",
+            "type": "local"
+        },
+        {
+            "id": "modules/ionrift-resonance/sounds/gore/gore_splatter_02.wav",
+            "name": "Bloody Hit 2",
+            "type": "local"
+        }
+    ],
+    "MONSTER_GENERIC": [
+        {
+            "id": "modules/ionrift-resonance/sounds/creatures/monster/567998__leadstarson__monster_sound_medium_pain.wav",
+            "name": "Monster Generic",
+            "type": "local"
+        }
+    ],
+    "WHOOSH": [
+        {
+            "id": "modules/ionrift-resonance/sounds/melee/420670__sypherzent__strong-melee-swing.wav",
+            "name": "Whoosh",
+            "type": "local"
+        }
+    ]
+}

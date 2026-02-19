@@ -113,9 +113,9 @@ export class ResonanceConfig {
         }
 
         let effectiveBindings;
-        if (this.activePreset === "none") {
+        if (this.activePreset === "none" || this.activePreset === "local") {
             effectiveBindings = { ...this.config, ...userBindings };
-            Logger.log(`ResonanceConfig | Preset: "none", Keys: ${Object.keys(effectiveBindings).length}`);
+            Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Keys: ${Object.keys(effectiveBindings).length}`);
         } else {
             effectiveBindings = { ...SYRINSCAPE_DEFAULTS, ...this.config, ...userBindings };
             Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Default Keys: ${Object.keys(SYRINSCAPE_DEFAULTS).length}, Total Keys: ${Object.keys(effectiveBindings).length}`);

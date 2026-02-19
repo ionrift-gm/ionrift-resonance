@@ -169,9 +169,10 @@ export class SoundResolver {
         const bindings = this.configService.getEffectiveBindings();
         let resolved = bindings[key];
 
-        // Unpack arrays from SYRINSCAPE_DEFAULTS structure: [{id, name, type}]
+        // Unpack arrays from preset/defaults structure: [{id, name, type}]
+        // Join all IDs for multi-sound randomisation at playback
         if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
-            resolved = resolved[0].id;
+            resolved = resolved.map(r => r.id).join(',');
         }
 
         if (resolved) {

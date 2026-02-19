@@ -4,13 +4,15 @@ import { Logger } from "../Logger.js";
 export class FoundryAudioProvider extends SoundProvider {
     /**
      * Plays a local audio file.
-     * @param {string} soundId - The path to the audio file (e.g., "modules/my-module/sounds/explosion.ogg")
-     * @param {number} volume - Volume (0.0 to 1.0)
+     * @param {string} soundId - The path to the audio file (e.g., "modules/my-module/sounds/explosion.wav")
+     * @param {object|number} options - Volume number (legacy) or options object { volume, delay, type }
      */
-    async playSound(soundId, volume = 1.0) {
+    async playSound(soundId, options = {}) {
         if (!soundId) return;
 
-        Logger.log(`[Local] Playing: ${soundId}`);
+        const volume = (typeof options === 'number') ? options : (options.volume ?? 1.0);
+
+        Logger.log(`[Local] Playing: ${soundId} (vol: ${volume})`);
 
         try {
             AudioHelper.play({

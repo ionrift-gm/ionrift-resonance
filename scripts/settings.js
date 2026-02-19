@@ -61,28 +61,13 @@ export const registerSettings = function () {
         default: { timestamp: 0, results: [] }
     });
 
-    // Audio Provider Choice
+    // Audio Provider (Deprecated — routing is now per-sound based on ID format)
+    // Kept hidden for migration; no longer user-configurable.
     game.settings.register('ionrift-resonance', 'provider', {
         name: "Audio Provider",
-        hint: "Choose between Syrinscape (Streaming) or Local Audio (Foundry Playlists/Files)",
         scope: "world",
-        config: true,
+        config: false,
         type: String,
-        choices: {
-            "syrinscape": "Syrinscape (Online)",
-            "foundry": "Local Audio (Experimental/Untested)"
-        },
-        onChange: () => {
-            // Re-initialize manager on change to switch providers
-            import("./SoundManager.js").then(({ soundManager }) => {
-                soundManager.initialize();
-            });
-            // Also update the Handler's resolution strategy
-            if (game.ionrift?.handler) {
-                game.ionrift.handler.reloadStrategy();
-            }
-            ui.notifications.info("Ionrift Resonance: Audio Provider Changed");
-        },
         default: "syrinscape"
     });
 
@@ -95,7 +80,8 @@ export const registerSettings = function () {
         type: String,
         choices: {
             "none": "Standard Setup (Manual)",
-            // "fantasy": "Fantasy / Core (DnD, Daggerheart)" // Disabled for Initial Release
+            // "fantasy": "Fantasy / Core (DnD, Daggerheart)", // Disabled for Initial Release
+            "local": "Local Demo SFX"
         },
         onChange: () => game.ionrift.handler?.loadConfig(),
         default: "none"

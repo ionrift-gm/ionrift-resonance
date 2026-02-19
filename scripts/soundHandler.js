@@ -61,7 +61,10 @@ export class SoundHandler {
         await this.loadConfig();
 
         if (game.user.isGM) {
-            this.checkConfiguration();
+            const token = game.settings.get('ionrift-resonance', 'syrinToken') || '';
+            if (token) {
+                this.checkConfiguration();
+            }
             this.validateMappings();
             this.runStartupChecks();
         }
