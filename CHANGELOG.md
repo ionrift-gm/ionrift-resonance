@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1] - Critical Bug Fix + Local Audio
+*   **Fix**: Resonance Calibration window no longer re-renders on every HP change during combat. Previously, any actor update (damage, healing) would force the Calibration UI to refresh if the actor had sound flags configured.
+*   **Fix**: Weapons (axes, swords, hammers) no longer incorrectly resolve to spell/domain sounds in Daggerheart. The domain resolution step now correctly skips weapon, armor, and equipment item types.
+*   **Feature**: Dual-provider audio routing — sound bindings that reference local file paths (e.g. `sfx/melee/axe_hit_01.wav`) automatically play via Foundry's native audio, while Syrinscape element IDs route to the Syrinscape API. No manual provider switching needed.
+*   **Feature**: `local` preset with CC0-licensed demo SFX covering melee, ranged, pain, death, creatures, magic, and Daggerheart stingers.
+*   **Improvement**: Attack ask sounds (anticipation stingers before impact).
+*   **Improvement**: Enhanced crit, fumble, and hope/fear stinger audio.
+
 ## [2.0.0] - Public Launch
 *   **Feature**: 4-tier sound resolution (Item Flag → Adversary Map → Classifier → String Match) with recursive fallback chains.
 *   **Feature**: AoE sound mitigation — single impact stinger with staggered per-target vocals.
