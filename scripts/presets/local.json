@@ -148,13 +148,8 @@
     ],
     "CORE_CRIT": [
         {
-            "id": "sfx/ionrift-resonance/melee/sword_clang_08.wav",
-            "name": "Crit Impact 1",
-            "type": "local"
-        },
-        {
-            "id": "sfx/ionrift-resonance/melee/sword_clang_07.wav",
-            "name": "Crit Impact 2",
+            "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_01.wav",
+            "name": "Crit Stinger",
             "type": "local"
         }
     ],
@@ -768,8 +763,13 @@
     ],
     "CORE_FUMBLE": [
         {
-            "id": "sfx/ionrift-resonance/melee/420670__sypherzent__strong-melee-swing.wav",
-            "name": "Fumble Whiff",
+            "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_01.wav",
+            "name": "Fumble (Gong + Tritone)",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_02.wav",
+            "name": "Fumble (Gong + Minor)",
             "type": "local"
         }
     ],
