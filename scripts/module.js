@@ -97,7 +97,11 @@ Hooks.once('init', async function () {
             const ATTUNEMENT_VERSION = "1";
             const lastSetupVersion = game.settings.get("ionrift-resonance", "setupVersion");
 
-            if (lastSetupVersion !== ATTUNEMENT_VERSION) {
+            // Backward compatibility: 2.0.0 users have semver strings (e.g. "2.0.0").
+            // Silently migrate them to the new protocol versioning without re-prompting.
+            if (lastSetupVersion.includes(".") && lastSetupVersion !== "0.0.0") {
+                await game.settings.set("ionrift-resonance", "setupVersion", ATTUNEMENT_VERSION);
+            } else if (lastSetupVersion !== ATTUNEMENT_VERSION) {
                 new AttunementApp(ATTUNEMENT_VERSION).render(true);
             }
         }
