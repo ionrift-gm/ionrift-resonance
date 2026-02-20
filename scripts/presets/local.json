@@ -148,8 +148,13 @@
     ],
     "CORE_CRIT": [
         {
+            "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_v2.wav",
+            "name": "Crit Crescendo",
+            "type": "local"
+        },
+        {
             "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_01.wav",
-            "name": "Crit Stinger",
+            "name": "Crit Impact",
             "type": "local"
         }
     ],
@@ -763,13 +768,18 @@
     ],
     "CORE_FUMBLE": [
         {
+            "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_v2.wav",
+            "name": "Fumble (Descend + Gong)",
+            "type": "local"
+        },
+        {
             "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_01.wav",
-            "name": "Fumble (Gong + Tritone)",
+            "name": "Fumble (Tritone + Gong)",
             "type": "local"
         },
         {
             "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_02.wav",
-            "name": "Fumble (Gong + Minor)",
+            "name": "Fumble (Minor + Gong)",
             "type": "local"
         }
     ],
