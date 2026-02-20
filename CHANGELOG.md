@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.2] - Supersedes v2.0.1 (Attunement Protocol Fix)
+*   **Fix**: Attunement Protocol no longer re-prompts on every module update. Uses a static protocol version that only changes when setup steps change. Existing 2.0.0 users are silently migrated.
+*   **Fix**: Release workflow upgraded to `softprops/action-gh-release@v2` (Node 16 EOL).
+*   All v2.0.1 fixes included (see below).
+
 ## [2.0.1] - Critical Bug Fix + Local Audio
 *   **Fix**: Resonance Calibration window no longer re-renders on every HP change during combat. Previously, any actor update (damage, healing) would force the Calibration UI to refresh if the actor had sound flags configured.
 *   **Fix**: Weapons (axes, swords, hammers) no longer incorrectly resolve to spell/domain sounds in Daggerheart. The domain resolution step now correctly skips weapon, armor, and equipment item types.
