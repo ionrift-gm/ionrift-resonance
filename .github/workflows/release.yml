@@ -19,10 +19,10 @@ jobs:
       - name: Zip Module
         # Zips current directory, excluding git/github/dev files
         run: |
-          zip -r module.zip . -x ".git/*" ".github/*" ".gitignore" "RELEASE_WORKFLOW.md" "task.md" "package.json" "package-lock.json" "node_modules/*" "scripts/utils/*" "scripts/debug_controls_structure.js" "debug_macro.js" "debug_pop.log" "audit_*.json" "audit_*.txt" "audit_*.js" "*.bak" "free_tier_candidates.md" "SETUP_GUIDE.md" "TEST_SCENARIOS.md" "docs/MIGRATION_STRATEGY.md" "docs/GUIDE.md"
+          zip -r module.zip . -x ".git/*" ".github/*" ".gitignore" "RELEASE_WORKFLOW.md" "task.md" "package.json" "package-lock.json" "node_modules/*" "scripts/utils/*" "scripts/debug_controls_structure.js" "debug_macro.js" "debug_pop.log" "audit_*.json" "audit_*.txt" "audit_*.js" "*.bak" "free_tier_candidates.md" "SETUP_GUIDE.md" "TEST_SCENARIOS.md" "docs/MIGRATION_STRATEGY.md" "docs/GUIDE.md" "sounds/*"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             module.zip
@@ -32,6 +32,7 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+          make_latest: true
 
       - name: Notify Foundry VTT
         if: success()
@@ -43,7 +44,6 @@ jobs:
             const fs = require('fs');
             const manifest = JSON.parse(fs.readFileSync('module.json', 'utf8'));
             
-            // Construct the payload matching Foundry's API expectations
             const payload = {
               id: manifest.id,
               release: {
@@ -56,7 +56,6 @@ jobs:
             
             console.log("Sending payload:", JSON.stringify(payload, null, 2));
             
-            // Send to Foundry API
             const response = await fetch("https://foundryvtt.com/_api/packages/release_version/", {
               method: "POST",
               headers: {
