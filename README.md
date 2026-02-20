@@ -7,7 +7,7 @@
 
 **Automated audio triggers for Foundry VTT.**
 
-Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (official system, native support) and **DnD5e** (via Midi-QOL). Integrates with Syrinscape to handle the audio.
+Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (official system, native support) and **DnD5e** (via Midi-QOL). Works with **local sound files** (WAV/MP3) out of the box — no paid accounts required. Optionally integrates with **Syrinscape** for cloud-hosted audio.
 
 <table>
 <tr>
@@ -28,7 +28,9 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 
 1. Install from Foundry VTT package manager
 2. Install **Ionrift Library** (required dependency)
-3. Configure your Syrinscape auth token via **Module Settings → Ionrift Resonance → Attunement Protocol**
+3. Run the **Attunement Protocol** (appears on first launch)
+   - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
+   - **Syrinscape?** Paste your auth token to connect cloud audio
 4. Select a sound preset or start with a blank configuration
 
 
@@ -64,14 +66,14 @@ This feature works independently of global presets—your custom bindings always
 ### Sound Picker
 
 ![Sound Picker](docs/sound_picker.gif)  
-*Search Syrinscape library → preview → select*
+*Search sounds → preview → select (supports local files and Syrinscape)*
 
 ### Tier Navigation
 
 ![Tier Navigation](docs/tier_navigation.gif)  
 *Browse tier tabs → expand categories → assign sounds to semantic keys*
 
-Ionrift Resonance features a comprehensive configuration UI used to map game events to specific Syrinscape Sound IDs.
+Ionrift Resonance features a comprehensive configuration UI to map game events to sound bindings — either local file paths or Syrinscape element IDs.
 
 > **Note:** This release focuses on manual configuration ("Standard Setup"). Curated presets are currently disabled and will be available in future updates.
 
@@ -94,18 +96,22 @@ Define specific pain and death sounds for your Player Characters.
 
 ## Data Management
 *   **Export JSON**: You can backup your entire configuration (including all overrides and player settings) to a JSON file via the **Export JSON** button in the calibration footer.
-*   **Syrinscape Token**: To ensure reliable playback, enter your Syrinscape Auth Token in the Module Settings.
+*   **Local Files**: Place WAV/MP3 files anywhere in your Foundry Data folder (e.g., `sfx/`) and bind them directly — no external accounts needed.
+*   **Syrinscape Token** (optional): If using Syrinscape cloud sounds, enter your Auth Token in Module Settings.
 
 ## Dependencies
 *   **[Ionrift Library](https://github.com/ionrift-gm/ionrift-library)** — Required core module.
 *   **[Midi-QOL](https://foundryvtt.com/packages/midi-qol)** — Required for DnD 5e combat automation.
+
+### Optional Integrations
+*   **[Syrinscape](https://syrinscape.com/)** — Cloud-hosted sound library. Resonance works without it — local sound files are fully supported.
+*   **[fvtt-syrin-control](https://github.com/frondeus/fvtt-syrin-control)** — Embeds the Syrinscape player in Foundry (only relevant if using Syrinscape).
 
 ### Recommended Modules
 These are not required but significantly improve the experience:
 
 *   **[Dice So Nice](https://foundryvtt.com/packages/dice-so-nice)** — 3D dice animations add a natural pause between the attack roll and result, giving Resonance's two-beat sound sequence (weapon swing → hit/miss) room to breathe. Works well with both Daggerheart and DnD 5e.
 *   **[Automated Animations](https://foundryvtt.com/packages/autoanimations)** — Attack and spell animations create timing gaps that let weapon and impact sounds play distinctly rather than overlapping.
-*   **[fvtt-syrin-control](https://github.com/frondeus/fvtt-syrin-control)** — Syrinscape integration module (optional if using auth token directly).
 
 
 ## Supported Systems

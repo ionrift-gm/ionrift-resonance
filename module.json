@@ -1,7 +1,7 @@
 {
     "id": "ionrift-resonance",
     "title": "Ionrift Resonance",
-    "description": "Immersive, reactive sound automation for Daggerheart and DnD5e (part of the Ionrift Suite).",
+    "description": "Immersive, reactive sound automation for Daggerheart and DnD5e. Works with local sound files out of the box — optionally integrates with Syrinscape for cloud audio.",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
     "version": "2.0.3",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
