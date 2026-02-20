@@ -148,13 +148,13 @@
     ],
     "CORE_CRIT": [
         {
-            "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_v2.wav",
-            "name": "Crit Crescendo",
+            "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_v3.wav",
+            "name": "Crit (Choral + Sparkle)",
             "type": "local"
         },
         {
-            "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_01.wav",
-            "name": "Crit Impact",
+            "id": "sfx/ionrift-resonance/stingers/crit/crit_stinger_v2.wav",
+            "name": "Crit (Power Chord)",
             "type": "local"
         }
     ],
