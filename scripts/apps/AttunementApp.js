@@ -7,10 +7,11 @@ import { Logger } from "../Logger.js";
  * Handles Syrinscape Connection and Sound Preset Configuration.
  */
 export class AttunementApp extends AbstractWelcomeApp {
-    constructor(options = {}) {
-        // Parent constructor: title, settingsKey, currentVersion
-        const version = game.modules.get("ionrift-resonance").version;
-        super("Ionrift Resonance: Syrinscape Configuration", "setupVersion", version);
+    constructor(attunementVersion, options = {}) {
+        // Parent constructor: title, settingsKey, attunement protocol version
+        // attunementVersion is a static constant from module.js — only changes
+        // when the setup steps themselves change, not on every patch release.
+        super("Ionrift Resonance: Syrinscape Configuration", "setupVersion", attunementVersion);
 
         // State for Token Input
         this.pendingToken = "";
@@ -294,6 +295,12 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async close(options = {}) {
+        // Always save the attunement version so the wizard doesn't re-show.
+        // This uses this.currentVersion set by AbstractWelcomeApp constructor.
+        if (this.currentVersion) {
+            await game.settings.set("ionrift-resonance", "setupVersion", this.currentVersion);
+        }
+
         // If we synced with Syrinscape Control, we MUST reload to ensure it picks up the new token.
         if (this.reloadRequired) {
             const confirm = await Dialog.confirm({
@@ -303,10 +310,6 @@ export class AttunementApp extends AbstractWelcomeApp {
             });
 
             if (confirm) {
-                // Save version tracking manually to ensure wizard doesn't pop up again
-                const version = game.modules.get("ionrift-resonance").version;
-                await game.settings.set("ionrift-resonance", "setupVersion", version);
-
                 await super.close(options);
                 window.location.reload();
                 return;

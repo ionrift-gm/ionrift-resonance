@@ -91,13 +91,14 @@ Hooks.once('init', async function () {
             //     new AttunementApp().render(true);
             // }
 
-            // Check if version mismatch requires Setup/Attunement
+            // Attunement Protocol: Only show when the setup process itself changes.
+            // ATTUNEMENT_VERSION is a static constant — only bump it when setup steps
+            // change (new API, new required config), NOT on every module patch release.
+            const ATTUNEMENT_VERSION = "1";
+            const lastSetupVersion = game.settings.get("ionrift-resonance", "setupVersion");
 
-            const currentVersion = game.modules.get("ionrift-resonance").version;
-            const lastVersion = game.settings.get("ionrift-resonance", "setupVersion");
-
-            if (currentVersion !== lastVersion) {
-                new AttunementApp().render(true);
+            if (lastSetupVersion !== ATTUNEMENT_VERSION) {
+                new AttunementApp(ATTUNEMENT_VERSION).render(true);
             }
         }
         // Register Status Indicator (Generic Integration)
