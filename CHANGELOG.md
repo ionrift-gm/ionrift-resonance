@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.0.3] - Compatibility Standardization
+*   **Fix**: Minimum Foundry version corrected to v12 (previously claimed v10, untested).
+
 ## [2.0.2] - Supersedes v2.0.1 (Attunement Protocol Fix)
 *   **Fix**: Attunement Protocol no longer re-prompts on every module update. Uses a static protocol version that only changes when setup steps change. Existing 2.0.0 users are silently migrated.
 *   **Fix**: Release workflow upgraded to `softprops/action-gh-release@v2` (Node 16 EOL).
