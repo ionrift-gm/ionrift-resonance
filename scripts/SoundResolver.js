@@ -53,7 +53,11 @@ export class SoundResolver {
 
         // 3.5. Daggerheart Domain Resolution
         // Priority: item.system.domain (domainCards) → actor.system.domains (class fallback)
-        if (game.system.id === "daggerheart" && item?.system) {
+        // Guard: Only spell-like items enter domain resolution. Weapons/armor/equipment skip this entirely.
+        const weaponTypes = ["weapon", "armor", "equipment", "loot", "consumable"];
+        const isWeaponLike = item?.type && weaponTypes.includes(item.type);
+
+        if (game.system.id === "daggerheart" && item?.system && !isWeaponLike) {
             // A) Direct domain on item (domainCard type items have this)
             const itemDomain = item.system.domain;
             if (itemDomain) {

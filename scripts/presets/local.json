@@ -84,8 +84,8 @@
         }
     },
     "default": {
-        "id": "sfx/ionrift-resonance/melee/420670__sypherzent__strong-melee-swing.wav",
-        "name": "Generic Impact (Local)",
+        "id": "sfx/ionrift-resonance/melee/attack_ask_01.wav",
+        "name": "Attack Roll (Reverb Clash)",
         "type": "local"
     },
     "players": {},
@@ -342,8 +342,13 @@
     ],
     "CORE_MELEE": [
         {
-            "id": "sfx/ionrift-resonance/melee/30245__streety__sword2.wav",
-            "name": "Melee Generic",
+            "id": "sfx/ionrift-resonance/melee/attack_ask_01.wav",
+            "name": "Attack Ask 1",
+            "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/attack_ask_02.wav",
+            "name": "Attack Ask 2",
             "type": "local"
         }
     ],
