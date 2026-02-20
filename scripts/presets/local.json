@@ -773,6 +773,11 @@
     ],
     "CORE_FUMBLE": [
         {
+            "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_v3.wav",
+            "name": "Fumble (Stab + Descend + Gong)",
+            "type": "local"
+        },
+        {
             "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_v2.wav",
             "name": "Fumble (Descend + Gong)",
             "type": "local"
@@ -780,11 +785,6 @@
         {
             "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_01.wav",
             "name": "Fumble (Tritone + Gong)",
-            "type": "local"
-        },
-        {
-            "id": "sfx/ionrift-resonance/stingers/fumble/fumble_stinger_02.wav",
-            "name": "Fumble (Minor + Gong)",
             "type": "local"
         }
     ],
