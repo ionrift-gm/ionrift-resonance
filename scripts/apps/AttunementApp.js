@@ -172,7 +172,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         return true; // Explicit Success
     }
     _getIntroText() {
-        return "Configure Ionrift Resonance to automate audio for your world. This protocol will connect to Syrinscape and apply a sound preset for your system.";
+        return "Configure Ionrift Resonance to automate audio for your world. You can use <strong>local sound files</strong> (no account needed) or connect to <strong>Syrinscape</strong> for cloud-hosted sounds. Both work — Syrinscape is entirely optional.";
     }
 
     _getCompleteMessage() {
@@ -183,9 +183,9 @@ export class AttunementApp extends AbstractWelcomeApp {
         return [
             {
                 id: "connect_syrinscape",
-                title: "Connect Syrinscape",
+                title: "Sound Provider",
                 icon: "fas fa-plug",
-                description: "Establish a connection to the Syrinscape Online API.",
+                description: "Optional — connect Syrinscape for cloud sounds, or skip to use local files only.",
                 actionLabel: "Verify Connection",
                 content: () => this._getTokenStepContent()
             },
@@ -274,7 +274,11 @@ export class AttunementApp extends AbstractWelcomeApp {
 
     async _verifyConnection() {
         const token = this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken");
-        if (!token) throw new Error("Please enter an Auth Token.");
+        if (!token) {
+            // No token = local-only mode. Skip gracefully.
+            ui.notifications.info("Resonance | Local-Only Mode — Syrinscape skipped. You can connect later via Module Settings.");
+            return true;
+        }
 
         // Verification Logic - Use a known element (Sword Clash 1035) instead of 'state' which can 400 if idle.
         const url = `https://syrinscape.com/online/frontend-api/elements/1035/?format=json&auth_token=${token}`;

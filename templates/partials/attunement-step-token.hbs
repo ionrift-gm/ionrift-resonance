@@ -1,9 +1,19 @@
 <div class="custom-step-container"
     style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
-    <label style="display:block; font-weight:bold;">Auth Token</label>
+
+    <div class="local-mode-notice"
+        style="padding: 10px; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.4); border-radius: 4px; color: #fff;">
+        <h4 style="margin: 0 0 5px 0; color: #4ade80; font-weight: bold;"><i class="fas fa-volume-up"></i> Local Sounds Work Without Syrinscape</h4>
+        <p style="margin: 0; font-size: 0.9em; opacity: 0.9;">
+            If you're using <strong>local sound files</strong> (WAV/MP3 in your Data folder), you don't need a Syrinscape account.
+            Leave the token blank and click <strong>Verify Connection</strong> to proceed in Local-Only mode.
+        </p>
+    </div>
+
+    <label style="display:block; font-weight:bold;">Syrinscape Auth Token <span style="opacity: 0.5; font-weight: normal;">(optional)</span></label>
     <div style="display: flex; gap: 5px;">
         <input type="password" name="authToken" class="attunement-token-input" value="{{token}}"
-            placeholder="Paste from Syrinscape Control Panel..."
+            placeholder="Leave blank for local-only, or paste Syrinscape token..."
             style="flex: 1; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px;">
         <button type="button" class="toggle-visibility" style="flex: 0 0 30px; padding: 0;"><i
                 class="fas fa-eye"></i></button>
