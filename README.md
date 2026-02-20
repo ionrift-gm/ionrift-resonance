@@ -12,14 +12,26 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 <table>
 <tr>
 <td width="50%">
-<h3>DnD5e Combat</h3>
-<img src="docs/dnd5e_combat.gif" alt="DnD5e automated combat sounds">
-<em>🎵 Attack → Hit → Pain vocal (automatic)</em>
+<h3>🏹 Ranged Attack</h3>
+<img src="docs/arrow_combat.gif" alt="Ranged attack with automated arrow sound">
+<em>🎵 Bow draw → Arrow impact → Pain vocal</em>
 </td>
 <td width="50%">
-<h3>Daggerheart Combat</h3>
-<img src="docs/daggerheart_combat.gif" alt="Daggerheart Hope/Fear mechanics">
-<em>🎵 Attack → Hope stinger → Damage → Fear tick</em>
+<h3>🐻 Creature Attack</h3>
+<img src="docs/bear_combat.gif" alt="Bear attack with Sacred Flame and automated sounds">
+<em>🎵 Claw swipe → Sacred Flame → Spell impact</em>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<h3>⚔️ Melee Combat</h3>
+<img src="docs/crit_combat.gif" alt="Melee attack with critical hit sound">
+<em>🎵 Sword swing → Hit → Damage</em>
+</td>
+<td width="50%">
+<h3>💀 Critical Kill</h3>
+<img src="docs/zombie_combat.gif" alt="Critical hit with death sound and blood effects">
+<em>🎵 Critical stinger → Death sound → Blood splatter</em>
 </td>
 </tr>
 </table>
