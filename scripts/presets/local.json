@@ -350,6 +350,11 @@
             "id": "sfx/ionrift-resonance/melee/attack_ask_02.wav",
             "name": "Attack Ask 2",
             "type": "local"
+        },
+        {
+            "id": "sfx/ionrift-resonance/melee/attack_ask_03.wav",
+            "name": "Attack Ask 3",
+            "type": "local"
         }
     ],
     "ATTACK_BOW_FIRE": [
