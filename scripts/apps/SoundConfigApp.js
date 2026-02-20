@@ -747,11 +747,13 @@ export class SoundConfigApp extends FormApplication {
         // ----------------------------------------------------------------
         // NEW: Live Updates for Auditor
         // ----------------------------------------------------------------
-        // Define the hook function
-        this._updateHook = (doc) => {
-            // Only care if ionrift-resonance flags changed
-            const flags = doc.flags?.["ionrift-resonance"];
-            if (flags) this._debouncedRefresh();
+        // Only refresh if ionrift-resonance flags actually CHANGED in this update.
+        // The updateActor/updateItem hooks pass (doc, changes, options, userId).
+        // Previously this checked doc.flags (always truthy for configured actors),
+        // causing the Calibration window to re-render on every HP change during combat.
+        this._updateHook = (doc, changes) => {
+            const flagsChanged = changes?.flags?.["ionrift-resonance"];
+            if (flagsChanged) this._debouncedRefresh();
         };
 
         if (!this._hooksRegistered) {

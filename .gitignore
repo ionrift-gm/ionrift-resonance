@@ -34,3 +34,6 @@ free_tier_candidates.md
 docs/MIGRATION_STRATEGY.md
 docs/GUIDE.md
 
+# Local SFX (not distributed — see DEV_PROTOCOLS Section 20)
+sounds/
+
