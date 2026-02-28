@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.1.0] — Sound Key Architecture & SFX Pack Integration
+
+### New Features
+*   **Ionrift SFX Pack**: 104 local audio bindings ship inside the module. Select "Ionrift SFX Pack" in the Attunement Protocol to activate. No Syrinscape account required.
+*   **Sound Provider Capability Helpers**: `SyrinscapeProvider.isConfigured()`, `hasControlModule()`, `hasMismatch()` — canonical checks used throughout the module. Stop All button now hidden when Syrinscape is not configured.
+
+### Improvements
+*   **Sound Key Namespaces**: New `ASK_*`, `ANSWER_*`, and `VOCAL_*` semantic prefixes added as aliases. Existing bindings (`CORE_*`, `MONSTER_*`) continue to work unchanged. Groundwork for the planned v3.0 full rename — no action needed from users.
+*   **Resonance Calibration UI**: Attack type cards now clarify they are weapon-swing sounds, not impact sounds. Impact/miss sounds are configured under Core Mechanics. Monster "Vocal / Pain Sound" cards renamed for clarity. Species-specific "Default Attack" override slots documented.
+*   **Attunement Protocol**: Token field required before Syrinscape verify. Apply Sound Preset locked behind Sound Provider completion. Close-without-completing no longer marks setup as done.
+*   **Spell/Domain Fallback (clarification)**: Spell and ability sounds resolve via the character's class domain. Individual item cards do not need sound data populated — this is expected behaviour, not a missing feature.
+
+### Bug Fixes
+*   **Foundry v15 Compatibility**: Migrated `renderChatMessage` hook to `renderChatMessageHTML` in `DaggerheartAdapter`. The old hook is deprecated in v13 and removed in v15.
+*   **Daggerheart Armor**: Armor direction corrected — increasing value = slot used, decreasing = repaired. Previously triggers were swapped.
+*   **Crossbow Detection**: "Hand Crossbow" was resolving to `ATTACK_BOW` due to substring ordering. Now correctly resolves to `ATTACK_CROSSBOW`.
+*   **Daggerheart Pain/Death Routing**: Character-type actors without a player owner (GM-owned NPCs) now correctly route to PC pain/death sounds.
+*   **NPC Death Sound**: Non-player actor deaths now play `VOCAL_GENERIC_DEATH` instead of `PC_DEATH`.
+*   **Pack Preset Bleed**: `SYRINSCAPE_DEFAULTS` (Syrinscape element IDs) no longer bleeds through as inherited values for local SFX Pack users.
+
 ## [2.0.3] - Compatibility Standardization
 *   **Fix**: Minimum Foundry version corrected to v12 (previously claimed v10, untested).
 
