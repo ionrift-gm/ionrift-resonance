@@ -309,10 +309,13 @@ export class AttunementApp extends AbstractWelcomeApp {
         // Keep Current is the safe default for returning users; Pack is default for first-timers
         const defaultPreset = isEmpty ? "pack" : "keep";
 
+        const isLocked = !this.completedSteps?.has("connect_syrinscape");
+
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-preset.hbs", {
             sysLabel: sysLabel,
             defaultPreset: defaultPreset,
-            isFirstSetup: isEmpty
+            isFirstSetup: isEmpty,
+            isLocked: isLocked
         });
     }
 

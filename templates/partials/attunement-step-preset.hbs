@@ -1,12 +1,20 @@
 <div class="custom-step-container"
-    style="display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+    style="display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);{{#if isLocked}} opacity:0.55; pointer-events:none;{{/if}}">
+
+    {{#if isLocked}}
+    <div
+        style="padding:8px 10px; background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.3); border-radius:3px; font-size:0.85em; color:#fde68a;">
+        <i class="fas fa-lock"></i> Complete the <strong>Sound Provider</strong> step first.
+    </div>
+    {{/if}}
 
     <div style="display: flex; flex-direction: column; gap: 10px;">
 
         {{!-- Local SFX Pack --}}
         <label
             style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="pack" {{#if (eq defaultPreset "pack" )}}checked{{/if}}
+            <input type="radio" name="preset" value="pack" {{#if (eq defaultPreset "pack" )}}checked{{/if}} {{#if
+                isLocked}}disabled{{/if}}
                 style="margin-top: 4px; transform: scale(1.5); accent-color: #4ade80; cursor: pointer;">
             <div style="flex: 1;">
                 <strong style="color: #4ade80; display: block; margin-bottom: 3px; font-size: 1.1em;">
@@ -23,7 +31,8 @@
         {{!-- Keep Current --}}
         <label
             style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="keep" {{#if (eq defaultPreset "keep" )}}checked{{/if}}
+            <input type="radio" name="preset" value="keep" {{#if (eq defaultPreset "keep" )}}checked{{/if}} {{#if
+                isLocked}}disabled{{/if}}
                 style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
             <div style="flex: 1;">
                 <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Keep Current
@@ -37,7 +46,8 @@
         {{!-- Standard (Manual) --}}
         <label
             style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="empty" {{#if (eq defaultPreset "empty" )}}checked{{/if}}
+            <input type="radio" name="preset" value="empty" {{#if (eq defaultPreset "empty" )}}checked{{/if}} {{#if
+                isLocked}}disabled{{/if}}
                 style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
             <div style="flex: 1;">
                 <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Standard Setup
@@ -50,7 +60,7 @@
 
     </div>
 
-    <button type="button" class="apply-preset-btn"
+    <button type="button" class="apply-preset-btn" {{#if isLocked}}disabled{{/if}}
         style="width:100%; padding:7px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold;">
         <i class="fas fa-check"></i> Apply Selection
     </button>
