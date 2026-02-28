@@ -290,10 +290,10 @@ export class DaggerheartAdapter extends SystemAdapter {
                     if (deathOverride) {
                         Logger.log(`Actor Override: Death -> ${deathOverride} (delay: ${VOCAL_STAGGER}ms)`);
                         this.handler.play(deathOverride, VOCAL_STAGGER);
-                    } else if (actor.hasPlayerOwner) {
+                    } else if (actor.hasPlayerOwner || actor.type === "character") {
                         this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
                     } else {
-                        this.play(SOUND_EVENTS.PC_DEATH, VOCAL_STAGGER);
+                        this.play(SOUND_EVENTS.VOCAL_GENERIC_DEATH, VOCAL_STAGGER);
                     }
                 } else {
                     // Non-lethal — pain sound after impact
@@ -301,7 +301,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                     if (painOverride) {
                         Logger.log(`Actor Override: Pain -> ${painOverride} (delay: ${VOCAL_STAGGER}ms)`);
                         this.handler.play(painOverride, VOCAL_STAGGER);
-                    } else if (actor.hasPlayerOwner) {
+                    } else if (actor.hasPlayerOwner || actor.type === "character") {
                         const pcPain = this.handler.getPCSound(actor, "PAIN");
                         Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
                         this.play(pcPain, VOCAL_STAGGER);
