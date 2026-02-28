@@ -196,6 +196,8 @@ export const SOUND_EVENTS = {
     VOCAL_INSECT: "MONSTER_INSECT",
     VOCAL_SPIDER: "MONSTER_SPIDER",
     VOCAL_LYCANTHROPE: "MONSTER_LYCANTHROPE",
+    VOCAL_GENERIC_DEATH: "CORE_MONSTER_DEATH",  // NPC/adversary death fallback
+    VOCAL_GENERIC_PAIN: "CORE_MONSTER_PAIN",    // NPC/adversary pain fallback
 
     // ─── Legacy aliases (@v2) ─────────────────────────────────────────────────
     // @legacy: kept for backward compat and as chain terminal until default
