@@ -269,7 +269,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 id: "verification",
                 title: "Final Verification",
                 icon: "fas fa-check-double",
-                description: "Verify integration status and sync with Control module.",
+                description: "Finalize configuration and activate Resonance.",
                 actionLabel: "Complete Setup",
                 isFinal: true
             }
