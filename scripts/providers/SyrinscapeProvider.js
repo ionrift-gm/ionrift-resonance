@@ -386,5 +386,32 @@ export class SyrinscapeProvider extends SoundProvider {
             ui.notifications.error("Syrinscape Library Sync Failed.");
             return [];
         }
+    } // end cacheLibrary
+
+    // ── Static Capability Helpers ─────────────────────────────────────────────
+    /**
+     * True if Resonance has a Syrinscape token configured.
+     * Canonical check — use this instead of reading the setting inline.
+     */
+    static isConfigured() {
+        return !!(game.settings.get("ionrift-resonance", "syrinToken")?.trim());
+    }
+
+    /**
+     * True if the Syrinscape Control companion module is installed and active.
+     */
+    static hasControlModule() {
+        return game.modules.get("syrinscape-control")?.active ?? false;
+    }
+
+    /**
+     * True if tokens are mismatched between Resonance and the Control module.
+     * Only meaningful when hasControlModule() is true.
+     */
+    static hasMismatch() {
+        if (!SyrinscapeProvider.hasControlModule()) return false;
+        const ionToken = (game.settings.get("ionrift-resonance", "syrinToken") || "").trim();
+        const ctrlToken = (game.settings.get("syrinscape-control", "authToken") || "").trim();
+        return !!(ionToken && ionToken !== ctrlToken);
     }
 }

@@ -1,6 +1,8 @@
 
 import { AbstractWelcomeApp } from "/modules/ionrift-library/scripts/apps/AbstractWelcomeApp.js";
 import { Logger } from "../Logger.js";
+import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
+
 
 /**
  * Ionrift Resonance Attunement Protocol
@@ -279,14 +281,10 @@ export class AttunementApp extends AbstractWelcomeApp {
 
     async _getTokenStepContent() {
         const currentToken = this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken") || "";
-        const mismatch = this._checkTokenMismatch(currentToken);
-        const controlMod = game.modules.get("syrinscape-control");
-        const hasSyrinControl = controlMod?.active;
-
-        // Expand if token stored (show current state) or mismatch needs attention.
-        // hasToken disables the Foundry Audio button to prevent silent destructive clear.
-        const hasToken = !!currentToken;
-        const expandSyrin = !!(currentToken || mismatch);
+        const mismatch = SyrinscapeProvider.hasMismatch();
+        const hasSyrinControl = SyrinscapeProvider.hasControlModule();
+        const hasToken = SyrinscapeProvider.isConfigured();
+        const expandSyrin = !!(hasToken || mismatch);
 
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-token.hbs", {
             token: currentToken,
