@@ -253,7 +253,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 title: "Sound Provider",
                 icon: "fas fa-plug",
                 description: "Optional — connect Syrinscape for cloud sounds. Skip this step to use the bundled SFX Pack.",
-                actionLabel: "Confirm & Continue",
+                actionLabel: "Verify & Connect",
                 content: () => this._getTokenStepContent()
             },
             {
@@ -311,6 +311,14 @@ export class AttunementApp extends AbstractWelcomeApp {
 
     activateListeners(html) {
         super.activateListeners(html);
+
+        // Skip button — clears token field then fires the step action so _verifyConnection
+        // reads an empty DOM value and proceeds as local-only
+        html.find(".skip-provider-btn").click((ev) => {
+            ev.preventDefault();
+            html.find(".attunement-token-input").val("");
+            html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
+        });
 
         // Live Token Input
         html.find(".attunement-token-input").on("input", (ev) => {
