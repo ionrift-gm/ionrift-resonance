@@ -183,9 +183,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         ui.notifications.info(`Resonance | Factory Reset Complete. Customizations cleared.`);
         return true; // Explicit Success
     }
-    _getIntroText() {
-        return "Ionrift Resonance plays audio automatically during your games. The <strong>SFX Pack</strong> is bundled with the module — no accounts or subscriptions required. Connect <strong>Syrinscape</strong> in Step 1 for cloud-hosted sounds, or skip it entirely and go straight to Step 2.";
-    }
+    _getIntroText() { return ""; }
 
     _getCompleteMessage() {
         return "Resonance is attuned and ready. You can re-run this protocol anytime to switch presets or update your token.";

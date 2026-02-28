@@ -16,11 +16,7 @@
                 <i class="fas fa-redo"></i> Re-Run Protocol
             </button>
         </div>
-        {{else}}
-        <p class="intro-text">
-            {{{introText}}}
-        </p>
-        {{/if}}
+        {{#if introText}}<p class="intro-text">{{{introText}}}</p>{{/if}}
 
         <div class="step-list">
             {{#each steps}}
