@@ -13,7 +13,7 @@
         </div>
 
         <div class="foundry-section"
-            style="display:{{#if hasToken}}none{{else}}flex{{/if}}; flex-direction:column; gap:10px; padding:12px 14px; border-top:1px solid rgba(255,255,255,0.06);">
+            style="display:{{#if hasToken}}none{{else}}block{{/if}}; padding:12px 14px; border-top:1px solid rgba(255,255,255,0.06);">
             <button type="button" class="skip-provider-btn"
                 style="width:100%; padding:8px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.8); border-radius:3px; cursor:pointer; font-size:0.9em;">
                 Foundry Audio Only →
@@ -34,13 +34,13 @@
         </div>
 
         <div class="syrin-section"
-            style="display:{{#if expandSyrin}}flex{{else}}none{{/if}}; flex-direction:column; gap:14px; padding:14px; border-top:1px solid rgba(139,92,246,0.15);">
+            style="display:{{#if expandSyrin}}block{{else}}none{{/if}}; padding:14px; border-top:1px solid rgba(139,92,246,0.15);">
 
-            <label style="display:block; font-weight:bold; font-size:0.9em; margin:0;">
+            <label style="display:block; font-weight:bold; font-size:0.9em; margin:0 0 8px 0;">
                 Auth Token <span style="opacity:0.5; font-weight:normal;">(optional)</span>
             </label>
 
-            <div style="display:flex; gap:5px; align-items:stretch;">
+            <div style="display:flex; gap:5px; align-items:stretch; margin-bottom:12px;">
                 <input type="password" name="authToken" class="attunement-token-input" value="{{token}}"
                     placeholder="Paste token here…"
                     style="flex:1; box-sizing:border-box; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.15); padding:8px 10px; border-radius:3px;">
@@ -51,13 +51,13 @@
             </div>
 
             <button type="button" class="verify-syrinscape-btn"
-                style="width:100%; padding:8px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold;">
+                style="display:block; width:100%; padding:8px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold; margin-bottom:12px;">
                 <i class="fas fa-plug"></i> Verify &amp; Connect Syrinscape
             </button>
 
             {{#if mismatch}}
             <div
-                style="padding:8px 10px; background:rgba(234,179,8,0.12); border:1px solid #facc15; border-radius:3px; color:#facc15; font-size:0.85em;">
+                style="padding:8px 10px; background:rgba(234,179,8,0.12); border:1px solid #facc15; border-radius:3px; color:#facc15; font-size:0.85em; margin-bottom:12px;">
                 <i class="fas fa-exclamation-triangle"></i> <strong>Token Mismatch</strong> — Verification will
                 synchronize Resonance and Syrinscape Control.
             </div>
@@ -65,7 +65,7 @@
 
             {{#if hasSyrinControl}}
             <div
-                style="padding:8px 10px; background:rgba(34,211,238,0.07); border:1px solid rgba(34,211,238,0.25); border-radius:3px; font-size:0.85em; color:#cffafe; line-height:1.4;">
+                style="padding:8px 10px; background:rgba(34,211,238,0.07); border:1px solid rgba(34,211,238,0.25); border-radius:3px; font-size:0.85em; color:#cffafe; line-height:1.4; margin-bottom:12px;">
                 <i class="fas fa-link" style="color:#22d3ee;"></i> <strong style="color:#22d3ee;">Syrinscape Control
                     detected.</strong>
                 A token is still required so Resonance can read your library metadata.
@@ -73,7 +73,7 @@
             {{/if}}
 
             <p
-                style="font-size:0.85em; opacity:0.7; margin:0; padding-top:2px; border-top:1px solid rgba(255,255,255,0.06);">
+                style="font-size:0.85em; opacity:0.7; margin:0; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06);">
                 Find your token: <a href="https://syrinscape.com/online/cp/" target="_blank"
                     style="color:#a29bfe;">Syrinscape Control Panel</a> → Your Game → Show Auth Token.
             </p>
