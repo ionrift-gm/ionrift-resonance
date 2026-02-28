@@ -261,8 +261,9 @@ export class AttunementApp extends AbstractWelcomeApp {
                 id: "apply_preset",
                 title: "Apply Sound Preset",
                 icon: "fas fa-sliders-h",
-                description: "Select a library preset to populate default bindings.",
+                description: "Set up your initial sound bindings. You can adjust these anytime via the Calibration UI.",
                 actionLabel: "Apply Preset",
+                actionHidden: true,
                 content: () => this._getPresetStepContent()
             },
             {
@@ -325,6 +326,12 @@ export class AttunementApp extends AbstractWelcomeApp {
         html.find(".verify-syrinscape-btn").click((ev) => {
             ev.preventDefault();
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
+        });
+
+        // Apply Preset button — fires the (hidden) step action btn
+        html.find(".apply-preset-btn").click((ev) => {
+            ev.preventDefault();
+            html.find(".step-action-btn[data-step='apply_preset']").trigger("click");
         });
 
         // Live Token Input

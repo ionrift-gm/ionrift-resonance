@@ -1,8 +1,5 @@
 <div class="custom-step-container"
     style="display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
-    <p style="margin-top:0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 10px;">
-        Detected System: <strong>{{sysLabel}}</strong>
-    </p>
 
     <div style="display: flex; flex-direction: column; gap: 10px;">
 
@@ -23,7 +20,7 @@
             </div>
         </label>
 
-        {{!-- Keep Current (default for returning users) --}}
+        {{!-- Keep Current --}}
         <label
             style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
             <input type="radio" name="preset" value="keep" {{#if (eq defaultPreset "keep" )}}checked{{/if}}
@@ -46,10 +43,16 @@
                 <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Standard Setup
                     (Manual)</strong>
                 <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
-                    Initialize with a clean slate. Bring your own sounds via the Calibration UI or Syrinscape library.
+                    Initialize with a clean slate. Bring your own sounds via the Calibration UI.
                 </span>
             </div>
         </label>
 
     </div>
+
+    <button type="button" class="apply-preset-btn"
+        style="width:100%; padding:7px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold;">
+        <i class="fas fa-check"></i> Apply Selection
+    </button>
+
 </div>
