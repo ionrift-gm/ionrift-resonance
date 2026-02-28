@@ -1,0 +1,1847 @@
+{
+    "version": "1.0",
+    "bindings": {
+        "CORE_CRIT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_CRIT_01.mp3",
+                "name": "Core Crit (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_CRIT_02.mp3",
+                "name": "Core Crit (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_CRIT_03.mp3",
+                "name": "Core Crit (03)",
+                "type": "local"
+            }
+        ],
+        "CORE_HIT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_01.mp3",
+                "name": "Core Hit (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_02.mp3",
+                "name": "Core Hit (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_03.mp3",
+                "name": "Core Hit (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_04.mp3",
+                "name": "Core Hit (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_05.mp3",
+                "name": "Core Hit (05)",
+                "type": "local"
+            }
+        ],
+        "CORE_HIT_MAGIC": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_MAGIC_01.mp3",
+                "name": "Core Hit Magic (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_MAGIC_02.mp3",
+                "name": "Core Hit Magic (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_MAGIC_03.mp3",
+                "name": "Core Hit Magic (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_MAGIC_04.mp3",
+                "name": "Core Hit Magic (04)",
+                "type": "local"
+            }
+        ],
+        "CORE_HIT_RANGED": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_RANGED_01.mp3",
+                "name": "Core Hit Ranged (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_RANGED_02.mp3",
+                "name": "Core Hit Ranged (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_RANGED_03.mp3",
+                "name": "Core Hit Ranged (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_RANGED_04.mp3",
+                "name": "Core Hit Ranged (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_RANGED_05.mp3",
+                "name": "Core Hit Ranged (05)",
+                "type": "local"
+            }
+        ],
+        "CORE_MISS": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_01.mp3",
+                "name": "Core Miss (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_02.mp3",
+                "name": "Core Miss (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_03.mp3",
+                "name": "Core Miss (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_04.mp3",
+                "name": "Core Miss (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_05.mp3",
+                "name": "Core Miss (05)",
+                "type": "local"
+            }
+        ],
+        "CORE_MISS_MAGIC": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_MAGIC_01.mp3",
+                "name": "Core Miss Magic (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_MAGIC_02.mp3",
+                "name": "Core Miss Magic (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_MAGIC_03.mp3",
+                "name": "Core Miss Magic (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_MAGIC_04.mp3",
+                "name": "Core Miss Magic (04)",
+                "type": "local"
+            }
+        ],
+        "CORE_MISS_RANGED": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_RANGED_01.mp3",
+                "name": "Core Miss Ranged (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_RANGED_02.mp3",
+                "name": "Core Miss Ranged (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_RANGED_03.mp3",
+                "name": "Core Miss Ranged (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_MISS_RANGED_04.mp3",
+                "name": "Core Miss Ranged (04)",
+                "type": "local"
+            }
+        ],
+        "CORE_WHOOSH": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_WHOOSH_01.mp3",
+                "name": "Core Whoosh (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_WHOOSH_02.mp3",
+                "name": "Core Whoosh (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_WHOOSH_03.mp3",
+                "name": "Core Whoosh (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_WHOOSH_04.mp3",
+                "name": "Core Whoosh (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_WHOOSH_05.mp3",
+                "name": "Core Whoosh (05)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_BITE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BITE_01.mp3",
+                "name": "Attack Bite (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BITE_02.mp3",
+                "name": "Attack Bite (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BITE_03.mp3",
+                "name": "Attack Bite (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BITE_04.mp3",
+                "name": "Attack Bite (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BITE_05.mp3",
+                "name": "Attack Bite (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BITE_06.mp3",
+                "name": "Attack Bite (06)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_BLUDGEON_SWING": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BLUDGEON_SWING_01.mp3",
+                "name": "Attack Bludgeon Swing (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BLUDGEON_SWING_02.mp3",
+                "name": "Attack Bludgeon Swing (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BLUDGEON_SWING_03.mp3",
+                "name": "Attack Bludgeon Swing (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BLUDGEON_SWING_04.mp3",
+                "name": "Attack Bludgeon Swing (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BLUDGEON_SWING_05.mp3",
+                "name": "Attack Bludgeon Swing (05)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_BOW_FIRE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BOW_FIRE_01.mp3",
+                "name": "Attack Bow Fire (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BOW_FIRE_02.mp3",
+                "name": "Attack Bow Fire (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BOW_FIRE_03.mp3",
+                "name": "Attack Bow Fire (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BOW_FIRE_04.mp3",
+                "name": "Attack Bow Fire (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_BOW_FIRE_05.mp3",
+                "name": "Attack Bow Fire (05)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_CLAW": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CLAW_01.mp3",
+                "name": "Attack Claw (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CLAW_02.mp3",
+                "name": "Attack Claw (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CLAW_03.mp3",
+                "name": "Attack Claw (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CLAW_04.mp3",
+                "name": "Attack Claw (04)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_CROSSBOW": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CROSSBOW_01.mp3",
+                "name": "Attack Crossbow (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CROSSBOW_02.mp3",
+                "name": "Attack Crossbow (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CROSSBOW_03.mp3",
+                "name": "Attack Crossbow (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CROSSBOW_04.mp3",
+                "name": "Attack Crossbow (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_CROSSBOW_05.mp3",
+                "name": "Attack Crossbow (05)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_SLAM": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SLAM_01.mp3",
+                "name": "Attack Slam (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SLAM_02.mp3",
+                "name": "Attack Slam (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SLAM_03.mp3",
+                "name": "Attack Slam (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SLAM_04.mp3",
+                "name": "Attack Slam (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SLAM_05.mp3",
+                "name": "Attack Slam (05)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_SWORD_SLASH": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SWORD_SLASH_01.mp3",
+                "name": "Attack Sword Slash (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SWORD_SLASH_02.mp3",
+                "name": "Attack Sword Slash (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SWORD_SLASH_03.mp3",
+                "name": "Attack Sword Slash (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SWORD_SLASH_04.mp3",
+                "name": "Attack Sword Slash (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SWORD_SLASH_05.mp3",
+                "name": "Attack Sword Slash (05)",
+                "type": "local"
+            }
+        ],
+        "ATTACK_TENTACLE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_TENTACLE_01.mp3",
+                "name": "Attack Tentacle (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_TENTACLE_02.mp3",
+                "name": "Attack Tentacle (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_TENTACLE_03.mp3",
+                "name": "Attack Tentacle (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_TENTACLE_04.mp3",
+                "name": "Attack Tentacle (04)",
+                "type": "local"
+            }
+        ],
+        "CORE_DEATH_FEMININE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_01.mp3",
+                "name": "Core Death Feminine (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_02.mp3",
+                "name": "Core Death Feminine (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_03.mp3",
+                "name": "Core Death Feminine (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_04.mp3",
+                "name": "Core Death Feminine (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_05.mp3",
+                "name": "Core Death Feminine (05)",
+                "type": "local"
+            }
+        ],
+        "CORE_DEATH_MASCULINE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_01.mp3",
+                "name": "Core Death Masculine (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_02.mp3",
+                "name": "Core Death Masculine (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_03.mp3",
+                "name": "Core Death Masculine (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_04.mp3",
+                "name": "Core Death Masculine (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_05.mp3",
+                "name": "Core Death Masculine (05)",
+                "type": "local"
+            }
+        ],
+        "CORE_PAIN_FEMININE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_01.mp3",
+                "name": "Core Pain Feminine (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_02.mp3",
+                "name": "Core Pain Feminine (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_03.mp3",
+                "name": "Core Pain Feminine (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_04.mp3",
+                "name": "Core Pain Feminine (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_05.mp3",
+                "name": "Core Pain Feminine (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_06.mp3",
+                "name": "Core Pain Feminine (06)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_07.mp3",
+                "name": "Core Pain Feminine (07)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_FEMININE_08.mp3",
+                "name": "Core Pain Feminine (08)",
+                "type": "local"
+            }
+        ],
+        "CORE_PAIN_MASCULINE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_MASCULINE_01.mp3",
+                "name": "Core Pain Masculine (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_MASCULINE_02.mp3",
+                "name": "Core Pain Masculine (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_MASCULINE_03.mp3",
+                "name": "Core Pain Masculine (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_MASCULINE_04.mp3",
+                "name": "Core Pain Masculine (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_PAIN_MASCULINE_05.mp3",
+                "name": "Core Pain Masculine (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_ACID": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ACID_01.mp3",
+                "name": "Spell Acid (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ACID_02.mp3",
+                "name": "Spell Acid (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ACID_03.mp3",
+                "name": "Spell Acid (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ACID_04.mp3",
+                "name": "Spell Acid (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ACID_05.mp3",
+                "name": "Spell Acid (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_FIRE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_FIRE_01.mp3",
+                "name": "Spell Fire (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_FIRE_02.mp3",
+                "name": "Spell Fire (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_FIRE_03.mp3",
+                "name": "Spell Fire (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_FIRE_04.mp3",
+                "name": "Spell Fire (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_FIRE_05.mp3",
+                "name": "Spell Fire (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_HEAL": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_HEAL_01.mp3",
+                "name": "Spell Heal (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_HEAL_02.mp3",
+                "name": "Spell Heal (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_HEAL_03.mp3",
+                "name": "Spell Heal (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_HEAL_04.mp3",
+                "name": "Spell Heal (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_HEAL_05.mp3",
+                "name": "Spell Heal (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_ICE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ICE_01.mp3",
+                "name": "Spell Ice (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ICE_02.mp3",
+                "name": "Spell Ice (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ICE_03.mp3",
+                "name": "Spell Ice (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ICE_04.mp3",
+                "name": "Spell Ice (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_ICE_05.mp3",
+                "name": "Spell Ice (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_LIGHTNING": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_LIGHTNING_01.mp3",
+                "name": "Spell Lightning (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_LIGHTNING_02.mp3",
+                "name": "Spell Lightning (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_LIGHTNING_03.mp3",
+                "name": "Spell Lightning (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_LIGHTNING_04.mp3",
+                "name": "Spell Lightning (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_LIGHTNING_05.mp3",
+                "name": "Spell Lightning (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_PSYCHIC": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_PSYCHIC_01.mp3",
+                "name": "Spell Psychic (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_PSYCHIC_02.mp3",
+                "name": "Spell Psychic (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_PSYCHIC_04.mp3",
+                "name": "Spell Psychic (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_PSYCHIC_05.mp3",
+                "name": "Spell Psychic (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_VOID": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_VOID_02.mp3",
+                "name": "Spell Void (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_VOID_03.mp3",
+                "name": "Spell Void (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/spells/SPELL_VOID_05.mp3",
+                "name": "Spell Void (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_BEAR": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/bear/MONSTER_BEAR_01.mp3",
+                "name": "Monster Bear (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/bear/MONSTER_BEAR_02.mp3",
+                "name": "Monster Bear (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/bear/MONSTER_BEAR_03.mp3",
+                "name": "Monster Bear (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/bear/MONSTER_BEAR_04.mp3",
+                "name": "Monster Bear (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_BEAST": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_01.mp3",
+                "name": "Monster Beast (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_02.mp3",
+                "name": "Monster Beast (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_03.mp3",
+                "name": "Monster Beast (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_04.mp3",
+                "name": "Monster Beast (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_05.mp3",
+                "name": "Monster Beast (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_CONSTRUCT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/construct/MONSTER_CONSTRUCT_01.mp3",
+                "name": "Monster Construct (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/construct/MONSTER_CONSTRUCT_02.mp3",
+                "name": "Monster Construct (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/construct/MONSTER_CONSTRUCT_03.mp3",
+                "name": "Monster Construct (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/construct/MONSTER_CONSTRUCT_04.mp3",
+                "name": "Monster Construct (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/construct/MONSTER_CONSTRUCT_05.mp3",
+                "name": "Monster Construct (05)",
+                "type": "local"
+            }
+        ],
+        "CORE_MONSTER_DEATH": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_death/CORE_MONSTER_DEATH_01.mp3",
+                "name": "Core Monster Death (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_death/CORE_MONSTER_DEATH_02.mp3",
+                "name": "Core Monster Death (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_death/CORE_MONSTER_DEATH_03.mp3",
+                "name": "Core Monster Death (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_death/CORE_MONSTER_DEATH_04.mp3",
+                "name": "Core Monster Death (04)",
+                "type": "local"
+            }
+        ],
+        "CORE_MONSTER_PAIN": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_pain/CORE_MONSTER_PAIN_01.mp3",
+                "name": "Core Monster Pain (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_pain/CORE_MONSTER_PAIN_02.mp3",
+                "name": "Core Monster Pain (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_pain/CORE_MONSTER_PAIN_03.mp3",
+                "name": "Core Monster Pain (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_pain/CORE_MONSTER_PAIN_04.mp3",
+                "name": "Core Monster Pain (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/core_pain/CORE_MONSTER_PAIN_05.mp3",
+                "name": "Core Monster Pain (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_DEMON": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/demon/MONSTER_DEMON_01.mp3",
+                "name": "Monster Demon (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/demon/MONSTER_DEMON_02.mp3",
+                "name": "Monster Demon (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/demon/MONSTER_DEMON_03.mp3",
+                "name": "Monster Demon (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/demon/MONSTER_DEMON_04.mp3",
+                "name": "Monster Demon (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_DRAGON": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/dragon/MONSTER_DRAGON_01.mp3",
+                "name": "Monster Dragon (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/dragon/MONSTER_DRAGON_02.mp3",
+                "name": "Monster Dragon (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/dragon/MONSTER_DRAGON_03.mp3",
+                "name": "Monster Dragon (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/dragon/MONSTER_DRAGON_04.mp3",
+                "name": "Monster Dragon (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/dragon/MONSTER_DRAGON_05.mp3",
+                "name": "Monster Dragon (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_ELEMENTAL_air": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/air/MONSTER_ELEMENTAL_air_01.mp3",
+                "name": "Monster Elemental Air (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/air/MONSTER_ELEMENTAL_air_02.mp3",
+                "name": "Monster Elemental Air (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/air/MONSTER_ELEMENTAL_air_03.mp3",
+                "name": "Monster Elemental Air (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/air/MONSTER_ELEMENTAL_air_04.mp3",
+                "name": "Monster Elemental Air (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_ELEMENTAL_earth": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/earth/MONSTER_ELEMENTAL_earth_01.mp3",
+                "name": "Monster Elemental Earth (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/earth/MONSTER_ELEMENTAL_earth_02.mp3",
+                "name": "Monster Elemental Earth (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/earth/MONSTER_ELEMENTAL_earth_03.mp3",
+                "name": "Monster Elemental Earth (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/earth/MONSTER_ELEMENTAL_earth_04.mp3",
+                "name": "Monster Elemental Earth (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_ELEMENTAL_fire": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/fire/MONSTER_ELEMENTAL_fire_01.mp3",
+                "name": "Monster Elemental Fire (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/fire/MONSTER_ELEMENTAL_fire_02.mp3",
+                "name": "Monster Elemental Fire (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/fire/MONSTER_ELEMENTAL_fire_03.mp3",
+                "name": "Monster Elemental Fire (03)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_ELEMENTAL_water": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/water/MONSTER_ELEMENTAL_water_01.mp3",
+                "name": "Monster Elemental Water (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/water/MONSTER_ELEMENTAL_water_02.mp3",
+                "name": "Monster Elemental Water (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/water/MONSTER_ELEMENTAL_water_03.mp3",
+                "name": "Monster Elemental Water (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/water/MONSTER_ELEMENTAL_water_04.mp3",
+                "name": "Monster Elemental Water (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_FIEND": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend/MONSTER_FIEND_01.mp3",
+                "name": "Monster Fiend (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend/MONSTER_FIEND_02.mp3",
+                "name": "Monster Fiend (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend/MONSTER_FIEND_03.mp3",
+                "name": "Monster Fiend (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend/MONSTER_FIEND_04.mp3",
+                "name": "Monster Fiend (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_FIEND_FERAL": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_feral/MONSTER_FIEND_FERAL_01.mp3",
+                "name": "Monster Fiend Feral (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_feral/MONSTER_FIEND_FERAL_02.mp3",
+                "name": "Monster Fiend Feral (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_feral/MONSTER_FIEND_FERAL_03.mp3",
+                "name": "Monster Fiend Feral (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_feral/MONSTER_FIEND_FERAL_04.mp3",
+                "name": "Monster Fiend Feral (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_FIEND_INTELLIGENT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_intelligent/MONSTER_FIEND_INTELLIGENT_01.mp3",
+                "name": "Monster Fiend Intelligent (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_intelligent/MONSTER_FIEND_INTELLIGENT_02.mp3",
+                "name": "Monster Fiend Intelligent (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_intelligent/MONSTER_FIEND_INTELLIGENT_03.mp3",
+                "name": "Monster Fiend Intelligent (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_intelligent/MONSTER_FIEND_INTELLIGENT_04.mp3",
+                "name": "Monster Fiend Intelligent (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/fiend_intelligent/MONSTER_FIEND_INTELLIGENT_05.mp3",
+                "name": "Monster Fiend Intelligent (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_GHOST": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/ghost/MONSTER_GHOST_01.mp3",
+                "name": "Monster Ghost (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/ghost/MONSTER_GHOST_02.mp3",
+                "name": "Monster Ghost (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/ghost/MONSTER_GHOST_03.mp3",
+                "name": "Monster Ghost (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/ghost/MONSTER_GHOST_04.mp3",
+                "name": "Monster Ghost (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/ghost/MONSTER_GHOST_05.mp3",
+                "name": "Monster Ghost (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_GIANT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/giant/MONSTER_GIANT_01.mp3",
+                "name": "Monster Giant (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/giant/MONSTER_GIANT_02.mp3",
+                "name": "Monster Giant (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/giant/MONSTER_GIANT_03.mp3",
+                "name": "Monster Giant (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/giant/MONSTER_GIANT_04.mp3",
+                "name": "Monster Giant (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/giant/MONSTER_GIANT_05.mp3",
+                "name": "Monster Giant (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/giant/MONSTER_GIANT_06.mp3",
+                "name": "Monster Giant (06)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_GOBLIN": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/goblin/MONSTER_GOBLIN_01.mp3",
+                "name": "Monster Goblin (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/goblin/MONSTER_GOBLIN_02.mp3",
+                "name": "Monster Goblin (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/goblin/MONSTER_GOBLIN_03.mp3",
+                "name": "Monster Goblin (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/goblin/MONSTER_GOBLIN_04.mp3",
+                "name": "Monster Goblin (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_HORSE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/horse/MONSTER_HORSE_01.mp3",
+                "name": "Monster Horse (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/horse/MONSTER_HORSE_02.mp3",
+                "name": "Monster Horse (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/horse/MONSTER_HORSE_03.mp3",
+                "name": "Monster Horse (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/horse/MONSTER_HORSE_04.mp3",
+                "name": "Monster Horse (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_HUMANOID": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/humanoid/MONSTER_HUMANOID_01.mp3",
+                "name": "Monster Humanoid (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/humanoid/MONSTER_HUMANOID_02.mp3",
+                "name": "Monster Humanoid (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/humanoid/MONSTER_HUMANOID_03.mp3",
+                "name": "Monster Humanoid (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/humanoid/MONSTER_HUMANOID_04.mp3",
+                "name": "Monster Humanoid (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/humanoid/MONSTER_HUMANOID_05.mp3",
+                "name": "Monster Humanoid (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_INSECT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/insect/MONSTER_INSECT_01.mp3",
+                "name": "Monster Insect (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/insect/MONSTER_INSECT_02.mp3",
+                "name": "Monster Insect (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/insect/MONSTER_INSECT_03.mp3",
+                "name": "Monster Insect (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/insect/MONSTER_INSECT_04.mp3",
+                "name": "Monster Insect (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/insect/MONSTER_INSECT_05.mp3",
+                "name": "Monster Insect (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_LYCANTHROPE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/lycanthrope/MONSTER_LYCANTHROPE_01.mp3",
+                "name": "Monster Lycanthrope (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/lycanthrope/MONSTER_LYCANTHROPE_02.mp3",
+                "name": "Monster Lycanthrope (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/lycanthrope/MONSTER_LYCANTHROPE_03.mp3",
+                "name": "Monster Lycanthrope (03)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_ORC": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/orc/MONSTER_ORC_01.mp3",
+                "name": "Monster Orc (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/orc/MONSTER_ORC_02.mp3",
+                "name": "Monster Orc (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/orc/MONSTER_ORC_03.mp3",
+                "name": "Monster Orc (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/orc/MONSTER_ORC_04.mp3",
+                "name": "Monster Orc (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/orc/MONSTER_ORC_05.mp3",
+                "name": "Monster Orc (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_PLANT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_01.mp3",
+                "name": "Monster Plant (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_02.mp3",
+                "name": "Monster Plant (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_03.mp3",
+                "name": "Monster Plant (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_04.mp3",
+                "name": "Monster Plant (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_05.mp3",
+                "name": "Monster Plant (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_REPTILE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/reptile/MONSTER_REPTILE_01.mp3",
+                "name": "Monster Reptile (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/reptile/MONSTER_REPTILE_02.mp3",
+                "name": "Monster Reptile (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/reptile/MONSTER_REPTILE_03.mp3",
+                "name": "Monster Reptile (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/reptile/MONSTER_REPTILE_04.mp3",
+                "name": "Monster Reptile (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/reptile/MONSTER_REPTILE_05.mp3",
+                "name": "Monster Reptile (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_SKELETON": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/skeleton/MONSTER_SKELETON_01.mp3",
+                "name": "Monster Skeleton (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/skeleton/MONSTER_SKELETON_02.mp3",
+                "name": "Monster Skeleton (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/skeleton/MONSTER_SKELETON_03.mp3",
+                "name": "Monster Skeleton (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/skeleton/MONSTER_SKELETON_04.mp3",
+                "name": "Monster Skeleton (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/skeleton/MONSTER_SKELETON_05.mp3",
+                "name": "Monster Skeleton (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/skeleton/MONSTER_SKELETON_06.mp3",
+                "name": "Monster Skeleton (06)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_SPIDER": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/spider/MONSTER_SPIDER_01.mp3",
+                "name": "Monster Spider (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/spider/MONSTER_SPIDER_02.mp3",
+                "name": "Monster Spider (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/spider/MONSTER_SPIDER_03.mp3",
+                "name": "Monster Spider (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/spider/MONSTER_SPIDER_04.mp3",
+                "name": "Monster Spider (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/spider/MONSTER_SPIDER_05.mp3",
+                "name": "Monster Spider (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_UNDEAD": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_01.mp3",
+                "name": "Monster Undead (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_02.mp3",
+                "name": "Monster Undead (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_03.mp3",
+                "name": "Monster Undead (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_04.mp3",
+                "name": "Monster Undead (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_05.mp3",
+                "name": "Monster Undead (05)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_WOLF": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/wolf/MONSTER_WOLF_01.mp3",
+                "name": "Monster Wolf (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/wolf/MONSTER_WOLF_02.mp3",
+                "name": "Monster Wolf (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/wolf/MONSTER_WOLF_03.mp3",
+                "name": "Monster Wolf (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/wolf/MONSTER_WOLF_04.mp3",
+                "name": "Monster Wolf (04)",
+                "type": "local"
+            }
+        ],
+        "MONSTER_ZOMBIE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/zombie/MONSTER_ZOMBIE_01.mp3",
+                "name": "Monster Zombie (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/zombie/MONSTER_ZOMBIE_02.mp3",
+                "name": "Monster Zombie (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/zombie/MONSTER_ZOMBIE_03.mp3",
+                "name": "Monster Zombie (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/zombie/MONSTER_ZOMBIE_04.mp3",
+                "name": "Monster Zombie (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/monsters/zombie/MONSTER_ZOMBIE_05.mp3",
+                "name": "Monster Zombie (05)",
+                "type": "local"
+            }
+        ],
+        "SPELL_TOLL_THE_DEAD": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/overrides/toll_the_dead/SPELL_TOLL_THE_DEAD_01.mp3",
+                "name": "Spell Toll The Dead (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/overrides/toll_the_dead/SPELL_TOLL_THE_DEAD_02.mp3",
+                "name": "Spell Toll The Dead (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/overrides/toll_the_dead/SPELL_TOLL_THE_DEAD_03.mp3",
+                "name": "Spell Toll The Dead (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/overrides/toll_the_dead/SPELL_TOLL_THE_DEAD_04.mp3",
+                "name": "Spell Toll The Dead (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/overrides/toll_the_dead/SPELL_TOLL_THE_DEAD_05.mp3",
+                "name": "Spell Toll The Dead (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_CRIT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_01.mp3",
+                "name": "Crit Stinger (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_02.mp3",
+                "name": "Crit Stinger (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_03.mp3",
+                "name": "Crit Stinger (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_04.mp3",
+                "name": "Crit Stinger (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_05.mp3",
+                "name": "Crit Stinger (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FAIL_WITH_FEAR": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/DAGGERHEART_FAIL_WITH_FEAR_01.mp3",
+                "name": "Fail with Fear (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/DAGGERHEART_FAIL_WITH_FEAR_02.mp3",
+                "name": "Fail with Fear (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/DAGGERHEART_FAIL_WITH_FEAR_03.mp3",
+                "name": "Fail with Fear (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/DAGGERHEART_FAIL_WITH_FEAR_04.mp3",
+                "name": "Fail with Fear (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/DAGGERHEART_FAIL_WITH_FEAR_05.mp3",
+                "name": "Fail with Fear (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FEAR_LOW": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_01.mp3",
+                "name": "Fear Gain (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_02.mp3",
+                "name": "Fear Gain (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_03.mp3",
+                "name": "Fear Gain (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_04.mp3",
+                "name": "Fear Gain (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_05.mp3",
+                "name": "Fear Gain (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_06.mp3",
+                "name": "Fear Gain (06)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FEAR_MED": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_01.mp3",
+                "name": "Fear Gain (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_02.mp3",
+                "name": "Fear Gain (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_03.mp3",
+                "name": "Fear Gain (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_04.mp3",
+                "name": "Fear Gain (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_05.mp3",
+                "name": "Fear Gain (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_06.mp3",
+                "name": "Fear Gain (06)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FEAR_HIGH": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_01.mp3",
+                "name": "Fear Gain (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_02.mp3",
+                "name": "Fear Gain (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_03.mp3",
+                "name": "Fear Gain (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_04.mp3",
+                "name": "Fear Gain (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_05.mp3",
+                "name": "Fear Gain (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_gain/DAGGERHEART_FEAR_06.mp3",
+                "name": "Fear Gain (06)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FEAR_USE_LOW": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_SMALL_01.mp3",
+                "name": "Fear Spent Low (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_SMALL_02.mp3",
+                "name": "Fear Spent Low (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_SMALL_03.mp3",
+                "name": "Fear Spent Low (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_SMALL_04.mp3",
+                "name": "Fear Spent Low (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_SMALL_05.mp3",
+                "name": "Fear Spent Low (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FEAR_USE_MED": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_MED_06.mp3",
+                "name": "Fear Spent Med (06)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_MED_07.mp3",
+                "name": "Fear Spent Med (07)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_MED_08.mp3",
+                "name": "Fear Spent Med (08)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_MED_09.mp3",
+                "name": "Fear Spent Med (09)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_MED_10.mp3",
+                "name": "Fear Spent Med (10)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FEAR_USE_HIGH": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_11.mp3",
+                "name": "Fear Spent High (11)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_12.mp3",
+                "name": "Fear Spent High (12)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_13.mp3",
+                "name": "Fear Spent High (13)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_14.mp3",
+                "name": "Fear Spent High (14)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_15.mp3",
+                "name": "Fear Spent High (15)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_16.mp3",
+                "name": "Fear Spent High (16)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fear_use/DAGGERHEART_FEAR_USE_LARGE_17.mp3",
+                "name": "Fear Spent High (17)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_HOPE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_01.mp3",
+                "name": "Hope Gain (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_02.mp3",
+                "name": "Hope Gain (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_03.mp3",
+                "name": "Hope Gain (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_04.mp3",
+                "name": "Hope Gain (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_05.mp3",
+                "name": "Hope Gain (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_HOPE_USE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_01.mp3",
+                "name": "Hope Used (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_02.mp3",
+                "name": "Hope Used (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_03.mp3",
+                "name": "Hope Used (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_04.mp3",
+                "name": "Hope Used (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_05.mp3",
+                "name": "Hope Used (05)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_06.mp3",
+                "name": "Hope Used (06)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_STRESS": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress/DAGGERHEART_STRESS_01.mp3",
+                "name": "Stress (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress/DAGGERHEART_STRESS_02.mp3",
+                "name": "Stress (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress/DAGGERHEART_STRESS_03.mp3",
+                "name": "Stress (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress/DAGGERHEART_STRESS_04.mp3",
+                "name": "Stress (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress/DAGGERHEART_STRESS_05.mp3",
+                "name": "Stress (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_STRESS_CLEAR": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress_clear/DAGGERHEART_STRESS_CLEAR_01.mp3",
+                "name": "Stress Clear (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress_clear/DAGGERHEART_STRESS_CLEAR_02.mp3",
+                "name": "Stress Clear (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress_clear/DAGGERHEART_STRESS_CLEAR_03.mp3",
+                "name": "Stress Clear (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress_clear/DAGGERHEART_STRESS_CLEAR_04.mp3",
+                "name": "Stress Clear (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/stress_clear/DAGGERHEART_STRESS_CLEAR_05.mp3",
+                "name": "Stress Clear (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_ARMOR_USE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_use/DAGGERHEART_ARMOR_USE_01.mp3",
+                "name": "Armor Used (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_use/DAGGERHEART_ARMOR_USE_02.mp3",
+                "name": "Armor Used (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_use/DAGGERHEART_ARMOR_USE_03.mp3",
+                "name": "Armor Used (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_use/DAGGERHEART_ARMOR_USE_04.mp3",
+                "name": "Armor Used (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_use/DAGGERHEART_ARMOR_USE_05.mp3",
+                "name": "Armor Used (05)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_ARMOR_REPAIR": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_repair/DAGGERHEART_ARMOR_REPAIR_01.mp3",
+                "name": "Armor Repair (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_repair/DAGGERHEART_ARMOR_REPAIR_02.mp3",
+                "name": "Armor Repair (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/armor_repair/DAGGERHEART_ARMOR_REPAIR_03.mp3",
+                "name": "Armor Repair (03)",
+                "type": "local"
+            }
+        ]
+    }
+}

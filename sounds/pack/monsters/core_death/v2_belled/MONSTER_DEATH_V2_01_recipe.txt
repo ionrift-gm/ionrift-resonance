@@ -1,0 +1,2 @@
+death  vol=1.0  CREAMnstr-Heavy_bloated_zombie-Elevenlabs.mp3
+bell   vol=0.32  delay=0.2s  death_bell_low_resonance.mp3

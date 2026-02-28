@@ -1,0 +1,2 @@
+death  vol=1.0  CREAMnstr-monster_screeching_d-Elevenlabs (1).mp3
+bell   vol=0.31  delay=0.2s  death_bell_low_resonance.mp3

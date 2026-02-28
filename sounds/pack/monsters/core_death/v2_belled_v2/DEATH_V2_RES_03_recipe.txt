@@ -1,0 +1,2 @@
+death  CREAMnstr-monster_death_grunt-Elevenlabs.mp3
+bell   vol=0.47  death_resonance_a.mp3

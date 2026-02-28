@@ -1,0 +1,2 @@
+death  CREAMnstr-monster_screeching_d-Elevenlabs.mp3
+bell   vol=0.36  death_resonance_b.mp3

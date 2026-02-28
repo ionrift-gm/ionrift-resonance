@@ -1,0 +1,2 @@
+death  vol=1.0  CREAMnstr-monster_death_sound-Elevenlabs.mp3
+bell   vol=0.4  delay=0.2s  death_bell_deep_a.mp3

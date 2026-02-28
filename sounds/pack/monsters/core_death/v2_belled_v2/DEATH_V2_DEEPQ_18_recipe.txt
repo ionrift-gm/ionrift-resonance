@@ -1,0 +1,2 @@
+death  CREAMnstr-monster_death_sound-Elevenlabs.mp3
+bell   vol=0.19  death_bell_deep_a.mp3
