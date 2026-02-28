@@ -187,6 +187,7 @@ export class DnD5eAdapter extends SystemAdapter {
         const AOE_THRESHOLD = 3;      // 4+ targets = AoE mode
         const MAX_AOE_VOCALS = 5;     // Max distinct vocals in AoE mode
         const VOCAL_STAGGER = 400;    // Stagger for single-target sequential vocals
+        const SPELL_BONUS = item?.type === "spell" ? 150 : 0; // Extra clearance for spell audio
 
         // Build complete target set: hitTargets (failed saves) + saves (made saves, half dmg)
         // For save-based AoE, workflow.targets has the full scope
@@ -236,7 +237,7 @@ export class DnD5eAdapter extends SystemAdapter {
 
             vocalTargets.forEach((target) => {
                 // Random micro-stagger (0–400ms) so vocals overlap like a chorus
-                const stagger = Math.floor(Math.random() * 400);
+                const stagger = Math.floor(Math.random() * 400) + SPELL_BONUS;
                 this._playVocalForTarget(target.actor, target.isPC, target.isDead, stagger);
             });
 
@@ -266,7 +267,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 }
 
                 this.play(SOUND_EVENTS.BLOODY_HIT);
-                this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER);
+                this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER + SPELL_BONUS);
             }
         }
     }
@@ -311,14 +312,17 @@ export class DnD5eAdapter extends SystemAdapter {
 
         const classification = game.ionrift.library.classifyCreature(actor);
         Logger.log(`DnD5e | Classification for ${actor.name}:`, classification);
+        Logger.log(`DnD5e | → type: "${classification?.type}", subtype: "${classification?.subtype}", sound: "${classification?.sound}"`);
 
         if (!classification) return SOUND_EVENTS.MONSTER_GENERIC;
 
         // Try subtype-specific key first (e.g. SFX_FIRE for elemental_fire)
         if (classification.subtype) {
             const subtypeKey = this._getSubtypeVocalKey(classification.type, classification.subtype);
+            Logger.log(`DnD5e | → compositeKey: "${classification.type}_${classification.subtype}" → subtypeKey: "${subtypeKey}"`);
             if (subtypeKey) {
                 const resolved = this.handler.resolver.resolveKey(subtypeKey);
+                Logger.log(`DnD5e | → resolveKey("${subtypeKey}") → "${resolved}"`);
                 if (resolved) {
                     Logger.log(`DnD5e | Monster pain: subtype ${subtypeKey} has binding → using it`);
                     return subtypeKey;
@@ -329,9 +333,11 @@ export class DnD5eAdapter extends SystemAdapter {
 
         // Fall back to broad classifier key (e.g. MONSTER_ELEMENTAL)
         if (classification.sound) {
+            Logger.log(`DnD5e | → Fallback to classification.sound: "${classification.sound}"`);
             if (Object.values(SOUND_EVENTS).includes(classification.sound)) return classification.sound;
             if (SOUND_EVENTS[classification.sound]) return SOUND_EVENTS[classification.sound];
         }
+        Logger.log(`DnD5e | → All resolution failed, using MONSTER_GENERIC`);
         return SOUND_EVENTS.MONSTER_GENERIC;
     }
 

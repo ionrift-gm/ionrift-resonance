@@ -288,4 +288,14 @@ Hooks.on("renderPlaylistDirectory", (app, html, data) => {
     });
 
     $html.find(".header-actions").append(btn);
+
+    // Visualizer toggle (only if devtools is active)
+    if (game.modules.get("ionrift-devtools")?.active) {
+        if ($html.find(".ionrift-viz-btn").length > 0) return;
+        const vizBtn = $(`<button class="ionrift-viz-btn" title="Toggle Audio Visualizer"><i class="fas fa-wave-square"></i></button>`);
+        vizBtn.click(() => {
+            game.ionrift?.devtools?.visualizer?.toggle();
+        });
+        $html.find(".header-actions").append(vizBtn);
+    }
 });

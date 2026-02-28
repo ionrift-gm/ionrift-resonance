@@ -15,7 +15,9 @@ export class FoundryAudioProvider extends SoundProvider {
         Logger.log(`[Local] Playing: ${soundId} (vol: ${volume})`);
 
         try {
-            AudioHelper.play({
+            // V12+ uses namespaced API; legacy global is deprecated since V12
+            const helper = foundry.audio?.AudioHelper ?? AudioHelper;
+            helper.play({
                 src: soundId,
                 volume: volume,
                 loop: false

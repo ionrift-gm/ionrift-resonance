@@ -12,9 +12,9 @@ export const SOUND_EVENTS = {
     PC_PAIN_MASCULINE: "CORE_PAIN_MASCULINE",
     PC_PAIN_FEMININE: "CORE_PAIN_FEMININE",
 
-    CRIT_DECORATION: "CORE_CRIT",
+    CRIT_DECORATION: "CORE_CRIT",  // @legacy — alias kept for back-compat; v3: deprecate
     CORE_CRIT: "CORE_CRIT",
-    MISS: "CORE_MISS",
+    MISS: "CORE_MISS",               // @legacy — alias kept for back-compat; v3: deprecate
 
     // Category-Aware Hit/Miss (auto-selected by attack type)
     CORE_HIT_RANGED: "CORE_HIT_RANGED",
@@ -127,6 +127,8 @@ export const SOUND_EVENTS = {
     DAGGERHEART_ROLL_HOPE: "DAGGERHEART_ROLL_HOPE",
     DAGGERHEART_ROLL_FEAR: "DAGGERHEART_ROLL_FEAR",
 
-    // Default
-    WHOOSH: "CORE_WHOOSH"
+    // Default — fires on attack swing (BEFORE hit/miss result is known).
+    // Falls back from CORE_MELEE and CORE_RANGED when no specific weapon sound is mapped.
+    // @v3-rename: CORE_WHOOSH → CORE_ATTACK_SWING (see SOUND_KEY_REFACTOR_v3.md)
+    WHOOSH: "CORE_WHOOSH"  // @legacy alias; v3: WHOOSH → CORE_ATTACK_SWING
 };

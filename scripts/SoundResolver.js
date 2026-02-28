@@ -206,6 +206,7 @@ export class SoundResolver {
         if (["ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING", "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"].includes(specificKey)) return "CORE_RANGED";
 
         // Physical weapon groups → generic swing fallback (spells do NOT swing)
+        // @v3-rename: CORE_WHOOSH → CORE_ATTACK_SWING (fires at attack initiation, not on miss)
         if (specificKey === "CORE_MELEE" || specificKey === "CORE_RANGED") return "CORE_WHOOSH";
 
         if (specificKey.startsWith("SPELL_") || specificKey.startsWith("SCHOOL_") || specificKey.startsWith("DOMAIN_")) return "CORE_MAGIC";
