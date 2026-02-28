@@ -432,9 +432,9 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async close(options = {}) {
-        // Always save the attunement version so the wizard doesn't re-show.
-        // This uses this.currentVersion set by AbstractWelcomeApp constructor.
-        if (this.currentVersion) {
+        // Only persist setup as complete if the user actually finished the final verification step.
+        // Closing early (X button) should NOT mark the wizard as done.
+        if (this.currentVersion && this.completedSteps?.has("verification")) {
             await game.settings.set("ionrift-resonance", "setupVersion", this.currentVersion);
         }
 
