@@ -434,11 +434,11 @@ export class DaggerheartAdapter extends SystemAdapter {
 
             Logger.log(`Armor Debug[Path: ${armorPath}]: New = ${newArmor}, Old = ${oldArmor} `);
 
-            if (newArmor < oldArmor) {
-                Logger.log(`Armor Used / Damaged(${oldArmor} -> ${newArmor})`);
+            if (newArmor > oldArmor) {
+                Logger.log(`Armor Slot Used(${oldArmor} -> ${newArmor})`);
                 this.handler.play("DAGGERHEART_ARMOR_USE");
-            } else if (newArmor > oldArmor) {
-                Logger.log(`Armor Repaired(${oldArmor} -> ${newArmor})`);
+            } else if (newArmor < oldArmor) {
+                Logger.log(`Armor Slot Restored(${oldArmor} -> ${newArmor})`);
                 this.handler.play("DAGGERHEART_ARMOR_REPAIR");
             }
         }
