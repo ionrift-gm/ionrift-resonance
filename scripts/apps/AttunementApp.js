@@ -283,13 +283,16 @@ export class AttunementApp extends AbstractWelcomeApp {
         const controlMod = game.modules.get("syrinscape-control");
         const hasSyrinControl = controlMod?.active;
 
-        // Only auto-expand if user has an existing token — Control module alone isn't enough
+        // Expand if token stored (show current state) or mismatch needs attention.
+        // hasToken disables the Foundry Audio button to prevent silent destructive clear.
+        const hasToken = !!currentToken;
         const expandSyrin = !!(currentToken || mismatch);
 
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-token.hbs", {
             token: currentToken,
             mismatch: mismatch,
             hasSyrinControl: hasSyrinControl,
+            hasToken: hasToken,
             expandSyrin: expandSyrin
         });
     }
@@ -316,16 +319,22 @@ export class AttunementApp extends AbstractWelcomeApp {
     activateListeners(html) {
         super.activateListeners(html);
 
-        // Syrinscape section expand/collapse toggle
-        html.find(".syrin-toggle").click(() => {
-            const section = html.find(".syrin-section");
-            const chevron = html.find(".syrin-chevron");
-            const isOpen = section.is(":visible");
-            section.toggle(!isOpen);
-            chevron.toggleClass("fa-right fa-down", false)
-                .toggleClass(isOpen ? "fa-chevron-down" : "fa-chevron-right", false)
-                .addClass(isOpen ? "fa-chevron-right" : "fa-chevron-down");
-        });
+        // Symmetric accordion — each toggle expands its panel, collapses the other
+        const makeAccordion = (toggleSel, sectionSel, chevronSel, otherSectionSel, otherChevronSel) => {
+            html.find(toggleSel).click(() => {
+                const isOpen = html.find(sectionSel).is(":visible");
+                html.find(sectionSel).toggle(!isOpen);
+                html.find(chevronSel)
+                    .toggleClass("fa-chevron-right", isOpen)
+                    .toggleClass("fa-chevron-down", !isOpen);
+                // Collapse the other panel
+                html.find(otherSectionSel).hide();
+                html.find(otherChevronSel)
+                    .removeClass("fa-chevron-down").addClass("fa-chevron-right");
+            });
+        };
+        makeAccordion(".foundry-toggle", ".foundry-section", ".foundry-chevron", ".syrin-section", ".syrin-chevron");
+        makeAccordion(".syrin-toggle", ".syrin-section", ".syrin-chevron", ".foundry-section", ".foundry-chevron");
 
         // Skip button — clears token field then fires the step action so _verifyConnection
         // reads an empty DOM value and proceeds as local-only

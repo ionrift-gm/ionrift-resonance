@@ -1,33 +1,44 @@
 <div class="custom-step-container"
-    style="display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+    style="display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
 
-    {{!-- Primary action: Foundry Audio only --}}
-    <div
-        style="display:flex; align-items:center; gap:12px; padding:8px 10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:4px;">
-        <span
-            style="flex:1; font-size:0.9em; color:rgba(255,255,255,0.85); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            <i class="fas fa-volume-up"></i> Foundry VTT audio only — no account required.
-        </span>
+    {{!-- Row A: Foundry Audio toggle --}}
+    <div class="foundry-toggle"
+        style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:4px; cursor:pointer; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.85); font-size:0.9em; user-select:none;">
+        <span><i class="fas fa-volume-up" style="margin-right:8px; opacity:0.7;"></i>Foundry VTT Audio — local and
+            bundled sounds</span>
+        <i class="fas fa-chevron-{{#if hasToken}}right{{else}}down{{/if}} foundry-chevron"
+            style="opacity:0.5; font-size:0.8em;"></i>
+    </div>
+
+    {{!-- Foundry Audio confirm panel — open by default unless Syrinscape is configured --}}
+    <div class="foundry-section"
+        style="display:{{#if hasToken}}none{{else}}flex{{/if}}; flex-direction:column; gap:8px; padding:8px 12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:4px;">
+        <p style="margin:0; font-size:0.85em; color:rgba(255,255,255,0.7);">
+            Proceed without Syrinscape. All sounds will use Foundry's built-in audio engine and the bundled SFX
+            pack.<br>
+            <span style="opacity:0.6;">You can connect Syrinscape at any time via Module Settings.</span>
+        </p>
         <button type="button" class="skip-provider-btn"
-            style="flex-shrink:0; padding:6px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.8); border-radius:3px; cursor:pointer; font-size:0.9em; white-space:nowrap;">
-            Foundry Audio →
+            style="align-self:flex-start; padding:6px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.8); border-radius:3px; cursor:pointer; font-size:0.9em;">
+            Confirm — Foundry Audio Only →
         </button>
     </div>
 
-    {{!-- Syrinscape expand toggle — equal visual weight --}}
+    {{!-- Row B: Syrinscape toggle --}}
     <div class="syrin-toggle"
-        style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:4px; cursor:pointer; border:1px solid rgba(139,92,246,0.3); background:rgba(139,92,246,0.06); color:rgba(255,255,255,0.85); font-size:0.9em; user-select:none;">
-        <i class="{{#if expandSyrin}}fas fa-chevron-down{{else}}fas fa-chevron-right{{/if}} syrin-chevron"
-            style="font-size:0.8em; color:#a78bfa; flex-shrink:0;"></i>
-        <span style="flex:1;">Connect Syrinscape — extend with cloud-hosted sounds</span>
+        style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:4px; cursor:pointer; border:1px solid rgba(139,92,246,0.3); background:rgba(139,92,246,0.06); color:rgba(255,255,255,0.85); font-size:0.9em; user-select:none;">
+        <span><i class="fas fa-plug" style="margin-right:8px; color:#a78bfa;"></i>Syrinscape <span
+                style="opacity:0.55;">(optional)</span> — extend with cloud-hosted sounds</span>
+        <i class="fas fa-chevron-{{#if expandSyrin}}down{{else}}right{{/if}} syrin-chevron"
+            style="opacity:0.6; font-size:0.8em;"></i>
     </div>
 
-    {{!-- Syrinscape section — collapsed by default unless expandSyrin --}}
+    {{!-- Syrinscape config panel --}}
     <div class="syrin-section"
-        style="display:{{#if expandSyrin}}flex{{else}}none{{/if}}; flex-direction:column; gap:10px; padding:4px 0 0 0;">
+        style="display:{{#if expandSyrin}}flex{{else}}none{{/if}}; flex-direction:column; gap:10px; padding:8px 12px; background:rgba(139,92,246,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:4px;">
 
         <label style="display:block; font-weight:bold; font-size:0.9em;">
-            Syrinscape Auth Token <span style="opacity:0.5; font-weight:normal;">(optional)</span>
+            Auth Token <span style="opacity:0.5; font-weight:normal;">(optional)</span>
         </label>
         <div style="display:flex; gap:5px;">
             <input type="password" name="authToken" class="attunement-token-input" value="{{token}}"
