@@ -283,8 +283,8 @@ export class AttunementApp extends AbstractWelcomeApp {
         const controlMod = game.modules.get("syrinscape-control");
         const hasSyrinControl = controlMod?.active;
 
-        // Auto-expand the Syrinscape section if the user already has a token or the module is active
-        const expandSyrin = !!(currentToken || hasSyrinControl || mismatch);
+        // Only auto-expand if user has an existing token — Control module alone isn't enough
+        const expandSyrin = !!(currentToken || mismatch);
 
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-token.hbs", {
             token: currentToken,
