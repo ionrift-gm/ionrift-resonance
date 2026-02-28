@@ -14,13 +14,9 @@
 
         <div class="foundry-section"
             style="display:{{#if hasToken}}none{{else}}flex{{/if}}; flex-direction:column; gap:10px; padding:12px 14px; border-top:1px solid rgba(255,255,255,0.06);">
-            <p style="margin:0; font-size:0.85em; color:rgba(255,255,255,0.65); line-height:1.5;">
-                Proceed without Syrinscape. All sounds use Foundry's audio engine and the bundled SFX pack.<br>
-                <span style="opacity:0.7;">You can connect Syrinscape at any time via Module Settings.</span>
-            </p>
             <button type="button" class="skip-provider-btn"
-                style="align-self:flex-start; padding:6px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.8); border-radius:3px; cursor:pointer; font-size:0.9em;">
-                Confirm — Foundry Audio Only →
+                style="width:100%; padding:8px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.8); border-radius:3px; cursor:pointer; font-size:0.9em;">
+                Foundry Audio Only →
             </button>
         </div>
 
@@ -38,17 +34,18 @@
         </div>
 
         <div class="syrin-section"
-            style="display:{{#if expandSyrin}}flex{{else}}none{{/if}}; flex-direction:column; gap:10px; padding:12px 14px; border-top:1px solid rgba(139,92,246,0.15);">
+            style="display:{{#if expandSyrin}}flex{{else}}none{{/if}}; flex-direction:column; gap:14px; padding:14px; border-top:1px solid rgba(139,92,246,0.15);">
 
             <label style="display:block; font-weight:bold; font-size:0.9em; margin:0;">
                 Auth Token <span style="opacity:0.5; font-weight:normal;">(optional)</span>
             </label>
-            <div style="display:flex; gap:5px;">
+
+            <div style="display:flex; gap:5px; align-items:stretch;">
                 <input type="password" name="authToken" class="attunement-token-input" value="{{token}}"
                     placeholder="Paste token here…"
                     style="flex:1; box-sizing:border-box; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.15); padding:8px 10px; border-radius:3px;">
                 <button type="button" class="toggle-visibility"
-                    style="flex:0 0 36px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:3px; cursor:pointer;">
+                    style="flex:0 0 36px; align-self:stretch; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:3px; cursor:pointer;">
                     <i class="fas fa-eye"></i>
                 </button>
             </div>
@@ -75,7 +72,8 @@
             </div>
             {{/if}}
 
-            <p style="font-size:0.8em; opacity:0.5; margin:0; padding-top:2px;">
+            <p
+                style="font-size:0.85em; opacity:0.7; margin:0; padding-top:2px; border-top:1px solid rgba(255,255,255,0.06);">
                 Find your token: <a href="https://syrinscape.com/online/cp/" target="_blank"
                     style="color:#a29bfe;">Syrinscape Control Panel</a> → Your Game → Show Auth Token.
             </p>
