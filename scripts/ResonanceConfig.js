@@ -46,9 +46,10 @@ export class ResonanceConfig {
         // 2. Load User Overrides
         const overrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
 
-        // 3. Merge Strategies
-        // Start with deep copy of loaded config
-        this.config = foundry.utils.deepClone(loadedConfig);
+        // 3. Normalise & Merge
+        // New local presets use {version, bindings:{...}} format; flatten to a plain map.
+        const raw = foundry.utils.deepClone(loadedConfig);
+        this.config = (raw.bindings && typeof raw.bindings === "object") ? raw.bindings : raw;
 
         // Merge Players (Array -> Object Map)
         if (overrides.players && Array.isArray(overrides.players)) {
@@ -113,7 +114,7 @@ export class ResonanceConfig {
         }
 
         let effectiveBindings;
-        if (this.activePreset === "none" || this.activePreset === "local") {
+        if (this.activePreset === "none" || this.activePreset === "local" || this.activePreset === "pack") {
             effectiveBindings = { ...this.config, ...userBindings };
             Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Keys: ${Object.keys(effectiveBindings).length}`);
         } else {

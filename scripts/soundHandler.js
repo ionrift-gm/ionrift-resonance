@@ -113,10 +113,13 @@ export class SoundHandler {
             "DAGGERHEART_FAIL_WITH_HOPE",
         ]);
 
+        // Support both flat format {KEY: val} and structured format {bindings: {KEY: [...]}}
+        const lookup = this.config?.bindings ?? this.config;
+
         const missing = [];
         for (const [key, value] of Object.entries(SOUND_EVENTS)) {
             if (SKIP_VALIDATION.has(value)) continue;
-            const resolved = this.config[value];
+            const resolved = lookup[value];
             if (!resolved || (Array.isArray(resolved) && resolved.length === 0)) {
                 if (value.startsWith("CORE_") || value.startsWith("PC_") || value.startsWith("DAGGERHEART_")) {
                     missing.push(value);

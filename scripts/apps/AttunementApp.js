@@ -7,11 +7,13 @@ import { Logger } from "../Logger.js";
  * Handles Syrinscape Connection and Sound Preset Configuration.
  */
 export class AttunementApp extends AbstractWelcomeApp {
+    // Must match ATTUNEMENT_VERSION in module.js — bump both together at release
+    static VERSION = "1";
+
     constructor(attunementVersion, options = {}) {
-        // Parent constructor: title, settingsKey, attunement protocol version
-        // attunementVersion is a static constant from module.js — only changes
-        // when the setup steps themselves change, not on every patch release.
-        super("Resonance: Attunement Protocol", "setupVersion", attunementVersion);
+        // Fall back to static VERSION so module-settings instantiation (no args)
+        // still gets the correct version and shows the Protocol Complete state.
+        super("Resonance: Attunement Protocol", "setupVersion", attunementVersion ?? AttunementApp.VERSION);
 
         // State for Token Input
         this.pendingToken = "";
