@@ -46,9 +46,11 @@
                     {{#if this.isCompleted}}
                     <span class="status-done"><i class="fas fa-check-circle success"></i> Done</span>
                     {{else}}
+                    {{#unless this.actionHidden}}
                     <button class="step-action-btn" data-step="{{this.id}}" {{#if this.isPending}}disabled{{/if}}>
                         {{this.actionLabel}}
                     </button>
+                    {{/unless}}
                     {{/if}}
                 </div>
             </div>

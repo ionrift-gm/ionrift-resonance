@@ -1,13 +1,13 @@
 <div class="custom-step-container"
     style="display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
 
-    {{!-- Path A: Skip (local-only) --}}
+    {{!-- Path A: Skip (SFX Pack only) --}}
     <div
         style="padding: 10px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); border-radius: 4px;">
         <p style="margin: 0 0 8px 0; font-size: 0.9em; color: #d1fae5;">
             <i class="fas fa-box-open" style="color:#4ade80;"></i>
             <strong style="color:#4ade80;">SFX Pack ready.</strong>
-            Skip this step to use it as-is — or connect Syrinscape below to extend individual sounds with your library.
+            Skip this step to use it as-is — or extend with Syrinscape below.
         </p>
         <button type="button" class="skip-provider-btn"
             style="width:100%; padding: 7px 12px; background: rgba(74,222,128,0.15); border: 1px solid #4ade80; color:#4ade80; border-radius:3px; cursor:pointer; font-weight:bold;">
@@ -35,6 +35,11 @@
             <i class="fas fa-eye"></i>
         </button>
     </div>
+
+    <button type="button" class="verify-syrinscape-btn"
+        style="width:100%; padding:7px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold;">
+        <i class="fas fa-plug"></i> Verify &amp; Connect Syrinscape
+    </button>
 
     {{#if mismatch}}
     <div
