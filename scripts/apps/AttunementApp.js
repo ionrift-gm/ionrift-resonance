@@ -189,7 +189,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                     `,
                     buttons: {
                         yes: {
-                            label: `<i class="fas fa-check"></i> Overwrite & Reset`,
+                            label: `<i class="fas fa-check"></i> Overwrite &amp; Reset`,
                             callback: () => resolve(true)
                         },
                         no: {
@@ -253,7 +253,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 title: "Sound Provider",
                 icon: "fas fa-plug",
                 description: "Optional — connect Syrinscape for cloud sounds. Skip this step to use the bundled SFX Pack.",
-                actionLabel: "Verify Connection",
+                actionLabel: "Confirm & Continue",
                 content: () => this._getTokenStepContent()
             },
             {
@@ -345,10 +345,17 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async _verifyConnection() {
-        const token = this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken");
+        // Read directly from the DOM input — if the user cleared the field it will be ""
+        // Don't fall back to stored token when the field is present and explicitly empty.
+        const inputEl = this.element?.find(".attunement-token-input");
+        const fieldValue = inputEl?.length ? inputEl.val().trim() : undefined;
+        const token = (fieldValue !== undefined) ? fieldValue
+            : (this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken") || "");
+
         if (!token) {
-            // No token = local-only mode. Skip gracefully.
-            ui.notifications.info("Resonance | Local-Only Mode — Syrinscape skipped. You can connect later via Module Settings.");
+            // No token entered — local-only mode. Clear any previously stored token.
+            await game.settings.set("ionrift-resonance", "syrinToken", "");
+            ui.notifications.info("Resonance | Local-Only Mode — no Syrinscape token. Connect later via Module Settings.");
             return true;
         }
 
