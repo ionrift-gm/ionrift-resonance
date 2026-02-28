@@ -196,4 +196,13 @@ export const SOUND_EVENTS = {
     VOCAL_INSECT: "MONSTER_INSECT",
     VOCAL_SPIDER: "MONSTER_SPIDER",
     VOCAL_LYCANTHROPE: "MONSTER_LYCANTHROPE",
+
+    // ─── Legacy aliases (@v2) ─────────────────────────────────────────────────
+    // @legacy: kept for backward compat and as chain terminal until default
+    // preset migrates CORE_MELEE/CORE_RANGED bindings away from CORE_WHOOSH.
+    // v4: remove once preset data uses ASK_GENERIC_MELEE/RANGED directly.
+    WHOOSH: "CORE_WHOOSH",
+    CRIT_DECORATION: "CORE_CRIT",
+    BLOODY_HIT: "CORE_HIT",
+    MISS: "CORE_MISS",
 };

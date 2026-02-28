@@ -1,12 +1,11 @@
 import { Logger } from "./Logger.js";
 import { SoundConfigApp } from "./apps/SoundConfigApp.js";
-import { AttunementApp } from "./apps/AttunementApp.js"; // Standardized Wizard
-// import { SetupGuide } from "./apps/SetupGuide.js"; // Deprecated
+import { AttunementApp } from "./apps/AttunementApp.js";
 import { SoundAuditor } from "./apps/SoundAuditor.js";
 import { SoundHandler } from "./SoundHandler.js";
 import { registerSettings } from "./settings.js";
 import { SyrinscapeProvider } from "./providers/SyrinscapeProvider.js";
-
+import { SOUND_EVENTS } from "./constants.js";
 
 Hooks.once('init', async function () {
     Logger.log("Initializing Sound Engine");
@@ -34,6 +33,9 @@ Hooks.once('init', async function () {
     // Expose API
     game.ionrift = game.ionrift || {};
     game.ionrift.sounds = game.ionrift.sounds || {};
+    // Expose SOUND_EVENTS for test harness and console access
+    game.ionrift.resonance = game.ionrift.resonance || {};
+    game.ionrift.resonance.SOUND_EVENTS = SOUND_EVENTS;
 
     // Import manager (it's a singleton export)
     const { soundManager } = await import("./SoundManager.js");

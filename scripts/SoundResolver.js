@@ -200,13 +200,17 @@ export class SoundResolver {
             return null;
         }
 
-        // Core Groups — chain ends at category generic (no further fallback)
+        // Core Groups — named intermediates now exposed as ASK_GENERIC_MELEE/RANGED constants.
+        // Chain still terminates at CORE_WHOOSH until default preset binds MELEE/RANGED directly.
+        // @v4: when preset migrates, remove the CORE_WHOOSH step here.
         if (["ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE", "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM", "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_MELEE;
 
         if (["ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING", "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_RANGED;
 
-        // @v3: MELEE/RANGED chains now terminate at their own generics — WHOOSH removed from chain.
-        // WHOOSH / CORE_WHOOSH kept only as ui/preset ultimate fallback (see pickSound line below).
+        // MELEE/RANGED still fall to CORE_WHOOSH — @v4: remove when preset data is migrated
+        if (specificKey === "CORE_MELEE" || specificKey === "CORE_RANGED") return SOUND_EVENTS.WHOOSH;
+
+
 
         if (specificKey.startsWith("SPELL_") || specificKey.startsWith("SCHOOL_") || specificKey.startsWith("DOMAIN_")) return SOUND_EVENTS.ASK_GENERIC_MAGIC;
         if (specificKey === "CORE_SCHOOL" || specificKey === "CORE_DOMAIN") return SOUND_EVENTS.ASK_GENERIC_MAGIC;
