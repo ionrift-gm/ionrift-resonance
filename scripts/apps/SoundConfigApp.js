@@ -158,16 +158,20 @@ export class SoundConfigApp extends FormApplication {
             if (!key) return null;
             if (loopCheck.includes(key)) return null;
 
-            // 1. Custom
+            // 1. Custom bindings always win
             if (customBindings[key]) return { value: customBindings[key], source: "custom" };
 
-            // 2. Check for None Preset
+            // 2. None preset: everything empty
             const preset = game.settings.get("ionrift-resonance", "soundPreset");
             if (preset === "none") return { value: null, source: null };
 
-            // 3. Default
-            const def = SYRINSCAPE_DEFAULTS[key];
-            if (def) return { value: def, source: "default" };
+            // 3. SYRINSCAPE_DEFAULTS fallback — skip for 'pack' users.
+            //    Pack users have pack.json loaded into customSoundBindings; Syrinscape IDs
+            //    would show as inherited but won't play locally.
+            if (preset !== "pack") {
+                const def = SYRINSCAPE_DEFAULTS[key];
+                if (def) return { value: def, source: "default" };
+            }
 
             return { value: null, source: null };
         };
@@ -551,14 +555,14 @@ export class SoundConfigApp extends FormApplication {
             },
             {
                 label: "Vocals",
-                description: "Pain and death sounds.",
+                description: "Pain and death sounds — played when a character takes damage or dies.",
                 children: [
-                    { id: "CORE_PAIN_MASCULINE", label: "Pain Cry (Masculine)", description: "Grunt when a masculine humanoid takes damage." },
-                    { id: "CORE_PAIN_FEMININE", label: "Pain Cry (Feminine)", description: "Grunt when a feminine humanoid takes damage." },
-                    { id: "CORE_DEATH_MASCULINE", label: "Death Cry (Masculine)", description: "Death sound for masculine humanoid actors." },
-                    { id: "CORE_DEATH_FEMININE", label: "Death Cry (Feminine)", description: "Death sound for feminine humanoid actors." },
-                    { id: "CORE_MONSTER_PAIN", label: "Monster Pain", description: "Growl/pain reaction for non-humanoid creatures." },
-                    { id: "CORE_MONSTER_DEATH", label: "Monster Death", description: "Death sound for non-humanoid creatures." }
+                    { id: "CORE_PAIN_MASCULINE", label: "Pain (Masculine)", description: "Played when a masculine-presenting humanoid takes damage." },
+                    { id: "CORE_PAIN_FEMININE", label: "Pain (Feminine)", description: "Played when a feminine-presenting humanoid takes damage." },
+                    { id: "CORE_DEATH_MASCULINE", label: "Death (Masculine)", description: "Played when a masculine-presenting humanoid actor dies." },
+                    { id: "CORE_DEATH_FEMININE", label: "Death (Feminine)", description: "Played when a feminine-presenting humanoid actor dies." },
+                    { id: "CORE_MONSTER_PAIN", label: "Monster Pain", description: "Reaction growl/grunt when a non-humanoid creature takes a hit." },
+                    { id: "CORE_MONSTER_DEATH", label: "Monster Death", description: "Death sound for non-humanoid creatures. Falls back when no type-specific death is set." }
                 ]
             }
         ];
