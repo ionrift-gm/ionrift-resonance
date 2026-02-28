@@ -344,9 +344,14 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
         });
 
-        // Verify Syrinscape button — fires the (hidden) step action btn with whatever token is in the field
+        // Verify Syrinscape button — token must be present; empty = redirect to Foundry Audio path
         html.find(".verify-syrinscape-btn").click((ev) => {
             ev.preventDefault();
+            const token = html.find(".attunement-token-input").val()?.trim();
+            if (!token) {
+                ui.notifications.warn("Enter a Syrinscape token, or use 'Foundry Audio Only' to proceed without one.");
+                return;
+            }
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
         });
 
