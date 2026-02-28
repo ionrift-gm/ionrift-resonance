@@ -81,7 +81,8 @@ export const registerSettings = function () {
         choices: {
             "none": "Standard Setup (Manual)",
             // "fantasy": "Fantasy / Core (DnD, Daggerheart)", // Disabled for Initial Release
-            "local": "Local Demo SFX"
+            "local": "Local Demo SFX",
+            "pack": "Ionrift SFX Pack"
         },
         onChange: () => game.ionrift.handler?.loadConfig(),
         default: "none"

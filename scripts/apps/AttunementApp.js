@@ -90,6 +90,18 @@ export class AttunementApp extends AbstractWelcomeApp {
             return true;
         }
 
+        // Local SFX Pack: set soundPreset to 'pack' — SoundHandler loads pack.json automatically
+        if (presetType === "pack") {
+            await game.settings.set("ionrift-resonance", "configOverrides", {});
+            await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
+            await game.settings.set("ionrift-resonance", "soundPreset", "pack", { ionriftConfirmed: true });
+            await game.settings.set("ionrift-resonance", "soundCompleteness", "pack");
+            const calibrationWin = Object.values(ui.windows).find(w => w.id === "ionrift-sound-config");
+            if (calibrationWin) calibrationWin.render(true, { focus: false });
+            ui.notifications.info("Resonance | SFX Pack loaded. Your world is ready.");
+            return true;
+        }
+
         // Import Defaults
         const { SYRINSCAPE_PRESETS } = await import("../data/syrinscape_defaults.js");
         const sysId = game.system.id === 'daggerheart' ? 'daggerheart' : 'dnd5e';
@@ -172,7 +184,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         return true; // Explicit Success
     }
     _getIntroText() {
-        return "Configure Ionrift Resonance to automate audio for your world. You can use <strong>local sound files</strong> (no account needed) or connect to <strong>Syrinscape</strong> for cloud-hosted sounds. Both work — Syrinscape is entirely optional.";
+        return "Ionrift Resonance plays audio automatically during your games. The <strong>SFX Pack</strong> is bundled with the module — no accounts or subscriptions required. Connect <strong>Syrinscape</strong> in Step 1 for cloud-hosted sounds, or skip it entirely and go straight to Step 2.";
     }
 
     _getCompleteMessage() {
@@ -185,7 +197,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 id: "connect_syrinscape",
                 title: "Sound Provider",
                 icon: "fas fa-plug",
-                description: "Optional — connect Syrinscape for cloud sounds, or skip to use local files only.",
+                description: "Optional — connect Syrinscape for cloud sounds. Skip this step to use the bundled SFX Pack.",
                 actionLabel: "Verify Connection",
                 content: () => this._getTokenStepContent()
             },
