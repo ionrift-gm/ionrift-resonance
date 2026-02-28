@@ -90,8 +90,35 @@ export class AttunementApp extends AbstractWelcomeApp {
             return true;
         }
 
-        // Local SFX Pack: set soundPreset to 'pack' — SoundHandler loads pack.json automatically
+        // Local SFX Pack — same overwrite guard as standard manual setup
         if (presetType === "pack") {
+            const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+            const existingOverrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
+            const hasCustom = Object.keys(existingBindings).length > 0;
+            const hasOverrides = Object.keys(existingOverrides).length > 0;
+
+            if (hasCustom || hasOverrides) {
+                const confirmed = await new Promise((resolve) => {
+                    new Dialog({
+                        title: "Overwrite Configuration?",
+                        content: `
+                            <div style="padding: 10px; text-align: center;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #f87171; margin-bottom: 15px;"></i>
+                                <p style="font-size: 1.1em; margin-bottom: 10px;">You have active sound customizations.</p>
+                                <p style="color: #ccc;">Applying the <strong>Ionrift SFX Pack</strong> preset will <strong style="color: #f87171;">reset</strong> all custom bindings and overrides.</p>
+                            </div>
+                        `,
+                        buttons: {
+                            yes: { label: `<i class="fas fa-check"></i> Overwrite &amp; Reset`, callback: () => resolve(true) },
+                            no: { label: `<i class="fas fa-times"></i> Cancel`, callback: () => resolve(false) }
+                        },
+                        default: "no",
+                        close: () => resolve(false)
+                    }, { classes: ["ionrift", "ionrift-window", "glass-ui"], width: 400 }).render(true);
+                });
+                if (!confirmed) return false;
+            }
+
             await game.settings.set("ionrift-resonance", "configOverrides", {});
             await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
             await game.settings.set("ionrift-resonance", "soundPreset", "pack", { ionriftConfirmed: true });
@@ -234,16 +261,21 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async _getPresetStepContent() {
-        // Detect System
-        const sysId = game.system.id === 'daggerheart' ? 'daggerheart' : 'dnd5e';
         const sysLabel = game.system.title;
 
-        // UI Logic: Load saved completeness preference (This stores 'full' or 'core')
-        let currentCompleteness = game.settings.get("ionrift-resonance", "soundCompleteness") || "full";
+        // Detect empty / first-run state:
+        // Default to SFX Pack only if nothing is configured (no bindings, preset is 'none')
+        const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+        const currentPreset = game.settings.get("ionrift-resonance", "soundPreset") || "none";
+        const isEmpty = Object.keys(existingBindings).length === 0 && currentPreset === "none";
+
+        // Keep Current is the safe default for returning users; Pack is default for first-timers
+        const defaultPreset = isEmpty ? "pack" : "keep";
 
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-preset.hbs", {
             sysLabel: sysLabel,
-            currentPreset: currentCompleteness // Pass completeness choice to UI
+            defaultPreset: defaultPreset,
+            isFirstSetup: isEmpty
         });
     }
 
