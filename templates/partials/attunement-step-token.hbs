@@ -1,22 +1,20 @@
 <div class="custom-step-container"
     style="display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
 
-    {{!-- Path A: Skip (SFX Pack only) --}}
+    {{!-- Path A: Skip (no Syrinscape) --}}
     <div
-        style="padding: 10px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); border-radius: 4px;">
-        <p style="margin: 0 0 8px 0; font-size: 0.9em; color: #d1fae5;">
-            <i class="fas fa-box-open" style="color:#4ade80;"></i>
-            <strong style="color:#4ade80;">SFX Pack ready.</strong>
-            Skip this step to use it as-is — or extend with Syrinscape below.
-        </p>
+        style="display:flex; align-items:center; justify-content:space-between; padding: 8px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
+        <span style="font-size:0.85em; opacity:0.75;">
+            <i class="fas fa-box-open"></i> SFX Pack only — no Syrinscape needed.
+        </span>
         <button type="button" class="skip-provider-btn"
-            style="width:100%; padding: 7px 12px; background: rgba(74,222,128,0.15); border: 1px solid #4ade80; color:#4ade80; border-radius:3px; cursor:pointer; font-weight:bold;">
-            <i class="fas fa-forward"></i> Skip — Use SFX Pack Without Syrinscape
+            style="padding: 5px 12px; background: transparent; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.6); border-radius:3px; cursor:pointer; font-size:0.85em; white-space:nowrap;">
+            Skip →
         </button>
     </div>
 
     {{!-- Divider --}}
-    <div style="display:flex; align-items:center; gap:8px; opacity:0.5; font-size:0.8em;">
+    <div style="display:flex; align-items:center; gap:8px; opacity:0.4; font-size:0.8em;">
         <hr style="flex:1; border-color: rgba(255,255,255,0.15); margin:0;">
         or extend with Syrinscape
         <hr style="flex:1; border-color: rgba(255,255,255,0.15); margin:0;">

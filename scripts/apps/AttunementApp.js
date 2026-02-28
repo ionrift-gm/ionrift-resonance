@@ -252,7 +252,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 id: "connect_syrinscape",
                 title: "Sound Provider",
                 icon: "fas fa-plug",
-                description: "Optional — connect Syrinscape for cloud sounds. Skip this step to use the bundled SFX Pack.",
+                description: "Connect Syrinscape to extend the SFX Pack with cloud-hosted sounds.",
                 actionLabel: "Verify & Connect",
                 actionHidden: true, // Both paths handled inside content — outer button suppressed
                 content: () => this._getTokenStepContent()
