@@ -153,9 +153,9 @@ export class SoundResolver {
         if (lower.includes("bite")) return (mappings.generic?.bite || SOUND_EVENTS.ATTACK_BITE);
         if (lower.includes("slam")) return (mappings.generic?.slam || SOUND_EVENTS.ATTACK_SLAM);
 
-        // Weapons
-        if (lower.includes("bow") || lower.includes("arrow")) return (mappings.generic?.bow || SOUND_EVENTS.ATTACK_BOW);
+        // Weapons (more specific keywords BEFORE general ones — e.g. crossbow contains 'bow')
         if (lower.includes("crossbow") || lower.includes("bolt")) return SOUND_EVENTS.ATTACK_CROSSBOW;
+        if (lower.includes("bow") || lower.includes("arrow")) return (mappings.generic?.bow || SOUND_EVENTS.ATTACK_BOW);
         if (lower.includes("axe") || lower.includes("hammer") || lower.includes("maul")) return SOUND_EVENTS.ATTACK_BLUDGEON;
         if (lower.includes("dagger") || lower.includes("knife")) return SOUND_EVENTS.ATTACK_DAGGER;
         if (lower.includes("sword") || lower.includes("blade") || lower.includes("scimitar")) return (mappings.generic?.sword || SOUND_EVENTS.ATTACK_SWORD);
