@@ -18,7 +18,7 @@
         </div>
         {{else}}
         <p class="intro-text">
-            {{introText}}
+            {{{introText}}}
         </p>
         {{/if}}
 
@@ -36,7 +36,7 @@
                 <div class="step-content"
                     style="{{#if this.isCompleted}}pointer-events: none; opacity: 0.7; filter: grayscale(0.5);{{/if}}">
                     <h3>{{this.title}}</h3>
-                    <p>{{this.description}}</p>
+                    <p>{{{this.description}}}</p>
 
                     {{#if this.content}}
                     {{{this.content}}}

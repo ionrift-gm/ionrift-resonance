@@ -11,7 +11,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         // Parent constructor: title, settingsKey, attunement protocol version
         // attunementVersion is a static constant from module.js — only changes
         // when the setup steps themselves change, not on every patch release.
-        super("Ionrift Resonance: Syrinscape Configuration", "setupVersion", attunementVersion);
+        super("Resonance: Attunement Protocol", "setupVersion", attunementVersion);
 
         // State for Token Input
         this.pendingToken = "";
