@@ -341,14 +341,14 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_HUMANOID", cardLabel: "Default Vocal",
                 description: "Standard bipedal folk (Humans, Elves, Dwarves).",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_HUMANOID_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_HUMANOID_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_GOBLIN_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_GOBLIN_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_LYCANTHROPE_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_LYCANTHROPE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -357,18 +357,18 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_UNDEAD", cardLabel: "Default Vocal",
                 description: "Zombies, Skeletons, Ghosts.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_UNDEAD_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_UNDEAD_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_ZOMBIE_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_ZOMBIE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_SKELETON_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_SKELETON_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_GHOST_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_GHOST_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -377,34 +377,34 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_BEAST", cardLabel: "Default Vocal",
                 description: "Natural creatures.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_BEAST_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_BEAST_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_BEAR_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_BEAR_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_WOLF_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_WOLF_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Feline (Cat / Lion)", id: "MONSTER_CAT", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_CAT_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_CAT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_BIRD_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_BIRD_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Equine (Horse)", id: "MONSTER_HORSE", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_HORSE_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_HORSE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Insects / Spiders", id: "SFX_INSECT", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "SFX_INSECT_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "SFX_INSECT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -413,10 +413,10 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_FIEND", cardLabel: "Default Vocal",
                 description: "Extraplanar evil entities.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_FIEND_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_FIEND_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Demon (Chaotic)", id: "MONSTER_DEMON", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "MONSTER_DEMON_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "MONSTER_DEMON_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -425,10 +425,10 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_DRAGON", cardLabel: "Default Vocal",
                 description: "Chromatics, Metallics, Wyverns.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_DRAGON_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_DRAGON_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Wyvern", id: "dragon_wyvern", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "dragon_wyvern_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "dragon_wyvern_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -437,7 +437,7 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_GIANT", cardLabel: "Default Vocal",
                 description: "Ogres, Trolls, Giants.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_GIANT_ATTACK" }
+                    { label: "Default Attack", id: "MONSTER_GIANT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }
                 ]
             },
             {
@@ -445,14 +445,14 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_CONSTRUCT", cardLabel: "Default Vocal",
                 description: "Golems, Animated Objects.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_CONSTRUCT_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_CONSTRUCT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Golems (Generic)", id: "construct_golem", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "construct_golem_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "construct_golem_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Animated Objects", id: "construct_animated_object", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "construct_animated_object_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "construct_animated_object_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -461,22 +461,22 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_ELEMENTAL", cardLabel: "Default Vocal",
                 description: "Beings of raw elemental matter.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_ELEMENTAL_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_ELEMENTAL_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Fire Elemental", id: "SFX_FIRE", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "SFX_FIRE_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "SFX_FIRE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Water Elemental", id: "SFX_WATER_ENTITY", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "SFX_WATER_ENTITY_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "SFX_WATER_ENTITY_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Air Elemental", id: "SFX_WIND", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "SFX_WIND_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "SFX_WIND_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Earth Elemental", id: "elemental_earth", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "elemental_earth_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "elemental_earth_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -485,18 +485,18 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_ALIEN", cardLabel: "Default Vocal",
                 description: "Beholders, Mind Flayers, Aliens.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_ALIEN_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_ALIEN_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Beholder", id: "aberration_beholder", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "aberration_beholder_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "aberration_beholder_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Mind Flayer", id: "aberration_mind_flayer", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "aberration_mind_flayer_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "aberration_mind_flayer_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Chuul / Aquatic", id: "aberration_chuul", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "aberration_chuul_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "aberration_chuul_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -505,18 +505,18 @@ export class SoundConfigApp extends FormApplication {
                 id: "MONSTER_PLANT", cardLabel: "Default Vocal",
                 description: "Treants, Myconids.",
                 children: [
-                    { label: "Default Attack", id: "MONSTER_PLANT_ATTACK" },
+                    { label: "Default Attack", id: "MONSTER_PLANT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
                         label: "Treants", id: "plant_treant", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "plant_treant_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "plant_treant_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Myconids / Fungi", id: "plant_myconid", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "plant_myconid_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "plant_myconid_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
                         label: "Shambling Mound", id: "plant_shambling_mound", cardLabel: "Default Vocal",
-                        children: [{ label: "Default Attack", id: "plant_shambling_mound_ATTACK" }]
+                        children: [{ label: "Default Attack", id: "plant_shambling_mound_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
@@ -525,7 +525,7 @@ export class SoundConfigApp extends FormApplication {
                 id: "SFX_SLIME", cardLabel: "Default Vocal",
                 description: "Gelatinous Cubes, Puddings.",
                 children: [
-                    { label: "Default Attack", id: "SFX_SLIME_ATTACK" }
+                    { label: "Default Attack", id: "SFX_SLIME_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }
                 ]
             }
         ];
