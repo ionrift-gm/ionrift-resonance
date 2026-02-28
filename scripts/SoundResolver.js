@@ -200,17 +200,16 @@ export class SoundResolver {
             return null;
         }
 
-        // Core Groups
-        if (["ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE", "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM", "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"].includes(specificKey)) return "CORE_MELEE";
+        // Core Groups — chain ends at category generic (no further fallback)
+        if (["ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE", "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM", "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_MELEE;
 
-        if (["ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING", "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"].includes(specificKey)) return "CORE_RANGED";
+        if (["ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING", "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_RANGED;
 
-        // Physical weapon groups → generic swing fallback (spells do NOT swing)
-        // @v3-rename: CORE_WHOOSH → CORE_ATTACK_SWING (fires at attack initiation, not on miss)
-        if (specificKey === "CORE_MELEE" || specificKey === "CORE_RANGED") return "CORE_WHOOSH";
+        // @v3: MELEE/RANGED chains now terminate at their own generics — WHOOSH removed from chain.
+        // WHOOSH / CORE_WHOOSH kept only as ui/preset ultimate fallback (see pickSound line below).
 
-        if (specificKey.startsWith("SPELL_") || specificKey.startsWith("SCHOOL_") || specificKey.startsWith("DOMAIN_")) return "CORE_MAGIC";
-        if (specificKey === "CORE_SCHOOL" || specificKey === "CORE_DOMAIN") return "CORE_MAGIC";
+        if (specificKey.startsWith("SPELL_") || specificKey.startsWith("SCHOOL_") || specificKey.startsWith("DOMAIN_")) return SOUND_EVENTS.ASK_GENERIC_MAGIC;
+        if (specificKey === "CORE_SCHOOL" || specificKey === "CORE_DOMAIN") return SOUND_EVENTS.ASK_GENERIC_MAGIC;
 
         // Hits & Results (Category-Aware → Generic)
         if (specificKey === "CORE_HIT_RANGED" || specificKey === "CORE_HIT_MAGIC") return "CORE_HIT";
@@ -244,8 +243,8 @@ export class SoundResolver {
             }
 
             // Pain vocals
-            if (specificKey.includes("DEATH")) return "CORE_MONSTER_DEATH";
-            return "CORE_MONSTER_PAIN";
+            if (specificKey.includes("DEATH")) return SOUND_EVENTS.VOCAL_GENERIC_DEATH;
+            return SOUND_EVENTS.VOCAL_GENERIC_PAIN;
         }
 
         return null;

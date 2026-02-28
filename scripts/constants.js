@@ -130,5 +130,70 @@ export const SOUND_EVENTS = {
     // Default — fires on attack swing (BEFORE hit/miss result is known).
     // Falls back from CORE_MELEE and CORE_RANGED when no specific weapon sound is mapped.
     // @v3-rename: CORE_WHOOSH → CORE_ATTACK_SWING (see SOUND_KEY_REFACTOR_v3.md)
-    WHOOSH: "CORE_WHOOSH"  // @legacy alias; v3: WHOOSH → CORE_ATTACK_SWING
+
+    // ─── v3 Semantic Aliases ─────────────────────────────────────────────────
+    // Values intentionally match legacy strings — user configs remain valid.
+    // v4: string values will be updated + migration bridge added.
+
+    // ASK — declare action (before roll)
+    ASK_GENERIC_MELEE: "CORE_MELEE",   // category fallback for any unmatched melee ask
+    ASK_GENERIC_RANGED: "CORE_RANGED",  // category fallback for any unmatched ranged ask
+    ASK_GENERIC_MAGIC: "CORE_MAGIC",   // category fallback for any unmatched spell/domain
+    ASK_SWORD: "ATTACK_SWORD",
+    ASK_DAGGER: "ATTACK_DAGGER",
+    ASK_BLUDGEON: "ATTACK_BLUDGEON",
+    ASK_BOW: "ATTACK_BOW",
+    ASK_CROSSBOW: "ATTACK_CROSSBOW",
+    ASK_SLING: "ATTACK_SLING",
+    ASK_CLAW: "ATTACK_CLAW",
+    ASK_BITE: "ATTACK_BITE",
+    ASK_SLAM: "ATTACK_SLAM",
+    ASK_SPELL_FIRE: "SPELL_FIRE",
+    ASK_SPELL_ICE: "SPELL_ICE",
+    ASK_SPELL_LIGHTNING: "SPELL_LIGHTNING",
+    ASK_SPELL_VOID: "SPELL_VOID",
+    ASK_SPELL_HEAL: "SPELL_HEAL",
+    ASK_SPELL_PSYCHIC: "SPELL_PSYCHIC",
+    ASK_SPELL_ACID: "SPELL_ACID",
+
+    // ANSWER — roll result
+    ANSWER_HIT: "CORE_HIT",
+    ANSWER_HIT_RANGED: "CORE_HIT_RANGED",
+    ANSWER_HIT_MAGIC: "CORE_HIT_MAGIC",
+    ANSWER_MISS: "CORE_MISS",
+    ANSWER_MISS_RANGED: "CORE_MISS_RANGED",
+    ANSWER_MISS_MAGIC: "CORE_MISS_MAGIC",
+    ANSWER_CRIT_HIT: "CORE_CRIT",         // combat weapon crit — NOT a roll stinger
+    ANSWER_ROLL_CRIT: "DAGGERHEART_CRIT",  // roll-outcome stinger (combat + social)
+    ANSWER_SUCCESS_HOPE: "DAGGERHEART_SUCCESS_WITH_HOPE",
+    ANSWER_SUCCESS_FEAR: "DAGGERHEART_SUCCESS_WITH_FEAR",
+    ANSWER_FAIL_FEAR: "DAGGERHEART_FAIL_WITH_FEAR",
+
+    // VOCAL — creature response (pain / death)
+    VOCAL_GENERIC_PAIN: "CORE_MONSTER_PAIN",
+    VOCAL_GENERIC_DEATH: "CORE_MONSTER_DEATH",
+    VOCAL_PC_PAIN_MASCULINE: "CORE_PAIN_MASCULINE",
+    VOCAL_PC_PAIN_FEMININE: "CORE_PAIN_FEMININE",
+    VOCAL_PC_DEATH_MASCULINE: "CORE_DEATH_MASCULINE",
+    VOCAL_PC_DEATH_FEMININE: "CORE_DEATH_FEMININE",
+    VOCAL_PC_DEATH: "PC_DEATH",
+    VOCAL_BEAR: "MONSTER_BEAR",
+    VOCAL_WOLF: "MONSTER_WOLF",
+    VOCAL_DRAGON: "MONSTER_DRAGON",
+    VOCAL_UNDEAD: "MONSTER_UNDEAD",
+    VOCAL_ZOMBIE: "MONSTER_ZOMBIE",
+    VOCAL_SKELETON: "MONSTER_SKELETON",
+    VOCAL_GHOST: "MONSTER_GHOST",
+    VOCAL_GOBLIN: "MONSTER_GOBLIN",
+    VOCAL_ORC: "MONSTER_ORC",
+    VOCAL_GIANT: "MONSTER_GIANT",
+    VOCAL_CONSTRUCT: "MONSTER_CONSTRUCT",
+    VOCAL_FIEND: "MONSTER_FIEND",
+    VOCAL_HUMANOID: "MONSTER_HUMANOID",
+    VOCAL_BEAST: "MONSTER_BEAST",
+    VOCAL_ELEMENTAL: "MONSTER_ELEMENTAL",
+    VOCAL_ELEMENTAL_FIRE: "SFX_FIRE",  // elemental pain response
+    VOCAL_INSECT: "MONSTER_INSECT",
+    VOCAL_SPIDER: "MONSTER_SPIDER",
+    VOCAL_LYCANTHROPE: "MONSTER_LYCANTHROPE",
 };
