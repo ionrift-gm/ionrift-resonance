@@ -280,15 +280,17 @@ export class AttunementApp extends AbstractWelcomeApp {
     async _getTokenStepContent() {
         const currentToken = this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken") || "";
         const mismatch = this._checkTokenMismatch(currentToken);
-
-        // Check for Control Module
         const controlMod = game.modules.get("syrinscape-control");
         const hasSyrinControl = controlMod?.active;
+
+        // Auto-expand the Syrinscape section if the user already has a token or the module is active
+        const expandSyrin = !!(currentToken || hasSyrinControl || mismatch);
 
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-token.hbs", {
             token: currentToken,
             mismatch: mismatch,
-            hasSyrinControl: hasSyrinControl
+            hasSyrinControl: hasSyrinControl,
+            expandSyrin: expandSyrin
         });
     }
 
@@ -313,6 +315,17 @@ export class AttunementApp extends AbstractWelcomeApp {
 
     activateListeners(html) {
         super.activateListeners(html);
+
+        // Syrinscape section expand/collapse toggle
+        html.find(".syrin-toggle").click(() => {
+            const section = html.find(".syrin-section");
+            const chevron = html.find(".syrin-chevron");
+            const isOpen = section.is(":visible");
+            section.toggle(!isOpen);
+            chevron.toggleClass("fa-right fa-down", false)
+                .toggleClass(isOpen ? "fa-chevron-down" : "fa-chevron-right", false)
+                .addClass(isOpen ? "fa-chevron-right" : "fa-chevron-down");
+        });
 
         // Skip button — clears token field then fires the step action so _verifyConnection
         // reads an empty DOM value and proceeds as local-only
