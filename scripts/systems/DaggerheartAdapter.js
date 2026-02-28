@@ -139,8 +139,11 @@ export class DaggerheartAdapter extends SystemAdapter {
         // Phase 1 (first render): Attack sound only (sword swing, spell cast)
         // Phase 2 (re-render, ~4s later): Result decorations (miss/hit/stingers)
         // This syncs result sounds with when the visual result appears on screen.
-        Hooks.on("renderChatMessage", (message, html, data) => {
-            Logger.log(`⏱️ [${Date.now()}] renderChatMessage HOOK FIRED (msg: ${message.id})`);
+        //
+        // renderChatMessageHTML replaces renderChatMessage (deprecated v13, removed v15).
+        // html is now a plain HTMLElement (not jQuery).
+        Hooks.on("renderChatMessageHTML", (message, html) => {
+            Logger.log(`⏱️ [${Date.now()}] renderChatMessageHTML HOOK FIRED (msg: ${message.id})`);
             if (!game.user.isGM) return;
             if (!message.isRoll || !message.rolls?.length) return;
 
@@ -689,9 +692,8 @@ export class DaggerheartAdapter extends SystemAdapter {
             let content = data.messageContent || "";
             if ((!content || content.trim() === "") && html) {
                 try {
-                    // html may be jQuery or HTMLElement
-                    const el = html instanceof HTMLElement ? html : html[0];
-                    content = el?.textContent || "";
+                    // html is HTMLElement (renderChatMessageHTML — v13+)
+                    content = (html instanceof HTMLElement ? html : html[0])?.textContent || "";
                 } catch (e) {
                     Logger.log(`⏱️ [${ts}]   Error extracting HTML text: ${e.message}`);
                 }
