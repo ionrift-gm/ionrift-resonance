@@ -50,7 +50,7 @@ Hooks.once('init', async function () {
     game.settings.registerMenu("ionrift-resonance", "setupGuide", {
         name: "Attunement Protocol",
         label: "Open Attunement Protocol",
-        hint: "Configure Syrinscape Token, Presets, and verify connection.",
+        hint: "First-time setup: select a sound preset and optionally connect Syrinscape.",
         icon: "fas fa-broadcast-tower",
         type: AttunementApp,
         restricted: true
