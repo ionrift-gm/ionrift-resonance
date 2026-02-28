@@ -257,24 +257,24 @@ export class SoundConfigApp extends FormApplication {
         const actionTaxonomy = [
             {
                 label: "Attacks (Melee)",
-                id: "CORE_MELEE", // Fallback for all melee?
-                description: "Master setting for Melee Attacks.",
+                id: "CORE_MELEE",
+                description: "Weapon swing sound for all melee attacks. This is the sound of the weapon in motion — not the impact. Hit/miss sounds are set under Core Mechanics.",
                 children: [
-                    { label: "Bludgeoning (Mace/Hammer)", id: "ATTACK_BLUDGEON" },
-                    { label: "Slashing (Sword/Axe)", id: "ATTACK_SWORD" }, // Maps to Generic Sword
-                    { label: "Piercing (Dagger/Spear)", id: "ATTACK_DAGGER" },
-                    { label: "Natural (Claw/Bite)", id: "ATTACK_CLAW" },
-                    { label: "Unarmed (Punch)", id: "CORE_BRAWL" }
+                    { label: "Bludgeoning (Mace/Hammer)", id: "ATTACK_BLUDGEON", description: "Swing sound for maces, hammers, and clubs. Plays on the attack roll — impact is Core Mechanics → Strike Landed." },
+                    { label: "Slashing (Sword/Axe)", id: "ATTACK_SWORD", description: "Slash sound for swords and axes. Dagger/spear shares this by default (blade is blade)." },
+                    { label: "Piercing (Dagger/Spear)", id: "ATTACK_DAGGER", description: "Thrust sound for daggers and spears. Defaults to the blade slash sound." },
+                    { label: "Natural (Claw/Bite)", id: "ATTACK_CLAW", description: "Claw rake or bite attack from creatures without manufactured weapons." },
+                    { label: "Unarmed (Punch)", id: "CORE_BRAWL", description: "Punch, shove, or grapple. Plays on the attack — impact is Strike Landed." }
                 ]
             },
             {
                 label: "Attacks (Ranged)",
                 id: "CORE_RANGED",
-                description: "Master setting for Ranged Attacks.",
+                description: "Projectile launch sound for all ranged attacks. This is the release/flight sound — not the impact. Impact is Core Mechanics → Strike Landed (Ranged).",
                 children: [
-                    { label: "Bow", id: "ATTACK_BOW" },
-                    { label: "Crossbow", id: "ATTACK_CROSSBOW" },
-                    { label: "Sling", id: "ATTACK_SLING" }
+                    { label: "Bow", id: "ATTACK_BOW", description: "Bowstring release and arrow flight. Impact is Strike Landed (Ranged)." },
+                    { label: "Crossbow", id: "ATTACK_CROSSBOW", description: "Crossbow bolt release." },
+                    { label: "Sling", id: "ATTACK_SLING", description: "Sling whip and stone release. Defaults to ranged master if unset." }
                     // Firearm? Thrown?
                 ]
             },
@@ -338,103 +338,103 @@ export class SoundConfigApp extends FormApplication {
         const monsterTaxonomy = [
             {
                 label: "Humanoids",
-                id: "MONSTER_HUMANOID", cardLabel: "Default Vocal",
+                id: "MONSTER_HUMANOID", cardLabel: "Vocal / Pain Sound",
                 description: "Standard bipedal folk (Humans, Elves, Dwarves).",
                 children: [
                     { label: "Default Attack", id: "MONSTER_HUMANOID_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN", cardLabel: "Default Vocal",
+                        label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_GOBLIN_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE", cardLabel: "Default Vocal",
+                        label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_LYCANTHROPE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Undead",
-                id: "MONSTER_UNDEAD", cardLabel: "Default Vocal",
+                id: "MONSTER_UNDEAD", cardLabel: "Vocal / Pain Sound",
                 description: "Zombies, Skeletons, Ghosts.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_UNDEAD_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE", cardLabel: "Default Vocal",
+                        label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_ZOMBIE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON", cardLabel: "Default Vocal",
+                        label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_SKELETON_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST", cardLabel: "Default Vocal",
+                        label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_GHOST_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Beasts & Animals",
-                id: "MONSTER_BEAST", cardLabel: "Default Vocal",
+                id: "MONSTER_BEAST", cardLabel: "Vocal / Pain Sound",
                 description: "Natural creatures.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_BEAST_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR", cardLabel: "Default Vocal",
+                        label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_BEAR_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF", cardLabel: "Default Vocal",
+                        label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_WOLF_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Feline (Cat / Lion)", id: "MONSTER_CAT", cardLabel: "Default Vocal",
+                        label: "Feline (Cat / Lion)", id: "MONSTER_CAT", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_CAT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD", cardLabel: "Default Vocal",
+                        label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_BIRD_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Equine (Horse)", id: "MONSTER_HORSE", cardLabel: "Default Vocal",
+                        label: "Equine (Horse)", id: "MONSTER_HORSE", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_HORSE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", cardLabel: "Default Vocal",
+                        label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Insects / Spiders", id: "SFX_INSECT", cardLabel: "Default Vocal",
+                        label: "Insects / Spiders", id: "SFX_INSECT", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "SFX_INSECT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Fiends (Demons & Devils)",
-                id: "MONSTER_FIEND", cardLabel: "Default Vocal",
+                id: "MONSTER_FIEND", cardLabel: "Vocal / Pain Sound",
                 description: "Extraplanar evil entities.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_FIEND_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Demon (Chaotic)", id: "MONSTER_DEMON", cardLabel: "Default Vocal",
+                        label: "Demon (Chaotic)", id: "MONSTER_DEMON", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "MONSTER_DEMON_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Dragons",
-                id: "MONSTER_DRAGON", cardLabel: "Default Vocal",
+                id: "MONSTER_DRAGON", cardLabel: "Vocal / Pain Sound",
                 description: "Chromatics, Metallics, Wyverns.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_DRAGON_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Wyvern", id: "dragon_wyvern", cardLabel: "Default Vocal",
+                        label: "Wyvern", id: "dragon_wyvern", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "dragon_wyvern_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Giants",
-                id: "MONSTER_GIANT", cardLabel: "Default Vocal",
+                id: "MONSTER_GIANT", cardLabel: "Vocal / Pain Sound",
                 description: "Ogres, Trolls, Giants.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_GIANT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }
@@ -442,87 +442,87 @@ export class SoundConfigApp extends FormApplication {
             },
             {
                 label: "Constructs",
-                id: "MONSTER_CONSTRUCT", cardLabel: "Default Vocal",
+                id: "MONSTER_CONSTRUCT", cardLabel: "Vocal / Pain Sound",
                 description: "Golems, Animated Objects.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_CONSTRUCT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Golems (Generic)", id: "construct_golem", cardLabel: "Default Vocal",
+                        label: "Golems (Generic)", id: "construct_golem", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "construct_golem_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Animated Objects", id: "construct_animated_object", cardLabel: "Default Vocal",
+                        label: "Animated Objects", id: "construct_animated_object", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "construct_animated_object_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Elementals",
-                id: "MONSTER_ELEMENTAL", cardLabel: "Default Vocal",
+                id: "MONSTER_ELEMENTAL", cardLabel: "Vocal / Pain Sound",
                 description: "Beings of raw elemental matter.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_ELEMENTAL_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Fire Elemental", id: "SFX_FIRE", cardLabel: "Default Vocal",
+                        label: "Fire Elemental", id: "SFX_FIRE", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "SFX_FIRE_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Water Elemental", id: "SFX_WATER_ENTITY", cardLabel: "Default Vocal",
+                        label: "Water Elemental", id: "SFX_WATER_ENTITY", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "SFX_WATER_ENTITY_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Air Elemental", id: "SFX_WIND", cardLabel: "Default Vocal",
+                        label: "Air Elemental", id: "SFX_WIND", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "SFX_WIND_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Earth Elemental", id: "elemental_earth", cardLabel: "Default Vocal",
+                        label: "Earth Elemental", id: "elemental_earth", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "elemental_earth_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Aberrations",
-                id: "MONSTER_ALIEN", cardLabel: "Default Vocal",
+                id: "MONSTER_ALIEN", cardLabel: "Vocal / Pain Sound",
                 description: "Beholders, Mind Flayers, Aliens.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_ALIEN_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Beholder", id: "aberration_beholder", cardLabel: "Default Vocal",
+                        label: "Beholder", id: "aberration_beholder", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "aberration_beholder_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Mind Flayer", id: "aberration_mind_flayer", cardLabel: "Default Vocal",
+                        label: "Mind Flayer", id: "aberration_mind_flayer", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "aberration_mind_flayer_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Chuul / Aquatic", id: "aberration_chuul", cardLabel: "Default Vocal",
+                        label: "Chuul / Aquatic", id: "aberration_chuul", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "aberration_chuul_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Plants & Fungi",
-                id: "MONSTER_PLANT", cardLabel: "Default Vocal",
+                id: "MONSTER_PLANT", cardLabel: "Vocal / Pain Sound",
                 description: "Treants, Myconids.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_PLANT_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." },
                     {
-                        label: "Treants", id: "plant_treant", cardLabel: "Default Vocal",
+                        label: "Treants", id: "plant_treant", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "plant_treant_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Myconids / Fungi", id: "plant_myconid", cardLabel: "Default Vocal",
+                        label: "Myconids / Fungi", id: "plant_myconid", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "plant_myconid_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     },
                     {
-                        label: "Shambling Mound", id: "plant_shambling_mound", cardLabel: "Default Vocal",
+                        label: "Shambling Mound", id: "plant_shambling_mound", cardLabel: "Vocal / Pain Sound",
                         children: [{ label: "Default Attack", id: "plant_shambling_mound_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }]
                     }
                 ]
             },
             {
                 label: "Oozes & Slimes",
-                id: "SFX_SLIME", cardLabel: "Default Vocal",
+                id: "SFX_SLIME", cardLabel: "Vocal / Pain Sound",
                 description: "Gelatinous Cubes, Puddings.",
                 children: [
                     { label: "Default Attack", id: "SFX_SLIME_ATTACK", description: "Species-specific attack override. Leave unbound — attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category." }
