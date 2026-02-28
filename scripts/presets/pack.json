@@ -1842,6 +1842,58 @@
                 "name": "Armor Repair (03)",
                 "type": "local"
             }
+        ],
+        "PC_DEATH": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_01.mp3",
+                "name": "Core Death Feminine 01",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_02.mp3",
+                "name": "Core Death Feminine 02",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_03.mp3",
+                "name": "Core Death Feminine 03",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_04.mp3",
+                "name": "Core Death Feminine 04",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_FEMININE_05.mp3",
+                "name": "Core Death Feminine 05",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_01.mp3",
+                "name": "Core Death Masculine 01",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_02.mp3",
+                "name": "Core Death Masculine 02",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_03.mp3",
+                "name": "Core Death Masculine 03",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_04.mp3",
+                "name": "Core Death Masculine 04",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/pc/CORE_DEATH_MASCULINE_05.mp3",
+                "name": "Core Death Masculine 05",
+                "type": "local"
+            }
         ]
     }
 }

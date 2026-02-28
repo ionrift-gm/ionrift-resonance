@@ -100,8 +100,22 @@ export class SoundHandler {
         if (!this.config) return;
         if (this.activePreset === "none") return;
 
+        // Abstract routing keys: resolved via alias chain, never need direct pack bindings.
+        // Known asset gaps: sounds not yet created — intentional, tracked in release plan.
+        const SKIP_VALIDATION = new Set([
+            // Abstract mid-level routing (adapter resolves these → specific attack sounds)
+            "CORE_MELEE", "CORE_RANGED", "CORE_MAGIC",
+            // Tiered keys delegate: adapters always use the _LOW/_MED/_HIGH variants directly
+            "DAGGERHEART_FEAR_USE",
+            // Known asset gaps — no sounds exist yet, tracked in backlog
+            "DAGGERHEART_SUCCESS_WITH_HOPE", "DAGGERHEART_SUCCESS_WITH_FEAR",
+            "DAGGERHEART_ROLL_HOPE", "DAGGERHEART_ROLL_FEAR",
+            "DAGGERHEART_FAIL_WITH_HOPE",
+        ]);
+
         const missing = [];
         for (const [key, value] of Object.entries(SOUND_EVENTS)) {
+            if (SKIP_VALIDATION.has(value)) continue;
             const resolved = this.config[value];
             if (!resolved || (Array.isArray(resolved) && resolved.length === 0)) {
                 if (value.startsWith("CORE_") || value.startsWith("PC_") || value.startsWith("DAGGERHEART_")) {
