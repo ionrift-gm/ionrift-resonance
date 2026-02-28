@@ -87,4 +87,14 @@ export const registerSettings = function () {
         onChange: () => game.ionrift.handler?.loadConfig(),
         default: "none"
     });
+
+    // Orchestrator Config — per-category budget windows + per-key timing offsets (GM only)
+    game.settings.register("ionrift-resonance", "orchestratorConfig", {
+        name: "Orchestrator Configuration",
+        hint: "Sound budget and timing settings. Managed via the Orchestration tab in Resonance Calibration.",
+        scope: "world",
+        config: false,
+        type: String,
+        default: "{}"
+    });
 };

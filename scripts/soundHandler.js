@@ -5,7 +5,7 @@ import { DnD5eAdapter } from "./systems/DnD5eAdapter.js";
 import { Logger } from "./Logger.js";
 import { ResonanceConfig } from "./ResonanceConfig.js";
 import { SoundResolver } from "./SoundResolver.js";
-
+import { SoundOrchestrator } from "./SoundOrchestrator.js";
 
 
 export class SoundHandler {
@@ -16,6 +16,7 @@ export class SoundHandler {
         // Architecture Refactor: New Services
         this.configService = new ResonanceConfig();
         this.resolver = new SoundResolver(this.configService);
+        this.orchestrator = new SoundOrchestrator();
 
         // Expose for Menu
         game.ionrift = game.ionrift || {};
@@ -38,6 +39,9 @@ export class SoundHandler {
                 setting.key === "ionrift-resonance.soundPreset" ||
                 setting.key === "ionrift-resonance.configOverrides") {
                 this.loadConfig();
+            }
+            if (setting.key === "ionrift-resonance.orchestratorConfig") {
+                this.orchestrator.loadConfig();
             }
         });
 
@@ -241,11 +245,6 @@ export class SoundHandler {
 
         // 1. Resolve Key -> ID/Object via Resolver
         const soundKey = this.resolver.resolveKey(key);
-        // Fallback: If resolver returned null, treat as raw ID if non-semantic.
-
-        // Legacy Resolver fallback embedded in SoundHandler previously:
-        // "return key if it looks like an ID"
-        // We'll trust the Key is valid if resolveKey fails but it isn't semantic.
 
         let finalData = soundKey;
         if (!finalData) {
@@ -262,9 +261,13 @@ export class SoundHandler {
             Logger.log(`SoundHandler.play | Resolved to: ${finalData}`);
         }
 
-        // 2. Delegate to SoundManager
+        // 2. Orchestrator gate — budget check (throttle) + timing offset
+        if (!this.orchestrator.allow(key)) return;
+        const offset = this.orchestrator.getOffset(key);
+
+        // 3. Delegate to SoundManager
         if (game.ionrift.sounds?.manager) {
-            game.ionrift.sounds.manager.play(finalData, { delay: delay });
+            game.ionrift.sounds.manager.play(finalData, { delay: delay + offset });
         } else {
             Logger.error("SoundHandler.play | Manager not available!");
         }

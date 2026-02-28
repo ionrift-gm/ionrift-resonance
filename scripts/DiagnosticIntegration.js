@@ -1,6 +1,7 @@
 import { SoundSystemValidator } from "./SoundSystemValidator.js";
 
 import { checkSheetCompatibility } from "./diagnostics/SheetCompatibility.js";
+import { OrchestratorDiagnostics } from "./diagnostics/OrchestratorDiagnostics.js";
 import { Logger } from "./Logger.js";
 
 /**
@@ -12,6 +13,12 @@ export function registerDiagnostics() {
         builder.addAsync(runSoundDiagnostics(builder));
         builder.addAsync(checkSheetCompatibility(builder));
     });
+
+    // Expose Orchestrator test runner for console/macro access:
+    // game.ionrift.resonance.runOrchestratorTests()
+    game.ionrift = game.ionrift || {};
+    game.ionrift.resonance = game.ionrift.resonance || {};
+    game.ionrift.resonance.runOrchestratorTests = () => new OrchestratorDiagnostics().run();
 }
 
 /**
