@@ -152,7 +152,18 @@ export class AttunementApp extends AbstractWelcomeApp {
             }
 
             await game.settings.set("ionrift-resonance", "configOverrides", {});
-            await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
+
+            // Load pack.json bindings and write to customSoundBindings so
+            // the Calibration UI resolveValue() finds them in the custom layer.
+            try {
+                const res = await fetch("modules/ionrift-resonance/scripts/presets/pack.json");
+                const packData = await res.json();
+                await game.settings.set("ionrift-resonance", "customSoundBindings", JSON.stringify(packData.bindings || {}));
+            } catch (e) {
+                Logger.error("Failed to load pack.json bindings:", e);
+                await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
+            }
+
             await game.settings.set("ionrift-resonance", "soundPreset", "pack", { ionriftConfirmed: true });
             await game.settings.set("ionrift-resonance", "soundCompleteness", "pack");
             const calibrationWin = Object.values(ui.windows).find(w => w.id === "ionrift-sound-config");

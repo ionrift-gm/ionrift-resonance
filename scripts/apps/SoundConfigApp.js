@@ -1,6 +1,8 @@
 import { SYRINSCAPE_DEFAULTS, SYRINSCAPE_PRESETS } from "../data/syrinscape_defaults.js";
 import { SoundCardState } from "../models/SoundCardState.js";
 import { Logger } from "../Logger.js";
+import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
+
 
 export class SoundConfigApp extends FormApplication {
     constructor(object, options) {
@@ -635,6 +637,7 @@ export class SoundConfigApp extends FormApplication {
         const tier3Roots = monsterTaxonomy.map(node => processHierarchy(node));
 
         return {
+            hasSyrinscape: SyrinscapeProvider.isConfigured(),
             tiers: {
                 tier1: {
                     label: "Tier 1: Core",
