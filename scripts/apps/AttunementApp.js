@@ -351,8 +351,13 @@ export class AttunementApp extends AbstractWelcomeApp {
         });
 
         // Apply Preset button — fires the (hidden) step action btn
+        // Guard: Sound Provider (connect_syrinscape) must be complete first
         html.find(".apply-preset-btn").click((ev) => {
             ev.preventDefault();
+            if (!this.completedSteps?.has("connect_syrinscape")) {
+                ui.notifications.warn("Complete the Sound Provider step before applying a preset.");
+                return;
+            }
             html.find(".step-action-btn[data-step='apply_preset']").trigger("click");
         });
 
