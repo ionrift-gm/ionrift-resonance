@@ -36,7 +36,9 @@
                     <p>{{{this.description}}}</p>
 
                     {{#if this.content}}
+                    {{#unless this.isCompleted}}
                     {{{this.content}}}
+                    {{/unless}}
                     {{/if}}
                 </div>
 

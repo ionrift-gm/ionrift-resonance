@@ -31,6 +31,34 @@ export class AttunementApp extends AbstractWelcomeApp {
         });
     }
 
+
+    activateListeners(html) {
+        super.activateListeners(html); // wires step-action-btn, finish-btn, reset-btn via parent
+
+        // Token input → update in-memory state on change
+        html.find(".attunement-token-input").on("input", (e) => {
+            this.pendingToken = e.currentTarget.value;
+        });
+
+        // Password field visibility toggle
+        html.find(".toggle-visibility").click((e) => {
+            const input = html.find(".attunement-token-input");
+            const icon = $(e.currentTarget).find("i");
+            const isPassword = input.attr("type") === "password";
+            input.attr("type", isPassword ? "text" : "password");
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
+    }
+
+    // Override to force a full re-render so the step flow is shown after reset
+    async _onReset(event) {
+        event.preventDefault();
+        await game.settings.set("ionrift-resonance", "setupVersion", "0.0.0");
+        this.currentStepIndex = 0;
+        this.completedSteps.clear();
+        this.render(true); // force=true ensures the completed-banner is cleared
+    }
+
     // Handle cancellation efficiently
     async _onStepAction(event) {
         event.preventDefault();
