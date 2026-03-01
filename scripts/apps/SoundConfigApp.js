@@ -754,8 +754,10 @@ export class SoundConfigApp extends FormApplication {
                 label: CATEGORY_LABELS[id] ?? id,
                 defaultMs,
                 defaultLabel: defaultMs === 0 ? "Unlimited" : `${defaultMs}ms`,
+                placeholderLabel: defaultMs === 0 ? "\u221e" : String(defaultMs),
                 overrideMs: override !== undefined ? String(override) : "",
                 hasOverride: override !== undefined,
+                accentBorder: override !== undefined,
                 isUnlimited: effectiveMs === 0
             };
         });
