@@ -1711,6 +1711,38 @@
                 "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_05.mp3",
                 "name": "Hope Gain (05)",
                 "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_gain/DAGGERHEART_HOPE_06.mp3",
+                "name": "Hope Gain (06)",
+                "type": "local"
+            }
+        ],
+        "DAGGERHEART_FAIL": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fail/DAGGERHEART_FAIL_01.mp3",
+                "name": "Roll Fail (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fail/DAGGERHEART_FAIL_02.mp3",
+                "name": "Roll Fail (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fail/DAGGERHEART_FAIL_03.mp3",
+                "name": "Roll Fail (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fail/DAGGERHEART_FAIL_04.mp3",
+                "name": "Roll Fail (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fail/DAGGERHEART_FAIL_05.mp3",
+                "name": "Roll Fail (05)",
+                "type": "local"
             }
         ],
         "DAGGERHEART_HOPE_USE": [
