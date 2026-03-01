@@ -1062,6 +1062,10 @@ export class SoundConfigApp extends FormApplication {
             key = row?.dataset?.key;
         }
 
+        // Grab human label from the DOM for the picker title
+        const row = button.closest(".entity-row");
+        const humanLabel = row?.querySelector(".entity-name")?.textContent?.trim() || key;
+
         if (!key) {
             Logger.error("Could not find key for sound config button.", button);
             return;
@@ -1228,7 +1232,7 @@ export class SoundConfigApp extends FormApplication {
                 })(),
                 currentSoundId: "", // bindings takes precedence
                 soundKey: key,
-                title: `Pick Sound for ${key}`,
+                title: `Pick Sound: ${humanLabel}`,
                 soundConfig: (() => {
                     try {
                         const v = currentValue.trim();

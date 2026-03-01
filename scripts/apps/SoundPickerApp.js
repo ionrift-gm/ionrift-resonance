@@ -152,7 +152,10 @@ export class SoundPickerApp extends Application {
             defaultSoundName: this.opts.defaultSoundName,
             filterOneshots: this.filterOneshots,
             cacheCount: count,
-            packSounds: this._packSounds,
+            packSounds: this._packSounds.map(ps => ({
+                ...ps,
+                alreadySelected: this.currentBindings.some(b => b.id === ps.id)
+            })),
             localActive: localActive
         };
     }
