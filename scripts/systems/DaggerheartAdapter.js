@@ -283,7 +283,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                     this.play(hitKey);
                 }
 
-                const VOCAL_STAGGER = 400;
+                const VOCAL_STAGGER = this.handler?.orchestrator?.getNamedOffset("VOCAL_STAGGER") ?? 400;
                 const isDeath = maxHp > 0 && newHp >= maxHp && oldHp < maxHp;
 
                 if (isDeath) {

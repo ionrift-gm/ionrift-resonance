@@ -86,12 +86,33 @@ export class SoundOrchestrator {
         PC_VOCAL: 0        // unlimited — PC deaths/pain always play
     };
 
+    // -------------------------------------------------------------------------
+    // Named timing offsets (ms) — configurable stagger presets.
+    // Adapters reference these by name instead of hardcoding constants.
+    // -------------------------------------------------------------------------
+    static DEFAULT_OFFSETS = {
+        VOCAL_STAGGER: 400,       // Delay between impact sound and pain/death vocal
+        AOE_VOCAL_MAX: 400,       // Max random stagger for AoE chorus effect
+        SPELL_AUDIO_BONUS: 150,   // Extra clearance for spell audio effects
+        FUMBLE_MISS_DELAY: 200,   // Delay before miss sound after fumble stinger
+        CRIT_DECORATION_DELAY: 300 // Delay before decoration sound after crit stinger
+    };
+
+    static OFFSET_LABELS = {
+        VOCAL_STAGGER: "Vocal Delay (after impact)",
+        AOE_VOCAL_MAX: "AoE Vocal Stagger (max)",
+        SPELL_AUDIO_BONUS: "Spell Audio Bonus",
+        FUMBLE_MISS_DELAY: "Fumble → Miss Delay",
+        CRIT_DECORATION_DELAY: "Crit → Decoration Delay"
+    };
+
     constructor() {
         // In-memory: category -> last-fired timestamp (resets on reload).
         this.lastPlayed = new Map();
-        // Persisted config: budget overrides + timing offsets.
+        // Persisted config: budget overrides + timing offsets + named offsets.
         this.budgetConfig = {};
         this.timingConfig = {};
+        this.offsetConfig = {};
     }
 
     /**
@@ -104,11 +125,13 @@ export class SoundOrchestrator {
             const parsed = raw ? JSON.parse(raw) : {};
             this.budgetConfig = parsed.budgets ?? {};
             this.timingConfig = parsed.timing ?? {};
-            Logger.log(`SoundOrchestrator | Config loaded. Budget overrides: ${Object.keys(this.budgetConfig).length}`);
+            this.offsetConfig = parsed.offsets ?? {};
+            Logger.log(`SoundOrchestrator | Config loaded. Budget overrides: ${Object.keys(this.budgetConfig).length}, Offset overrides: ${Object.keys(this.offsetConfig).length}`);
         } catch (e) {
             Logger.error("SoundOrchestrator | Failed to load config:", e);
             this.budgetConfig = {};
             this.timingConfig = {};
+            this.offsetConfig = {};
         }
     }
 
@@ -161,6 +184,17 @@ export class SoundOrchestrator {
      */
     getOffset(key) {
         return this.timingConfig[key]?.offsetMs ?? 0;
+    }
+
+    /**
+     * Get a named offset value (ms), with config override support.
+     * Used by adapters for configurable stagger constants.
+     *
+     * @param {string} name - Offset name (e.g. 'VOCAL_STAGGER')
+     * @returns {number} offset in ms
+     */
+    getNamedOffset(name) {
+        return this.offsetConfig[name] ?? SoundOrchestrator.DEFAULT_OFFSETS[name] ?? 0;
     }
 
     /**
