@@ -43,7 +43,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 3. Run the **Attunement Protocol** (appears on first launch)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-4. Select a sound preset or start with a blank configuration
+4. Select the **Ionrift SFX Pack** preset — 389 sounds activate immediately, no configuration needed
 
 
 ## Per-Actor & Per-Item Sound Overrides
@@ -61,6 +61,22 @@ Every actor and item sheet includes a **🎵 Sounds** button (header or overflow
 - Override generic pain sounds with character-specific voice lines
 
 This feature works independently of global presets—your custom bindings always take priority.
+
+## Ionrift SFX Pack
+
+Resonance ships with **389 local sound files** covering the full combat loop. Select **"Ionrift SFX Pack"** in the Attunement Protocol or Module Settings to activate.
+
+| Category | Sounds | Examples |
+|----------|--------|----------|
+| Combat (hits, misses, crits) | 35 | Melee impacts, magic hits, ranged strikes, whooshes |
+| Weapons | 50+ | Sword slashes, bow draws, claw swipes, bludgeon swings, tentacles |
+| Monsters | 70+ | Bear, beast, construct, demon, dragon, goblin, undead, wolf |
+| Monster Deaths | 20+ | Generic + type-specific death sounds |
+| PC Vocals | 40+ | Pain and death vocals (masculine / feminine) |
+| Spells | 50+ | Fire, ice, lightning, necrotic, radiant, thunder, void |
+| Stingers | 40+ | Crits, fumbles, success/fail outcomes, Hope/Fear (Daggerheart) |
+
+All sounds are local MP3 files — no accounts, no cloud dependencies. Works offline.
 
 ## Features
 *   **Duality Dice Support**: Recognizes Daggerheart roll mechanics.
@@ -87,8 +103,6 @@ This feature works independently of global presets—your custom bindings always
 
 Ionrift Resonance features a comprehensive configuration UI to map game events to sound bindings — either local file paths or Syrinscape element IDs.
 
-> **Note:** This release focuses on manual configuration ("Standard Setup"). Curated presets are currently disabled and will be available in future updates.
-
 Open it via **Module Settings -> Ionrift Resonance -> Resonance Calibration**.
 
 ### Tier 1: Core Events
@@ -105,6 +119,9 @@ Assign default sounds to entire families of creatures. The system attempts to cl
 Define specific pain and death sounds for your Player Characters.
 *   **Pain ID**: Plays when the character takes damage.
 *   **Death ID**: Plays when the character drops to 0 HP / dies.
+
+### Orchestrator
+Configure sound budgets and timing offsets in the **Orchestration** tab. Budget windows prevent spam (e.g. 5 fear stingers in 2 seconds). Named timing offsets control the stagger between layered sounds (e.g. impact → vocal delay).
 
 ## Data Management
 *   **Export JSON**: You can backup your entire configuration (including all overrides and player settings) to a JSON file via the **Export JSON** button in the calibration footer.
