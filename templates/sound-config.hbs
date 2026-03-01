@@ -25,6 +25,7 @@
                 <div class="header">Tools</div>
                 <div class="group-items">
                     <a class="item auditor-tab" data-tab="auditor"><i class="fas fa-search"></i> Sound Auditor</a>
+                    <a class="item" data-tab="orchestrator"><i class="fas fa-sliders-h"></i> Orchestration</a>
                 </div>
             </div>
         </nav>
@@ -100,7 +101,114 @@
                 </div>
             </div>
 
-        </section>
+            <!-- ORCHESTRATOR -->
+            <div class="tab" data-tab="orchestrator">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-sliders-h"></i> Orchestration</div>
+
+                    <p style="font-size:0.85em; opacity:0.7; margin: 0 0 16px 0; padding: 0 4px;">
+                        <i class="fas fa-info-circle"></i>
+                        Budget windows prevent sound spam — sounds in the same category share one window.
+                        Leave blank to use the built-in default. Set to <code>0</code> to disable throttling.
+                    </p>
+
+                    <!-- Budget Table -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">Sound Budgets</div>
+                        <table style="width:100%; border-collapse:collapse; font-size:0.88em;">
+                            <thead>
+                                <tr style="opacity:0.5; font-size:0.8em;">
+                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">Category</th>
+                                    <th style="text-align:center; padding:4px 6px; font-weight:normal; width:90px;">Default</th>
+                                    <th style="text-align:center; padding:4px 6px; font-weight:normal; width:100px;">Override (ms)</th>
+                                    <th style="width:34px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each tiers.orchestrator.categories}}
+                                <tr style="border-top: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 5px 6px;">{{this.label}}</td>
+                                    <td style="text-align:center; padding: 5px 6px; opacity:0.5; font-size:0.9em;">{{this.defaultLabel}}</td>
+                                    <td style="padding: 4px 6px; text-align:center;">
+                                        <input type="number"
+                                            class="orchestrator-budget-input"
+                                            data-category="{{this.id}}"
+                                            value="{{this.overrideMs}}"
+                                            placeholder="{{this.defaultMs}}"
+                                            min="0" step="500"
+                                            style="width:80px; text-align:center; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:2px 4px; border-radius:3px;">
+                                    </td>
+                                    <td style="text-align:center; padding: 4px 6px;">
+                                        <button type="button"
+                                            class="orchestrator-reset-category"
+                                            data-category="{{this.id}}"
+                                            title="Reset to default"
+                                            style="display:{{#if this.hasOverride}}inline-block{{else}}none{{/if}}; width:26px; height:26px; padding:0; font-size:0.8em; background:rgba(200,120,80,0.2); border:1px solid rgba(200,120,80,0.3); color:#c84; border-radius:3px; cursor:pointer;">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Timing Offsets -->
+                    <div style="margin-bottom:24px;">
+                        <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:6px;">Timing Offsets</div>
+                        <p style="font-size:0.8em; opacity:0.55; margin:0 0 10px 0;">
+                            Delay a sound N ms after it would naturally fire. Useful for staggering layered stingers.
+                        </p>
+                        {{#if tiers.orchestrator.hasTiming}}
+                        <table style="width:100%; border-collapse:collapse; font-size:0.88em;">
+                            <thead>
+                                <tr style="opacity:0.5; font-size:0.8em;">
+                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">Sound Key</th>
+                                    <th style="text-align:center; padding:4px 6px; font-weight:normal; width:100px;">Offset (ms)</th>
+                                    <th style="width:34px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each tiers.orchestrator.timing}}
+                                <tr style="border-top: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding:5px 6px; font-family:monospace; font-size:0.85em;">{{this.key}}</td>
+                                    <td style="padding:4px 6px; text-align:center;">
+                                        <input type="number"
+                                            class="orchestrator-timing-input"
+                                            data-key="{{this.key}}"
+                                            value="{{this.offsetMs}}"
+                                            min="0" step="50"
+                                            style="width:80px; text-align:center; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:2px 4px; border-radius:3px;">
+                                    </td>
+                                    <td style="text-align:center; padding:4px 6px;">
+                                        <button type="button"
+                                            class="orchestrator-timing-delete"
+                                            data-key="{{this.key}}"
+                                            title="Remove offset"
+                                            style="width:26px; height:26px; padding:0; font-size:0.8em; background:rgba(200,60,60,0.2); border:1px solid rgba(200,60,60,0.3); color:#c44; border-radius:3px; cursor:pointer;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                        {{else}}
+                        <p style="font-size:0.85em; opacity:0.4; text-align:center; padding:8px 0; font-style:italic;">No timing offsets configured.</p>
+                        {{/if}}
+                    </div>
+
+                    <!-- Reset All -->
+                    <div style="text-align:right; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
+                        <button type="button" class="orchestrator-reset-all"
+                            style="background:rgba(200,80,80,0.12); border:1px solid rgba(200,80,80,0.25); color:#c88; padding:4px 12px; border-radius:3px; font-size:0.85em; cursor:pointer;">
+                            <i class="fas fa-undo"></i> Reset All Budgets to Defaults
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
     </div>
 
     <!-- Footer -->

@@ -2,7 +2,7 @@ import { SYRINSCAPE_DEFAULTS, SYRINSCAPE_PRESETS } from "../data/syrinscape_defa
 import { SoundCardState } from "../models/SoundCardState.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
-
+import { SoundOrchestrator } from "../SoundOrchestrator.js";
 
 export class SoundConfigApp extends FormApplication {
     constructor(object, options) {
@@ -651,12 +651,12 @@ export class SoundConfigApp extends FormApplication {
                 tier2: {
                     label: "Tier 2: Actions",
                     active: false,
-                    paramounts: tier2Roots // New Structure
+                    paramounts: tier2Roots
                 },
                 tier3: {
                     label: "Tier 3: Monsters",
                     active: false,
-                    paramounts: tier3Roots // New Structure
+                    paramounts: tier3Roots
                 },
                 auditor: {
                     label: "Auditor",
@@ -668,6 +668,7 @@ export class SoundConfigApp extends FormApplication {
                     active: false,
                     players: configOverrides.players || []
                 },
+                orchestrator: this._getOrchestratorData(),
                 config: configOverrides
             }
         };
@@ -717,6 +718,54 @@ export class SoundConfigApp extends FormApplication {
 
     async _updateObject(event, formData) {
         // Auto-save handles bindings; this handles any top-level config overrides if present.
+    }
+
+    /**
+     * Build data for the Orchestration tab.
+     * Reads SoundOrchestrator.DEFAULT_BUDGETS and the orchestratorConfig world setting.
+     */
+    _getOrchestratorData() {
+        const CATEGORY_LABELS = {
+            FEAR_STINGER: "Fear Stingers",
+            FEAR_USE: "Fear Spent",
+            DH_HOPE_GAIN: "Hope Gained",
+            DH_HOPE_USE: "Hope Spent",
+            DH_STRESS_GAIN: "Stress Applied",
+            DH_STRESS_CLEAR: "Stress Cleared",
+            DH_ARMOR_USE: "Armor Used",
+            DH_ARMOR_REPAIR: "Armor Repaired",
+            DH_OUTCOME: "Outcome Stingers",
+            MONSTER_VOCAL: "Monster Vocals",
+            PC_VOCAL: "PC Vocals"
+        };
+
+        let budgets = {};
+        let timing = {};
+        try {
+            const raw = game.settings.get("ionrift-resonance", "orchestratorConfig");
+            if (raw) { const c = JSON.parse(raw); budgets = c.budgets ?? {}; timing = c.timing ?? {}; }
+        } catch (e) { }
+
+        const categories = Object.entries(SoundOrchestrator.DEFAULT_BUDGETS).map(([id, defaultMs]) => {
+            const override = budgets[id]?.budgetMs;
+            const effectiveMs = override ?? defaultMs;
+            return {
+                id,
+                label: CATEGORY_LABELS[id] ?? id,
+                defaultMs,
+                defaultLabel: defaultMs === 0 ? "Unlimited" : `${defaultMs}ms`,
+                overrideMs: override !== undefined ? String(override) : "",
+                hasOverride: override !== undefined,
+                isUnlimited: effectiveMs === 0
+            };
+        });
+
+        const timingEntries = Object.entries(timing).map(([key, cfg]) => ({
+            key,
+            offsetMs: cfg.offsetMs ?? 0
+        }));
+
+        return { categories, timing: timingEntries, hasTiming: timingEntries.length > 0 };
     }
 
     activateListeners(html) {
@@ -769,6 +818,13 @@ export class SoundConfigApp extends FormApplication {
             this._hooksRegistered = true;
         }
 
+        // Orchestrator tab
+        html.on("change", ".orchestrator-budget-input", this._onOrchestratorBudgetChange.bind(this));
+        html.on("click", ".orchestrator-reset-category", this._onOrchestratorResetCategory.bind(this));
+        html.on("change", ".orchestrator-timing-input", this._onOrchestratorTimingSave.bind(this));
+        html.on("click", ".orchestrator-timing-delete", this._onOrchestratorTimingDelete.bind(this));
+        html.on("click", ".orchestrator-reset-all", this._onOrchestratorResetAll.bind(this));
+
         // State Tracking for Details
         html.find("details").on("toggle", (event) => {
             const details = event.currentTarget;
@@ -791,6 +847,84 @@ export class SoundConfigApp extends FormApplication {
             this._hooksRegistered = false;
         }
         return super.close(options);
+    }
+
+    // -------------------------------------------------------------------------
+    // Orchestrator Tab Handlers
+    // -------------------------------------------------------------------------
+
+    async _saveOrchestratorConfig(mutator) {
+        let config = { budgets: {}, timing: {} };
+        try {
+            const raw = game.settings.get("ionrift-resonance", "orchestratorConfig");
+            if (raw) { const c = JSON.parse(raw); config.budgets = c.budgets ?? {}; config.timing = c.timing ?? {}; }
+        } catch (e) { }
+        config = mutator(config);
+        await game.settings.set("ionrift-resonance", "orchestratorConfig", JSON.stringify(config));
+        game.ionrift.handler?.orchestrator?.loadConfig();
+    }
+
+    async _onOrchestratorBudgetChange(event) {
+        const input = event.currentTarget;
+        const category = input.dataset.category;
+        const raw = input.value.trim();
+        const value = raw === "" ? undefined : parseInt(raw, 10);
+
+        await this._saveOrchestratorConfig(config => {
+            if (value === undefined || isNaN(value)) {
+                delete config.budgets[category];
+            } else {
+                config.budgets[category] = { budgetMs: value };
+            }
+            return config;
+        });
+        // No re-render — just update the reset button visibility via DOM
+        const row = $(input).closest("tr");
+        if (value !== undefined && !isNaN(value)) {
+            row.find(".orchestrator-reset-category").show();
+        } else {
+            row.find(".orchestrator-reset-category").hide();
+        }
+    }
+
+    async _onOrchestratorResetCategory(event) {
+        const btn = event.currentTarget;
+        const category = btn.dataset.category;
+        await this._saveOrchestratorConfig(config => {
+            delete config.budgets[category];
+            return config;
+        });
+        const row = $(btn).closest("tr");
+        row.find(".orchestrator-budget-input").val("");
+        $(btn).hide();
+    }
+
+    async _onOrchestratorTimingSave(event) {
+        const input = event.currentTarget;
+        const key = input.dataset.key;
+        const value = parseInt(input.value, 10) || 0;
+        await this._saveOrchestratorConfig(config => {
+            config.timing[key] = { offsetMs: value };
+            return config;
+        });
+    }
+
+    async _onOrchestratorTimingDelete(event) {
+        const btn = event.currentTarget;
+        const key = btn.dataset.key;
+        await this._saveOrchestratorConfig(config => {
+            delete config.timing[key];
+            return config;
+        });
+        $(btn).closest("tr").remove();
+    }
+
+    async _onOrchestratorResetAll(event) {
+        await this._saveOrchestratorConfig(config => {
+            config.budgets = {};
+            return config;
+        });
+        this.render(false);
     }
 
     async _onAuditorSearchKey(event) {
