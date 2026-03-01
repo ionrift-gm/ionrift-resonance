@@ -32,7 +32,7 @@ export class ActorSoundConfig extends FormApplication {
         const identityLabel = (currentIdentity === "feminine" || currentIdentity === "female") ? "Feminine" : "Masculine";
 
         // Define Actor-specific sound slots (system-aware)
-        const isPC = this.actor.hasPlayerOwner;
+        const isPC = this.actor.type === "character";
         const sharedSlots = [
             { key: "sound_pain", label: "Vocal (Pain)", icon: "fas fa-heart-broken", hint: "Played when this character takes damage." },
             { key: "sound_death", label: "Vocal (Death)", icon: "fas fa-skull", hint: "Played when this character dies." }
@@ -137,7 +137,7 @@ export class ActorSoundConfig extends FormApplication {
 
         if (game.ionrift?.handler) {
             const h = game.ionrift.handler;
-            const isPC = this.actor.hasPlayerOwner;
+            const isPC = this.actor.type === "character";
 
             if (isPC) {
                 const identity = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
