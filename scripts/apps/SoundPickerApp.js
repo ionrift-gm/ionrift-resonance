@@ -7,7 +7,7 @@ export class SoundPickerApp extends Application {
             title: "Sound Library",
             template: "modules/ionrift-resonance/templates/sound-picker.hbs",
             width: 500,
-            height: 600,
+            height: 700,
             classes: ["ionrift-window", "glass-ui"],
             resizable: true
         });
