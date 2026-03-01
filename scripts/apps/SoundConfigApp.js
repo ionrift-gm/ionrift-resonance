@@ -533,8 +533,8 @@ export class SoundConfigApp extends FormApplication {
         // --- CORE TAXONOMY (Tier 1: Results Only) ---
         const coreTaxonomy = [
             {
-                label: "Combat Outcomes",
-                description: "Hits, misses, and impacts.",
+                label: "Strike Results",
+                description: "What plays when an attack hits or misses its target.",
                 children: [
                     {
                         id: "CORE_HIT", label: "Strike Landed", description: "Default impact sound when an attack hits.",
@@ -549,10 +549,16 @@ export class SoundConfigApp extends FormApplication {
                             { id: "CORE_MISS_RANGED", label: "Strike Missed (Ranged)", description: "Arrow whiff/ricochet. Falls back to default miss if unset." },
                             { id: "CORE_MISS_MAGIC", label: "Strike Missed (Spell)", description: "Fizzle/dissipate on spell miss. Falls back to default miss if unset." }
                         ]
-                    },
+                    }
+                ]
+            },
+            {
+                label: "Weapon Extras",
+                description: "Additional weapon sounds — swing fallback and critical hit/miss impact decorations.",
+                children: [
                     { id: "CORE_WHOOSH", label: "Swing (Fallback)", description: "Generic swing for weapons without a specific attack sound." },
-                    { id: "CORE_CRIT", label: "Critical Hit", description: "Celebratory sound for a weapon Critical Hit." },
-                    { id: "CORE_FUMBLE", label: "Critical Miss", description: "Fail sound for a weapon Critical Miss." }
+                    { id: "CORE_CRIT", label: "Critical Hit (Impact)", description: "Extra crunch/gore layered on top of a critical weapon hit. Not a roll stinger — see Roll Stingers for that." },
+                    { id: "CORE_FUMBLE", label: "Critical Miss (Whiff)", description: "Extra fumble sound on a critical miss. Not a roll stinger — see Roll Stingers for that." }
                 ]
             },
             {
