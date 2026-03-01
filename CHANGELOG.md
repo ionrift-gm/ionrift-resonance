@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.2.0] — UI Polish, Orchestration & SFX Pack
+
+### New Features
+*   **Configurable Sound Timing**: All hardcoded stagger delays are now exposed in the Orchestrator tab under "Sound Timing". Five named offsets — Vocal Delay (after impact), AoE Vocal Stagger, Spell Audio Bonus, Fumble → Miss Delay, and Crit → Decoration Delay — can be tuned per-world. System-agnostic: works identically for DnD 5e and Daggerheart.
+
+### Improvements
+*   **Sound Picker UX**: Distinct visual treatment for catalog (browse) vs. playlist (assigned) sections. Catalog rows use compact `+` icon with "ADDED" tags. Assigned section has violet tint with "These sounds play in-game" subtitle. Gradient divider between sections.
+*   **Syrinscape Tab Polish**: Stripped noisy `[Global]` prefix from search results. Added `+` click affordance and already-added detection matching Pack tab styling.
+*   **Actor Sound Config**: "Pain / Hit" → "Vocal (Pain)", "Death" → "Vocal (Death)" — aligned with main Resonance config terminology. Voice Tone dropdown now only shows for PCs; NPCs display "Vocal defaults resolve from monster type" instead. Default badges show "Default (Monster)" for NPCs.
+*   **Item Sound Config**: "Hit / Impact" → "Impact", "Miss / Dodge" → "Miss". Hints added to all slots.
+*   **Sound Picker Titles**: Humanized from raw keys (`Bind sound_pain for Zombie`) to readable labels (`Pick Sound: Vocal (Pain) — Zombie`).
+*   **NPC Preview Sounds**: Picker correctly resolves monster defaults via `getMonsterSound` instead of PC defaults for non-character actors.
+*   **Tab Persistence**: Switching between Pack/Syrinscape tabs no longer resets back to default when adding sounds.
+
+### Bug Fixes
+*   **PC Detection**: Fixed regression where PC actors without a player assignment showed as monsters. Now uses `actor.type === "character"` instead of `hasPlayerOwner`.
+*   **SFX Metadata**: Stripped ID3 tags from all 389 MP3 files in the SFX pack. Prevents prompt and toolchain metadata leaks.
+
 ## [2.1.0] — Sound Key Architecture & SFX Pack Integration
 
 ### New Features

@@ -1,0 +1,75 @@
+<h2>Ionrift Resonance</h2>
+<p><strong>Automated audio triggers for Foundry VTT.</strong> Sound effects fire automatically from combat workflows,
+    mechanics, and chat messages.</p>
+
+<p>Supports <strong>Daggerheart</strong> (native) and <strong>DnD 5e</strong> (via Midi-QOL). Works with <strong>local
+        sound files</strong> (WAV/MP3) out of the box — no paid accounts required. Optionally integrates with
+    <strong>Syrinscape</strong> for cloud-hosted audio.</p>
+
+<h3>✨ What's New in v2.2.0</h3>
+<ul>
+    <li><strong>Configurable Sound Timing</strong> — Tune the delay between impact and vocal sounds, AoE stagger, spell
+        audio bonus, and more. All exposed in the Orchestrator UI.</li>
+    <li><strong>Polished Sound Picker</strong> — Distinct visual treatment for browsing vs. assigned sounds. Compact
+        catalog rows with click-to-add, violet-tinted playlist section.</li>
+    <li><strong>Clearer Actor/Item Config</strong> — "Pain / Hit" → "Vocal (Pain)", with Voice Tone dropdown only for
+        PCs. Monster actors show monster-appropriate defaults.</li>
+    <li><strong>Humanized UI</strong> — Picker titles, labels, and hints across all config screens now use clear,
+        human-readable language.</li>
+    <li><strong>389 SFX Pack sounds</strong> — Local sound files covering combat, weapons, monsters, spells, and
+        stingers. Metadata stripped clean.</li>
+</ul>
+
+<h3>⚔️ Combat Automation</h3>
+<p>Resonance listens to your game system's combat hooks and plays context-aware sounds:</p>
+<ul>
+    <li><strong>Weapon swings</strong> — Sword slash, bow draw, spell cast (auto-detected from item type)</li>
+    <li><strong>Hit / Miss / Crit / Fumble</strong> — Distinct audio cues per outcome</li>
+    <li><strong>Pain & Death vocals</strong> — Per-PC identity (Deep/Bright), per-monster type (Undead, Beast, Dragon…)
+    </li>
+    <li><strong>AoE mitigation</strong> — Single impact + staggered vocal chorus instead of 20 overlapping sounds</li>
+</ul>
+
+<h3>🎧 Sound Sources</h3>
+<ul>
+    <li><strong>Local Files</strong> — Drop WAV/MP3 files anywhere in your Foundry data folder. No accounts needed.</li>
+    <li><strong>Ionrift SFX Pack</strong> — 389 sounds included. Select "Ionrift SFX Pack" preset to activate.</li>
+    <li><strong>Syrinscape</strong> (optional) — Cloud-hosted sound library via auth token.</li>
+</ul>
+
+<h3>🔧 Configuration</h3>
+<ul>
+    <li><strong>Attunement Protocol</strong> — Guided first-run wizard for token setup and preset selection</li>
+    <li><strong>Resonance Calibration</strong> — Full sound binding editor with 4 tiers: Core Events → Categories →
+        Monsters → Campaign Overrides</li>
+    <li><strong>Per-Actor & Per-Item Overrides</strong> — 🎵 Sounds button on every sheet. Custom attack, pain, death
+        sounds per character or weapon.</li>
+    <li><strong>Orchestrator</strong> — Budget windows prevent sound spam. Configurable timing offsets for layered
+        sounds.</li>
+    <li><strong>Import / Export</strong> — Full JSON backup and restore of all sound bindings</li>
+</ul>
+
+<h3>🎲 Supported Systems</h3>
+<table>
+    <tr>
+        <td><strong>Daggerheart</strong></td>
+        <td>Native support. Fear Tracker, Duality Dice, Hope/Stress/Armor mechanics, Domain sound resolution.</td>
+    </tr>
+    <tr>
+        <td><strong>DnD 5e</strong></td>
+        <td>Via Midi-QOL. Attack → Hit/Miss → Damage → Pain/Death chain. Spell school detection. Creature
+            classification.</td>
+    </tr>
+</table>
+
+<h3>📦 Dependencies</h3>
+<ul>
+    <li><strong>Ionrift Library</strong> (required) — Core module for creature classification and shared utilities</li>
+    <li><strong>Midi-QOL</strong> (required for DnD 5e) — Combat automation hooks</li>
+</ul>
+
+<h3>💡 Recommended Modules</h3>
+<ul>
+    <li><strong>Dice So Nice</strong> — 3D dice animations add natural pauses between weapon swing and hit/miss</li>
+    <li><strong>Automated Animations</strong> — Visual effects create timing gaps that let sounds play distinctly</li>
+</ul>
