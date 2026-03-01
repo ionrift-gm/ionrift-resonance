@@ -228,7 +228,7 @@
             flex: 0 0 auto;
             border-top: 2px solid rgba(139, 92, 246, 0.4);
             padding: 10px 8px 6px 8px;
-            background: rgba(139, 92, 246, 0.03);
+            background: rgba(139, 92, 246, 0.06);
         }
 
         /* Selected Sounds List */
@@ -396,12 +396,44 @@
 
         /* Dim pack sounds already in Selected list */
         .ionrift-picker-layout .result-row.already-selected {
-            opacity: 0.35;
+            opacity: 0.3;
         }
 
-        .ionrift-picker-layout .result-row.already-selected .result-name::after {
-            content: " ✓";
+        .ionrift-picker-layout .result-row.already-selected .added-tag {
+            display: inline;
+        }
+
+        .ionrift-picker-layout .added-tag {
+            display: none;
+            font-size: 0.7em;
             color: #6ee7b7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
+        /* Compact catalog rows for pack sounds */
+        .ionrift-picker-layout .local-sounds-list .result-row {
+            padding: 4px 8px;
+            font-size: 0.88em;
+            cursor: pointer;
+        }
+
+        .ionrift-picker-layout .local-sounds-list .result-row .result-meta {
+            font-size: 0.72em;
+            opacity: 0.4;
+        }
+
+        .ionrift-picker-layout .local-sounds-list .add-icon {
+            color: rgba(139, 92, 246, 0.6);
+            font-size: 0.8em;
+            width: 20px;
+            text-align: center;
+            transition: color 0.2s;
+        }
+
+        .ionrift-picker-layout .local-sounds-list .result-row:hover .add-icon {
+            color: #c4b5fd;
         }
     </style>
 
@@ -427,13 +459,13 @@
                 {{#each packSounds}}
                 <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
                     data-name="{{this.name}}" data-type="local" data-meta="Pack"
-                    title="{{#if this.alreadySelected}}Already selected{{else}}Click to add to Selected Sounds{{/if}}">
-                    <i class="fas fa-music" style="width: 24px; text-align: center; opacity: 0.8;"></i>
+                    title="{{#if this.alreadySelected}}Already added{{else}}Click to add{{/if}}">
+                    <i class="fas fa-plus add-icon"></i>
                     <div class="result-info">
-                        <span class="result-name">{{this.name}}</span>
+                        <span class="result-name">{{this.name}}<span class="added-tag">added</span></span>
                         <span class="result-meta">{{this.id}}</span>
                     </div>
-                    <span class="preview-icon action-preview-local" data-src="{{this.id}}" title="Preview Sound"><i
+                    <span class="preview-icon action-preview-local" data-src="{{this.id}}" title="Preview"><i
                             class="fas fa-play"></i></span>
                 </li>
                 {{/each}}
@@ -548,12 +580,17 @@
     <div class="footer-area">
         <div
             style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding-left: 4px;">
-            <h3 style="margin: 0; font-size: 0.85em; text-transform: uppercase; color: #c4b5fd; letter-spacing: 0.5px;">
-                Selected Sounds
-                {{#if hasBindings}}<span
-                    style="font-size: 0.85em; color: #888; font-weight: normal; text-transform: none;">
-                    ({{currentBindings.length}})</span>{{/if}}
-            </h3>
+            <div>
+                <h3
+                    style="margin: 0; font-size: 0.85em; text-transform: uppercase; color: #c4b5fd; letter-spacing: 0.5px;">
+                    <i class="fas fa-list-check" style="margin-right: 4px; opacity: 0.7;"></i>Assigned
+                    {{#if hasBindings}}<span
+                        style="font-size: 0.85em; color: #888; font-weight: normal; text-transform: none;">
+                        ({{currentBindings.length}})</span>{{/if}}
+                </h3>
+                <div style="font-size: 0.7em; color: #666; margin-top: 1px;">These sounds play in-game for this event.
+                </div>
+            </div>
             <div class="delay-help"
                 title="Configures a random start delay (Min/Max). useful for syncing with animation latency."
                 style="font-size: 0.8em; color: #666; cursor: help; margin-right: 85px;">
