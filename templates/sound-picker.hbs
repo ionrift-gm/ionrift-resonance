@@ -1,6 +1,6 @@
 <div class="ionrift-picker-layout">
     <style>
-        /* --- Sound Picker UI (Refactor) --- */
+        /* --- Sound Picker UI --- */
         .ionrift-picker-layout {
             display: flex;
             flex-direction: column;
@@ -9,15 +9,55 @@
             font-family: var(--font-primary);
         }
 
-        .ionrift-picker-layout .picker-header {
+        /* Tab Bar */
+        .ionrift-picker-layout .picker-tabs {
             flex: 0 0 auto;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px 10px 4px 10px;
-            border-radius: 4px;
-            margin-bottom: 5px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 2px;
+            padding: 4px 4px 0;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .ionrift-picker-layout .picker-tab {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            color: #888;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ionrift-picker-layout .picker-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+        }
+
+        .ionrift-picker-layout .picker-tab.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #fff;
+        }
+
+        .ionrift-picker-layout .tab-content {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .ionrift-picker-layout .tab-content.active {
+            display: flex;
+        }
+
+        /* Shared */
         .ionrift-picker-layout .search-bar {
             display: flex;
             gap: 5px;
@@ -146,7 +186,6 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Ensure no horizontal overflow on result rows */
         .ionrift-picker-layout .result-row,
         .ionrift-picker-layout .binding-row {
             box-sizing: border-box;
@@ -187,7 +226,6 @@
             max-height: 120px;
             overflow-y: auto;
             overflow-x: hidden;
-            /* Fix horizontal scrollbar */
             margin-bottom: 10px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 4px;
@@ -255,8 +293,36 @@
             flex-shrink: 0;
         }
 
+        .ionrift-picker-layout .footer-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .ionrift-picker-layout .action-browse-local {
+            flex: 0 0 auto;
+            height: 36px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #aaa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85em;
+        }
+
+        .ionrift-picker-layout .action-browse-local:hover {
+            color: #fff;
+            border-color: rgba(139, 92, 246, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         .ionrift-picker-layout .action-save {
-            width: 100%;
+            flex: 1;
             height: 36px;
             display: flex;
             align-items: center;
@@ -275,7 +341,6 @@
             box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
         }
 
-        /* Fix Preview Icon */
         .ionrift-picker-layout .preview-icon {
             width: 28px;
             height: 28px;
@@ -293,91 +358,146 @@
             background: var(--ionrift-accent, #8b5cf6);
             color: white;
         }
+
+        /* Local Tab */
+        .ionrift-picker-layout .local-sounds-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .ionrift-picker-layout .local-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .ionrift-picker-layout .local-empty i {
+            font-size: 2em;
+            opacity: 0.2;
+            margin-bottom: 15px;
+        }
     </style>
-    <!-- 1. HEADER AREA -->
-    <div class="picker-header">
 
-        <!-- A. Search Bar -->
-        <div class="search-bar">
-            <input type="text" name="search" class="search-input" value="{{searchTerm}}"
-                placeholder="Search Syrinscape sounds..." />
-            <button class="action-search"
-                style="flex: 0 0 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.6); color: white; border: none; border-radius: 4px; cursor: pointer;"><i
-                    class="fas fa-search"></i></button>
-            <button class="action-browse-local" title="Browse Local Audio Files"
-                style="flex: 0 0 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); color: #aaa; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; cursor: pointer; transition: all 0.2s;"><i
-                    class="fas fa-folder-open"></i></button>
+    <!-- TAB BAR -->
+    <div class="picker-tabs">
+        <div class="picker-tab {{#if localActive}}active{{/if}}" data-picker-tab="local">
+            <i class="fas fa-folder-open"></i> Local
         </div>
-
-        <!-- B. Status Strip -->
-        <div class="status-strip">
-            <!-- Left: Cache Status & Filter -->
-            <div class="status-left">
-                <div class="cache-info">
-                    <span style="font-weight: 600; text-transform: uppercase;">Global One-Shots:</span>
-                    {{#if cacheCount}}
-                    <span style="color: #6ee7b7;">{{cacheCount}} cached</span>
-                    {{else}}
-                    <span style="color: #fca5a5;">Not Synced</span>
-                    {{/if}}
-                </div>
-                <!-- Filter Toggle -->
-                <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;"
-                    title="If checked, limits search to One-Shot sound effects only (hides Moods/Music).">
-                    <input type="checkbox" name="filterOneshots" id="filterOneshots" {{checked filterOneshots}}>
-                    <label for="filterOneshots">One-Shots Only</label>
-                </div>
-            </div>
-
-            <!-- Right: Tools -->
-            <div class="cache-tools">
-                <button type="button" class="action-update-lib"
-                    title="Syncs your local cache with the latest Global One-Shots from Syrinscape.">
-                    <i class="fas fa-sync-alt"></i> <span>Sync Cache</span>
-                </button>
-                <button type="button" class="action-purge-lib" title="Clear local cache (Force Re-Sync)">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
+        <div class="picker-tab {{#unless localActive}}active{{/unless}}" data-picker-tab="syrinscape">
+            <i class="fas fa-cloud"></i> Syrinscape
         </div>
     </div>
 
-    <!-- 2. Results Area -->
-    <div class="results-area ionrift-list">
-        <ul class="results-list">
-            {{#if isLoading}}
-            <div class="loading" style="padding: 20px; text-align: center; color: #aaa;"><i
-                    class="fas fa-spinner fa-spin"></i> Searching...</div>
-            {{else}}
-            {{#each results}}
-            <li class="result-row" data-id="{{this.id}}" data-name="{{this.name}}" data-type="{{this.type}}"
-                data-meta="{{this.meta}}" title="Click to Add">
-                <i class="{{this.icon}}" style="width: 24px; text-align: center; opacity: 0.8;"></i>
-                <div class="result-info">
-                    <span class="result-name">{{this.name}}</span>
-                    {{#if this.meta}}<span class="result-meta">{{this.meta}}</span>{{/if}}
+    <!-- TAB: LOCAL -->
+    <div class="tab-content {{#if localActive}}active{{/if}}" data-picker-tab-content="local">
+        <div class="results-area ionrift-list" style="margin-top: 8px;">
+            <ul class="local-sounds-list results-list">
+                {{#if packSounds.length}}
+                {{#each packSounds}}
+                <li class="result-row" data-id="{{this.id}}" data-name="{{this.name}}" data-type="{{this.type}}"
+                    data-meta="Pack" title="Click to Add">
+                    <i class="fas fa-music" style="width: 24px; text-align: center; opacity: 0.8;"></i>
+                    <div class="result-info">
+                        <span class="result-name">{{this.name}}</span>
+                        <span class="result-meta">{{this.id}}</span>
+                    </div>
+                    <span class="preview-icon action-preview-local" data-src="{{this.id}}" title="Preview Sound"><i
+                            class="fas fa-play"></i></span>
+                </li>
+                {{/each}}
+                {{else}}
+                <div class="local-empty">
+                    <i class="fas fa-volume-mute"></i>
+                    <div>No pack sounds for this key.</div>
+                    <div style="font-size: 0.85em; margin-top: 8px; color: #555;">Use <strong>+ Add Custom</strong>
+                        below to browse local files.</div>
                 </div>
-                <span class="preview-icon" title="Preview Sound"><i class="fas fa-play"></i></span>
-            </li>
-            {{else}}
-            {{#if searchTerm}}
-            <div class="no-results" style="padding: 20px; text-align: center; color: #777;">
-                <div>No results found.</div>
-                {{#if filterOneshots}}<div style="font-size: 0.9em; margin-top: 5px;">Try unchecking <strong>"One-Shots
-                        Only"</strong>.</div>{{/if}}
-            </div>
-            {{else}}
-            <div class="empty-state" style="padding: 40px 20px; text-align: center; color: #888;">
-                <i class="fas fa-search" style="font-size: 2em; opacity: 0.2; margin-bottom: 15px;"></i>
-                <div>Type above to search sounds.</div>
-            </div>
-            {{/if}}
-            {{/each}}
-            {{/if}}
-        </ul>
+                {{/if}}
+            </ul>
+        </div>
     </div>
 
-    <!-- 3. Footer Area -->
+    <!-- TAB: SYRINSCAPE -->
+    <div class="tab-content {{#unless localActive}}active{{/unless}}" data-picker-tab-content="syrinscape">
+        <div class="picker-header" style="margin-top: 8px;">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" name="search" class="search-input" value="{{searchTerm}}"
+                    placeholder="Search Syrinscape sounds..." />
+                <button class="action-search"
+                    style="flex: 0 0 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.6); color: white; border: none; border-radius: 4px; cursor: pointer;"><i
+                        class="fas fa-search"></i></button>
+            </div>
+
+            <!-- Status Strip -->
+            <div class="status-strip">
+                <div class="status-left">
+                    <div class="cache-info">
+                        <span style="font-weight: 600; text-transform: uppercase;">Global One-Shots:</span>
+                        {{#if cacheCount}}
+                        <span style="color: #6ee7b7;">{{cacheCount}} cached</span>
+                        {{else}}
+                        <span style="color: #fca5a5;">Not Synced</span>
+                        {{/if}}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;"
+                        title="If checked, limits search to One-Shot sound effects only (hides Moods/Music).">
+                        <input type="checkbox" name="filterOneshots" id="filterOneshots" {{checked filterOneshots}}>
+                        <label for="filterOneshots">One-Shots Only</label>
+                    </div>
+                </div>
+
+                <div class="cache-tools">
+                    <button type="button" class="action-update-lib"
+                        title="Syncs your local cache with the latest Global One-Shots from Syrinscape.">
+                        <i class="fas fa-sync-alt"></i> <span>Sync Cache</span>
+                    </button>
+                    <button type="button" class="action-purge-lib" title="Clear local cache (Force Re-Sync)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div class="results-area ionrift-list">
+            <ul class="results-list">
+                {{#if isLoading}}
+                <div class="loading" style="padding: 20px; text-align: center; color: #aaa;"><i
+                        class="fas fa-spinner fa-spin"></i> Searching...</div>
+                {{else}}
+                {{#each results}}
+                <li class="result-row" data-id="{{this.id}}" data-name="{{this.name}}" data-type="{{this.type}}"
+                    data-meta="{{this.meta}}" title="Click to Add">
+                    <i class="{{this.icon}}" style="width: 24px; text-align: center; opacity: 0.8;"></i>
+                    <div class="result-info">
+                        <span class="result-name">{{this.name}}</span>
+                        {{#if this.meta}}<span class="result-meta">{{this.meta}}</span>{{/if}}
+                    </div>
+                    <span class="preview-icon" title="Preview Sound"><i class="fas fa-play"></i></span>
+                </li>
+                {{else}}
+                {{#if searchTerm}}
+                <div class="no-results" style="padding: 20px; text-align: center; color: #777;">
+                    <div>No results found.</div>
+                    {{#if filterOneshots}}<div style="font-size: 0.9em; margin-top: 5px;">Try unchecking
+                        <strong>"One-Shots
+                            Only"</strong>.</div>{{/if}}
+                </div>
+                {{else}}
+                <div class="empty-state" style="padding: 40px 20px; text-align: center; color: #888;">
+                    <i class="fas fa-search" style="font-size: 2em; opacity: 0.2; margin-bottom: 15px;"></i>
+                    <div>Type above to search Syrinscape sounds.</div>
+                </div>
+                {{/if}}
+                {{/each}}
+                {{/if}}
+            </ul>
+        </div>
+    </div>
+
+    <!-- FOOTER (always visible) -->
     <div class="footer-area">
         <div
             style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding-left: 8px;">
@@ -394,13 +514,11 @@
             {{#each currentBindings}}
             <div class="ionrift-list-item entity-row binding-row" data-id="{{this.id}}" data-name="{{this.name}}"
                 data-type="{{this.type}}" data-meta="{{this.meta}}">
-                <!-- 1. Info (Flex 1) -->
                 <div class="entity-info" style="flex: 1; min-width: 0; margin-right: 10px;">
                     <div class="entity-name" title="{{this.name}}">{{this.name}}</div>
                     <div class="entity-meta">{{this.id}}</div>
                 </div>
 
-                <!-- 2. Configuration (Flex 0 - Fixed Width) -->
                 <div class="sound-config-group" title="Min/Max Delay (Seconds)">
                     <div class="config-input-col">
                         <label>Min</label>
@@ -415,7 +533,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Actions (Flex 0) -->
                 <div class="entity-actions">
                     <button type="button" class="action-test-current" data-id="{{this.id}}" title="Play Preview"><i
                             class="fas fa-play"></i></button>
@@ -442,8 +559,13 @@
             {{/if}}
         </div>
 
-        <button class="action-save">
-            <i class="fas fa-check" style="margin-right: 5px;"></i> Save Changes
-        </button>
+        <div class="footer-actions">
+            <button class="action-browse-local" title="Browse local audio files">
+                <i class="fas fa-folder-open"></i> Add Custom
+            </button>
+            <button class="action-save">
+                <i class="fas fa-check" style="margin-right: 5px;"></i> Save Changes
+            </button>
+        </div>
     </div>
 </div>

@@ -24,8 +24,13 @@ export class SoundPickerApp extends Application {
             defaultSoundId: null,
             defaultSoundName: "",
             bindings: null, // Array of {id, name, meta}
-            soundConfig: {} // Object { [id]: { delayMin: 0, delayMax: 0 } }
+            soundConfig: {}, // Object { [id]: { delayMin: 0, delayMax: 0 } }
+            soundKey: ""    // The SOUND_EVENTS key this picker is editing
         }, options);
+
+        // Cache pack sounds for this key
+        this._packSounds = [];
+        this._loadPackSounds();
 
         // Also override defaultOptions title if provided
         if (options.title) {
@@ -96,6 +101,23 @@ export class SoundPickerApp extends Application {
         return super._render(force, options);
     }
 
+    /**
+     * Load pack.json sounds for the current soundKey.
+     */
+    async _loadPackSounds() {
+        if (!this.opts.soundKey) return;
+        try {
+            const res = await fetch("modules/ionrift-resonance/scripts/presets/pack.json");
+            const data = await res.json();
+            const bindings = data.bindings || data;
+            this._packSounds = bindings[this.opts.soundKey] || [];
+            // Re-render if already rendered to show pack sounds
+            if (this.rendered) this.render(false);
+        } catch (e) {
+            Logger.warn("Failed to load pack sounds for picker:", e);
+        }
+    }
+
     getData() {
         Logger.log("getData() Called.");
 
@@ -114,7 +136,11 @@ export class SoundPickerApp extends Application {
             count = this.results.length;
         }
 
-        Logger.log(`Data Prepared: Bindings=${this.currentBindings.length}, Results=${this.results.length}, Search=${this.searchTerm}`);
+        // Default to Local tab if pack preset is active
+        const preset = game.settings.get("ionrift-resonance", "soundPreset");
+        const localActive = (preset === "pack");
+
+        Logger.log(`Data Prepared: Bindings=${this.currentBindings.length}, Results=${this.results.length}, PackSounds=${this._packSounds.length}, Search=${this.searchTerm}`);
 
         return {
             currentBindings: this.currentBindings,
@@ -125,7 +151,9 @@ export class SoundPickerApp extends Application {
             defaultSoundId: this.opts.defaultSoundId,
             defaultSoundName: this.opts.defaultSoundName,
             filterOneshots: this.filterOneshots,
-            cacheCount: count
+            cacheCount: count,
+            packSounds: this._packSounds,
+            localActive: localActive
         };
     }
 
@@ -143,6 +171,28 @@ export class SoundPickerApp extends Application {
         } else {
             Logger.log("Footer found in DOM.");
         }
+
+        // Tab Switching
+        html.find(".picker-tab").click(ev => {
+            const tab = ev.currentTarget.dataset.pickerTab;
+            html.find(".picker-tab").removeClass("active");
+            html.find(".tab-content").removeClass("active");
+            $(ev.currentTarget).addClass("active");
+            html.find(`.tab-content[data-picker-tab-content="${tab}"]`).addClass("active");
+        });
+
+        // Local tab: preview local sounds
+        html.find(".action-preview-local").click(ev => {
+            ev.stopPropagation();
+            const src = ev.currentTarget.dataset.src;
+            if (src) {
+                const sound = new foundry.audio.Sound(src);
+                sound.load().then(() => sound.play());
+            }
+        });
+
+        // Local tab: click result row to add to selected
+        html.find(".local-sounds-list .result-row").click(this._onAddSound.bind(this));
 
         // Search Input
         // Search Input - Change to 'keypress' (Enter) and 'blur'/focusout to prevent re-render on every keystroke
