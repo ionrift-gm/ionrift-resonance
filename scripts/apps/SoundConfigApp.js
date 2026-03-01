@@ -827,6 +827,16 @@ export class SoundConfigApp extends FormApplication {
         html.on("click", ".orchestrator-timing-delete", this._onOrchestratorTimingDelete.bind(this));
         html.on("click", ".orchestrator-reset-all", this._onOrchestratorResetAll.bind(this));
 
+        // Prevent Enter from submitting the FormApplication (which closes the window).
+        // Instead: commit the value via change event and blur.
+        html.on("keydown", ".orchestrator-budget-input, .orchestrator-timing-input", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                $(e.currentTarget).trigger("change").blur();
+            }
+        });
+
         // State Tracking for Details
         html.find("details").on("toggle", (event) => {
             const details = event.currentTarget;
