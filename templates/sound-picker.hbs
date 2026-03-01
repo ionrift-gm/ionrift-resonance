@@ -535,14 +535,18 @@
                         class="fas fa-spinner fa-spin"></i> Searching...</div>
                 {{else}}
                 {{#each results}}
-                <li class="result-row" data-id="{{this.id}}" data-name="{{this.name}}" data-type="{{this.type}}"
-                    data-meta="{{this.meta}}" title="Click to Add">
-                    <i class="{{this.icon}}" style="width: 24px; text-align: center; opacity: 0.8;"></i>
+                <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
+                    data-name="{{this.name}}" data-type="{{this.type}}" data-meta="{{this.meta}}"
+                    title="{{#if this.alreadySelected}}Already added{{else}}Click to add{{/if}}"
+                    style="padding: 4px 8px; font-size: 0.88em;">
+                    <i class="fas fa-plus add-icon"
+                        style="color: rgba(139,92,246,0.6); width: 20px; text-align: center; font-size: 0.8em;"></i>
                     <div class="result-info">
-                        <span class="result-name">{{this.name}}</span>
-                        {{#if this.meta}}<span class="result-meta">{{this.meta}}</span>{{/if}}
+                        <span class="result-name">{{this.name}}<span class="added-tag">added</span></span>
+                        {{#if this.meta}}<span class="result-meta"
+                            style="font-size: 0.72em; opacity: 0.4;">{{this.meta}}</span>{{/if}}
                     </div>
-                    <span class="preview-icon" title="Preview Sound"><i class="fas fa-play"></i></span>
+                    <span class="preview-icon" title="Preview"><i class="fas fa-play"></i></span>
                 </li>
                 {{else}}
                 {{#if searchTerm}}

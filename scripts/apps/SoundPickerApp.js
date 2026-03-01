@@ -151,7 +151,11 @@ export class SoundPickerApp extends Application {
             currentBindings: this.currentBindings,
             hasBindings: this.currentBindings.length > 0,
             searchTerm: this.searchTerm,
-            results: this.results,
+            results: this.results.map(r => ({
+                ...r,
+                name: (r.name || "").replace(/^\[Global\]\s*/i, ""),
+                alreadySelected: this.currentBindings.some(b => b.id === String(r.id))
+            })),
             isLoading: this.isLoading,
             defaultSoundId: this.opts.defaultSoundId,
             defaultSoundName: this.opts.defaultSoundName,
