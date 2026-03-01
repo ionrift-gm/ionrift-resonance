@@ -137,17 +137,32 @@ export class ActorSoundConfig extends FormApplication {
 
         if (game.ionrift?.handler) {
             const h = game.ionrift.handler;
-            const identity = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
-            const identityLabel = identity === "feminine" ? "Feminine" : "Masculine";
+            const isPC = this.actor.hasPlayerOwner;
 
-            if (key === "sound_pain") {
-                const keyId = h.getPCSound(this.actor, "PAIN");
-                defaultSoundId = h.resolveSound(keyId);
-                defaultSoundName = `Default (${identityLabel} Pain)`;
-            } else if (key === "sound_death") {
-                const keyId = h.getPCSound(this.actor, "DEATH");
-                defaultSoundId = h.resolveSound(keyId);
-                defaultSoundName = `Default (${identityLabel} Death)`;
+            if (isPC) {
+                const identity = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
+                const identityLabel = identity === "feminine" ? "Feminine" : "Masculine";
+
+                if (key === "sound_pain") {
+                    const keyId = h.getPCSound(this.actor, "PAIN");
+                    defaultSoundId = h.resolveSound(keyId);
+                    defaultSoundName = `Default (${identityLabel} Pain)`;
+                } else if (key === "sound_death") {
+                    const keyId = h.getPCSound(this.actor, "DEATH");
+                    defaultSoundId = h.resolveSound(keyId);
+                    defaultSoundName = `Default (${identityLabel} Death)`;
+                }
+            } else {
+                // Monster/NPC — resolve via monster sound chain
+                if (key === "sound_pain") {
+                    const keyId = h.getMonsterSound?.(this.actor, "PAIN") || "CORE_MONSTER_PAIN";
+                    defaultSoundId = h.resolveSound(keyId);
+                    defaultSoundName = "Default (Monster Pain)";
+                } else if (key === "sound_death") {
+                    const keyId = h.getMonsterSound?.(this.actor, "DEATH") || "CORE_MONSTER_DEATH";
+                    defaultSoundId = h.resolveSound(keyId);
+                    defaultSoundName = "Default (Monster Death)";
+                }
             }
         }
 
