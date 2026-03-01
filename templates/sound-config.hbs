@@ -200,11 +200,55 @@
                         {{/if}}
                     </div>
 
+                    <!-- Named Offsets (configurable stagger presets) -->
+                    <div style="margin-bottom: 24px;">
+                        <div
+                            style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:6px;">
+                            Sound Timing</div>
+                        <p style="font-size:0.8em; opacity:0.55; margin:0 0 10px 0;">
+                            Controls the delay between layered sounds (e.g. impact → vocal). Leave blank for defaults.
+                        </p>
+                        <table style="width:100%; border-collapse:collapse; font-size:0.88em;">
+                            <thead>
+                                <tr style="opacity:0.5; font-size:0.8em;">
+                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">Offset</th>
+                                    <th style="text-align:center; padding:4px 6px; font-weight:normal; width:90px;">
+                                        Default</th>
+                                    <th style="text-align:center; padding:4px 6px; font-weight:normal; width:100px;">
+                                        Override (ms)</th>
+                                    <th style="width:34px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each tiers.orchestrator.namedOffsets}}
+                                <tr style="border-top: 1px solid rgba(255,255,255,0.05); background: transparent;">
+                                    <td style="padding: 5px 6px;">{{this.label}}</td>
+                                    <td style="text-align:center; padding: 5px 6px; opacity:0.5; font-size:0.9em;">
+                                        {{this.defaultMs}}ms</td>
+                                    <td style="padding: 4px 6px; text-align:center;">
+                                        <input type="number" class="orchestrator-offset-input" data-offset="{{this.id}}"
+                                            value="{{this.overrideMs}}" placeholder="{{this.defaultMs}}" min="0"
+                                            step="50"
+                                            style="width:80px; text-align:center; background:rgba(255,255,255,0.07); border:1px solid {{#if this.accentBorder}}rgba(124,58,237,0.6){{else}}rgba(255,255,255,0.15){{/if}}; color:#fff; padding:2px 4px; border-radius:3px;">
+                                    </td>
+                                    <td style="text-align:center; padding: 4px 6px;">
+                                        <button type="button" class="orchestrator-reset-offset"
+                                            data-offset="{{this.id}}" title="Reset to default"
+                                            style="display:{{#if this.hasOverride}}inline-block{{else}}none{{/if}}; width:26px; height:26px; padding:0; font-size:0.8em; background:rgba(200,120,80,0.2); border:1px solid rgba(200,120,80,0.3); color:#c84; border-radius:3px; cursor:pointer;">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+
                     <!-- Reset All -->
                     <div style="text-align:right; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
                         <button type="button" class="orchestrator-reset-all"
                             style="background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); color:rgba(180,160,255,0.65); padding:4px 12px; border-radius:3px; font-size:0.85em; cursor:pointer;">
-                            <i class="fas fa-undo"></i> Reset All Budgets to Defaults
+                            <i class="fas fa-undo"></i> Reset All to Defaults
                         </button>
                     </div>
 

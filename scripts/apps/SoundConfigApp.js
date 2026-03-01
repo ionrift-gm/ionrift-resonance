@@ -768,7 +768,26 @@ export class SoundConfigApp extends FormApplication {
             offsetMs: cfg.offsetMs ?? 0
         }));
 
-        return { categories, timing: timingEntries, hasTiming: timingEntries.length > 0 };
+        // Named offsets — configurable stagger presets
+        let offsets = {};
+        try {
+            const raw2 = game.settings.get("ionrift-resonance", "orchestratorConfig");
+            if (raw2) { const c2 = JSON.parse(raw2); offsets = c2.offsets ?? {}; }
+        } catch (e) { }
+
+        const namedOffsets = Object.entries(SoundOrchestrator.DEFAULT_OFFSETS).map(([id, defaultMs]) => {
+            const override = offsets[id];
+            return {
+                id,
+                label: SoundOrchestrator.OFFSET_LABELS[id] ?? id,
+                defaultMs,
+                overrideMs: override !== undefined ? String(override) : "",
+                hasOverride: override !== undefined,
+                accentBorder: override !== undefined
+            };
+        });
+
+        return { categories, timing: timingEntries, hasTiming: timingEntries.length > 0, namedOffsets };
     }
 
     activateListeners(html) {
@@ -826,11 +845,13 @@ export class SoundConfigApp extends FormApplication {
         html.on("click", ".orchestrator-reset-category", this._onOrchestratorResetCategory.bind(this));
         html.on("change", ".orchestrator-timing-input", this._onOrchestratorTimingSave.bind(this));
         html.on("click", ".orchestrator-timing-delete", this._onOrchestratorTimingDelete.bind(this));
+        html.on("change", ".orchestrator-offset-input", this._onOrchestratorOffsetChange.bind(this));
+        html.on("click", ".orchestrator-reset-offset", this._onOrchestratorResetOffset.bind(this));
         html.on("click", ".orchestrator-reset-all", this._onOrchestratorResetAll.bind(this));
 
         // Prevent Enter from submitting the FormApplication (which closes the window).
         // Instead: commit the value via change event and blur.
-        html.on("keydown", ".orchestrator-budget-input, .orchestrator-timing-input", (e) => {
+        html.on("keydown", ".orchestrator-budget-input, .orchestrator-timing-input, .orchestrator-offset-input", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
                 e.stopPropagation();
@@ -932,9 +953,43 @@ export class SoundConfigApp extends FormApplication {
         $(btn).closest("tr").remove();
     }
 
+    async _onOrchestratorOffsetChange(event) {
+        const input = event.currentTarget;
+        const offsetId = input.dataset.offset;
+        const val = input.value.trim();
+        await this._saveOrchestratorConfig(config => {
+            if (!config.offsets) config.offsets = {};
+            if (val === "") {
+                delete config.offsets[offsetId];
+            } else {
+                config.offsets[offsetId] = parseInt(val, 10) || 0;
+            }
+            return config;
+        });
+        const row = $(input).closest("tr");
+        if (val !== "") {
+            row.find(".orchestrator-reset-offset").show();
+        } else {
+            row.find(".orchestrator-reset-offset").hide();
+        }
+    }
+
+    async _onOrchestratorResetOffset(event) {
+        const btn = event.currentTarget;
+        const offsetId = btn.dataset.offset;
+        await this._saveOrchestratorConfig(config => {
+            if (config.offsets) delete config.offsets[offsetId];
+            return config;
+        });
+        const row = $(btn).closest("tr");
+        row.find(".orchestrator-offset-input").val("");
+        $(btn).hide();
+    }
+
     async _onOrchestratorResetAll(event) {
         await this._saveOrchestratorConfig(config => {
             config.budgets = {};
+            config.offsets = {};
             return config;
         });
         this.render(false);

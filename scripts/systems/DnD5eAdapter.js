@@ -121,13 +121,16 @@ export class DnD5eAdapter extends SystemAdapter {
         const item = workflow.item;
         if (!item) return;
 
+        const orch = this.handler?.orchestrator;
+
         Logger.log(`5e Attack Result: ${item.name} — hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}, fumble: ${workflow.isFumble}`);
 
         if (workflow.isFumble) {
             // Nat 1: roll fumble stinger + miss sound
             this.play(SOUND_EVENTS.ROLL_FUMBLE);
             const missKey = this._getMissKey(item);
-            this.play(missKey, { delay: 200 });
+            const fumbleDelay = orch?.getNamedOffset("FUMBLE_MISS_DELAY") ?? 200;
+            this.play(missKey, fumbleDelay);
         } else if (workflow.hitTargets.size === 0) {
             // Weapon-type-aware miss sound
             const missKey = this._getMissKey(item);
@@ -136,7 +139,8 @@ export class DnD5eAdapter extends SystemAdapter {
         } else if (workflow.isCritical) {
             // Nat 20: roll crit stinger + weapon impact decoration
             this.play(SOUND_EVENTS.ROLL_CRIT);
-            this.play(SOUND_EVENTS.CRIT_DECORATION, { delay: 300 });
+            const critDelay = orch?.getNamedOffset("CRIT_DECORATION_DELAY") ?? 300;
+            this.play(SOUND_EVENTS.CRIT_DECORATION, critDelay);
         }
         // Normal hits: damage hook handles CORE_HIT + pain/death
     }
@@ -192,8 +196,12 @@ export class DnD5eAdapter extends SystemAdapter {
         const MAX_TARGETS = 20;       // Hard cap — never process more than this
         const AOE_THRESHOLD = 3;      // 4+ targets = AoE mode
         const MAX_AOE_VOCALS = 5;     // Max distinct vocals in AoE mode
-        const VOCAL_STAGGER = 400;    // Stagger for single-target sequential vocals
-        const SPELL_BONUS = item?.type === "spell" ? 150 : 0; // Extra clearance for spell audio
+
+        // Timing offsets — read from orchestrator (configurable)
+        const orch = this.handler?.orchestrator;
+        const VOCAL_STAGGER = orch?.getNamedOffset("VOCAL_STAGGER") ?? 400;
+        const AOE_VOCAL_MAX = orch?.getNamedOffset("AOE_VOCAL_MAX") ?? 400;
+        const SPELL_BONUS = (item?.type === "spell") ? (orch?.getNamedOffset("SPELL_AUDIO_BONUS") ?? 150) : 0;
 
         // Build complete target set: hitTargets (failed saves) + saves (made saves, half dmg)
         // For save-based AoE, workflow.targets has the full scope
@@ -242,8 +250,8 @@ export class DnD5eAdapter extends SystemAdapter {
             const vocalTargets = shuffled.slice(0, MAX_AOE_VOCALS);
 
             vocalTargets.forEach((target) => {
-                // Random micro-stagger (0–400ms) so vocals overlap like a chorus
-                const stagger = Math.floor(Math.random() * 400) + SPELL_BONUS;
+                // Random micro-stagger (0–AOE_VOCAL_MAX ms) so vocals overlap like a chorus
+                const stagger = Math.floor(Math.random() * AOE_VOCAL_MAX) + SPELL_BONUS;
                 this._playVocalForTarget(target.actor, target.isPC, target.isDead, stagger);
             });
 
