@@ -550,7 +550,9 @@ export class SoundConfigApp extends FormApplication {
                             { id: "CORE_MISS_MAGIC", label: "Strike Missed (Spell)", description: "Fizzle/dissipate on spell miss. Falls back to default miss if unset." }
                         ]
                     },
-                    { id: "CORE_WHOOSH", label: "Swing (Fallback)", description: "Generic swing for weapons without a specific attack sound." }
+                    { id: "CORE_WHOOSH", label: "Swing (Fallback)", description: "Generic swing for weapons without a specific attack sound." },
+                    { id: "CORE_CRIT", label: "Critical Hit", description: "Celebratory sound for a weapon Critical Hit." },
+                    { id: "CORE_FUMBLE", label: "Critical Miss", description: "Fail sound for a weapon Critical Miss." }
                 ]
             },
             {
@@ -567,34 +569,16 @@ export class SoundConfigApp extends FormApplication {
             }
         ];
 
-        // Add System Specifics
-        if (game.system.id === 'dnd5e') {
-            coreTaxonomy.push({
-                label: "D&D 5e Mechanics",
-                description: "System specific rolls (Nat 20 / Nat 1).",
-                children: [
-                    { id: "CORE_CRIT", label: "Critical Hit (Nat 20)", description: "Celebratory sound for a Critical Hit." },
-                    { id: "CORE_FUMBLE", label: "Critical Miss (Nat 1)", description: "Fail sound for a Critical Miss." }
-                ]
-            });
-        }
 
         if (game.system.id === 'daggerheart') {
             // Group 1: Duality Dice (Roll Outcomes)
             coreTaxonomy.push({
                 label: "Daggerheart: Duality Dice",
-                description: "Sounds for 2d12 roll outcomes.",
+                description: "Roll outcome stingers. Hope/Fear resource sounds are handled separately by actor hooks.",
                 children: [
-                    // Granular Roll Outcomes
                     { id: "DAGGERHEART_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice (automatic success)." },
-                    { id: "DAGGERHEART_SUCCESS_WITH_HOPE", label: "Success with Hope", description: "Action succeeded, Hope die won." },
-                    { id: "DAGGERHEART_SUCCESS_WITH_FEAR", label: "Success with Fear", description: "Action succeeded, but with a complication (Fear die won)." },
-                    { id: "DAGGERHEART_FAIL_WITH_HOPE", label: "Fail with Hope", description: "Action failed, but Hope die won (silver lining)." },
-                    { id: "DAGGERHEART_FAIL_WITH_FEAR", label: "Fail with Fear (Fumble)", description: "Action failed catastrophically (Fear die won)." },
-
-                    // Legacy (fallback if DC not available)
-                    { id: "DAGGERHEART_ROLL_HOPE", label: "Roll with Hope (Legacy)", description: "Hope die > Fear die (use if DC unknown)." },
-                    { id: "DAGGERHEART_ROLL_FEAR", label: "Roll with Fear (Legacy)", description: "Fear die > Hope die (use if DC unknown)." }
+                    { id: "DAGGERHEART_SUCCESS", label: "Roll Success", description: "Action succeeded (any Duality roll that beats DC)." },
+                    { id: "DAGGERHEART_FAIL", label: "Roll Fail", description: "Action failed (any Duality roll that misses DC)." }
                 ]
             });
 
