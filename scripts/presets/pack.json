@@ -1745,6 +1745,33 @@
                 "type": "local"
             }
         ],
+        "DAGGERHEART_SUCCESS": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/success/DAGGERHEART_SUCCESS_01.mp3",
+                "name": "Roll Success (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/success/DAGGERHEART_SUCCESS_02.mp3",
+                "name": "Roll Success (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/success/DAGGERHEART_SUCCESS_03.mp3",
+                "name": "Roll Success (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/success/DAGGERHEART_SUCCESS_04.mp3",
+                "name": "Roll Success (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/success/DAGGERHEART_SUCCESS_05.mp3",
+                "name": "Roll Success (05)",
+                "type": "local"
+            }
+        ],
         "DAGGERHEART_HOPE_USE": [
             {
                 "id": "modules/ionrift-resonance/sounds/pack/stingers/hope_use/DAGGERHEART_HOPE_USE_01.mp3",
