@@ -32,9 +32,10 @@ export class ActorSoundConfig extends FormApplication {
         const identityLabel = (currentIdentity === "feminine" || currentIdentity === "female") ? "Feminine" : "Masculine";
 
         // Define Actor-specific sound slots (system-aware)
+        const isPC = this.actor.hasPlayerOwner;
         const sharedSlots = [
-            { key: "sound_pain", label: "Pain / Hit", icon: "fas fa-heart-broken" },
-            { key: "sound_death", label: "Death", icon: "fas fa-skull" }
+            { key: "sound_pain", label: "Vocal (Pain)", icon: "fas fa-heart-broken", hint: "Played when this character takes damage." },
+            { key: "sound_death", label: "Vocal (Death)", icon: "fas fa-skull", hint: "Played when this character dies." }
         ];
 
         let systemSlots = [];
@@ -59,7 +60,7 @@ export class ActorSoundConfig extends FormApplication {
             actorName: this.actor.name,
             actorImg: this.actor.img,
             voice: currentIdentity,
-            // We pass options for the helper or manual iteration
+            isPC: isPC,
             voiceOptions: { masculine: "Deep / Low (Masculine)", feminine: "Bright / High (Feminine)" },
             slots: slots.map(slot => {
                 const val = this.actor.getFlag("ionrift-resonance", slot.key);
@@ -78,7 +79,7 @@ export class ActorSoundConfig extends FormApplication {
 
                 if (!val) {
                     if (slot.key === "sound_pain" || slot.key === "sound_death") {
-                        display = `Default (${identityLabel})`;
+                        display = isPC ? `Default (${identityLabel})` : "Default (Monster)";
                     } else {
                         display = "Default (System)";
                     }
@@ -153,6 +154,11 @@ export class ActorSoundConfig extends FormApplication {
         // Load existing global sound config for this actor
         const existingConfig = this.actor.getFlag("ionrift-resonance", "sound_config") || {};
 
+        // Find the slot label for human-readable picker title
+        const slotDefs = this.getData().slots;
+        const slotMatch = slotDefs.find(s => s.key === key);
+        const slotLabel = slotMatch ? slotMatch.label : key;
+
         new SoundPickerApp(async (result) => {
             if (result === null) {
                 // Removal
@@ -178,8 +184,8 @@ export class ActorSoundConfig extends FormApplication {
             currentSoundMeta: currentSoundMeta,
             defaultSoundId: defaultSoundId,
             defaultSoundName: defaultSoundName,
-            soundConfig: existingConfig, // Pass full config context
-            title: `Bind ${key} for ${this.actor.name}`
+            soundConfig: existingConfig,
+            title: `Pick Sound: ${slotLabel} — ${this.actor.name}`
         }).render(true);
     }
 

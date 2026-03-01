@@ -9,7 +9,8 @@
                     style="background: transparent; border: none; font-weight: bold; font-size: 1.2em; color: #fff; width: 100%; padding: 0;" />
             </h1>
 
-            <!-- Voice Selection -->
+            <!-- Voice Selection (PCs only) -->
+            {{#if isPC}}
             <div class="voice-config"
                 style="display: flex; align-items: center; gap: 10px; font-size: 0.9em; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
                 <label style="white-space: nowrap; color: #bbb;"><i class="fas fa-volume-up"></i> Voice Tone:</label>
@@ -20,8 +21,13 @@
             </div>
 
             <p class="notes" style="margin: 5px 0 0 0; font-style: italic; opacity: 0.6; font-size: 0.8em;">
-                Optional Overrides (Defaults to Voice Tone)
+                Optional overrides. Defaults to Voice Tone.
             </p>
+            {{else}}
+            <p class="notes" style="margin: 5px 0 0 0; font-style: italic; opacity: 0.6; font-size: 0.8em;">
+                <i class="fas fa-paw" style="margin-right: 4px;"></i>Vocal defaults resolve from monster type.
+            </p>
+            {{/if}}
         </div>
     </header>
 
