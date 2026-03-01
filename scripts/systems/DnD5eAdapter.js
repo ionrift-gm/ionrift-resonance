@@ -117,20 +117,26 @@ export class DnD5eAdapter extends SystemAdapter {
         return schoolMap[school] || null;
     }
 
-    // Phase 2: Result stinger — fires AFTER dice roll (the "answer")
     handleAttackResult(workflow) {
         const item = workflow.item;
         if (!item) return;
 
-        Logger.log(`5e Attack Result: ${item.name} — hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}`);
+        Logger.log(`5e Attack Result: ${item.name} — hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}, fumble: ${workflow.isFumble}`);
 
-        if (workflow.hitTargets.size === 0) {
+        if (workflow.isFumble) {
+            // Nat 1: roll fumble stinger + miss sound
+            this.play(SOUND_EVENTS.ROLL_FUMBLE);
+            const missKey = this._getMissKey(item);
+            this.play(missKey, { delay: 200 });
+        } else if (workflow.hitTargets.size === 0) {
             // Weapon-type-aware miss sound
             const missKey = this._getMissKey(item);
             Logger.log(`DnD5e | Miss type: ${missKey}`);
             this.play(missKey);
         } else if (workflow.isCritical) {
-            this.play(SOUND_EVENTS.CRIT_DECORATION);
+            // Nat 20: roll crit stinger + weapon impact decoration
+            this.play(SOUND_EVENTS.ROLL_CRIT);
+            this.play(SOUND_EVENTS.CRIT_DECORATION, { delay: 300 });
         }
         // Normal hits: damage hook handles CORE_HIT + pain/death
     }

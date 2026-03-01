@@ -11,7 +11,7 @@
             <div class="sidebar-group tiers" style="flex: 0 0 auto;">
                 <div class="header">Calibration Tiers</div>
                 <div class="group-items" style="display: flex; flex-direction: column; gap: 2px;">
-                    <a class="item" data-tab="tier1"><i class="fas fa-cube"></i> Core Mechanics</a>
+                    <a class="item" data-tab="tier1"><i class="fas fa-cube"></i> Essentials</a>
                     <a class="item" data-tab="tier2"><i class="fas fa-hammer"></i> Combat Actions</a>
                     <a class="item" data-tab="tier3"><i class="fas fa-skull"></i> Monsters</a>
                     <!-- <a class="item" data-tab="tier4"><i class="fas fa-cloud-showers-heavy"></i> Weather</a> -->
@@ -36,7 +36,7 @@
             <!-- TIER 1: CORE (Hierarchical) -->
             <div class="tab" data-tab="tier1">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-cube"></i> Core Mechanics</div>
+                    <div class="ionrift-list-header"><i class="fas fa-cube"></i> Essentials</div>
 
                     {{#each tiers.tier1.paramounts as |group|}}
                     {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}

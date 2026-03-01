@@ -570,13 +570,14 @@ export class SoundConfigApp extends FormApplication {
         ];
 
 
+        // --- SYSTEM-SPECIFIC ROLL STINGERS ---
         if (game.system.id === 'daggerheart') {
             // Group 1: Duality Dice (Roll Outcomes)
             coreTaxonomy.push({
                 label: "Daggerheart: Duality Dice",
                 description: "Roll outcome stingers. Hope/Fear resource sounds are handled separately by actor hooks.",
                 children: [
-                    { id: "DAGGERHEART_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice (automatic success)." },
+                    { id: "ROLL_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice (automatic success)." },
                     { id: "DAGGERHEART_SUCCESS", label: "Roll Success", description: "Action succeeded (any Duality roll that beats DC)." },
                     { id: "DAGGERHEART_FAIL", label: "Roll Fail", description: "Action failed (any Duality roll that misses DC)." }
                 ]
@@ -617,6 +618,16 @@ export class SoundConfigApp extends FormApplication {
                     { id: "DAGGERHEART_FEAR_HIGH", label: "GM Fear Increases (to 9+)", description: "Triggered when GM Fear pool reaches 9 or more." }
                 ]
             });
+        } else if (game.system.id === 'dnd5e') {
+            // DnD 5e Roll Stingers
+            coreTaxonomy.push({
+                label: "D&D 5e: Roll Stingers",
+                description: "Celebratory/failure stingers for natural 20s and natural 1s.",
+                children: [
+                    { id: "ROLL_CRIT", label: "Natural 20", description: "Stinger played when a d20 rolls a natural 20." },
+                    { id: "ROLL_FUMBLE", label: "Natural 1", description: "Stinger played when a d20 rolls a natural 1." }
+                ]
+            });
         }
 
         // Process Roots
@@ -628,7 +639,7 @@ export class SoundConfigApp extends FormApplication {
             hasSyrinscape: SyrinscapeProvider.isConfigured(),
             tiers: {
                 tier1: {
-                    label: "Tier 1: Core",
+                    label: "Essentials",
                     active: true,
                     paramounts: tier1Roots
                 },

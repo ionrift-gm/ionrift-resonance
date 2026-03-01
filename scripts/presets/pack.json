@@ -18,6 +18,60 @@
                 "type": "local"
             }
         ],
+        "ROLL_CRIT": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/ROLL_CRIT_01.mp3",
+                "name": "Roll Crit (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/ROLL_CRIT_02.mp3",
+                "name": "Roll Crit (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/ROLL_CRIT_03.mp3",
+                "name": "Roll Crit (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/ROLL_CRIT_04.mp3",
+                "name": "Roll Crit (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/ROLL_CRIT_05.mp3",
+                "name": "Roll Crit (05)",
+                "type": "local"
+            }
+        ],
+        "ROLL_FUMBLE": [
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/ROLL_FUMBLE_01.mp3",
+                "name": "Roll Fumble (01)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/ROLL_FUMBLE_02.mp3",
+                "name": "Roll Fumble (02)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/ROLL_FUMBLE_03.mp3",
+                "name": "Roll Fumble (03)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/ROLL_FUMBLE_04.mp3",
+                "name": "Roll Fumble (04)",
+                "type": "local"
+            },
+            {
+                "id": "modules/ionrift-resonance/sounds/pack/stingers/fumble/ROLL_FUMBLE_05.mp3",
+                "name": "Roll Fumble (05)",
+                "type": "local"
+            }
+        ],
         "CORE_HIT": [
             {
                 "id": "modules/ionrift-resonance/sounds/pack/combat/CORE_HIT_01.mp3",
@@ -1442,33 +1496,6 @@
             {
                 "id": "modules/ionrift-resonance/sounds/pack/overrides/toll_the_dead/SPELL_TOLL_THE_DEAD_05.mp3",
                 "name": "Spell Toll The Dead (05)",
-                "type": "local"
-            }
-        ],
-        "DAGGERHEART_CRIT": [
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_01.mp3",
-                "name": "Crit Stinger (01)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_02.mp3",
-                "name": "Crit Stinger (02)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_03.mp3",
-                "name": "Crit Stinger (03)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_04.mp3",
-                "name": "Crit Stinger (04)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/stingers/crit/DAGGERHEART_CRIT_05.mp3",
-                "name": "Crit Stinger (05)",
                 "type": "local"
             }
         ],
