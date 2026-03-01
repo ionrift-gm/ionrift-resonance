@@ -226,8 +226,9 @@
 
         .ionrift-picker-layout .footer-area {
             flex: 0 0 auto;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid rgba(139, 92, 246, 0.4);
             padding: 10px 8px 6px 8px;
+            background: rgba(139, 92, 246, 0.03);
         }
 
         /* Selected Sounds List */
@@ -396,17 +397,11 @@
         /* Dim pack sounds already in Selected list */
         .ionrift-picker-layout .result-row.already-selected {
             opacity: 0.35;
-            pointer-events: none;
         }
 
-        .ionrift-picker-layout .result-row.already-selected::after {
-            content: "\f00c";
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            position: absolute;
-            right: 12px;
+        .ionrift-picker-layout .result-row.already-selected .result-name::after {
+            content: " ✓";
             color: #6ee7b7;
-            font-size: 0.9em;
         }
     </style>
 
@@ -432,8 +427,7 @@
                 {{#each packSounds}}
                 <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
                     data-name="{{this.name}}" data-type="local" data-meta="Pack"
-                    title="{{#if this.alreadySelected}}Already selected{{else}}Click to add to Selected Sounds{{/if}}"
-                    style="position: relative;">
+                    title="{{#if this.alreadySelected}}Already selected{{else}}Click to add to Selected Sounds{{/if}}">
                     <i class="fas fa-music" style="width: 24px; text-align: center; opacity: 0.8;"></i>
                     <div class="result-info">
                         <span class="result-name">{{this.name}}</span>
@@ -538,8 +532,13 @@
     <!-- FOOTER (always visible) -->
     <div class="footer-area">
         <div
-            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding-left: 8px;">
-            <h3 style="margin: 0; font-size: 0.9em; text-transform: uppercase; color: #888;">Selected Sounds</h3>
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding-left: 4px;">
+            <h3 style="margin: 0; font-size: 0.85em; text-transform: uppercase; color: #c4b5fd; letter-spacing: 0.5px;">
+                Selected Sounds
+                {{#if hasBindings}}<span
+                    style="font-size: 0.85em; color: #888; font-weight: normal; text-transform: none;">
+                    ({{currentBindings.length}})</span>{{/if}}
+            </h3>
             <div class="delay-help"
                 title="Configures a random start delay (Min/Max). useful for syncing with animation latency."
                 style="font-size: 0.8em; color: #666; cursor: help; margin-right: 85px;">
