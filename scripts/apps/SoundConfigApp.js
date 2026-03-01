@@ -1092,6 +1092,12 @@ export class SoundConfigApp extends FormApplication {
             }
         }
 
+        // Coerce to string — pack bindings store arrays/objects, not strings.
+        // Downstream code calls .trim() so we must guarantee a string here.
+        if (currentValue && typeof currentValue !== "string") {
+            currentValue = JSON.stringify(currentValue);
+        }
+
         try {
             const { SoundPickerApp } = await import("./SoundPickerApp.js");
 
