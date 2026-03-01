@@ -1,75 +1,75 @@
-<h2>Ionrift Resonance</h2>
-<p><strong>Automated audio triggers for Foundry VTT.</strong> Sound effects fire automatically from combat workflows,
-    mechanics, and chat messages.</p>
-
-<p>Supports <strong>Daggerheart</strong> (native) and <strong>DnD 5e</strong> (via Midi-QOL). Works with <strong>local
-        sound files</strong> (WAV/MP3) out of the box — no paid accounts required. Optionally integrates with
-    <strong>Syrinscape</strong> for cloud-hosted audio.</p>
-
-<h3>✨ What's New in v2.2.0</h3>
-<ul>
-    <li><strong>Configurable Sound Timing</strong> — Tune the delay between impact and vocal sounds, AoE stagger, spell
-        audio bonus, and more. All exposed in the Orchestrator UI.</li>
-    <li><strong>Polished Sound Picker</strong> — Distinct visual treatment for browsing vs. assigned sounds. Compact
-        catalog rows with click-to-add, violet-tinted playlist section.</li>
-    <li><strong>Clearer Actor/Item Config</strong> — "Pain / Hit" → "Vocal (Pain)", with Voice Tone dropdown only for
-        PCs. Monster actors show monster-appropriate defaults.</li>
-    <li><strong>Humanized UI</strong> — Picker titles, labels, and hints across all config screens now use clear,
-        human-readable language.</li>
-    <li><strong>389 SFX Pack sounds</strong> — Local sound files covering combat, weapons, monsters, spells, and
-        stingers. Metadata stripped clean.</li>
-</ul>
-
-<h3>⚔️ Combat Automation</h3>
-<p>Resonance listens to your game system's combat hooks and plays context-aware sounds:</p>
-<ul>
-    <li><strong>Weapon swings</strong> — Sword slash, bow draw, spell cast (auto-detected from item type)</li>
-    <li><strong>Hit / Miss / Crit / Fumble</strong> — Distinct audio cues per outcome</li>
-    <li><strong>Pain & Death vocals</strong> — Per-PC identity (Deep/Bright), per-monster type (Undead, Beast, Dragon…)
-    </li>
-    <li><strong>AoE mitigation</strong> — Single impact + staggered vocal chorus instead of 20 overlapping sounds</li>
-</ul>
-
-<h3>🎧 Sound Sources</h3>
-<ul>
-    <li><strong>Local Files</strong> — Drop WAV/MP3 files anywhere in your Foundry data folder. No accounts needed.</li>
-    <li><strong>Ionrift SFX Pack</strong> — 389 sounds included. Select "Ionrift SFX Pack" preset to activate.</li>
-    <li><strong>Syrinscape</strong> (optional) — Cloud-hosted sound library via auth token.</li>
-</ul>
-
-<h3>🔧 Configuration</h3>
-<ul>
-    <li><strong>Attunement Protocol</strong> — Guided first-run wizard for token setup and preset selection</li>
-    <li><strong>Resonance Calibration</strong> — Full sound binding editor with 4 tiers: Core Events → Categories →
-        Monsters → Campaign Overrides</li>
-    <li><strong>Per-Actor & Per-Item Overrides</strong> — 🎵 Sounds button on every sheet. Custom attack, pain, death
-        sounds per character or weapon.</li>
-    <li><strong>Orchestrator</strong> — Budget windows prevent sound spam. Configurable timing offsets for layered
-        sounds.</li>
-    <li><strong>Import / Export</strong> — Full JSON backup and restore of all sound bindings</li>
-</ul>
-
-<h3>🎲 Supported Systems</h3>
+<p><strong>Automated combat audio for Foundry VTT.</strong></p>
+<p>Resonance listens to chat messages, attack rolls, damage applications, and combat workflows, then triggers the
+    appropriate sound effect automatically. Works with local sound files (WAV/MP3) out of the box. Optionally connects
+    to Syrinscape for cloud-hosted audio.</p>
 <table>
-    <tr>
-        <td><strong>Daggerheart</strong></td>
-        <td>Native support. Fear Tracker, Duality Dice, Hope/Stress/Armor mechanics, Domain sound resolution.</td>
-    </tr>
-    <tr>
-        <td><strong>DnD 5e</strong></td>
-        <td>Via Midi-QOL. Attack → Hit/Miss → Damage → Pain/Death chain. Spell school detection. Creature
-            classification.</td>
-    </tr>
+    <tbody>
+        <tr>
+            <td width="50%"><img
+                    src="https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/docs/bear_combat.gif"
+                    alt="Sacred Flame spell with automated sound triggers" width="100%" /></td>
+            <td width="50%"><img
+                    src="https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/docs/zombie_combat.gif"
+                    alt="Critical hit with death sound and blood effects" width="100%" /></td>
+        </tr>
+    </tbody>
 </table>
+<p>&nbsp;</p>
 
-<h3>📦 Dependencies</h3>
+<p><strong>✨ New in v2.2.0</strong></p>
 <ul>
-    <li><strong>Ionrift Library</strong> (required) — Core module for creature classification and shared utilities</li>
-    <li><strong>Midi-QOL</strong> (required for DnD 5e) — Combat automation hooks</li>
+    <li><strong>389 SFX Pack sounds included</strong> &mdash; local combat, weapon, monster, spell, and stinger audio.
+        Select "Ionrift SFX Pack" preset to activate. No accounts required.</li>
+    <li><strong>Configurable Sound Timing</strong> &mdash; tune the delay between impact and pain vocals, AoE stagger,
+        crit decorations, and more via the Orchestrator UI.</li>
+    <li><strong>Polished configuration UIs</strong> &mdash; clearer labels, humanized picker titles, conditional Voice
+        Tone display, and improved sound picker with distinct browse vs. playlist sections.</li>
 </ul>
+<p>&nbsp;</p>
 
-<h3>💡 Recommended Modules</h3>
+<p><strong>How it works</strong></p>
 <ul>
-    <li><strong>Dice So Nice</strong> — 3D dice animations add natural pauses between weapon swing and hit/miss</li>
-    <li><strong>Automated Animations</strong> — Visual effects create timing gaps that let sounds play distinctly</li>
+    <li><strong>Sound resolution</strong> &mdash; follows a priority waterfall: item/actor overrides &rarr; monster
+        families &rarr; weapon categories &rarr; core fallbacks. First match wins.</li>
+    <li><strong>Weapon and spell detection</strong> &mdash; resolves sounds by weapon name (Sword, Dagger, Bow), damage
+        type (Slashing, Bludgeoning, Piercing), and spell school (Evocation, Necromancy, etc.).</li>
+    <li><strong>Monster classification</strong> &mdash; identifies creature families (Dragon, Undead, Beast) from actor
+        names and assigns sounds per family.</li>
+    <li><strong>Per-actor and per-item overrides</strong> &mdash; every actor and item sheet has a 🎵 Sounds button.
+        Custom bindings always take priority over system defaults.</li>
+    <li><strong>Critical hits, pain, death</strong> &mdash; distinct stingers for crits, pain vocals on damage
+        (masculine/feminine), and death sounds when HP reaches zero.</li>
+    <li><strong>Orchestration</strong> &mdash; budget windows prevent sound spam. Configurable timing offsets control
+        the stagger between layered sounds.</li>
+</ul>
+<p>&nbsp;</p>
+
+<p><strong>Supported systems</strong></p>
+<ul>
+    <li><strong>Daggerheart</strong> (native) &mdash; Hope/Fear mechanics, Duality Dice rolls, Fear Tracker thresholds,
+        and resource changes all have sound hooks. No additional modules needed.</li>
+    <li><strong>DnD5e</strong> (via Midi-QOL) &mdash; full attack/damage/healing workflow support. Two-beat sequences:
+        weapon swing, then hit or miss result.</li>
+</ul>
+<p>&nbsp;</p>
+
+<p><strong>Resonance Calibration</strong></p>
+<p>Configuration UI for mapping game events to sound bindings. Three tiers: Core events &rarr; Weapon categories &rarr;
+    Monster families. Per-actor and per-item overrides take priority over all tiers.</p>
+<p><img src="https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/docs/sound_picker.gif"
+        alt="Sound Picker &mdash; search, preview, and assign sounds" width="640" /></p>
+<hr />
+<p><strong>Requirements</strong></p>
+<ul>
+    <li><a href="https://foundryvtt.com/packages/ionrift-library" rel="nofollow">Ionrift Library</a> &mdash; required
+        dependency.</li>
+    <li><a href="https://foundryvtt.com/packages/midi-qol" rel="nofollow">Midi-QOL</a> &mdash; required for DnD5e
+        automation. Not needed for Daggerheart.</li>
+</ul>
+<p><strong>Links</strong></p>
+<ul>
+    <li><a href="https://github.com/ionrift-gm/ionrift-resonance" target="_blank" rel="nofollow noopener">GitHub</a>
+        &mdash; source, issues, docs.</li>
+    <li><a href="https://github.com/ionrift-gm/ionrift-resonance/blob/main/CHANGELOG.md" target="_blank"
+            rel="nofollow noopener">Changelog</a></li>
 </ul>
