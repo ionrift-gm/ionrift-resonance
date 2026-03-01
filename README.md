@@ -43,7 +43,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 3. Run the **Attunement Protocol** (appears on first launch)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-4. Select the **Ionrift SFX Pack** preset — 389 sounds activate immediately, no configuration needed
+4. Select the **Ionrift SFX Pack** preset — ~400 sounds activate immediately, no configuration needed
 
 
 ## Per-Actor & Per-Item Sound Overrides
@@ -64,7 +64,7 @@ This feature works independently of global presets—your custom bindings always
 
 ## Ionrift SFX Pack
 
-Resonance ships with **389 local sound files** covering the full combat loop. Select **"Ionrift SFX Pack"** in the Attunement Protocol or Module Settings to activate.
+Resonance ships with **~400 local sound files** covering the full combat loop. Select **"Ionrift SFX Pack"** in the Attunement Protocol or Module Settings to activate.
 
 | Category | Sounds | Examples |
 |----------|--------|----------|
