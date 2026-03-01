@@ -155,51 +155,6 @@
                         </table>
                     </div>
 
-                    <!-- Timing Offsets -->
-                    <div style="margin-bottom:24px;">
-                        <div
-                            style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:6px;">
-                            Timing Offsets</div>
-                        <p style="font-size:0.8em; opacity:0.55; margin:0 0 10px 0;">
-                            Delay a sound N ms after it would naturally fire. Useful for staggering layered stingers.
-                        </p>
-                        {{#if tiers.orchestrator.hasTiming}}
-                        <table style="width:100%; border-collapse:collapse; font-size:0.88em;">
-                            <thead>
-                                <tr style="opacity:0.5; font-size:0.8em;">
-                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">Sound Key</th>
-                                    <th style="text-align:center; padding:4px 6px; font-weight:normal; width:100px;">
-                                        Offset (ms)</th>
-                                    <th style="width:34px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#each tiers.orchestrator.timing}}
-                                <tr style="border-top: 1px solid rgba(255,255,255,0.05); background: transparent;">
-                                    <td style="padding:5px 6px; font-family:monospace; font-size:0.85em;">{{this.key}}
-                                    </td>
-                                    <td style="padding:4px 6px; text-align:center;">
-                                        <input type="number" class="orchestrator-timing-input" data-key="{{this.key}}"
-                                            value="{{this.offsetMs}}" min="0" step="50"
-                                            style="width:80px; text-align:center; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:2px 4px; border-radius:3px;">
-                                    </td>
-                                    <td style="text-align:center; padding:4px 6px;">
-                                        <button type="button" class="orchestrator-timing-delete" data-key="{{this.key}}"
-                                            title="Remove offset"
-                                            style="width:26px; height:26px; padding:0; font-size:0.8em; background:rgba(200,60,60,0.2); border:1px solid rgba(200,60,60,0.3); color:#c44; border-radius:3px; cursor:pointer;">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                        {{else}}
-                        <p style="font-size:0.85em; opacity:0.4; text-align:center; padding:8px 0; font-style:italic;">
-                            No timing offsets configured.</p>
-                        {{/if}}
-                    </div>
-
                     <!-- Named Offsets (configurable stagger presets) -->
                     <div style="margin-bottom: 24px;">
                         <div
