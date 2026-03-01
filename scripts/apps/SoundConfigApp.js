@@ -1227,6 +1227,7 @@ export class SoundConfigApp extends FormApplication {
                     return [];
                 })(),
                 currentSoundId: "", // bindings takes precedence
+                soundKey: key,
                 title: `Pick Sound for ${key}`,
                 soundConfig: (() => {
                     try {
