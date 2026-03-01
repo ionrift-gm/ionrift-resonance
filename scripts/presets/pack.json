@@ -1283,33 +1283,6 @@
                 "type": "local"
             }
         ],
-        "MONSTER_PLANT": [
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_01.mp3",
-                "name": "Monster Plant (01)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_02.mp3",
-                "name": "Monster Plant (02)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_03.mp3",
-                "name": "Monster Plant (03)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_04.mp3",
-                "name": "Monster Plant (04)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/plant/MONSTER_PLANT_05.mp3",
-                "name": "Monster Plant (05)",
-                "type": "local"
-            }
-        ],
         "MONSTER_REPTILE": [
             {
                 "id": "modules/ionrift-resonance/sounds/pack/monsters/reptile/MONSTER_REPTILE_01.mp3",
@@ -2172,33 +2145,6 @@
                 "type": "local"
             }
         ],
-        "SFX_SLIME": [
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_01.mp3",
-                "name": "Monster Undead (01)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_02.mp3",
-                "name": "Monster Undead (02)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_03.mp3",
-                "name": "Monster Undead (03)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_04.mp3",
-                "name": "Monster Undead (04)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/undead/MONSTER_UNDEAD_05.mp3",
-                "name": "Monster Undead (05)",
-                "type": "local"
-            }
-        ],
         "CORE_MELEE": [
             {
                 "id": "modules/ionrift-resonance/sounds/pack/weapons/ATTACK_SWORD_SLASH_01.mp3",
@@ -2334,60 +2280,6 @@
                 "type": "local"
             }
         ],
-        "MONSTER_CAT": [
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_01.mp3",
-                "name": "Monster Beast (01)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_02.mp3",
-                "name": "Monster Beast (02)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_03.mp3",
-                "name": "Monster Beast (03)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_04.mp3",
-                "name": "Monster Beast (04)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_05.mp3",
-                "name": "Monster Beast (05)",
-                "type": "local"
-            }
-        ],
-        "MONSTER_BIRD": [
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_01.mp3",
-                "name": "Monster Beast (01)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_02.mp3",
-                "name": "Monster Beast (02)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_03.mp3",
-                "name": "Monster Beast (03)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_04.mp3",
-                "name": "Monster Beast (04)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_05.mp3",
-                "name": "Monster Beast (05)",
-                "type": "local"
-            }
-        ],
         "dragon_wyvern": [
             {
                 "id": "modules/ionrift-resonance/sounds/pack/monsters/dragon/MONSTER_DRAGON_01.mp3",
@@ -2483,33 +2375,6 @@
             {
                 "id": "modules/ionrift-resonance/sounds/pack/monsters/elemental/fire/MONSTER_ELEMENTAL_fire_03.mp3",
                 "name": "Monster Elemental Fire (03)",
-                "type": "local"
-            }
-        ],
-        "MONSTER_ALIEN": [
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_01.mp3",
-                "name": "Monster Beast (01)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_02.mp3",
-                "name": "Monster Beast (02)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_03.mp3",
-                "name": "Monster Beast (03)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_04.mp3",
-                "name": "Monster Beast (04)",
-                "type": "local"
-            },
-            {
-                "id": "modules/ionrift-resonance/sounds/pack/monsters/beast/MONSTER_BEAST_05.mp3",
-                "name": "Monster Beast (05)",
                 "type": "local"
             }
         ],
