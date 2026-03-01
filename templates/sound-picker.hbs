@@ -391,7 +391,7 @@
     <!-- TAB BAR -->
     <div class="picker-tabs">
         <div class="picker-tab {{#if localActive}}active{{/if}}" data-picker-tab="local">
-            <i class="fas fa-folder-open"></i> Local
+            <i class="fas fa-box-open"></i> Pack Sounds
         </div>
         <div class="picker-tab {{#unless localActive}}active{{/unless}}" data-picker-tab="syrinscape">
             <i class="fas fa-cloud"></i> Syrinscape
@@ -400,12 +400,16 @@
 
     <!-- TAB: LOCAL -->
     <div class="tab-content {{#if localActive}}active{{/if}}" data-picker-tab-content="local">
-        <div class="results-area ionrift-list" style="margin-top: 8px;">
+        <div style="padding: 6px 10px; font-size: 0.8em; color: #888; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <i class="fas fa-info-circle" style="opacity: 0.6;"></i>
+            Available sounds from the SFX Pack for this key. Click to add to Selection.
+        </div>
+        <div class="results-area ionrift-list">
             <ul class="local-sounds-list results-list">
                 {{#if packSounds.length}}
                 {{#each packSounds}}
-                <li class="result-row" data-id="{{this.id}}" data-name="{{this.name}}" data-type="{{this.type}}"
-                    data-meta="Pack" title="Click to Add">
+                <li class="result-row" data-id="{{this.id}}" data-name="{{this.name}}" data-type="local"
+                    data-meta="Pack" title="Click to add to Selected Sounds">
                     <i class="fas fa-music" style="width: 24px; text-align: center; opacity: 0.8;"></i>
                     <div class="result-info">
                         <span class="result-name">{{this.name}}</span>
@@ -417,10 +421,10 @@
                 {{/each}}
                 {{else}}
                 <div class="local-empty">
-                    <i class="fas fa-volume-mute"></i>
+                    <i class="fas fa-box-open"></i>
                     <div>No pack sounds for this key.</div>
                     <div style="font-size: 0.85em; margin-top: 8px; color: #555;">Use <strong>+ Add Custom</strong>
-                        below to browse local files.</div>
+                        below to browse your own local audio files.</div>
                 </div>
                 {{/if}}
             </ul>
