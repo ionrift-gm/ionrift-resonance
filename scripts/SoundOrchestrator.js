@@ -39,10 +39,8 @@ export class SoundOrchestrator {
         // Outcome stingers — never throttled (crit/fumble/hope/fear are per-roll events).
         DH_OUTCOME: [
             "DAGGERHEART_CRIT",
-            "DAGGERHEART_SUCCESS_WITH_HOPE",
-            "DAGGERHEART_SUCCESS_WITH_FEAR",
-            "DAGGERHEART_FAIL_WITH_HOPE",
-            "DAGGERHEART_FAIL_WITH_FEAR"
+            "DAGGERHEART_SUCCESS",
+            "DAGGERHEART_FAIL"
         ],
         // All monster vocalisations share one window (AoE mitigation layer 2).
         MONSTER_VOCAL: [

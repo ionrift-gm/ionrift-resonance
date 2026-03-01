@@ -724,33 +724,21 @@ export class DaggerheartAdapter extends SystemAdapter {
             this.play(SOUND_EVENTS.DAGGERHEART_CRIT); // Stinger only
 
         } else if (isSuccess !== null) {
-            const hopeWins = hopeValue > fearValue;
 
-            if (isSuccess && hopeWins) {
-                // Hit — CORE_HIT already played by damage hook
-                Logger.log(`⏱️ [${ts}]   SUCCESS WITH HOPE - Stinger only (hit handled by damage hook)`);
-                this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS_WITH_HOPE);
-
-            } else if (isSuccess && !hopeWins) {
-                // Hit — CORE_HIT already played by damage hook
-                Logger.log(`⏱️ [${ts}]   SUCCESS WITH FEAR - Stinger only (hit handled by damage hook)`);
-                this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS_WITH_FEAR);
-
-            } else if (!isSuccess && hopeWins) {
-                // Miss — no damage hook fires, so play miss whoosh here
-                Logger.log(`⏱️ [${ts}]   FAIL WITH HOPE - Miss + Hope stinger`);
-                const missOverride1 = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
-                const missKey1 = missOverride1 || this._deriveCategoryKey(data.attackSoundKey, "MISS");
-                this.handler.play(missKey1);
-                this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_HOPE);
+            if (isSuccess) {
+                // Hit — CORE_HIT already played by preUpdateActor damage hook.
+                // Hope/Fear sounds fire naturally from resource update hooks.
+                Logger.log(`⏱️ [${ts}]   SUCCESS — Roll stinger only (hope/fear from resource hooks)`);
+                this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS);
 
             } else {
-                // Miss — no damage hook fires, so play miss whoosh here
-                Logger.log(`⏱️ [${ts}]   FUMBLE (Fail+Fear) - Miss + Fumble stinger`);
-                const missOverride2 = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
-                const missKey2 = missOverride2 || this._deriveCategoryKey(data.attackSoundKey, "MISS");
-                this.handler.play(missKey2);
-                this.play(SOUND_EVENTS.DAGGERHEART_FAIL_WITH_FEAR);
+                // Fail — no damage hook fires for a miss, so play miss whoosh here.
+                // Hope/Fear sounds fire naturally from resource update hooks.
+                Logger.log(`⏱️ [${ts}]   FAIL — Miss whoosh + fail stinger (hope/fear from resource hooks)`);
+                const missOverride = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
+                const missKey = missOverride || this._deriveCategoryKey(data.attackSoundKey, "MISS");
+                this.handler.play(missKey);
+                this.play(SOUND_EVENTS.DAGGERHEART_FAIL);
             }
 
         } else {

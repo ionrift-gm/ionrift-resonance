@@ -116,12 +116,19 @@ export const SOUND_EVENTS = {
     DAGGERHEART_ARMOR_USE: "DAGGERHEART_ARMOR_USE",
     DAGGERHEART_ARMOR_REPAIR: "DAGGERHEART_ARMOR_REPAIR",
 
-    // Daggerheart Roll Outcomes (Granular)
-    DAGGERHEART_CRIT: "DAGGERHEART_CRIT", // Doubles
-    DAGGERHEART_SUCCESS_WITH_HOPE: "DAGGERHEART_SUCCESS_WITH_HOPE",
-    DAGGERHEART_SUCCESS_WITH_FEAR: "DAGGERHEART_SUCCESS_WITH_FEAR",
-    DAGGERHEART_FAIL_WITH_HOPE: "DAGGERHEART_FAIL_WITH_HOPE",
-    DAGGERHEART_FAIL_WITH_FEAR: "DAGGERHEART_FAIL_WITH_FEAR", // Fumble
+    // Daggerheart Roll Outcomes — Simplified (v2.2+)
+    // Roll stinger signals good/bad outcome only. Hope/Fear sounds are resource-driven
+    // from actor and setting update hooks — keeping concerns separate.
+    DAGGERHEART_CRIT: "DAGGERHEART_CRIT",    // Doubles
+    DAGGERHEART_SUCCESS: "DAGGERHEART_SUCCESS",  // Any success (hope or fear die wins)
+    DAGGERHEART_FAIL: "DAGGERHEART_FAIL",     // Any failure (hope or fear die wins)
+
+    // Backwards-compat aliases — old WITH_HOPE/WITH_FEAR keys resolve to the simplified sounds.
+    // Existing world bindings remain valid without migration.
+    DAGGERHEART_SUCCESS_WITH_HOPE: "DAGGERHEART_SUCCESS",
+    DAGGERHEART_SUCCESS_WITH_FEAR: "DAGGERHEART_SUCCESS",
+    DAGGERHEART_FAIL_WITH_HOPE: "DAGGERHEART_FAIL",
+    DAGGERHEART_FAIL_WITH_FEAR: "DAGGERHEART_FAIL",
 
     // Daggerheart Roll Outcomes (Legacy - Hope/Fear dominance only)
     DAGGERHEART_ROLL_HOPE: "DAGGERHEART_ROLL_HOPE",

@@ -105,9 +105,9 @@ export class OrchestratorDiagnostics {
     testDHOutcomeUnlimited() {
         this.log("── Unit: DH_OUTCOME has no budget (always plays) ──");
         const o = this.makeOrchestrator();
-        const r1 = o.allow("DAGGERHEART_CRIT");
-        const r2 = o.allow("DAGGERHEART_CRIT");
-        this.assert(r1 && r2, "DAGGERHEART_CRIT: plays regardless of frequency");
+        const r1 = o.allow("DAGGERHEART_SUCCESS");
+        const r2 = o.allow("DAGGERHEART_SUCCESS");
+        this.assert(r1 && r2, "DAGGERHEART_SUCCESS: plays regardless of frequency (unlimited)");
     }
 
     testTimingOffset() {
@@ -122,7 +122,7 @@ export class OrchestratorDiagnostics {
     // -------------------------------------------------------------------------
 
     testScenario_HeroicStrike() {
-        this.log("── Scenario: Heroic Strike (crit + hope + stress clear) ──");
+        this.log("── Scenario: Heroic Strike (success + hope + stress clear) ──");
         const o = this.makeOrchestrator();
 
         const attack = o.allow("ATTACK_SWORD");               // uncategorised
@@ -136,7 +136,7 @@ export class OrchestratorDiagnostics {
         this.assert(hit, "Heroic Strike: CORE_HIT plays");
         this.assert(crit, "Heroic Strike: DAGGERHEART_CRIT plays (unlimited)");
         this.assert(vocal, "Heroic Strike: MONSTER_WOLF vocal plays");
-        this.assert(hope, "Heroic Strike: DAGGERHEART_HOPE plays");
+        this.assert(hope, "Heroic Strike: DAGGERHEART_HOPE plays (resource hook)");
         this.assert(stressClear, "Heroic Strike: DAGGERHEART_STRESS_CLEAR plays (different category from Hope)");
     }
 
@@ -146,13 +146,13 @@ export class OrchestratorDiagnostics {
 
         const swing = o.allow("ATTACK_DAGGER");             // uncategorised
         const whoosh = o.allow("CORE_WHOOSH");               // uncategorised
-        const fumble = o.allow("DAGGERHEART_FAIL_WITH_FEAR");// DH_OUTCOME (unlimited)
+        const fumble = o.allow("DAGGERHEART_FAIL");          // DH_OUTCOME (unlimited)
         const fear = o.allow("DAGGERHEART_FEAR_MED");      // FEAR_STINGER
 
         this.assert(swing, "Fumble+Fear: ATTACK_DAGGER plays");
         this.assert(whoosh, "Fumble+Fear: CORE_WHOOSH plays");
-        this.assert(fumble, "Fumble+Fear: DAGGERHEART_FAIL_WITH_FEAR plays");
-        this.assert(fear, "Fumble+Fear: DAGGERHEART_FEAR_MED plays (different category)");
+        this.assert(fumble, "Fumble+Fear: DAGGERHEART_FAIL plays");
+        this.assert(fear, "Fumble+Fear: DAGGERHEART_FEAR_MED plays (resource hook, different category)");
     }
 
     testScenario_FearTrackerSpam() {
