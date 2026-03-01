@@ -91,7 +91,7 @@ export class SoundOrchestrator {
     // Adapters reference these by name instead of hardcoding constants.
     // -------------------------------------------------------------------------
     static DEFAULT_OFFSETS = {
-        VOCAL_STAGGER: 400,       // Delay between impact sound and pain/death vocal
+        VOCAL_STAGGER: 1400,      // Delay between impact sound and pain/death vocal
         AOE_VOCAL_MAX: 400,       // Max random stagger for AoE chorus effect
         SPELL_AUDIO_BONUS: 150,   // Extra clearance for spell audio effects
         FUMBLE_MISS_DELAY: 200,   // Delay before miss sound after fumble stinger
