@@ -84,6 +84,11 @@ export class SoundPickerApp extends Application {
     async _render(force, options) {
         Logger.log("_render called with force:", force);
 
+        // Load pack sounds before rendering (avoids race condition from constructor)
+        if (this._packSounds.length === 0 && this.opts.soundKey) {
+            await this._loadPackSounds();
+        }
+
         // Guarantee partial registration before render
         const partialPath = "modules/ionrift-resonance/templates/partials/sound-picker-row.hbs";
         if (!Handlebars.partials[partialPath]) {
