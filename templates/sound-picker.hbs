@@ -303,8 +303,14 @@
         }
 
         .ionrift-picker-layout .footer-actions {
-            display: flex;
+            display: flex !important;
+            flex-direction: row !important;
             gap: 6px;
+        }
+
+        /* Override Foundry's `form button { width: 100% }` */
+        .ionrift-picker-layout .footer-actions button {
+            width: auto !important;
         }
 
         .ionrift-picker-layout .action-browse-local {
