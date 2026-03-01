@@ -113,7 +113,7 @@ Hooks.once('init', async function () {
             if (lastNotified !== NOTIFY_VERSION && lastSetupVersion === ATTUNEMENT_VERSION) {
                 // Existing user who completed setup — tell them about new stuff
                 ui.notifications.info(
-                    `Ionrift Resonance ${NOTIFY_VERSION}: 389 SFX Pack sounds available! Open Resonance Calibration → select "Ionrift SFX Pack" preset to activate.`,
+                    `Ionrift Resonance ${NOTIFY_VERSION}: ~400 SFX Pack sounds available! Open Resonance Calibration → select "Ionrift SFX Pack" preset to activate.`,
                     { permanent: true }
                 );
                 await game.settings.set("ionrift-resonance", "lastNotifiedVersion", NOTIFY_VERSION);

@@ -16,7 +16,7 @@
 
 ### Bug Fixes
 *   **PC Detection**: Fixed regression where PC actors without a player assignment showed as monsters. Now uses `actor.type === "character"` instead of `hasPlayerOwner`.
-*   **SFX Metadata**: Stripped ID3 tags from all 389 MP3 files in the SFX pack. Prevents prompt and toolchain metadata leaks.
+*   **SFX Metadata**: Stripped ID3 tags from all ~400 MP3 files in the SFX pack. Prevents prompt and toolchain metadata leaks.
 
 ## [2.1.0] — Sound Key Architecture & SFX Pack Integration
 
