@@ -1,10 +1,19 @@
 <div class="ionrift-picker-layout">
     <style>
         /* --- Sound Picker UI --- */
+        /* Force Foundry's window-content to cooperate with our flex layout */
+        #ionrift-sound-picker .window-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0;
+        }
+
         .ionrift-picker-layout {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            flex: 1;
+            min-height: 0;
             overflow: hidden;
             font-family: var(--font-primary);
         }
@@ -483,7 +492,8 @@
                     <div>No results found.</div>
                     {{#if filterOneshots}}<div style="font-size: 0.9em; margin-top: 5px;">Try unchecking
                         <strong>"One-Shots
-                            Only"</strong>.</div>{{/if}}
+                            Only"</strong>.
+                    </div>{{/if}}
                 </div>
                 {{else}}
                 <div class="empty-state" style="padding: 40px 20px; text-align: center; color: #888;">
