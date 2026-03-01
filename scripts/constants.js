@@ -130,9 +130,11 @@ export const SOUND_EVENTS = {
     DAGGERHEART_FAIL_WITH_HOPE: "DAGGERHEART_FAIL",
     DAGGERHEART_FAIL_WITH_FEAR: "DAGGERHEART_FAIL",
 
-    // Daggerheart Roll Outcomes (Legacy - Hope/Fear dominance only)
-    DAGGERHEART_ROLL_HOPE: "DAGGERHEART_ROLL_HOPE",
-    DAGGERHEART_ROLL_FEAR: "DAGGERHEART_ROLL_FEAR",
+    // Daggerheart Roll Outcomes — Fallback aliases (active, not deprecated)
+    // Used when adapter cannot determine pass/fail (no DC on chat card).
+    // Aliased to SUCCESS/FAIL — users don't need to configure separately.
+    DAGGERHEART_ROLL_HOPE: "DAGGERHEART_SUCCESS",
+    DAGGERHEART_ROLL_FEAR: "DAGGERHEART_FAIL",
 
     // Default — fires on attack swing (BEFORE hit/miss result is known).
     // Falls back from CORE_MELEE and CORE_RANGED when no specific weapon sound is mapped.

@@ -111,10 +111,6 @@ export class SoundHandler {
             "CORE_MELEE", "CORE_RANGED", "CORE_MAGIC",
             // Tiered keys — adapters always use the _LOW/_MED/_HIGH variants directly
             "DAGGERHEART_FEAR_USE", "DAGGERHEART_FEAR",
-            // Known asset gaps — no sounds exist yet, tracked in backlog
-            "DAGGERHEART_SUCCESS_WITH_HOPE", "DAGGERHEART_SUCCESS_WITH_FEAR",
-            "DAGGERHEART_ROLL_HOPE", "DAGGERHEART_ROLL_FEAR",
-            "DAGGERHEART_FAIL_WITH_HOPE",
         ]);
 
         // Support both flat format {KEY: val} and structured format {bindings: {KEY: [...]}}
