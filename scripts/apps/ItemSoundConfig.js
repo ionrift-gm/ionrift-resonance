@@ -21,8 +21,8 @@ export class ItemSoundConfig extends FormApplication {
     getData() {
         const slots = [
             { key: "sound_attack", label: "Attack / Cast", icon: "fas fa-khanda", hint: "Swing or cast sound (Phase 1)" },
-            { key: "sound_hit", label: "Hit / Impact", icon: "fas fa-burst", hint: "Replaces the default blood splat on a landed hit" },
-            { key: "sound_miss", label: "Miss / Dodge", icon: "fas fa-wind", hint: "Replaces the default whoosh on a miss" },
+            { key: "sound_hit", label: "Impact", icon: "fas fa-burst", hint: "Replaces the default hit sound on a landed strike" },
+            { key: "sound_miss", label: "Miss", icon: "fas fa-wind", hint: "Replaces the default whoosh on a miss" },
             { key: "sound_use", label: "Use / Generic", icon: "fas fa-hand-sparkles", hint: "Non-attack item use (potions, scrolls)" },
             { key: "sound_equip", label: "Equip", icon: "fas fa-tshirt", hint: "Played when item is equipped" },
             { key: "sound_unequip", label: "Unequip", icon: "fas fa-box-open", hint: "Played when item is unequipped" }
@@ -73,6 +73,11 @@ export class ItemSoundConfig extends FormApplication {
         const currentSoundMeta = this.item.getFlag("ionrift-resonance", key + "_meta");
         const existingConfig = this.item.getFlag("ionrift-resonance", "sound_config") || {};
 
+        // Find the slot label for human-readable picker title
+        const slotDefs = this.getData().slots;
+        const slotMatch = slotDefs.find(s => s.key === key);
+        const slotLabel = slotMatch ? slotMatch.label : key;
+
         new SoundPickerApp(async (result) => {
             if (result === null) {
                 // Removal
@@ -91,13 +96,13 @@ export class ItemSoundConfig extends FormApplication {
                     await this.item.setFlag("ionrift-resonance", "sound_config", newConfig);
                 }
             }
-            this.render(); // Refresh ItemSoundConfig
+            this.render();
         }, {
             currentSoundId: currentSoundId,
             currentSoundName: currentSoundName,
             currentSoundMeta: currentSoundMeta,
             soundConfig: existingConfig,
-            title: `Bind ${key} for ${this.item.name}`
+            title: `Pick Sound: ${slotLabel} — ${this.item.name}`
         }).render(true);
     }
 
