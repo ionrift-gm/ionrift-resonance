@@ -41,6 +41,10 @@ export class SoundPickerApp extends Application {
         this.isLoading = false;
         this.filterOneshots = true; // Default: Only show reactive sounds
 
+        // Track active tab (persist across re-renders)
+        const preset = game.settings.get("ionrift-resonance", "soundPreset");
+        this._activeTab = (preset === "pack") ? "local" : "syrinscape";
+
         // Pre-load cache if available
         const cache = game.settings.get('ionrift-resonance', 'oneshotCache');
         if (this.filterOneshots && cache && cache.results) {
@@ -141,9 +145,8 @@ export class SoundPickerApp extends Application {
             count = this.results.length;
         }
 
-        // Default to Local tab if pack preset is active
-        const preset = game.settings.get("ionrift-resonance", "soundPreset");
-        const localActive = (preset === "pack");
+        // Use tracked active tab state
+        const localActive = (this._activeTab === "local");
 
         Logger.log(`Data Prepared: Bindings=${this.currentBindings.length}, Results=${this.results.length}, PackSounds=${this._packSounds.length}, Search=${this.searchTerm}`);
 
@@ -187,6 +190,7 @@ export class SoundPickerApp extends Application {
         // Tab Switching
         html.find(".picker-tab").click(ev => {
             const tab = ev.currentTarget.dataset.pickerTab;
+            this._activeTab = tab; // Persist across re-renders
             html.find(".picker-tab").removeClass("active");
             html.find(".tab-content").removeClass("active");
             $(ev.currentTarget).addClass("active");
