@@ -106,6 +106,18 @@ Hooks.once('init', async function () {
             } else if (lastSetupVersion !== ATTUNEMENT_VERSION) {
                 new AttunementApp(ATTUNEMENT_VERSION).render(true);
             }
+
+            // One-time upgrade notification — surfaces new features for existing users
+            const NOTIFY_VERSION = "2.2.0";
+            const lastNotified = game.settings.get("ionrift-resonance", "lastNotifiedVersion");
+            if (lastNotified !== NOTIFY_VERSION && lastSetupVersion === ATTUNEMENT_VERSION) {
+                // Existing user who completed setup — tell them about new stuff
+                ui.notifications.info(
+                    `Ionrift Resonance ${NOTIFY_VERSION}: 389 SFX Pack sounds available! Open Resonance Calibration → select "Ionrift SFX Pack" preset to activate.`,
+                    { permanent: true }
+                );
+                await game.settings.set("ionrift-resonance", "lastNotifiedVersion", NOTIFY_VERSION);
+            }
         }
         // Register Status Indicator (Generic Integration)
         if (game.ionrift?.integration) {

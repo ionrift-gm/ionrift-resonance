@@ -97,4 +97,12 @@ export const registerSettings = function () {
         type: String,
         default: "{}"
     });
+
+    // Upgrade Notification Tracking — prevents repeated toasts
+    game.settings.register("ionrift-resonance", "lastNotifiedVersion", {
+        scope: "world",
+        config: false,
+        type: String,
+        default: ""
+    });
 };
