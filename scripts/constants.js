@@ -14,7 +14,12 @@ export const SOUND_EVENTS = {
 
     CRIT_DECORATION: "CORE_CRIT",  // @legacy — alias kept for back-compat; v3: deprecate
     CORE_CRIT: "CORE_CRIT",
+    CORE_FUMBLE: "CORE_FUMBLE",
     MISS: "CORE_MISS",               // @legacy — alias kept for back-compat; v3: deprecate
+
+    // Roll Outcome Stingers — system-agnostic (nat 20 / doubles / nat 1)
+    ROLL_CRIT: "ROLL_CRIT",
+    ROLL_FUMBLE: "ROLL_FUMBLE",
 
     // Category-Aware Hit/Miss (auto-selected by attack type)
     CORE_HIT_RANGED: "CORE_HIT_RANGED",
@@ -119,7 +124,7 @@ export const SOUND_EVENTS = {
     // Daggerheart Roll Outcomes — Simplified (v2.2+)
     // Roll stinger signals good/bad outcome only. Hope/Fear sounds are resource-driven
     // from actor and setting update hooks — keeping concerns separate.
-    DAGGERHEART_CRIT: "DAGGERHEART_CRIT",    // Doubles
+    DAGGERHEART_CRIT: "ROLL_CRIT",    // @alias — Doubles stinger now uses system-agnostic key
     DAGGERHEART_SUCCESS: "DAGGERHEART_SUCCESS",  // Any success (hope or fear die wins)
     DAGGERHEART_FAIL: "DAGGERHEART_FAIL",     // Any failure (hope or fear die wins)
 
@@ -173,7 +178,8 @@ export const SOUND_EVENTS = {
     ANSWER_MISS_RANGED: "CORE_MISS_RANGED",
     ANSWER_MISS_MAGIC: "CORE_MISS_MAGIC",
     ANSWER_CRIT_HIT: "CORE_CRIT",         // combat weapon crit — NOT a roll stinger
-    ANSWER_ROLL_CRIT: "DAGGERHEART_CRIT",  // roll-outcome stinger (combat + social)
+    ANSWER_ROLL_CRIT: "ROLL_CRIT",  // roll-outcome stinger (combat + social)
+    ANSWER_ROLL_FUMBLE: "ROLL_FUMBLE",  // roll-outcome fumble stinger
     ANSWER_SUCCESS_HOPE: "DAGGERHEART_SUCCESS_WITH_HOPE",
     ANSWER_SUCCESS_FEAR: "DAGGERHEART_SUCCESS_WITH_FEAR",
     ANSWER_FAIL_FEAR: "DAGGERHEART_FAIL_WITH_FEAR",
