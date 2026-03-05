@@ -19,7 +19,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 <tr>
 <td width="50%">
 <h3>Ranged Attack</h3>
-<img src="docs/arrow_combat.gif" alt="Ranged attack with automated arrow sound">
+<img src="docs/ranged_skeleton_clip.gif" alt="Ranged attack with automated arrow sound">
 <em>Bow draw, arrow impact, pain vocal</em>
 </td>
 <td width="50%">
@@ -31,7 +31,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 <tr>
 <td width="50%">
 <h3>Melee Combat</h3>
-<img src="docs/crit_combat.gif" alt="Melee attack with critical hit sound">
+<img src="docs/zombie_melee_clip.gif" alt="Melee attack with critical hit sound">
 <em>Sword swing, hit, damage</em>
 </td>
 <td width="50%">
