@@ -85,15 +85,15 @@ Resonance ships with **~400 local sound files** covering the full combat loop. S
 All sounds are local MP3 files included in the module.
 
 ## Features
-*   **Duality Dice Support**: Recognizes Daggerheart roll mechanics.
-    *   **Fear**: Plays dark/tense sounds when Fear interacts with the roll.
-    *   **Hope**: Plays heroic/uplifting sounds when Hope prevails.
-    *   **Criticals**: Distinct audio cues for rolling doubles (Crits).
+*   **Duality Dice Support**: Hooks into Daggerheart roll mechanics.
+    *   **Fear**: Dark/tense sounds when Fear interacts with the roll.
+    *   **Hope**: Heroic sounds when Hope wins.
+    *   **Criticals**: Sound cues for rolling doubles.
 *   **Contextual Triggers**:
-    *   **Damage**: "Blood splat" sounds when actors take damage.
-    *   **Death**: Dramatic cues when an actor takes damage exceeding their max HP.
-    *   **Misses**: "Whoosh" or failure sounds on missed attacks.
-*   **Smart Matching**: Automatically picks sounds based on weapon names (Sword, Dagger, Bow) or spell keywords (Fire, Ice, Void).
+    *   **Damage**: Blood splat sounds when actors take damage.
+    *   **Death**: Death sounds when HP drops to 0.
+    *   **Misses**: Whoosh or failure sounds on missed attacks.
+*   **Smart Matching**: Picks sounds based on weapon names (Sword, Dagger, Bow) or spell keywords (Fire, Ice, Void).
 
 ## Resonance Calibration
 
@@ -112,7 +112,7 @@ Configuration UI for mapping game events to sound bindings (local file paths or 
 Open it via **Module Settings -> Ionrift Resonance -> Resonance Calibration**.
 
 ### Tier 1: Core Events
-Override the fundamental sounds of the system, such as Critical Hits, Misses, and Generic PC Death sounds.
+The base sounds: crits, misses, PC death sounds.
 *   **Tip**: Use the picker's multi-select (Ctrl+Click) to assign multiple sounds for randomized playback.
 
 ### Tier 2: Categories
@@ -127,10 +127,10 @@ Define specific pain and death sounds for your Player Characters.
 *   **Death ID**: Plays when the character drops to 0 HP / dies.
 
 ### Orchestrator
-Configure sound budgets and timing offsets in the **Orchestration** tab. Budget windows prevent spam (e.g. 5 fear stingers in 2 seconds). Timing offsets control the stagger between layered sounds (e.g. impact then vocal).
+Sound budgets and timing offsets. Budgets stop sounds from piling up (e.g. 5 fear stingers in 2 seconds). Offsets add a gap between layered sounds (e.g. impact then vocal).
 
 ## Data Management
-*   **Export JSON**: You can backup your entire configuration (including all overrides and player settings) to a JSON file via the **Export JSON** button in the calibration footer.
+*   **Export JSON**: Back up your config to a JSON file via the **Export JSON** button in the calibration footer.
 *   **Local Files**: Place WAV/MP3 files anywhere in your Foundry Data folder (e.g. `sfx/`) and bind them directly.
 *   **Syrinscape Token** (optional): If using Syrinscape cloud sounds, enter your Auth Token in Module Settings.
 
