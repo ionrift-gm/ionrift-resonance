@@ -36,7 +36,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 </td>
 <td width="50%">
 <h3>Critical Kill</h3>
-<img src="docs/zombie_combat.gif" alt="Critical hit with death sound and blood effects">
+<video src="docs/zombie_combat_clip.mp4" alt="Critical hit with death sound and blood effects" controls muted width="100%"></video>
 <em>Critical stinger, death sound, blood splatter</em>
 </td>
 </tr>
