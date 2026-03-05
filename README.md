@@ -7,13 +7,13 @@
 
 **Automated audio triggers for Foundry VTT.**
 
-Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (official system, native support) and **DnD5e** (via Midi-QOL). Works with **local sound files** (WAV/MP3) out of the box — no paid accounts required. Optionally integrates with **Syrinscape** for cloud-hosted audio.
+Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (native support) and **DnD5e** (via Midi-QOL). Ships with local sound files (WAV/MP3). Optionally integrates with **Syrinscape** for cloud audio.
 
 ### Demo
 
 [![Watch the demo](https://img.youtube.com/vi/vRZeyZqYwxw/maxresdefault.jpg)](https://youtu.be/vRZeyZqYwxw)
 
-*Full DnD5e combat sequence — melee, ranged, spells, and AoE. All sounds triggered automatically.*
+*Full DnD5e combat sequence: melee, ranged, spells, and AoE. All sounds triggered automatically.*
 
 <table>
 <tr>
@@ -35,9 +35,9 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 <em>Sword swing, hit, damage</em>
 </td>
 <td width="50%">
-<h3>Critical Kill</h3>
-<video src="docs/zombie_combat_clip.mp4" alt="Critical hit with death sound and blood effects" controls muted width="100%"></video>
-<em>Critical stinger, death sound, blood splatter</em>
+<h3>Fireball (AoE)</h3>
+<img src="docs/fireball_combat.gif" alt="Fireball AoE with automated spell sounds">
+<em>Spell cast, explosion, multi-target damage</em>
 </td>
 </tr>
 </table>
@@ -49,14 +49,14 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 3. Run the **Attunement Protocol** (appears on first launch)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-4. Select the **Ionrift SFX Pack** preset — ~400 sounds activate immediately, no configuration needed
+4. Select the **Ionrift SFX Pack** preset. ~400 sounds activate immediately.
 
 
 ## Per-Actor & Per-Item Sound Overrides
 
 Every actor and item sheet includes a **Sounds** button (header or overflow menu). Click it to:
 
-- **Assign custom attack/spell sounds** to specific items (e.g., "Flaming Longsword" → fire impact)
+- **Assign custom attack/spell sounds** to specific items (e.g. "Flaming Longsword" to fire impact)
 - **Override PC pain/death vocals** per character (Masculine/Feminine identity selection)
 - **Configure monster-specific sounds** (e.g., Dragon breath attack)
 - **Set actor-wide defaults** that apply to all their items
@@ -66,7 +66,7 @@ Every actor and item sheet includes a **Sounds** button (header or overflow menu
 - Give "Elric's Stormblade" a custom thunder impact sound
 - Override generic pain sounds with character-specific voice lines
 
-This feature works independently of global presets—your custom bindings always take priority.
+Custom bindings always take priority over global presets.
 
 ## Ionrift SFX Pack
 
@@ -82,7 +82,7 @@ Resonance ships with **~400 local sound files** covering the full combat loop. S
 | Spells | 50+ | Fire, ice, lightning, necrotic, radiant, thunder, void |
 | Stingers | 40+ | Crits, fumbles, success/fail outcomes, Hope/Fear (Daggerheart) |
 
-All sounds are local MP3 files — no accounts, no cloud dependencies. Works offline.
+All sounds are local MP3 files included in the module.
 
 ## Features
 *   **Duality Dice Support**: Recognizes Daggerheart roll mechanics.
@@ -100,14 +100,14 @@ All sounds are local MP3 files — no accounts, no cloud dependencies. Works off
 ### Sound Picker
 
 ![Sound Picker](docs/sound_picker.gif)  
-*Search sounds → preview → select (supports local files and Syrinscape)*
+*Search, preview, and select sounds. Supports local files and Syrinscape.*
 
 ### Tier Navigation
 
 ![Tier Navigation](docs/tier_navigation.gif)  
-*Browse tier tabs → expand categories → assign sounds to semantic keys*
+*Browse tier tabs, expand categories, assign sounds to keys.*
 
-Ionrift Resonance features a comprehensive configuration UI to map game events to sound bindings — either local file paths or Syrinscape element IDs.
+Configuration UI for mapping game events to sound bindings (local file paths or Syrinscape element IDs).
 
 Open it via **Module Settings -> Ionrift Resonance -> Resonance Calibration**.
 
@@ -119,7 +119,7 @@ Override the fundamental sounds of the system, such as Critical Hits, Misses, an
 Configure sounds for broad categories like specific Weapon types (Axes, Bows, Swords) and Magic Schools (Fire, Ice, Necrotic).
 
 ### Tier 3: Monsters
-Assign default sounds to entire families of creatures. The system attempts to classify actors (e.g. "Zombie Shambler" -> Zombie) and play the appropriate family sound.
+Assign default sounds to creature families. Actors are classified automatically (e.g. "Zombie Shambler" matches the Zombie family).
 
 ### Players Tab
 Define specific pain and death sounds for your Player Characters.
@@ -127,26 +127,26 @@ Define specific pain and death sounds for your Player Characters.
 *   **Death ID**: Plays when the character drops to 0 HP / dies.
 
 ### Orchestrator
-Configure sound budgets and timing offsets in the **Orchestration** tab. Budget windows prevent spam (e.g. 5 fear stingers in 2 seconds). Named timing offsets control the stagger between layered sounds (e.g. impact → vocal delay).
+Configure sound budgets and timing offsets in the **Orchestration** tab. Budget windows prevent spam (e.g. 5 fear stingers in 2 seconds). Timing offsets control the stagger between layered sounds (e.g. impact then vocal).
 
 ## Data Management
 *   **Export JSON**: You can backup your entire configuration (including all overrides and player settings) to a JSON file via the **Export JSON** button in the calibration footer.
-*   **Local Files**: Place WAV/MP3 files anywhere in your Foundry Data folder (e.g., `sfx/`) and bind them directly — no external accounts needed.
+*   **Local Files**: Place WAV/MP3 files anywhere in your Foundry Data folder (e.g. `sfx/`) and bind them directly.
 *   **Syrinscape Token** (optional): If using Syrinscape cloud sounds, enter your Auth Token in Module Settings.
 
 ## Dependencies
-*   **[Ionrift Library](https://github.com/ionrift-gm/ionrift-library)** — Required core module.
-*   **[Midi-QOL](https://foundryvtt.com/packages/midi-qol)** — Required for DnD 5e combat automation.
+*   **[Ionrift Library](https://github.com/ionrift-gm/ionrift-library)** - Required.
+*   **[Midi-QOL](https://foundryvtt.com/packages/midi-qol)** - Required for DnD 5e.
 
 ### Optional Integrations
-*   **[Syrinscape](https://syrinscape.com/)** — Cloud-hosted sound library. Resonance works without it — local sound files are fully supported.
-*   **[fvtt-syrin-control](https://github.com/frondeus/fvtt-syrin-control)** — Embeds the Syrinscape player in Foundry (only relevant if using Syrinscape).
+*   **[Syrinscape](https://syrinscape.com/)** - Cloud-hosted sound library.
+*   **[fvtt-syrin-control](https://github.com/frondeus/fvtt-syrin-control)** - Embeds the Syrinscape player in Foundry.
 
 ### Recommended Modules
 These are not required but significantly improve the experience:
 
-*   **[Dice So Nice](https://foundryvtt.com/packages/dice-so-nice)** — 3D dice animations add a natural pause between the attack roll and result, giving Resonance's two-beat sound sequence (weapon swing → hit/miss) room to breathe. Works well with both Daggerheart and DnD 5e.
-*   **[Automated Animations](https://foundryvtt.com/packages/autoanimations)** — Attack and spell animations create timing gaps that let weapon and impact sounds play distinctly rather than overlapping.
+*   **[Dice So Nice](https://foundryvtt.com/packages/dice-so-nice)** - 3D dice add a natural pause between the attack roll and result, giving sounds room to breathe.
+*   **[Automated Animations](https://foundryvtt.com/packages/autoanimations)** - Spell and attack animations create timing gaps so sounds don't overlap.
 
 
 ## Supported Systems
@@ -155,7 +155,7 @@ These are not required but significantly improve the experience:
 **Native Support**. No external modules required (other than core dependencies).
 
 **Setup:** Enable automation in Daggerheart system settings for sound triggers to work properly:
-- Open **Game Settings → Daggerheart → Roll Tab → Automation Settings**
+- Open **Game Settings > Daggerheart > Roll Tab > Automation Settings**
 - Enable the **Roll** automation for GM and Players
 - Enable **Apply Damage/Healing** automation for GM and Players
 
@@ -166,7 +166,7 @@ These are not required but significantly improve the experience:
 *   Automatic chat card parsing.
 
 #### Known Limitations (Daggerheart v0.5.x)
-*   **Domain Resolution for Features**: The current Daggerheart data model does not store per-feature domain metadata. When a class feature (e.g. "Sparing Touch") is used, Resonance cannot determine which domain it belongs to. As a fallback, it tries the **actor's class domains** in order — the first domain with a bound sound is used. If you have multiple domains configured, all features will default to whichever domain has a sound bound first. You can override individual features using Tier 4 (Campaign Overrides) for precise control.
+*   **Domain Resolution for Features**: The Daggerheart data model does not store per-feature domain metadata. When a class feature (e.g. "Sparing Touch") is used, Resonance falls back to the actor's class domains in order. The first domain with a bound sound is used. Override individual features using Tier 4 (Campaign Overrides) for precise control.
 
 ### 2. DnD 5e
 **Requires [Midi-QOL](https://foundryvtt.com/packages/midi-qol)** for combat automation.
@@ -174,12 +174,12 @@ These are not required but significantly improve the experience:
 Without Midi-QOL, Resonance falls back to native DnD5e hooks which provide limited automation (attack rolls only, no damage/death detection).
 
 **Supported Triggers:**
-*   **Attacks**: Weapon swing → then Hit, Miss, or Critical result (two-beat sequence).
+*   **Attacks**: Weapon swing, then hit/miss/crit result (two-beat sequence).
 *   **Damage**:
     *   **Pain**: Configured pain sounds for PCs (Masculine/Feminine) and Monsters (classified by creature type).
     *   **Death**: Detects when HP drops to 0 and plays a death sound.
 *   **Items**:
-    *   **Weapons**: Detects Damage Type (Slashing → Sword, Bludgeoning → Mace, etc.).
+    *   **Weapons**: Matches Damage Type to sound (Slashing = Sword, Bludgeoning = Mace, etc.).
     *   **Spells**: Maps to Spell Schools (Evocation, Necromancy, etc.) and effect types (Fire, Ice, Void).
     *   **Specifics**: Tier 4 overrides work for any item name (e.g. override "Fireball" specifically).
 
@@ -188,8 +188,8 @@ Without Midi-QOL, Resonance falls back to native DnD5e hooks which provide limit
 For the best experience, Resonance works with Midi-QOL's **automated workflow**. This gives Resonance access to attack results, damage rolls, and target HP changes.
 
 **Recommended Midi-QOL Workflow Settings:**
-1.  Open **Module Settings → Midi-QOL → Workflow Settings**.
-2.  Set **Auto Roll Attack** and **Auto Roll Damage** to your preference — Resonance works with any setting.
+1.  Open **Module Settings > Midi-QOL > Workflow Settings**.
+2.  Set **Auto Roll Attack** and **Auto Roll Damage** to your preference. Resonance works with any setting.
 3.  Enable **Auto Apply Damage** (or "Apply Damage to Target") so that HP changes fire the damage hook and trigger pain/death vocals.
 
 > **Tip:** Dice So Nice and Automated Animations are particularly effective with DnD 5e, as they insert natural pauses between the weapon swing sound and the hit/miss result.

@@ -1,7 +1,7 @@
 {
     "id": "ionrift-resonance",
     "title": "Ionrift Resonance",
-    "description": "Immersive, reactive sound automation for Daggerheart and DnD5e. Works with local sound files out of the box — optionally integrates with Syrinscape for cloud audio.",
+    "description": "Automated combat sound effects for Daggerheart and DnD5e. Ships with 400+ local sounds. Optionally integrates with Syrinscape.",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
     "version": "2.2.0",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
@@ -38,6 +38,13 @@
         {
             "name": "Ionrift",
             "url": "https://patreon.com/ionrift"
+        }
+    ],
+    "media": [
+        {
+            "type": "video",
+            "url": "https://youtu.be/vRZeyZqYwxw",
+            "caption": "DnD5e Combat Demo — Automated Sound Effects"
         }
     ]
 }
