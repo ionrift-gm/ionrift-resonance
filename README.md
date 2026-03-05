@@ -9,6 +9,12 @@
 
 Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (official system, native support) and **DnD5e** (via Midi-QOL). Works with **local sound files** (WAV/MP3) out of the box — no paid accounts required. Optionally integrates with **Syrinscape** for cloud-hosted audio.
 
+### Demo
+
+[![Watch the demo](https://img.youtube.com/vi/vRZeyZqYwxw/maxresdefault.jpg)](https://youtu.be/vRZeyZqYwxw)
+
+*Full DnD5e combat sequence — melee, ranged, spells, and AoE. All sounds triggered automatically.*
+
 <table>
 <tr>
 <td width="50%">
