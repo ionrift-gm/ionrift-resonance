@@ -18,26 +18,26 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 <table>
 <tr>
 <td width="50%">
-<h3>🏹 Ranged Attack</h3>
+<h3>Ranged Attack</h3>
 <img src="docs/arrow_combat.gif" alt="Ranged attack with automated arrow sound">
-<em>🎵 Bow draw → Arrow impact → Pain vocal</em>
+<em>Bow draw, arrow impact, pain vocal</em>
 </td>
 <td width="50%">
-<h3>🐻 Creature Attack</h3>
+<h3>Creature Attack</h3>
 <img src="docs/bear_combat.gif" alt="Bear attack with Sacred Flame and automated sounds">
-<em>🎵 Claw swipe → Sacred Flame → Spell impact</em>
+<em>Claw swipe, Sacred Flame, spell impact</em>
 </td>
 </tr>
 <tr>
 <td width="50%">
-<h3>⚔️ Melee Combat</h3>
+<h3>Melee Combat</h3>
 <img src="docs/crit_combat.gif" alt="Melee attack with critical hit sound">
-<em>🎵 Sword swing → Hit → Damage</em>
+<em>Sword swing, hit, damage</em>
 </td>
 <td width="50%">
-<h3>💀 Critical Kill</h3>
+<h3>Critical Kill</h3>
 <img src="docs/zombie_combat.gif" alt="Critical hit with death sound and blood effects">
-<em>🎵 Critical stinger → Death sound → Blood splatter</em>
+<em>Critical stinger, death sound, blood splatter</em>
 </td>
 </tr>
 </table>
@@ -54,7 +54,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 
 ## Per-Actor & Per-Item Sound Overrides
 
-Every actor and item sheet includes a **🎵 Sounds** button (header or overflow menu). Click it to:
+Every actor and item sheet includes a **Sounds** button (header or overflow menu). Click it to:
 
 - **Assign custom attack/spell sounds** to specific items (e.g., "Flaming Longsword" → fire impact)
 - **Override PC pain/death vocals** per character (Masculine/Feminine identity selection)
