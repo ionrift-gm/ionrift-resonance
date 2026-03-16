@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.2.1] - Discord Support Link
+*   **Feature**: Added "Get Support" button to module settings. Opens the Ionrift Discord server.
+*   **Improvement**: Added `bugs` field to `module.json` pointing to Discord.
 ## [2.2.0] — UI Polish, Orchestration & SFX Pack
 
 ### New Features

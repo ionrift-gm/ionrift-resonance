@@ -66,6 +66,18 @@ Hooks.once('init', async function () {
         restricted: true
     });
 
+    // Support Link
+    game.settings.registerMenu("ionrift-resonance", "supportLink", {
+        name: "Get Support",
+        label: "Join Discord",
+        hint: "Bug reports, questions, and feature requests.",
+        icon: "fab fa-discord",
+        type: class extends FormApplication {
+            render() { window.open("https://discord.gg/YmgdNNu4", "_blank"); return this; }
+        },
+        restricted: false
+    });
+
 
 
 
