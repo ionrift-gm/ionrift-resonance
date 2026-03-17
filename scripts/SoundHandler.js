@@ -264,6 +264,9 @@ export class SoundHandler {
         // 3. Delegate to SoundManager
         if (game.ionrift.sounds?.manager) {
             game.ionrift.sounds.manager.play(finalData, { delay: delay + offset });
+
+            // Notify visualizer + any other consumers
+            Hooks.call("ionrift.soundPlayed", key, finalData);
         } else {
             Logger.error("SoundHandler.play | Manager not available!");
         }
