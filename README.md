@@ -46,10 +46,13 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 
 1. Install from Foundry VTT package manager
 2. Install **Ionrift Library** (required dependency)
-3. Run the **Attunement Protocol** (appears on first launch)
+3. Open **Game Settings > Module Settings > Ionrift Resonance**
+4. Click **Open Attunement Protocol** (not the Library's "Begin Attunement", that's for creature indexing)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-4. Select the **Ionrift SFX Pack** preset. ~400 sounds activate immediately.
+5. Select the **Ionrift SFX Pack** preset. ~400 sounds activate immediately.
+
+For detailed walkthrough, troubleshooting, and FAQ see the **[Setup Guide](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Guide)**.
 
 
 ## Per-Actor & Per-Item Sound Overrides
@@ -198,13 +201,11 @@ For the best experience, Resonance works with Midi-QOL's **automated workflow**.
 
 ## Bug Reports
 
-This is an early public release. If you encounter unexpected behavior:
+If something isn't working:
 
-1.  Open the **F12 Developer Console** and check for errors prefixed with `Ionrift`.
-2.  Open a **GitHub Issue** at [ionrift-resonance/issues](https://github.com/ionrift-gm/ionrift-resonance/issues).
-3.  Include your **Foundry version**, **system** (DnD5e or Daggerheart), and a **screenshot or console log**.
-
-Your feedback directly improves the module. Thank you.
+1.  Check the **[Setup Guide](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Guide)** for common fixes.
+2.  Post to the **[Ionrift Discord](https://discord.gg/YmgdNNu4)** with your Foundry version, module versions, and any console errors (F12).
+3.  Or open a **[GitHub Issue](https://github.com/ionrift-gm/ionrift-resonance/issues)**.
 
 ---
 

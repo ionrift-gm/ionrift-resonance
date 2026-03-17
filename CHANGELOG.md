@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.2.2] - Hotfix: Case-Sensitivity Fix
+*   **Critical Fix**: Renamed `soundHandler.js` to `SoundHandler.js` to match the import in `module.js`. The case mismatch caused a 404 on Linux-hosted servers (Molten, etc), preventing the entire module from initializing. Windows users were unaffected.
+
 ## [2.2.1] - Discord Support Link
 *   **Feature**: Added "Get Support" button to module settings. Opens the Ionrift Discord server.
 *   **Improvement**: Added `bugs` field to `module.json` pointing to Discord.
