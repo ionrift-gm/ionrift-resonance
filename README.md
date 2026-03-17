@@ -52,7 +52,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
    - **Syrinscape?** Paste your auth token to connect cloud audio
 5. Select the **Ionrift SFX Pack** preset. ~400 sounds activate immediately.
 
-For detailed walkthrough, troubleshooting, and FAQ see the **[Setup Guide](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Guide)**.
+For detailed walkthrough, troubleshooting, and FAQ see the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/Setup:-Resonance)**.
 
 
 ## Per-Actor & Per-Item Sound Overrides
@@ -203,7 +203,7 @@ For the best experience, Resonance works with Midi-QOL's **automated workflow**.
 
 If something isn't working:
 
-1.  Check the **[Setup Guide](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Guide)** for common fixes.
+1.  Check the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/Setup:-Resonance)** for common fixes.
 2.  Post to the **[Ionrift Discord](https://discord.gg/YmgdNNu4)** with your Foundry version, module versions, and any console errors (F12).
 3.  Or open a **[GitHub Issue](https://github.com/ionrift-gm/ionrift-resonance/issues)**.
 
