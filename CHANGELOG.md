@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.2.3] - Hotfix: Sound Files Missing from Download
+*   **Critical Fix**: The Ionrift SFX Pack audio files (`sounds/pack/`) were excluded from the release zip. Users who installed via the Foundry package manager received the sound bindings but no actual audio files, causing "Directory does not exist" errors in Resonance Calibration. The 500+ local sound files now ship with the module download.
+
 ## [2.2.2] - Hotfix: Case-Sensitivity Fix
 *   **Critical Fix**: Renamed `soundHandler.js` to `SoundHandler.js` to match the import in `module.js`. The case mismatch caused a 404 on Linux-hosted servers (Molten, etc), preventing the entire module from initializing. Windows users were unaffected.
 
