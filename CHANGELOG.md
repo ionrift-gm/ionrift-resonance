@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.2.4] - Update Notification for Sound Fix
+*   **Improvement**: Added one-time GM notification on module load explaining the v2.2.3 sound fix and prompting users to re-run the Attunement Protocol if sounds weren't working.
+
 ## [2.2.3] - Hotfix: Sound Files Missing from Download
 *   **Critical Fix**: The Ionrift SFX Pack audio files (`sounds/pack/`) were excluded from the release zip. Users who installed via the Foundry package manager received the sound bindings but no actual audio files, causing "Directory does not exist" errors in Resonance Calibration. The 500+ local sound files now ship with the module download.
 
