@@ -3,11 +3,11 @@
     "title": "Ionrift Resonance",
     "description": "Automated combat sound effects for Daggerheart and DnD5e. Ships with 400+ local sounds. Optionally integrates with Syrinscape.",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
-    "version": "2.2.4",
+    "version": "2.2.5",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
     "bugs": "https://discord.gg/YmgdNNu4",
     "manifest": "https://github.com/ionrift-gm/ionrift-resonance/releases/latest/download/module.json",
-    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.2.4/module.zip",
+    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.2.5/module.zip",
     "license": "LICENSE",
     "compatibility": {
         "minimum": "12",

@@ -120,7 +120,7 @@ Hooks.once('init', async function () {
             }
 
             // One-time upgrade notification — surfaces new features for existing users
-            const NOTIFY_VERSION = "2.2.3";
+            const NOTIFY_VERSION = "2.2.5";
             const lastNotified = game.settings.get("ionrift-resonance", "lastNotifiedVersion");
             if (lastNotified !== NOTIFY_VERSION && lastSetupVersion === ATTUNEMENT_VERSION) {
                 // Existing user who completed setup — tell them about the fix
