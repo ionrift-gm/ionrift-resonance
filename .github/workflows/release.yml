@@ -15,6 +15,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Validate Sound Files
+        run: |
+          # Ensure LFS files are real audio, not pointer stubs
+          FIRST_MP3=$(find sounds/pack -name '*.mp3' -type f | head -1)
+          if [ -z "$FIRST_MP3" ]; then
+            echo "ERROR: No MP3 files found in sounds/pack/"
+            exit 1
+          fi
+          SIZE=$(wc -c < "$FIRST_MP3")
+          if [ "$SIZE" -lt 1000 ]; then
+            echo "ERROR: $FIRST_MP3 is only ${SIZE} bytes — likely an LFS pointer, not audio"
+            exit 1
+          fi
+          echo "OK: Sound files are real audio (first file: $FIRST_MP3, ${SIZE} bytes)"
 
       - name: Zip Module
         # Zips current directory, excluding git/github/dev files

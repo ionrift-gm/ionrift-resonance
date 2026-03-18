@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.2.5] - Hotfix: Sound Files Were LFS Pointers
+*   **Critical Fix**: Release zip contained Git LFS pointer stubs (130 bytes) instead of actual MP3 audio files. Added `lfs: true` to the GitHub Actions checkout step so sound files are properly resolved. Added a validation gate that blocks releases if sound files are stubs.
+
 ## [2.2.4] - Update Notification for Sound Fix
 *   **Improvement**: Added one-time GM notification on module load explaining the v2.2.3 sound fix and prompting users to re-run the Attunement Protocol if sounds weren't working.
 
