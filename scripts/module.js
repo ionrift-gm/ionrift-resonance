@@ -120,12 +120,12 @@ Hooks.once('init', async function () {
             }
 
             // One-time upgrade notification — surfaces new features for existing users
-            const NOTIFY_VERSION = "2.2.5";
+            const NOTIFY_VERSION = "2.3.0";
             const lastNotified = game.settings.get("ionrift-resonance", "lastNotifiedVersion");
             if (lastNotified !== NOTIFY_VERSION && lastSetupVersion === ATTUNEMENT_VERSION) {
-                // Existing user who completed setup — tell them about the fix
+                // Existing user who completed setup — tell them about the new feature
                 ui.notifications.info(
-                    `Ionrift Resonance ${NOTIFY_VERSION}: Fixed a critical bug where SFX Pack sound files were missing from the download. If sounds weren't working, re-run the Attunement Protocol (Module Settings) and select "Ionrift SFX Pack" to activate.`,
+                    `Ionrift Resonance ${NOTIFY_VERSION}: You can now mute individual sound events in the Calibration UI. Look for the speaker icon on each sound row.`,
                     { permanent: true }
                 );
                 await game.settings.set("ionrift-resonance", "lastNotifiedVersion", NOTIFY_VERSION);

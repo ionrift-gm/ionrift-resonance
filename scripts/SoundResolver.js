@@ -173,6 +173,12 @@ export class SoundResolver {
         const bindings = this.configService.getEffectiveBindings();
         let resolved = bindings[key];
 
+        // Mute sentinel: explicit silence — blocks the entire fallback chain
+        if (resolved === "__MUTED__") {
+            Logger.log(`SoundResolver | ${key} → MUTED (silenced by user)`);
+            return null;
+        }
+
         // Unpack arrays from preset/defaults structure: [{id, name, type}]
         // Join all IDs for multi-sound randomisation at playback
         if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
