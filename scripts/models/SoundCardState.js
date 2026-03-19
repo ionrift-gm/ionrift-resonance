@@ -18,6 +18,7 @@ export class SoundCardState {
         this.isCustom = false;
         this.isDefault = true;
         this.isInherited = false;
+        this.isMuted = false;
         this.inheritanceSource = inheritanceSource;
         this.displayTags = [];
         this.inputValue = "";
@@ -27,6 +28,16 @@ export class SoundCardState {
 
     _parse() {
         let effectiveValue = null;
+
+        // 0. Mute sentinel — explicit silence by user
+        if (this.value === "__MUTED__") {
+            this.isMuted = true;
+            this.isCustom = true;
+            this.isDefault = false;
+            this.inputValue = "__MUTED__";
+            this.displayTags = [];
+            return;
+        }
 
         // 1. Determine Effective Value & Status
         if (this.value && this.value !== "") {
@@ -129,6 +140,7 @@ export class SoundCardState {
             isCustom: this.isCustom,
             isDefault: this.isDefault,
             isInherited: this.isInherited,
+            isMuted: this.isMuted,
             inheritanceSource: this.inheritanceSource
         };
     }

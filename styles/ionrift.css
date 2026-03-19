@@ -30,3 +30,11 @@
     font-size: 0.85em;
     color: #aaa;
 }
+
+/* Muted sound event rows */
+.muted-row {
+    opacity: 0.55;
+}
+.muted-row .toggle-mute {
+    color: #ef4444;
+}

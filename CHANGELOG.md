@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.3.0] - Mute Toggle for Sound Events
+*   **Feature**: Added a per-event mute button in the Calibration UI. Click the speaker icon to silence any sound event, overriding inheritance. Click again to restore inherited sounds.
+
 ## [2.2.5] - Hotfix: Sound Files Were LFS Pointers
 *   **Critical Fix**: Release zip contained Git LFS pointer stubs (130 bytes) instead of actual MP3 audio files. Added `lfs: true` to the GitHub Actions checkout step so sound files are properly resolved. Added a validation gate that blocks releases if sound files are stubs.
 

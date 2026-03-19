@@ -814,6 +814,9 @@ export class SoundConfigApp extends FormApplication {
         // Reset
         html.on("click", ".reset-sound", this._onReset.bind(this));
 
+        // Mute Toggle
+        html.on("click", ".toggle-mute", this._onToggleMute.bind(this));
+
         // Auditor
         html.on("click", ".auditor-edit", this._onAuditorEdit.bind(this));
         html.on("click", ".auditor-delete", this._onAuditorDelete.bind(this));
@@ -881,6 +884,31 @@ export class SoundConfigApp extends FormApplication {
             this._hooksRegistered = false;
         }
         return super.close(options);
+    }
+
+    /**
+     * Toggle mute/unmute on a sound event key.
+     * Muting saves "__MUTED__" sentinel. Unmuting clears the override (restores inheritance).
+     */
+    async _onToggleMute(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const key = event.currentTarget.dataset.key;
+        if (!key) return;
+
+        const currentBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
+        const isMuted = currentBindings[key] === "__MUTED__";
+
+        if (isMuted) {
+            // Unmute: clear the override to restore inheritance
+            await this._saveBinding(key, null);
+        } else {
+            // Mute: save the sentinel
+            await this._saveBinding(key, "__MUTED__");
+        }
+
+        // Full re-render to update the row state (muted badge, button icon)
+        this.render(true);
     }
 
     // -------------------------------------------------------------------------
