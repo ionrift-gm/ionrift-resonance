@@ -217,6 +217,7 @@ All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Libra
 - **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)** - Sound configuration and presets
 - **[Resonance Calibration](https://github.com/ionrift-gm/ionrift-library/wiki/3-Resonance-Calibration)** - Fine-tuning sound bindings
 - **[Advanced Diagnostics](https://github.com/ionrift-gm/ionrift-library/wiki/4-Advanced-Diagnostics)** - Manifest inspection and troubleshooting
+- **[Targeting Sounds Per Creature](https://github.com/ionrift-gm/ionrift-library/wiki/5-Targeting-Sounds-Per-Creature)** - Per-item and per-actor sound scoping
 
 ## Bug Reports
 
@@ -228,6 +229,6 @@ If something isn't working:
 
 ---
 
-## License
-MIT License. See [LICENSE](./LICENSE) for details.
+**Part of the [Ionrift Module Suite](https://github.com/ionrift-gm)**
 
+[Wiki / Guides](https://github.com/ionrift-gm/ionrift-library/wiki) · [Discord](https://discord.gg/YmgdNNu4) · [Patreon](https://patreon.com/ionrift)
