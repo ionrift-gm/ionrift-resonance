@@ -151,6 +151,8 @@ Actions per row:
 
 The Auditor also scans unlinked tokens present in the active scene - so stage items and encounter-specific actors are included, not just world items.
 
+![Sound Auditor listing actor overrides alongside an item sound config](img/sound-auditor.png)
+
 Useful after importing compendium content (e.g. a bestiary pack someone else configured) to see what's pre-bound, or to audit a world before a campaign handoff.
 
 ---
