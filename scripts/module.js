@@ -46,17 +46,13 @@ Hooks.once('init', async function () {
     registerDiagnostics();
 
 
-    // Register Setup Menu
-    game.settings.registerMenu("ionrift-resonance", "setupGuide", {
-        name: "Attunement Protocol",
-        label: "Open Attunement Protocol",
-        hint: "First-time setup: select a sound preset and optionally connect Syrinscape.",
-        icon: "fas fa-broadcast-tower",
-        type: AttunementApp,
-        restricted: true
+    // HEADER
+    const { SettingsLayout } = await import("../../ionrift-library/scripts/SettingsLayout.js");
+    SettingsLayout.registerHeader("ionrift-resonance", AttunementApp, {
+        hint: "First-time setup: select a sound preset and optionally connect Syrinscape."
     });
 
-    // Register Calibration Menu
+    // BODY: Calibration (resonance-specific tool)
     game.settings.registerMenu('ionrift-resonance', 'soundConfigMenu', {
         name: "Resonance Calibration",
         label: "Open Calibration",
@@ -66,17 +62,8 @@ Hooks.once('init', async function () {
         restricted: true
     });
 
-    // Support Link
-    game.settings.registerMenu("ionrift-resonance", "supportLink", {
-        name: "Get Support",
-        label: "Join Discord",
-        hint: "Bug reports, questions, and feature requests.",
-        icon: "fab fa-discord",
-        type: class extends FormApplication {
-            render() { window.open("https://discord.gg/YmgdNNu4", "_blank"); return this; }
-        },
-        restricted: false
-    });
+    // FOOTER
+    SettingsLayout.registerFooter("ionrift-resonance");
 
 
 
@@ -134,7 +121,7 @@ Hooks.once('init', async function () {
         // Register Status Indicator (Generic Integration)
         if (game.ionrift?.integration) {
             game.ionrift.integration.registerApp('ionrift-resonance', {
-                settingsKey: ['ionrift-resonance.setupGuide'],
+                settingsKey: ['ionrift-resonance.setupWizard'],
                 checkStatus: async () => {
                     // console.log("Ionrift Sounds | Running Status Check...");
 
