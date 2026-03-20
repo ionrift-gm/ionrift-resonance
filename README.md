@@ -52,7 +52,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
    - **Syrinscape?** Paste your auth token to connect cloud audio
 5. Select the **Ionrift SFX Pack** preset. ~400 sounds activate immediately.
 
-For detailed walkthrough, troubleshooting, and FAQ see the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Resonance)**.
+For detailed walkthrough, troubleshooting, and FAQ see the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)**.
 
 
 ## Per-Actor & Per-Item Sound Overrides
@@ -213,10 +213,10 @@ For the best experience, Resonance works with Midi-QOL's **automated workflow**.
 
 All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)** - that's the single source of truth for the whole Ionrift ecosystem. The files in this repo (`README`, `docs/FEATURES.md`) are technical reference, not guides.
 
-- **[Setup: Core Library](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Core-Library)** - Installation and creature indexing
-- **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Resonance)** - Sound configuration and presets
-- **[Resonance Calibration](https://github.com/ionrift-gm/ionrift-library/wiki/Resonance-Calibration)** - Fine-tuning sound bindings
-- **[Advanced Diagnostics](https://github.com/ionrift-gm/ionrift-library/wiki/Advanced-Diagnostics)** - Manifest inspection and troubleshooting
+- **[Setup: Core Library](https://github.com/ionrift-gm/ionrift-library/wiki/1-Setup-Core-Library)** - Installation and creature indexing
+- **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)** - Sound configuration and presets
+- **[Resonance Calibration](https://github.com/ionrift-gm/ionrift-library/wiki/3-Resonance-Calibration)** - Fine-tuning sound bindings
+- **[Advanced Diagnostics](https://github.com/ionrift-gm/ionrift-library/wiki/4-Advanced-Diagnostics)** - Manifest inspection and troubleshooting
 
 ## Bug Reports
 
