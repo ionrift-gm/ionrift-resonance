@@ -219,7 +219,9 @@ export class SoundPickerApp extends Application {
                 this._onSearch(ev);
             }
         });
-        searchInput.on("focusout", this._onSearch.bind(this));
+        // NOTE: No focusout handler. focusout triggers render() which destroys the DOM
+        // and immediately dismisses the caret when switching tabs. Use Enter or the
+        // search button to trigger search instead.
 
         // Add Binding
         html.find(".sound-row").click(this._onAddSound.bind(this));
@@ -559,7 +561,7 @@ export class SoundPickerApp extends Application {
         event.preventDefault();
         const fp = new FilePicker({
             type: "audio",
-            current: "sfx/ionrift-resonance/",
+            current: "modules/ionrift-resonance/sounds/pack/",
             callback: (path) => {
                 // Derive a display name from the filename
                 const filename = path.split('/').pop();
