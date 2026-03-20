@@ -35,12 +35,14 @@ export class ItemSoundConfig extends FormApplication {
                 const val = this.item.getFlag("ionrift-resonance", slot.key);
                 const name = this.item.getFlag("ionrift-resonance", slot.key + "_name");
                 const meta = this.item.getFlag("ionrift-resonance", slot.key + "_meta");
+                const isMuted = val === "__MUTED__";
                 return {
                     ...slot,
                     value: val,
                     displayValue: name || val,
                     meta: meta,
-                    hasValue: !!val
+                    hasValue: !!val && !isMuted,
+                    isMuted
                 };
             })
         };
@@ -48,15 +50,10 @@ export class ItemSoundConfig extends FormApplication {
 
     activateListeners(html) {
         super.activateListeners(html);
-
-        // search
         html.find(".action-search").click(this._onSearch.bind(this));
-
-        // play
         html.find(".action-play").click(this._onPlay.bind(this));
-
-        // clear
         html.find(".action-clear").click(this._onClear.bind(this));
+        html.find(".action-mute").click(this._onToggleMute.bind(this));
     }
 
     async _onSearch(event) {
@@ -111,12 +108,27 @@ export class ItemSoundConfig extends FormApplication {
         const key = event.currentTarget.dataset.key;
         const val = this.item.getFlag("ionrift-resonance", key);
 
-        if (val) {
+        if (val && val !== "__MUTED__") {
             const manager = game.ionrift?.sounds?.manager;
             if (manager) {
                 manager.play(val);
             }
         }
+    }
+
+    async _onToggleMute(event) {
+        event.preventDefault();
+        const key = event.currentTarget.dataset.key;
+        const current = this.item.getFlag("ionrift-resonance", key);
+
+        if (current === "__MUTED__") {
+            // Unmute: clear the flag entirely (restores fallback chain)
+            await this.item.unsetFlag("ionrift-resonance", key);
+        } else {
+            // Mute: set the sentinel (blocks fallback chain)
+            await this.item.setFlag("ionrift-resonance", key, "__MUTED__");
+        }
+        this.render();
     }
 
     async _onClear(event) {
