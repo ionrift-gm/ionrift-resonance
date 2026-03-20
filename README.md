@@ -97,6 +97,11 @@ All sounds are local MP3 files included in the module.
     *   **Death**: Death sounds when HP drops to 0.
     *   **Misses**: Whoosh or failure sounds on missed attacks.
 *   **Smart Matching**: Picks sounds based on weapon names (Sword, Dagger, Bow) or spell keywords (Fire, Ice, Void).
+*   **Per-Item Overrides**: Bind specific sounds to individual items (attack, hit, miss, equip, unequip). Takes priority over all presets.
+*   **Per-Actor Overrides**: Set pain, death, spotlight, and system-specific sounds per character or creature.
+*   **Mute Toggle** *(v2.3.0)*: Silence individual event keys in the Calibration UI without removing the preset. Blocks the full fallback chain.
+
+For a full breakdown of how these interact, see the **[Features Reference](docs/FEATURES.md)**.
 
 ## Resonance Calibration
 
@@ -130,7 +135,12 @@ Define specific pain and death sounds for your Player Characters.
 *   **Death ID**: Plays when the character drops to 0 HP / dies.
 
 ### Orchestrator
-Sound budgets and timing offsets. Budgets stop sounds from piling up (e.g. 5 fear stingers in 2 seconds). Offsets add a gap between layered sounds (e.g. impact then vocal).
+Sound budgets and timing offsets. Budgets prevent the same sound category from stacking when multiple triggers fire at once (e.g. a Fireball hitting four targets). Offsets control the delay between layered sounds in the two-beat attack sequence (swing, then impact). Defaults are tuned for the SFX Pack.
+
+### Sound Auditor
+Scans the world for items with Ionrift sound flags set. Shows which slots are bound per item and lets you open or clear them. Access it from the tools area inside the Calibration UI.
+
+See **[Features Reference](docs/FEATURES.md)** for full detail on all tabs and controls.
 
 ## Data Management
 *   **Export JSON**: Back up your config to a JSON file via the **Export JSON** button in the calibration footer.
