@@ -108,11 +108,13 @@ Open via the **Sounds** button on any actor sheet. The entry point is the actor 
 
 Actor flags override Calibration config for that specific actor. Useful for giving a specific NPC a unique death sound, or a PC a distinctive pain vocal, without touching anything else.
 
+![Actor Sound Configuration - Voice Tone dropdown and vocal/turn slots](img/actor-sound-config.png)
+
 ---
 
 ## Identity / Voice
 
-The actor config includes a **Voice** selector (Masculine / Feminine). This maps to vocal register and controls which pool of pain and death vocals the module draws from for PCs. It does not affect NPCs or monsters - those use the monster vocal chain regardless of this setting.
+The actor config includes a **Voice Tone** selector (Deep / Low (Masculine) or Bright / High (Feminine)). This controls which pool of pain and death vocals the module draws from for that actor. It does not affect how other actors or monsters are resolved.
 
 Both pools are included in the SFX Pack. The selector can be changed at any time and takes effect immediately on next trigger.
 
@@ -126,6 +128,8 @@ Click the speaker icon on any sound row to mute that event key. When muted:
 - The row dims and shows a red "MUTED" badge
 - The fallback chain is blocked entirely - nothing plays for that event
 - The mute state persists across reloads
+
+![Mute button with tooltip](img/mute-toggle.png)
 
 Click the icon again to unmute and restore inherited behaviour.
 
