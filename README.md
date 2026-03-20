@@ -211,7 +211,7 @@ For the best experience, Resonance works with Midi-QOL's **automated workflow**.
 
 ## Documentation
 
-Full guides, screenshots, and troubleshooting on the **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**:
+All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)** - that's the single source of truth for the whole Ionrift ecosystem. The files in this repo (`README`, `docs/FEATURES.md`) are technical reference, not guides.
 
 - **[Setup: Core Library](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Core-Library)** - Installation and creature indexing
 - **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/Setup-Resonance)** - Sound configuration and presets
