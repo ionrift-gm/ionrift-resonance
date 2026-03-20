@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1] - Per-Item Mute Toggle and Settings Layout
+*   **Feature**: Per-item mute button on sound slots. Click the speaker icon to silence a specific attack/slot without needing a silent file. Click again to unmute.
+*   **Feature**: Standardised settings layout with visual divider between module settings and support/diagnostics section.
+*   **Feature**: Wiki / Guides button in module settings footer.
+*   **Docs**: Standardised README footer with wiki, Discord, and Patreon links.
+*   **Docs**: Added Guide 5 (Targeting Sounds Per Creature) link to README.
+
 ## [2.3.0] - Mute Toggle for Sound Events
 *   **Feature**: Added a per-event mute button in the Calibration UI. Click the speaker icon to silence any sound event, overriding inheritance. Click again to restore inherited sounds.
 
