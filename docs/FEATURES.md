@@ -2,6 +2,8 @@
 
 Detailed reference for all Resonance features. For setup and quick start, see the [README](../README.md).
 
+> **Guides and tutorials live in the [Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki).** This document is the technical reference for features and controls - not the place to start if you're setting up for the first time.
+
 ---
 
 ## Sound Hierarchy
