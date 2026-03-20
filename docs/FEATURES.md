@@ -27,7 +27,13 @@ If the resolved value is `__MUTED__` at any point (see Mute Toggle below), the c
 
 ## Item Sound Overrides
 
-Open via the **Sounds** button on any item sheet (header or overflow menu).
+Open via the **Sounds** button on any item sheet. The entry point is the item header overflow menu (the three-dot icon on the item sheet title bar).
+
+![Opening Configure Sounds from the item overflow menu](img/item-overflow-menu.png)
+
+This opens the **Item Sound Configuration** window for that specific item.
+
+![Item Sound Configuration - all slots empty](img/item-sound-config.png)
 
 Six slots, each independent:
 
@@ -40,9 +46,29 @@ Six slots, each independent:
 | Equip | When the item is equipped |
 | Unequip | When the item is removed |
 
-Each slot has a search button (opens the Sound Picker), a preview button, and a clear button. Multi-sound randomization is supported - select multiple files in the picker with Ctrl+Click and Resonance picks one at random on each trigger.
+Each slot has an edit button that opens the **Sound Picker**. Multi-sound randomization is supported - add multiple files to a slot and Resonance picks one at random on each trigger. Each assigned sound also has an optional delay range (Min/Max in seconds) for timing variation.
 
-**Typical uses:**
+### The Sound Picker
+
+The Sound Picker has two tabs: **Pack Sounds** and **Syrinscape**.
+
+**Pack Sounds tab** - lists curated sounds from the Ionrift SFX Pack. Browse by category, preview before assigning, and add with a single click. The **Browse Files** button at the bottom opens the Foundry file picker so you can assign any local audio file on your server.
+
+![Sound Picker - Pack tab with an assigned sound](img/sound-picker-pack-assigned.png)
+
+The **Assigned** tray at the bottom shows all sounds currently bound to this slot. Each entry has a Min/Max delay range, a preview button, and a remove button.
+
+**Syrinscape tab** - connects to your Syrinscape Online account. The first time you open this tab the cache will show "Not Synced".
+
+![Sound Picker - Syrinscape tab with Sync Cache tooltip](img/sound-picker-syrinscape-tooltip.png)
+
+Click **Sync Cache** to pull the Global One-Shots list from Syrinscape. Once synced the count updates and the full list populates.
+
+![Sound Picker - Syrinscape tab after sync (70 cached)](img/sound-picker-syrinscape-synced.png)
+
+Type in the search bar to filter by name. Hover any result to preview. Click the `+` icon to add it to the Assigned tray. Your Syrinscape API key is set in the Resonance module settings.
+
+**Typical uses for item overrides:**
 - Silence a bone devil's generic swing by setting Attack to mute on the Claws item, rather than muting `CORE_WHOOSH` globally
 - Give a specific legendary weapon a unique impact sound
 - Add an equip/unequip sound to armor and weapons for immersion
@@ -53,7 +79,9 @@ Item flags take highest priority in the resolution chain, so they always win ove
 
 ## Actor Sound Overrides
 
-Open via the **Sounds** button on any actor sheet (character or NPC).
+Open via the **Sounds** button on any actor sheet. The entry point is the actor header overflow menu (the three-dot icon on the character sheet title bar).
+
+![Opening Configure Sounds from the actor header overflow menu](img/actor-overflow-menu.png)
 
 **Shared slots (all systems, all actor types):**
 
@@ -111,11 +139,13 @@ Accessible from the tools area inside the Resonance Calibration UI.
 
 The Auditor scans the entire Foundry world and lists every item that has Ionrift sound flags set. For each item it shows:
 - Item name and owning actor (if it's an actor-owned item vs a world item)
-- Which slots are bound (Attack, Hit, Miss, Use, Equip columns)
+- Which slots are bound (Attack, Impact, Miss, Use, Equip columns)
 
 Actions per row:
 - **Open** - opens the item sheet directly
 - **Clear** - removes all Ionrift sound flags from that item after confirmation
+
+The Auditor also scans unlinked tokens present in the active scene - so stage items and encounter-specific actors are included, not just world items.
 
 Useful after importing compendium content (e.g. a bestiary pack someone else configured) to see what's pre-bound, or to audit a world before a campaign handoff.
 
