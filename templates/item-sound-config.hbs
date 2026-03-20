@@ -29,7 +29,9 @@
 
                 <div class="badges"
                     style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
-                    {{#if slot.hasValue}}
+                    {{#if slot.isMuted}}
+                    <span class="ionrift-badge warning">Muted</span>
+                    {{else if slot.hasValue}}
                     <span class="ionrift-badge success">{{slot.displayValue}}</span>
                     {{else}}
                     <span class="ionrift-badge loading">No binding</span>
@@ -37,12 +39,17 @@
                 </div>
 
                 <div class="entity-actions" style="flex: 0 0 auto; display: flex; gap: 4px;">
+                    <button type="button" class="action-mute" data-key="{{slot.key}}"
+                        title="{{#if slot.isMuted}}Unmute{{else}}Mute{{/if}}">
+                        <i class="fas {{#if slot.isMuted}}fa-volume-xmark{{else}}fa-volume-high{{/if}}"
+                            style="{{#if slot.isMuted}}color: #ef4444;{{/if}}"></i>
+                    </button>
                     <button type="button" class="action-play" data-key="{{slot.key}}" title="Preview"
-                        style="{{#unless slot.hasValue}}display: none;{{/unless}}">
+                        style="{{#if slot.isMuted}}display: none;{{else}}{{#unless slot.hasValue}}display: none;{{/unless}}{{/if}}">
                         <i class="fas fa-play"></i>
                     </button>
                     <button type="button" class="action-clear" data-key="{{slot.key}}" title="Reset"
-                        style="{{#unless slot.hasValue}}display: none;{{/unless}}">
+                        style="{{#if slot.isMuted}}{{else}}{{#unless slot.hasValue}}display: none;{{/unless}}{{/if}}">
                         <i class="fas fa-undo" style="color: #ef4444;"></i>
                     </button>
                     <button type="button" class="action-search" data-key="{{slot.key}}" title="Search Sounds">
