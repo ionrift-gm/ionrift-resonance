@@ -37,7 +37,7 @@ export class SoundAuditor extends FormApplication {
             }
         });
 
-        // 2. Actor Items
+        // 2. Linked Actor Items (world actors)
         game.actors.forEach(actor => {
             actor.items.forEach(item => {
                 if (this._hasAudioFlags(item)) {
@@ -46,9 +46,22 @@ export class SoundAuditor extends FormApplication {
             });
         });
 
-        return {
-            items: items
-        };
+        // 3. Unlinked Token Actors (synthetic — not in game.actors, live in the scene)
+        if (game.scenes?.active) {
+            for (const tokenDoc of game.scenes.active.tokens) {
+                const actor = tokenDoc.actor;
+                if (!actor) continue;
+                // Skip linked tokens — already covered by game.actors scan above
+                if (tokenDoc.isLinked) continue;
+                actor.items.forEach(item => {
+                    if (this._hasAudioFlags(item)) {
+                        items.push(this._formatEntry(item, `Token: ${tokenDoc.name}`, actor));
+                    }
+                });
+            }
+        }
+
+        return { items };
     }
 
     _formatEntry(item, source, actor) {
