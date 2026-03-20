@@ -161,10 +161,14 @@ Each sound category has a minimum gap in milliseconds before it can play again. 
 
 Set to 0 to disable limiting for a category.
 
+![Orchestration - Sound Budgets table](img/orchestration-budgets.png)
+
 **Timing Offsets**
 
 Named offsets add a deliberate delay before specific sounds fire. The primary use case is the two-beat attack sequence: the swing sound plays at the action moment, and the impact/pain sound plays slightly after. Tuning the offset changes how that sequence feels.
 
-Defaults are tuned for the SFX Pack. Modules like Dice So Nice and Automated Animations already add natural pauses, so offset values often need to be smaller when those are active.
+Defaults are tuned for the SFX Pack. Modules like Dice So Nice and Animated Spells already add natural pauses, so offset values often need to be smaller when those are active.
 
-Reset individual categories/offsets or reset all to defaults via the buttons in the tab footer.
+![Orchestration - Sound Timing offsets and Reset All](img/orchestration-timing.png)
+
+Reset individual categories or all to defaults via the **Reset All to Defaults** button in the tab footer.
