@@ -44,6 +44,13 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 
 ## Quick Start
 
+> Documentation, setup guides, and troubleshooting: **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**
+
+### Support Ionrift
+
+[![Patreon](https://img.shields.io/badge/Patreon-ionrift-ff424d?logo=patreon&logoColor=white)](https://patreon.com/ionrift)
+[![Discord](https://img.shields.io/discord/1483208289507479725?color=5865F2&logo=discord&logoColor=white&label=Discord)](https://discord.gg/vFGXf7Fncj)
+
 1. Install from Foundry VTT package manager
 2. Install **Ionrift Library** (required dependency)
 3. Open **Game Settings > Module Settings > Ionrift Resonance**
