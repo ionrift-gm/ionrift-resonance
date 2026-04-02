@@ -9,6 +9,13 @@
 
 Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (native support) and **DnD5e** (via Midi-QOL). Ships with local sound files (WAV/MP3). Optionally integrates with **Syrinscape** for cloud audio.
 
+### Support Ionrift
+
+[![Patreon](https://img.shields.io/badge/Patreon-ionrift-ff424d?logo=patreon&logoColor=white)](https://patreon.com/ionrift)
+[![Discord](https://img.shields.io/badge/Discord-Ionrift-5865F2?logo=discord&logoColor=white)](https://discord.gg/vFGXf7Fncj)
+
+> Documentation, setup guides, and troubleshooting: **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**
+
 ### Demo
 
 [![Watch the demo](https://img.youtube.com/vi/vRZeyZqYwxw/maxresdefault.jpg)](https://youtu.be/vRZeyZqYwxw)
@@ -41,13 +48,6 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 </td>
 </tr>
 </table>
-
-### Support Ionrift
-
-[![Patreon](https://img.shields.io/badge/Patreon-ionrift-ff424d?logo=patreon&logoColor=white)](https://patreon.com/ionrift)
-[![Discord](https://img.shields.io/badge/Discord-Ionrift-5865F2?logo=discord&logoColor=white)](https://discord.gg/vFGXf7Fncj)
-
-> Documentation, setup guides, and troubleshooting: **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**
 
 ## Quick Start
 
