@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.3.4] - Fix Expired Discord Link
+*   **Fix**: Updated the support Discord link in module settings and the `bugs` field. The previous invite had expired.
+
 ## [2.3.1] - Per-Item Mute Toggle and Settings Layout
 *   **Feature**: Per-item mute button on sound slots. Click the speaker icon to silence a specific attack/slot without needing a silent file. Click again to unmute.
 *   **Feature**: Standardised settings layout with visual divider between module settings and support/diagnostics section.
