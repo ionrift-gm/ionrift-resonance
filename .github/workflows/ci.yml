@@ -1,0 +1,68 @@
+name: CI — Static Analysis
+
+on:
+  push:
+    branches:
+      - main
+    # Explicitly skip tag pushes — release.yml owns those
+    tags-ignore:
+      - '**'
+
+  # Allow manual trigger for diagnosis
+  workflow_dispatch:
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 1 — Inclusion Scan
+  # Rejects prohibited identity terminology ("Male", "Female", "Sex", "Gender").
+  # Permitted: Masculine, Feminine, Identity.
+  #
+  # Note: scripts/ are compiled/encoded for distribution. Only .js and .html
+  # surface text is scanned — encoded binary content does not produce matches.
+  # ─────────────────────────────────────────────────────────────────────────────
+  inclusion-scan:
+    name: Inclusion Terminology Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan for prohibited terms
+        run: |
+          # Search .js and .html files. Exit 1 if any match found.
+          # lang/ is optional — || true prevents failure if absent.
+          MATCHES=$(grep -rn --include="*.js" --include="*.html" \
+            -E '\b(Male|Female|Sex|Gender)\b' scripts/ lang/ || true)
+          if [ -n "$MATCHES" ]; then
+            echo "❌ Prohibited identity terminology detected:"
+            echo "$MATCHES"
+            echo ""
+            echo "Use: Masculine / Feminine / Identity"
+            exit 1
+          fi
+          echo "✅ Inclusion scan passed."
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 2 — Signal Check
+  # Runs tools/signal_check.js against the scripts directory.
+  # tools/ holds a local CI copy — authoring source is ionrift-devtools/scripts/.
+  # When patterns change in devtools, copy here and commit.
+  #
+  # Note: ESLint, import-integrity, and case-sensitivity jobs are not included
+  # for this module — scripts are compiled for distribution and are not valid
+  # plain-text ES modules. Those checks run in the source-only modules.
+  # ─────────────────────────────────────────────────────────────────────────────
+  signal-check:
+    name: Signal Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run signal check
+        run: node tools/signal_check.js scripts/
