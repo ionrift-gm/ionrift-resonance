@@ -1,4 +1,4 @@
-﻿# Dependency directories
+# Dependency directories
 node_modules/
 
 # OS metadata
@@ -26,6 +26,11 @@ audit_*.json
 audit_*.txt
 debug_*.js
 debug_*.log
+
+# Diagnostics & test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
+scripts/diagnostics/
+scripts/tests/
+tests/
 
 # Development/Internal docs (excluded from releases)
 TEST_SCENARIOS.md
