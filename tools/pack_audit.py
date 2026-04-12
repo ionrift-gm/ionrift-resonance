@@ -2,7 +2,6 @@
 pack_audit.py
 -------------
 Validates pack.json integrity against constants, UI cards, and actual files on disk.
-Run as part of dev prep before release.
 
 Usage: python pack_audit.py
 """
