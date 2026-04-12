@@ -1,5 +1,4 @@
-// Force-apply Ionrift SFX Pack preset (dev macro)
-// Skips Attunement UI — loads pack.json directly into world settings.
+// Applies Ionrift SFX Pack preset directly to world settings.
 
 (async () => {
     try {

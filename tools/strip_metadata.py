@@ -1,8 +1,7 @@
 """
 strip_metadata.py
 -----------------
-Strips ALL ID3/metadata tags from pack MP3 files.
-Removes ElevenLabs prompts, generator info, and any other embedded data.
+Strips all ID3/metadata tags from pack MP3 files.
 
 Usage: python strip_metadata.py [--dry-run]
 """
