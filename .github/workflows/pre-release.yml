@@ -1,0 +1,14 @@
+name: Pre-Release Gate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gate:
+    uses: ionrift-gm/ionrift-ci/.github/workflows/pre-release.yml@main
+    with:
+      skip_eslint: true
+      skip_import_integrity: true
+      skip_case_sensitivity: true
+      inclusion_scan_dirs: 'scripts/'
+      skip_vitest: true
