@@ -14,100 +14,20 @@ on:
   repository_dispatch:
     types: [lib-updated]
 
+# NOTE: Resonance scripts are compiled for distribution. ESLint, import-integrity,
+# and case-sensitivity checks are not applicable. Only inclusion scan, signal
+# check, and artifact hygiene run.
+
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 1 — Inclusion Scan
-  # Rejects prohibited identity terminology ("Male", "Female", "Sex", "Gender").
-  # Permitted: Masculine, Feminine, Identity.
-  #
-  # Note: scripts/ are compiled/encoded for distribution. Only .js and .html
-  # surface text is scanned — encoded binary content does not produce matches.
-  # ─────────────────────────────────────────────────────────────────────────────
-  inclusion-scan:
-    name: Inclusion Terminology Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Scan for prohibited terms
-        run: |
-          # Search .js and .html files. Exit 1 if any match found.
-          # lang/ is optional — || true prevents failure if absent.
-          MATCHES=(grep -rn --include="*.js" --include="*.html" \
-            -E '\b(Male|Female|Sex|Gender)\b' scripts/ lang/ || true)
-          if [ -n "$MATCHES" ]; then
-            echo "❌ Prohibited identity terminology detected:"
-            echo "$MATCHES"
-            echo ""
-            echo "Use: Masculine / Feminine / Identity"
-            exit 1
-          fi
-          echo "✅ Inclusion scan passed."
+  lint:
+    uses: ionrift-gm/ionrift-ci/.github/workflows/lint.yml@main
+    with:
+      skip_eslint: true
+      skip_import_integrity: true
+      skip_case_sensitivity: true
+      # Resonance has no lang/ directory — only scripts/ for inclusion scan.
+      inclusion_scan_dirs: 'scripts/'
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 2 — Signal Check
-  # Runs tools/signal_check.js against the scripts directory.
-  # tools/ holds a local CI copy — authoring source is ionrift-devtools/scripts/.
-  # When patterns change in devtools, copy here and commit.
-  #
-  # Note: ESLint, import-integrity, and case-sensitivity jobs are not included
-  # for this module — scripts are compiled for distribution and are not valid
-  # plain-text ES modules. Those checks run in the source-only modules.
-  # ─────────────────────────────────────────────────────────────────────────────
-  signal-check:
-    name: Signal Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Run signal check
-        run: node tools/signal_check.js scripts/
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 6 — Artifact Hygiene Gate
-  # Detects dev docs, test tooling, and LevelDB runtime files committed to the repo.
-  # Translates the manual RELEASE_PROCESS §3.2 sweep into a CI gate.
-  # ─────────────────────────────────────────────────────────────────────────────
-  artifact-hygiene:
-    name: Artifact Hygiene Gate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Dev document sweep
-        run: |
-          MATCHES=$(git ls-files | grep -iE "BACKLOG|DESIGN|CHECKLIST|CONTENT_GUIDE|scenarios/" || true)
-          if [ -n "$MATCHES" ]; then
-            echo "❌ Dev documents found in tracked files:"
-            echo "$MATCHES"
-            exit 1
-          fi
-          echo "✅ Dev document sweep passed."
-
-      - name: Dev tooling sweep
-        run: |
-          MATCHES=$(git ls-files | grep -iE "scripts/tests/|scripts/utils/|dev-link|compendiumBuilder" || true)
-          if [ -n "$MATCHES" ]; then
-            echo "❌ Dev tooling found in tracked files:"
-            echo "$MATCHES"
-            exit 1
-          fi
-          echo "✅ Dev tooling sweep passed."
-
-      - name: LevelDB runtime sweep
-        run: |
-          MATCHES=$(git ls-files | grep -iE "packs/.*\.(LOCK|LOG|LOG\.old|log)$" || true)
-          if [ -n "$MATCHES" ]; then
-            echo "❌ LevelDB runtime files found in tracked files:"
-            echo "$MATCHES"
-            exit 1
-          fi
-          echo "✅ LevelDB sweep passed."
+  hygiene:
+    uses: ionrift-gm/ionrift-ci/.github/workflows/hygiene.yml@main
