@@ -1,3 +1,5 @@
+import { ResonancePackRegistryApp } from "./apps/ResonancePackRegistryApp.js";
+
 export const registerSettings = function () {
     // Debug Mode
     game.settings.register('ionrift-resonance', 'debug', {
@@ -61,7 +63,7 @@ export const registerSettings = function () {
         default: { timestamp: 0, results: [] }
     });
 
-    // Audio Provider (Deprecated — routing is now per-sound based on ID format)
+    // Audio Provider (Deprecated - routing is now per-sound based on ID format)
     // Kept hidden for migration; no longer user-configurable.
     game.settings.register('ionrift-resonance', 'provider', {
         name: "Audio Provider",
@@ -88,7 +90,7 @@ export const registerSettings = function () {
         default: "none"
     });
 
-    // Orchestrator Config — per-category budget windows + per-key timing offsets (GM only)
+    // Orchestrator Config - per-category budget windows + per-key timing offsets (GM only)
     game.settings.register("ionrift-resonance", "orchestratorConfig", {
         name: "Orchestrator Configuration",
         hint: "Sound budget and timing settings. Managed via the Orchestration tab in Resonance Calibration.",
@@ -98,11 +100,28 @@ export const registerSettings = function () {
         default: "{}"
     });
 
-    // Upgrade Notification Tracking — prevents repeated toasts
+    // Upgrade Notification Tracking - prevents repeated toasts
     game.settings.register("ionrift-resonance", "lastNotifiedVersion", {
         scope: "world",
         config: false,
         type: String,
         default: ""
+    });
+
+    // Sound Pack enable/disable state: { packId: boolean }
+    game.settings.register("ionrift-resonance", "installedSoundPacks", {
+        scope: "world",
+        config: false,
+        type: Object,
+        default: {}
+    });
+
+    game.settings.registerMenu("ionrift-resonance", "soundPackManager", {
+        name: "Sound Packs",
+        label: "Manage Sound Packs",
+        hint: "Enable or disable installed sound packs. Packs add sound bindings at lower priority than presets.",
+        icon: "fas fa-music",
+        type: ResonancePackRegistryApp,
+        restricted: true
     });
 };

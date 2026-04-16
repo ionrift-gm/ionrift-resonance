@@ -105,11 +105,11 @@ export class SoundHandler {
         if (this.activePreset === "none") return;
 
         // Abstract routing keys: resolved via alias chain, never need direct pack bindings.
-        // Known asset gaps: sounds not yet created — intentional, tracked in release plan.
+        // Known asset gaps: sounds not yet created - intentional, tracked in release plan.
         const SKIP_VALIDATION = new Set([
-            // Abstract mid-level routing (adapter resolves these → specific attack sounds)
+            // Abstract mid-level routing (adapter resolves these -> specific attack sounds)
             "CORE_MELEE", "CORE_RANGED", "CORE_MAGIC",
-            // Tiered keys — adapters always use the _LOW/_MED/_HIGH variants directly
+            // Tiered keys - adapters always use the _LOW/_MED/_HIGH variants directly
             "DAGGERHEART_FEAR_USE", "DAGGERHEART_FEAR",
         ]);
 
@@ -222,16 +222,16 @@ export class SoundHandler {
 
     /**
      * Try primaryKey first. If it doesn't resolve to a bound sound,
-     * fall back to fallbackKey. Used for spells: effect key → school key.
+     * fall back to fallbackKey. Used for spells: effect key -> school key.
      */
     playItemSoundWithFallback(primaryKey, fallbackKey, item = null, delay = 0) {
         // Check if primary key resolves to a bound sound
         const primaryResult = this.resolver.resolveKey(primaryKey);
         if (primaryResult) {
-            Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} resolved → using it`);
+            Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} resolved -> using it`);
             this.playItemSound(primaryKey, item, delay);
         } else {
-            Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} unbound → trying ${fallbackKey}`);
+            Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} unbound -> trying ${fallbackKey}`);
             this.playItemSound(fallbackKey, item, delay);
         }
     }
@@ -257,7 +257,7 @@ export class SoundHandler {
             Logger.log(`SoundHandler.play | Resolved to: ${finalData}`);
         }
 
-        // 2. Orchestrator gate — budget check (throttle) + timing offset
+        // 2. Orchestrator gate - budget check (throttle) + timing offset
         if (!this.orchestrator.allow(key)) return;
         const offset = this.orchestrator.getOffset(key);
 
@@ -315,7 +315,7 @@ export class SoundHandler {
         Hooks.on("getActorSheetHeaderButtons", (app, buttons) => this._getAppHeaderButtons(app, buttons));
         Hooks.on("getItemSheetHeaderButtons", (app, buttons) => this._getAppHeaderButtons(app, buttons));
 
-        // App V2 — System-specific and generic hooks
+        // App V2 - System-specific and generic hooks
         const injectV2 = (app, controls) => this._getAppHeaderControls(controls, app);
         Hooks.on("getHeaderControlsActorSheetV2", injectV2);
         Hooks.on("getActorSheetV2HeaderControls", injectV2);

@@ -15,8 +15,9 @@ export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator 
             message: "Audio Provider is invalid."
         });
 
-        if (game.settings.get("ionrift-resonance", "provider") === "syrinscape") {
-            // Token is optional if module is present
+        const provider = game.settings.get("ionrift-resonance", "provider");
+        if (provider === "syrinscape") {
+            // Token is required for Direct API when control module is absent
             const hasModule = game.modules.get("syrinscape-control")?.active;
             if (!hasModule) {
                 this.addSetting("syrinToken", {

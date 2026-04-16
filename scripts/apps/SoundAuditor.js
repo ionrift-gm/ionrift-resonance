@@ -46,12 +46,12 @@ export class SoundAuditor extends FormApplication {
             });
         });
 
-        // 3. Unlinked Token Actors (synthetic — not in game.actors, live in the scene)
+        // 3. Unlinked Token Actors (synthetic - not in game.actors, live in the scene)
         if (game.scenes?.active) {
             for (const tokenDoc of game.scenes.active.tokens) {
                 const actor = tokenDoc.actor;
                 if (!actor) continue;
-                // Skip linked tokens — already covered by game.actors scan above
+                // Skip linked tokens - already covered by game.actors scan above
                 if (tokenDoc.isLinked) continue;
                 actor.items.forEach(item => {
                     if (this._hasAudioFlags(item)) {
@@ -71,7 +71,7 @@ export class SoundAuditor extends FormApplication {
             uuid: item.uuid,
             name: item.name,
             img: item.img,
-            actorName: actor ? actor.name : "—",
+            actorName: actor ? actor.name : "-",
             actorId: actor ? actor.id : null,
             source: source,
             // Flag Details (Concise)

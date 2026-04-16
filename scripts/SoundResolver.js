@@ -52,7 +52,7 @@ export class SoundResolver {
         const lower = itemName.toLowerCase();
 
         // 3.5. Daggerheart Domain Resolution
-        // Priority: item.system.domain (domainCards) → actor.system.domains (class fallback)
+        // Priority: item.system.domain (domainCards) -> actor.system.domains (class fallback)
         // Guard: Only spell-like items enter domain resolution. Weapons/armor/equipment skip this entirely.
         const weaponTypes = ["weapon", "armor", "equipment", "loot", "consumable"];
         const isWeaponLike = item?.type && weaponTypes.includes(item.type);
@@ -64,20 +64,20 @@ export class SoundResolver {
                 const domainKey = `DOMAIN_${itemDomain.toUpperCase()}`;
                 const resolved = this.resolveKey(domainKey);
                 if (resolved) {
-                    Logger.log(`pickSound | Daggerheart item domain: ${itemDomain} → ${domainKey}`);
+                    Logger.log(`pickSound | Daggerheart item domain: ${itemDomain} -> ${domainKey}`);
                     return domainKey;
                 }
             }
 
             // B) Fallback: actor's class domains (features don't carry domain metadata)
-            //    Try each domain — first one with a bound sound wins
+            //    Try each domain - first one with a bound sound wins
             const actorDomains = actor?.system?.domains;
             if (actorDomains?.length && !itemDomain) {
                 for (const domain of actorDomains) {
                     const domainKey = `DOMAIN_${domain.toUpperCase()}`;
                     const resolved = this.resolveKey(domainKey);
                     if (resolved) {
-                        Logger.log(`pickSound | Daggerheart actor domain fallback: ${domain} → ${domainKey}`);
+                        Logger.log(`pickSound | Daggerheart actor domain fallback: ${domain} -> ${domainKey}`);
                         return domainKey;
                     }
                 }
@@ -153,7 +153,7 @@ export class SoundResolver {
         if (lower.includes("bite")) return (mappings.generic?.bite || SOUND_EVENTS.ATTACK_BITE);
         if (lower.includes("slam")) return (mappings.generic?.slam || SOUND_EVENTS.ATTACK_SLAM);
 
-        // Weapons (more specific keywords BEFORE general ones — e.g. crossbow contains 'bow')
+        // Weapons (more specific keywords BEFORE general ones - e.g. crossbow contains 'bow')
         if (lower.includes("crossbow") || lower.includes("bolt")) return SOUND_EVENTS.ATTACK_CROSSBOW;
         if (lower.includes("bow") || lower.includes("arrow")) return (mappings.generic?.bow || SOUND_EVENTS.ATTACK_BOW);
         if (lower.includes("axe") || lower.includes("hammer") || lower.includes("maul")) return SOUND_EVENTS.ATTACK_BLUDGEON;
@@ -173,9 +173,9 @@ export class SoundResolver {
         const bindings = this.configService.getEffectiveBindings();
         let resolved = bindings[key];
 
-        // Mute sentinel: explicit silence — blocks the entire fallback chain
+        // Mute sentinel: explicit silence - blocks the entire fallback chain
         if (resolved === "__MUTED__") {
-            Logger.log(`SoundResolver | ${key} → MUTED (silenced by user)`);
+            Logger.log(`SoundResolver | ${key} -> MUTED (silenced by user)`);
             return null;
         }
 
@@ -186,14 +186,14 @@ export class SoundResolver {
         }
 
         if (resolved) {
-            if (depth > 0) Logger.log(`SoundResolver | ${key} → resolved at depth ${depth} → ${resolved}`);
+            if (depth > 0) Logger.log(`SoundResolver | ${key} -> resolved at depth ${depth} -> ${resolved}`);
             return resolved;
         }
 
         // Chase the fallback chain recursively
         const fallback = this.getFallbackKey(key);
         if (fallback) {
-            Logger.log(`SoundResolver | ${key} → fallback → ${fallback}`);
+            Logger.log(`SoundResolver | ${key} -> fallback -> ${fallback}`);
             return this.resolveKey(fallback, depth + 1);
         }
 
@@ -206,14 +206,14 @@ export class SoundResolver {
             return null;
         }
 
-        // Core Groups — named intermediates now exposed as ASK_GENERIC_MELEE/RANGED constants.
+        // Core Groups - named intermediates now exposed as ASK_GENERIC_MELEE/RANGED constants.
         // Chain still terminates at CORE_WHOOSH until default preset binds MELEE/RANGED directly.
         // @v4: when preset migrates, remove the CORE_WHOOSH step here.
         if (["ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE", "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM", "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_MELEE;
 
         if (["ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING", "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_RANGED;
 
-        // MELEE/RANGED still fall to CORE_WHOOSH — @v4: remove when preset data is migrated
+        // MELEE/RANGED still fall to CORE_WHOOSH - @v4: remove when preset data is migrated
         if (specificKey === "CORE_MELEE" || specificKey === "CORE_RANGED") return SOUND_EVENTS.WHOOSH;
 
 
@@ -221,7 +221,7 @@ export class SoundResolver {
         if (specificKey.startsWith("SPELL_") || specificKey.startsWith("SCHOOL_") || specificKey.startsWith("DOMAIN_")) return SOUND_EVENTS.ASK_GENERIC_MAGIC;
         if (specificKey === "CORE_SCHOOL" || specificKey === "CORE_DOMAIN") return SOUND_EVENTS.ASK_GENERIC_MAGIC;
 
-        // Hits & Results (Category-Aware → Generic)
+        // Hits & Results (Category-Aware -> Generic)
         if (specificKey === "CORE_HIT_RANGED" || specificKey === "CORE_HIT_MAGIC") return "CORE_HIT";
         if (specificKey === "CORE_MISS_RANGED" || specificKey === "CORE_MISS_MAGIC") return "CORE_MISS";
         if (specificKey.endsWith("_HIT") || specificKey === "BLOODY_HIT") return "CORE_HIT";
@@ -236,18 +236,18 @@ export class SoundResolver {
         if (specificKey === "PC_DEATH_MALE") return "CORE_DEATH_MASCULINE";
         if (specificKey === "PC_DEATH_FEMALE") return "CORE_DEATH_FEMININE";
 
-        // Vocals - Monster (weapon suffix → monster attack → weapon type → catch-all)
-        // MONSTER_BEAR_CLAW → MONSTER_BEAR_ATTACK → ATTACK_CLAW → CORE_MELEE
+        // Vocals - Monster (weapon suffix -> monster attack -> weapon type -> catch-all)
+        // MONSTER_BEAR_CLAW -> MONSTER_BEAR_ATTACK -> ATTACK_CLAW -> CORE_MELEE
         if (specificKey.startsWith("MONSTER_")) {
-            // Step 1: Weapon-specific composite → Monster Default Attack
+            // Step 1: Weapon-specific composite -> Monster Default Attack
             if (specificKey.endsWith("_CLAW") || specificKey.endsWith("_BITE") || specificKey.endsWith("_SLAM")) {
-                // Extract monster base: MONSTER_BEAR_CLAW → MONSTER_BEAR
+                // Extract monster base: MONSTER_BEAR_CLAW -> MONSTER_BEAR
                 const suffix = specificKey.endsWith("_CLAW") ? "_CLAW" : specificKey.endsWith("_BITE") ? "_BITE" : "_SLAM";
                 const monsterBase = specificKey.slice(0, -suffix.length);
                 return `${monsterBase}_ATTACK`;
             }
 
-            // Step 2: Monster Default Attack → Generic weapon type
+            // Step 2: Monster Default Attack -> Generic weapon type
             if (specificKey.endsWith("_ATTACK")) {
                 return "CORE_MELEE"; // Broadest weapon catch-all
             }

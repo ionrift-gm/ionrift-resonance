@@ -74,13 +74,13 @@ export class DnD5eAdapter extends SystemAdapter {
         }
     }
 
-    // Phase 1: Weapon swing — fires BEFORE dice roll (the "ask")
+    // Phase 1: Weapon swing - fires BEFORE dice roll (the "ask")
     handleWeaponSound(item, activity) {
         // Skip non-combat items unless they have an explicit sound binding
         if (item.type !== "weapon" && item.type !== "spell") {
             const hasBinding = item.getFlag("ionrift-resonance", "sound_attack");
             if (!hasBinding) {
-                Logger.log(`5e Weapon Sound: Skipping ${item.name} (${item.type}) — no binding`);
+                Logger.log(`5e Weapon Sound: Skipping ${item.name} (${item.type}) - no binding`);
                 return;
             }
         }
@@ -93,7 +93,7 @@ export class DnD5eAdapter extends SystemAdapter {
         if (item.type === "spell" && item.system?.school) {
             const schoolKey = this._getSchoolKey(item.system.school);
             if (schoolKey) {
-                Logger.log(`5e Weapon Sound: spell school ${item.system.school} → ${schoolKey}`);
+                Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey}`);
                 this.handler.playItemSoundWithFallback(soundKey, schoolKey, item);
                 return;
             }
@@ -123,7 +123,7 @@ export class DnD5eAdapter extends SystemAdapter {
 
         const orch = this.handler?.orchestrator;
 
-        Logger.log(`5e Attack Result: ${item.name} — hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}, fumble: ${workflow.isFumble}`);
+        Logger.log(`5e Attack Result: ${item.name} - hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}, fumble: ${workflow.isFumble}`);
 
         if (workflow.isFumble) {
             // Nat 1: roll fumble stinger + miss sound
@@ -178,12 +178,12 @@ export class DnD5eAdapter extends SystemAdapter {
             return;
         }
 
-        // Check for healing damage types — healing is not damage
+        // Check for healing damage types - healing is not damage
         const isHealing = workflow.defaultDamageType === "healing"
             || workflow.defaultDamageType === "temphp"
             || workflow.damageDetail?.every(d => d.type === "healing" || d.type === "temphp");
         if (isHealing) {
-            Logger.log(`DnD5e | Skipping damage sounds — healing effect`);
+            Logger.log(`DnD5e | Skipping damage sounds - healing effect`);
             return;
         }
 
@@ -193,11 +193,11 @@ export class DnD5eAdapter extends SystemAdapter {
             ?? 0;
 
         // AoE mitigation constants
-        const MAX_TARGETS = 20;       // Hard cap — never process more than this
+        const MAX_TARGETS = 20;       // Hard cap - never process more than this
         const AOE_THRESHOLD = 3;      // 4+ targets = AoE mode
         const MAX_AOE_VOCALS = 5;     // Max distinct vocals in AoE mode
 
-        // Timing offsets — read from orchestrator (configurable)
+        // Timing offsets - read from orchestrator (configurable)
         const orch = this.handler?.orchestrator;
         const VOCAL_STAGGER = orch?.getNamedOffset("VOCAL_STAGGER") ?? 400;
         const AOE_VOCAL_MAX = orch?.getNamedOffset("AOE_VOCAL_MAX") ?? 400;
@@ -268,14 +268,14 @@ export class DnD5eAdapter extends SystemAdapter {
                 const isPC = actor.type === 'character';
                 const currentHp = hp?.value ?? 0;
                 const estimatedHp = currentHp - totalDamage;
-                Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} → est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
+                Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} -> est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
 
                 const maxHp = hp?.max ?? 1;
                 let isDead;
                 if (isPC) {
                     const overflow = Math.abs(Math.min(0, estimatedHp));
                     isDead = overflow >= maxHp;
-                    Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} → ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
+                    Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} -> ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
                 } else {
                     isDead = estimatedHp <= 0;
                 }
@@ -326,19 +326,19 @@ export class DnD5eAdapter extends SystemAdapter {
 
         const classification = game.ionrift.library.classifyCreature(actor);
         Logger.log(`DnD5e | Classification for ${actor.name}:`, classification);
-        Logger.log(`DnD5e | → type: "${classification?.type}", subtype: "${classification?.subtype}", sound: "${classification?.sound}"`);
+        Logger.log(`DnD5e | -> type: "${classification?.type}", subtype: "${classification?.subtype}", sound: "${classification?.sound}"`);
 
         if (!classification) return SOUND_EVENTS.MONSTER_GENERIC;
 
         // Try subtype-specific key first (e.g. SFX_FIRE for elemental_fire)
         if (classification.subtype) {
             const subtypeKey = this._getSubtypeVocalKey(classification.type, classification.subtype);
-            Logger.log(`DnD5e | → compositeKey: "${classification.type}_${classification.subtype}" → subtypeKey: "${subtypeKey}"`);
+            Logger.log(`DnD5e | -> compositeKey: "${classification.type}_${classification.subtype}" -> subtypeKey: "${subtypeKey}"`);
             if (subtypeKey) {
                 const resolved = this.handler.resolver.resolveKey(subtypeKey);
-                Logger.log(`DnD5e | → resolveKey("${subtypeKey}") → "${resolved}"`);
+                Logger.log(`DnD5e | -> resolveKey("${subtypeKey}") -> "${resolved}"`);
                 if (resolved) {
-                    Logger.log(`DnD5e | Monster pain: subtype ${subtypeKey} has binding → using it`);
+                    Logger.log(`DnD5e | Monster pain: subtype ${subtypeKey} has binding -> using it`);
                     return subtypeKey;
                 }
                 Logger.log(`DnD5e | Monster pain: subtype ${subtypeKey} unbound, trying category`);
@@ -347,11 +347,11 @@ export class DnD5eAdapter extends SystemAdapter {
 
         // Fall back to broad classifier key (e.g. MONSTER_ELEMENTAL)
         if (classification.sound) {
-            Logger.log(`DnD5e | → Fallback to classification.sound: "${classification.sound}"`);
+            Logger.log(`DnD5e | -> Fallback to classification.sound: "${classification.sound}"`);
             if (Object.values(SOUND_EVENTS).includes(classification.sound)) return classification.sound;
             if (SOUND_EVENTS[classification.sound]) return SOUND_EVENTS[classification.sound];
         }
-        Logger.log(`DnD5e | → All resolution failed, using MONSTER_GENERIC`);
+        Logger.log(`DnD5e | -> All resolution failed, using MONSTER_GENERIC`);
         return SOUND_EVENTS.MONSTER_GENERIC;
     }
 

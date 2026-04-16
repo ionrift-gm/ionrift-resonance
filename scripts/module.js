@@ -6,6 +6,8 @@ import { SoundHandler } from "./SoundHandler.js";
 import { registerSettings } from "./settings.js";
 import { SyrinscapeProvider } from "./providers/SyrinscapeProvider.js";
 import { SOUND_EVENTS } from "./constants.js";
+import { SoundPackLoader } from "./services/SoundPackLoader.js";
+import { ResonancePackRegistryApp } from "./apps/ResonancePackRegistryApp.js";
 
 Hooks.once('init', async function () {
     Logger.log("Initializing Sound Engine");
@@ -71,6 +73,13 @@ Hooks.once('init', async function () {
 
     // Start Engine (After Settings Registered & Modules Ready)
     Hooks.once('ready', async () => {
+        // Load sound packs before the handler reads config, so pack
+        // bindings are available to ResonanceConfig.getEffectiveBindings().
+        await SoundPackLoader.init();
+
+        // Expose the registry app for console/macro access
+        game.ionrift.resonance.ResonancePackRegistryApp = ResonancePackRegistryApp;
+
         // Initialize Handler (Main Controller) - IMMEDIATELY to register hooks
         // This sets up game.ionrift.handler
         new SoundHandler();
@@ -93,7 +102,7 @@ Hooks.once('init', async function () {
             // }
 
             // Attunement Protocol: Only show when the setup process itself changes.
-            // ATTUNEMENT_VERSION is a static constant — only bump it when setup steps
+            // ATTUNEMENT_VERSION is a static constant - only bump it when setup steps
             // change (new API, new required config), NOT on every module patch release.
             const ATTUNEMENT_VERSION = "1";
             const lastSetupVersion = game.settings.get("ionrift-resonance", "setupVersion");
@@ -106,11 +115,11 @@ Hooks.once('init', async function () {
                 new AttunementApp(ATTUNEMENT_VERSION).render(true);
             }
 
-            // One-time upgrade notification — surfaces new features for existing users
+            // One-time upgrade notification - shows new features to existing users
             const NOTIFY_VERSION = "2.3.0";
             const lastNotified = game.settings.get("ionrift-resonance", "lastNotifiedVersion");
             if (lastNotified !== NOTIFY_VERSION && lastSetupVersion === ATTUNEMENT_VERSION) {
-                // Existing user who completed setup — tell them about the new feature
+                // Existing user who completed setup - tell them about the new feature
                 ui.notifications.info(
                     `Ionrift Resonance ${NOTIFY_VERSION}: You can now mute individual sound events in the Calibration UI. Look for the speaker icon on each sound row.`,
                     { permanent: true }

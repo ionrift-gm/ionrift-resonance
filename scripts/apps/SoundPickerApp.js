@@ -251,7 +251,7 @@ export class SoundPickerApp extends Application {
         // Browse Local Files
         html.find(".action-browse-local").click(this._onBrowseLocal.bind(this));
 
-        // Play Default — route through manager.play() for per-sound dispatch
+        // Play Default - route through manager.play() for per-sound dispatch
         html.find(".action-test-default").click((ev) => {
             ev.preventDefault();
             if (this.opts.defaultSoundId) {
@@ -538,7 +538,7 @@ export class SoundPickerApp extends Application {
 
         if (id) {
             const manager = game.ionrift?.sounds?.manager;
-            // Routes automatically: local paths → FoundryAudio, numeric IDs → Syrinscape
+            // Routes automatically: local paths -> FoundryAudio, numeric IDs -> Syrinscape
             if (manager) manager.play(id, { type: type });
         }
     }

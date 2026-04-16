@@ -388,10 +388,10 @@ export class SyrinscapeProvider extends SoundProvider {
         }
     } // end cacheLibrary
 
-    // ── Static Capability Helpers ─────────────────────────────────────────────
+    // --- Static Capability Helpers ---
     /**
      * True if Resonance has a Syrinscape token configured.
-     * Canonical check — use this instead of reading the setting inline.
+     * Canonical check - use this instead of reading the setting inline.
      */
     static isConfigured() {
         return !!(game.settings.get("ionrift-resonance", "syrinToken")?.trim());

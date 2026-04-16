@@ -11,7 +11,7 @@ export class SoundManager {
 
         this.syrinscapeProvider = null;
         this.localProvider = null;
-        // Legacy compat — points to syrinscape by default
+        // Legacy compat - points to syrinscape by default
         this.provider = null;
     }
 
@@ -26,8 +26,8 @@ export class SoundManager {
 
     /**
      * Determines the correct provider based on the sound ID format.
-     * File paths (containing "/" or common audio extensions) → Local provider.
-     * Everything else (numeric Syrinscape IDs) → Syrinscape provider.
+     * File paths (containing "/" or common audio extensions) -> Local provider.
+     * Everything else (numeric Syrinscape IDs) -> Syrinscape provider.
      * @param {string} soundId
      * @returns {SoundProvider}
      */
