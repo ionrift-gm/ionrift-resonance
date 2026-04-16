@@ -9,7 +9,7 @@ import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
  * Handles Syrinscape Connection and Sound Preset Configuration.
  */
 export class AttunementApp extends AbstractWelcomeApp {
-    // Must match ATTUNEMENT_VERSION in module.js — bump both together at release
+    // Must match ATTUNEMENT_VERSION in module.js - bump both together at release
     static VERSION = "1";
 
     constructor(attunementVersion, options = {}) {
@@ -39,7 +39,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     activateListeners(html) {
         super.activateListeners(html); // wires step-action-btn, finish-btn, reset-btn via parent
 
-        // Token input → update in-memory state on change
+        // Token input -> update in-memory state on change
         html.find(".attunement-token-input").on("input", (e) => {
             this.pendingToken = e.currentTarget.value;
         });
@@ -109,7 +109,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         const form = this.element.find("form");
         let presetType = form.find("input[name='preset']:checked").val();
 
-        // Default to 'keep' if no selection made (Safety — preserve existing config)
+        // Default to 'keep' if no selection made (Safety - preserve existing config)
         if (!presetType) {
             Logger.warn("Attunement | No preset selected, defaulting to 'keep'.");
             presetType = "keep";
@@ -122,7 +122,7 @@ export class AttunementApp extends AbstractWelcomeApp {
             return true;
         }
 
-        // Local SFX Pack — same overwrite guard as standard manual setup
+        // Local SFX Pack - same overwrite guard as standard manual setup
         if (presetType === "pack") {
             const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
             const existingOverrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
@@ -267,7 +267,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                 icon: "fas fa-plug",
                 description: "Connect Syrinscape to extend the SFX Pack with cloud-hosted sounds.",
                 actionLabel: "Verify & Connect",
-                actionHidden: true, // Both paths handled inside content — outer button suppressed
+                actionHidden: true, // Both paths handled inside content - outer button suppressed
                 content: () => this._getTokenStepContent()
             },
             {
@@ -331,7 +331,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     activateListeners(html) {
         super.activateListeners(html);
 
-        // Symmetric accordion — each toggle expands its panel, collapses the other
+        // Symmetric accordion - each toggle expands its panel, collapses the other
         const makeAccordion = (toggleSel, sectionSel, chevronSel, otherSectionSel, otherChevronSel) => {
             html.find(toggleSel).click(() => {
                 const isOpen = html.find(sectionSel).is(":visible");
@@ -348,7 +348,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         makeAccordion(".foundry-toggle", ".foundry-section", ".foundry-chevron", ".syrin-section", ".syrin-chevron");
         makeAccordion(".syrin-toggle", ".syrin-section", ".syrin-chevron", ".foundry-section", ".foundry-chevron");
 
-        // Skip button — clears token field then fires the step action so _verifyConnection
+        // Skip button - clears token field then fires the step action so _verifyConnection
         // reads an empty DOM value and proceeds as local-only
         html.find(".skip-provider-btn").click((ev) => {
             ev.preventDefault();
@@ -356,7 +356,7 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
         });
 
-        // Verify Syrinscape button — token must be present; empty = redirect to Foundry Audio path
+        // Verify Syrinscape button - token must be present; empty = redirect to Foundry Audio path
         html.find(".verify-syrinscape-btn").click((ev) => {
             ev.preventDefault();
             const token = html.find(".attunement-token-input").val()?.trim();
@@ -367,7 +367,7 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
         });
 
-        // Apply Preset button — fires the (hidden) step action btn
+        // Apply Preset button - fires the (hidden) step action btn
         // Guard: Sound Provider (connect_syrinscape) must be complete first
         html.find(".apply-preset-btn").click((ev) => {
             ev.preventDefault();
@@ -411,7 +411,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     async _verifyConnection() {
-        // Read directly from the DOM input — if the user cleared the field it will be ""
+        // Read directly from the DOM input - if the user cleared the field it will be ""
         // Don't fall back to stored token when the field is present and explicitly empty.
         const inputEl = this.element?.find(".attunement-token-input");
         const fieldValue = inputEl?.length ? inputEl.val().trim() : undefined;
@@ -419,9 +419,9 @@ export class AttunementApp extends AbstractWelcomeApp {
             : (this.pendingToken || game.settings.get("ionrift-resonance", "syrinToken") || "");
 
         if (!token) {
-            // No token entered — local-only mode. Clear any previously stored token.
+            // No token entered - local-only mode. Clear any previously stored token.
             await game.settings.set("ionrift-resonance", "syrinToken", "");
-            ui.notifications.info("Resonance | Local-Only Mode — no Syrinscape token. Connect later via Module Settings.");
+            ui.notifications.info("Resonance | Local-Only Mode - no Syrinscape token. Connect later via Module Settings.");
             return true;
         }
 

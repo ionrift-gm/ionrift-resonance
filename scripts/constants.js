@@ -12,12 +12,12 @@ export const SOUND_EVENTS = {
     PC_PAIN_MASCULINE: "CORE_PAIN_MASCULINE",
     PC_PAIN_FEMININE: "CORE_PAIN_FEMININE",
 
-    CRIT_DECORATION: "CORE_CRIT",  // @legacy — alias kept for back-compat; v3: deprecate
+    CRIT_DECORATION: "CORE_CRIT",  // @legacy - alias kept for back-compat; v3: deprecate
     CORE_CRIT: "CORE_CRIT",
     CORE_FUMBLE: "CORE_FUMBLE",
-    MISS: "CORE_MISS",               // @legacy — alias kept for back-compat; v3: deprecate
+    MISS: "CORE_MISS",               // @legacy - alias kept for back-compat; v3: deprecate
 
-    // Roll Outcome Stingers — system-agnostic (nat 20 / doubles / nat 1)
+    // Roll Outcome Stingers - system-agnostic (nat 20 / doubles / nat 1)
     ROLL_CRIT: "ROLL_CRIT",
     ROLL_FUMBLE: "ROLL_FUMBLE",
 
@@ -121,35 +121,35 @@ export const SOUND_EVENTS = {
     DAGGERHEART_ARMOR_USE: "DAGGERHEART_ARMOR_USE",
     DAGGERHEART_ARMOR_REPAIR: "DAGGERHEART_ARMOR_REPAIR",
 
-    // Daggerheart Roll Outcomes — Simplified (v2.2+)
+    // Daggerheart Roll Outcomes - Simplified (v2.2+)
     // Roll stinger signals good/bad outcome only. Hope/Fear sounds are resource-driven
-    // from actor and setting update hooks — keeping concerns separate.
-    DAGGERHEART_CRIT: "ROLL_CRIT",    // @alias — Doubles stinger now uses system-agnostic key
+    // from actor and setting update hooks - keeping concerns separate.
+    DAGGERHEART_CRIT: "ROLL_CRIT",    // @alias - Doubles stinger now uses system-agnostic key
     DAGGERHEART_SUCCESS: "DAGGERHEART_SUCCESS",  // Any success (hope or fear die wins)
     DAGGERHEART_FAIL: "DAGGERHEART_FAIL",     // Any failure (hope or fear die wins)
 
-    // Backwards-compat aliases — old WITH_HOPE/WITH_FEAR keys resolve to the simplified sounds.
+    // Backwards-compat aliases - old WITH_HOPE/WITH_FEAR keys resolve to the simplified sounds.
     // Existing world bindings remain valid without migration.
     DAGGERHEART_SUCCESS_WITH_HOPE: "DAGGERHEART_SUCCESS",
     DAGGERHEART_SUCCESS_WITH_FEAR: "DAGGERHEART_SUCCESS",
     DAGGERHEART_FAIL_WITH_HOPE: "DAGGERHEART_FAIL",
     DAGGERHEART_FAIL_WITH_FEAR: "DAGGERHEART_FAIL",
 
-    // Daggerheart Roll Outcomes — Fallback aliases (active, not deprecated)
+    // Daggerheart Roll Outcomes - Fallback aliases (active, not deprecated)
     // Used when adapter cannot determine pass/fail (no DC on chat card).
-    // Aliased to SUCCESS/FAIL — users don't need to configure separately.
+    // Aliased to SUCCESS/FAIL - users don't need to configure separately.
     DAGGERHEART_ROLL_HOPE: "DAGGERHEART_SUCCESS",
     DAGGERHEART_ROLL_FEAR: "DAGGERHEART_FAIL",
 
-    // Default — fires on attack swing (BEFORE hit/miss result is known).
+    // Default - fires on attack swing (BEFORE hit/miss result is known).
     // Falls back from CORE_MELEE and CORE_RANGED when no specific weapon sound is mapped.
-    // @v3-rename: CORE_WHOOSH → CORE_ATTACK_SWING (see SOUND_KEY_REFACTOR_v3.md)
+    // @v3-rename: CORE_WHOOSH -> CORE_ATTACK_SWING (see SOUND_KEY_REFACTOR_v3.md)
 
-    // ─── v3 Semantic Aliases ─────────────────────────────────────────────────
-    // Values intentionally match legacy strings — user configs remain valid.
+    // --- v3 Semantic Aliases ---
+    // Values intentionally match legacy strings - user configs remain valid.
     // v4: string values will be updated + migration bridge added.
 
-    // ASK — declare action (before roll)
+    // ASK - declare action (before roll)
     ASK_GENERIC_MELEE: "CORE_MELEE",   // category fallback for any unmatched melee ask
     ASK_GENERIC_RANGED: "CORE_RANGED",  // category fallback for any unmatched ranged ask
     ASK_GENERIC_MAGIC: "CORE_MAGIC",   // category fallback for any unmatched spell/domain
@@ -170,21 +170,21 @@ export const SOUND_EVENTS = {
     ASK_SPELL_PSYCHIC: "SPELL_PSYCHIC",
     ASK_SPELL_ACID: "SPELL_ACID",
 
-    // ANSWER — roll result
+    // ANSWER - roll result
     ANSWER_HIT: "CORE_HIT",
     ANSWER_HIT_RANGED: "CORE_HIT_RANGED",
     ANSWER_HIT_MAGIC: "CORE_HIT_MAGIC",
     ANSWER_MISS: "CORE_MISS",
     ANSWER_MISS_RANGED: "CORE_MISS_RANGED",
     ANSWER_MISS_MAGIC: "CORE_MISS_MAGIC",
-    ANSWER_CRIT_HIT: "CORE_CRIT",         // combat weapon crit — NOT a roll stinger
+    ANSWER_CRIT_HIT: "CORE_CRIT",         // combat weapon crit - NOT a roll stinger
     ANSWER_ROLL_CRIT: "ROLL_CRIT",  // roll-outcome stinger (combat + social)
     ANSWER_ROLL_FUMBLE: "ROLL_FUMBLE",  // roll-outcome fumble stinger
     ANSWER_SUCCESS_HOPE: "DAGGERHEART_SUCCESS_WITH_HOPE",
     ANSWER_SUCCESS_FEAR: "DAGGERHEART_SUCCESS_WITH_FEAR",
     ANSWER_FAIL_FEAR: "DAGGERHEART_FAIL_WITH_FEAR",
 
-    // VOCAL — creature response (pain / death)
+    // VOCAL - creature response (pain / death)
     VOCAL_GENERIC_PAIN: "CORE_MONSTER_PAIN",
     VOCAL_GENERIC_DEATH: "CORE_MONSTER_DEATH",
     VOCAL_PC_PAIN_MASCULINE: "CORE_PAIN_MASCULINE",
@@ -214,7 +214,7 @@ export const SOUND_EVENTS = {
     VOCAL_GENERIC_DEATH: "CORE_MONSTER_DEATH",  // NPC/adversary death fallback
     VOCAL_GENERIC_PAIN: "CORE_MONSTER_PAIN",    // NPC/adversary pain fallback
 
-    // ─── Legacy aliases (@v2) ─────────────────────────────────────────────────
+    // --- Legacy aliases (@v2) ---
     // @legacy: kept for backward compat and as chain terminal until default
     // preset migrates CORE_MELEE/CORE_RANGED bindings away from CORE_WHOOSH.
     // v4: remove once preset data uses ASK_GENERIC_MELEE/RANGED directly.

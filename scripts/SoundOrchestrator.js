@@ -1,14 +1,14 @@
 import { Logger } from "./Logger.js";
 
 /**
- * SoundOrchestrator — Sound Budget Manager + Timing Coordinator.
+ * SoundOrchestrator - Sound Budget Manager + Timing Coordinator.
  *
  * Sits between SoundHandler.play() and SoundManager to enforce:
- *   1. Per-category budget windows (throttle) — prevents sound spam.
- *   2. Per-key timing offsets — consistent stagger between layered sounds.
+ *   1. Per-category budget windows (throttle) - prevents sound spam.
+ *   2. Per-key timing offsets - consistent stagger between layered sounds.
  *
  * Categories group semantically related keys. Budget window is shared across
- * all keys in a category. Crossing FEAR_LOW → FEAR_MED → FEAR_HIGH all
+ * all keys in a category. Crossing FEAR_LOW -> FEAR_MED -> FEAR_HIGH all
  * consume the same FEAR_STINGER budget.
  *
  * Keys not assigned to any category always play (no throttle).
@@ -16,7 +16,7 @@ import { Logger } from "./Logger.js";
 export class SoundOrchestrator {
 
     // -------------------------------------------------------------------------
-    // Category definitions — which keys share a budget window.
+    // Category definitions - which keys share a budget window.
     // -------------------------------------------------------------------------
     static CATEGORIES = {
         FEAR_STINGER: [
@@ -29,14 +29,14 @@ export class SoundOrchestrator {
             "DAGGERHEART_FEAR_USE_MED",
             "DAGGERHEART_FEAR_USE_HIGH"
         ],
-        // Fine-grained DH resource categories — allow Hope+Stress to fire together.
+        // Fine-grained DH resource categories - allow Hope+Stress to fire together.
         DH_HOPE_GAIN: ["DAGGERHEART_HOPE"],
         DH_HOPE_USE: ["DAGGERHEART_HOPE_USE"],
         DH_STRESS_GAIN: ["DAGGERHEART_STRESS"],
         DH_STRESS_CLEAR: ["DAGGERHEART_STRESS_CLEAR"],
         DH_ARMOR_USE: ["DAGGERHEART_ARMOR_USE"],
         DH_ARMOR_REPAIR: ["DAGGERHEART_ARMOR_REPAIR"],
-        // Outcome stingers — never throttled (crit/fumble/hope/fear are per-roll events).
+        // Outcome stingers - never throttled (crit/fumble/hope/fear are per-roll events).
         DH_OUTCOME: [
             "DAGGERHEART_CRIT",
             "DAGGERHEART_SUCCESS",
@@ -60,7 +60,7 @@ export class SoundOrchestrator {
             "SFX_INSECT", "SFX_FIRE", "SFX_WATER_ENTITY", "SFX_WIND", "SFX_SLIME",
             "elemental_earth"
         ],
-        // PC vocals — always play (deaths/pain are important individual events).
+        // PC vocals - always play (deaths/pain are important individual events).
         PC_VOCAL: [
             "CORE_PAIN_MASCULINE", "CORE_PAIN_FEMININE",
             "CORE_DEATH_MASCULINE", "CORE_DEATH_FEMININE",
@@ -81,13 +81,13 @@ export class SoundOrchestrator {
         DH_STRESS_CLEAR: 5000,
         DH_ARMOR_USE: 2000,
         DH_ARMOR_REPAIR: 5000,
-        DH_OUTCOME: 0,       // unlimited — per-roll outcome events
+        DH_OUTCOME: 0,       // unlimited - per-roll outcome events
         MONSTER_VOCAL: 2000,
-        PC_VOCAL: 0        // unlimited — PC deaths/pain always play
+        PC_VOCAL: 0        // unlimited - PC deaths/pain always play
     };
 
     // -------------------------------------------------------------------------
-    // Named timing offsets (ms) — configurable stagger presets.
+    // Named timing offsets (ms) - configurable stagger presets.
     // Adapters reference these by name instead of hardcoding constants.
     // -------------------------------------------------------------------------
     static DEFAULT_OFFSETS = {
@@ -102,8 +102,8 @@ export class SoundOrchestrator {
         VOCAL_STAGGER: "Vocal Delay (after impact)",
         AOE_VOCAL_MAX: "AoE Vocal Stagger (max)",
         SPELL_AUDIO_BONUS: "Spell Audio Bonus",
-        FUMBLE_MISS_DELAY: "Fumble → Miss Delay",
-        CRIT_DECORATION_DELAY: "Crit → Decoration Delay"
+        FUMBLE_MISS_DELAY: "Fumble -> Miss Delay",
+        CRIT_DECORATION_DELAY: "Crit -> Decoration Delay"
     };
 
     constructor() {
@@ -156,7 +156,7 @@ export class SoundOrchestrator {
      */
     allow(key) {
         const category = this.getCategory(key);
-        if (!category) return true;    // uncategorised — always play
+        if (!category) return true;    // uncategorised - always play
 
         const budgetMs = this.budgetConfig[category]?.budgetMs
             ?? SoundOrchestrator.DEFAULT_BUDGETS[category]

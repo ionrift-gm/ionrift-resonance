@@ -153,7 +153,7 @@ export class ActorSoundConfig extends FormApplication {
                     defaultSoundName = `Default (${identityLabel} Death)`;
                 }
             } else {
-                // Monster/NPC — resolve via monster sound chain
+                // Monster/NPC - resolve via monster sound chain
                 if (key === "sound_pain") {
                     const keyId = h.getMonsterSound?.(this.actor, "PAIN") || "CORE_MONSTER_PAIN";
                     defaultSoundId = h.resolveSound(keyId);
@@ -200,7 +200,7 @@ export class ActorSoundConfig extends FormApplication {
             defaultSoundId: defaultSoundId,
             defaultSoundName: defaultSoundName,
             soundConfig: existingConfig,
-            title: `Pick Sound: ${slotLabel} — ${this.actor.name}`
+            title: `Pick Sound: ${slotLabel} - ${this.actor.name}`
         }).render(true);
     }
 

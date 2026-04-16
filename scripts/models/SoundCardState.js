@@ -29,7 +29,7 @@ export class SoundCardState {
     _parse() {
         let effectiveValue = null;
 
-        // 0. Mute sentinel — explicit silence by user
+        // 0. Mute sentinel - explicit silence by user
         if (this.value === "__MUTED__") {
             this.isMuted = true;
             this.isCustom = true;

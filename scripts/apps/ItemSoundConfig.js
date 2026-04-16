@@ -99,7 +99,7 @@ export class ItemSoundConfig extends FormApplication {
             currentSoundName: currentSoundName,
             currentSoundMeta: currentSoundMeta,
             soundConfig: existingConfig,
-            title: `Pick Sound: ${slotLabel} — ${this.item.name}`
+            title: `Pick Sound: ${slotLabel} - ${this.item.name}`
         }).render(true);
     }
 

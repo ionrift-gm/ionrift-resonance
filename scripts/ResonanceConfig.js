@@ -1,5 +1,6 @@
 import { Logger } from "./Logger.js";
 import { SYRINSCAPE_DEFAULTS } from "./data/syrinscape_defaults.js";
+import { SoundPackLoader } from "./services/SoundPackLoader.js";
 
 export class ResonanceConfig {
     constructor() {
@@ -113,13 +114,19 @@ export class ResonanceConfig {
             }
         }
 
+        // Pack bindings sit between defaults and preset: additive, lower priority
+        // than preset keys. Preset values always win over packs, and user
+        // overrides always win over both.
+        const packBindings = SoundPackLoader.loaded ? SoundPackLoader.getMergedBindings() : {};
+        const packKeyCount = Object.keys(packBindings).length;
+
         let effectiveBindings;
         if (this.activePreset === "none" || this.activePreset === "local" || this.activePreset === "pack") {
-            effectiveBindings = { ...this.config, ...userBindings };
-            Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Keys: ${Object.keys(effectiveBindings).length}`);
+            effectiveBindings = { ...packBindings, ...this.config, ...userBindings };
+            Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Pack Keys: ${packKeyCount}, Total Keys: ${Object.keys(effectiveBindings).length}`);
         } else {
-            effectiveBindings = { ...SYRINSCAPE_DEFAULTS, ...this.config, ...userBindings };
-            Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Default Keys: ${Object.keys(SYRINSCAPE_DEFAULTS).length}, Total Keys: ${Object.keys(effectiveBindings).length}`);
+            effectiveBindings = { ...SYRINSCAPE_DEFAULTS, ...packBindings, ...this.config, ...userBindings };
+            Logger.log(`ResonanceConfig | Preset: "${this.activePreset}", Default Keys: ${Object.keys(SYRINSCAPE_DEFAULTS).length}, Pack Keys: ${packKeyCount}, Total Keys: ${Object.keys(effectiveBindings).length}`);
             Logger.log(`ResonanceConfig | Has BLOODY_HIT: ${!!effectiveBindings.BLOODY_HIT}, Has MONSTER_WOLF: ${!!effectiveBindings.MONSTER_WOLF}`);
         }
 

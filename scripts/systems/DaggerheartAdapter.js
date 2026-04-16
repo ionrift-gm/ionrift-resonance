@@ -150,12 +150,12 @@ export class DaggerheartAdapter extends SystemAdapter {
             const phase = this.renderPhases.get(message.id);
 
             if (!phase) {
-                // Phase 1: First render → attack sound only
+                // Phase 1: First render -> attack sound only
                 Logger.log(`⏱️ [${Date.now()}] PHASE 1 (Attack) for msg: ${message.id}`);
                 this.renderPhases.set(message.id, { timestamp: Date.now(), phase: 1 });
                 this.handleAttackSound(message);
             } else if (phase.phase === 1 && (Date.now() - phase.timestamp) > 500) {
-                // Phase 2: Re-render after 500ms+ → result decorations
+                // Phase 2: Re-render after 500ms+ -> result decorations
                 Logger.log(`⏱️ [${Date.now()}] PHASE 2 (Result) for msg: ${message.id} (${Date.now() - phase.timestamp}ms since Phase 1)`);
                 this.renderPhases.set(message.id, { ...phase, phase: 2 });
                 this.handleResultSound(message, html);
@@ -220,7 +220,7 @@ export class DaggerheartAdapter extends SystemAdapter {
         Logger.log(`Fear Tracker Update: ${this.lastFearCount} -> ${newFear}`);
 
         if (newFear > this.lastFearCount) {
-            // Fear Gained — threshold-based intensity
+            // Fear Gained - threshold-based intensity
             if (newFear >= 9) {
                 this.handler.play("DAGGERHEART_FEAR_HIGH");
             } else if (newFear >= 5) {
@@ -229,7 +229,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                 this.handler.play("DAGGERHEART_FEAR_LOW");
             }
         } else {
-            // Fear Used — delta-based intensity
+            // Fear Used - delta-based intensity
             const delta = this.lastFearCount - newFear;
             if (delta >= 5) {
                 this.handler.play("DAGGERHEART_FEAR_USE_HIGH");
@@ -272,7 +272,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                 Logger.log(`⏱️ [${Date.now()}] Damage Taken (Value Increased). Playing 'Blood Splat'`);
                 Logger.log(`⏱️ [${Date.now()}] DH | HP Change: ${oldHp} -> ${newHp} (Max: ${maxHp})`);
 
-                // Hit Sound (immediate) — priority: item override > category > generic
+                // Hit Sound (immediate) - priority: item override > category > generic
                 const hitOverride = this.lastAttackItem?.getFlag?.("ionrift-resonance", "sound_hit");
                 if (hitOverride) {
                     Logger.log(`⏱️ [${Date.now()}] DH | Item Override: Hit -> ${hitOverride}`);
@@ -287,7 +287,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                 const isDeath = maxHp > 0 && newHp >= maxHp && oldHp < maxHp;
 
                 if (isDeath) {
-                    // Killing blow — skip pain, go straight to death cry
+                    // Killing blow - skip pain, go straight to death cry
                     Logger.log("Actor Died (Damage >= Max)!");
                     const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                     if (deathOverride) {
@@ -299,7 +299,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                         this.play(SOUND_EVENTS.VOCAL_GENERIC_DEATH, VOCAL_STAGGER);
                     }
                 } else {
-                    // Non-lethal — pain sound after impact
+                    // Non-lethal - pain sound after impact
                     const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
                     if (painOverride) {
                         Logger.log(`Actor Override: Pain -> ${painOverride} (delay: ${VOCAL_STAGGER}ms)`);
@@ -692,7 +692,7 @@ export class DaggerheartAdapter extends SystemAdapter {
             let content = data.messageContent || "";
             if ((!content || content.trim() === "") && html) {
                 try {
-                    // html is HTMLElement (renderChatMessageHTML — v13+)
+                    // html is HTMLElement (renderChatMessageHTML - v13+)
                     content = (html instanceof HTMLElement ? html : html[0])?.textContent || "";
                 } catch (e) {
                     Logger.log(`⏱️ [${ts}]   Error extracting HTML text: ${e.message}`);
@@ -719,22 +719,22 @@ export class DaggerheartAdapter extends SystemAdapter {
         Logger.log(`⏱️ [${ts}] ══ PHASE 2: RESULT SOUNDS ══`);
 
         if (hopeValue === fearValue) {
-            // Critical Hit (Doubles) — CORE_HIT already played by preUpdateActor damage hook
+            // Critical Hit (Doubles) - CORE_HIT already played by preUpdateActor damage hook
             Logger.log(`⏱️ [${ts}]   CRITICAL HIT (Doubles) Hope=${hopeValue}, Fear=${fearValue}`);
             this.play(SOUND_EVENTS.DAGGERHEART_CRIT); // Stinger only
 
         } else if (isSuccess !== null) {
 
             if (isSuccess) {
-                // Hit — CORE_HIT already played by preUpdateActor damage hook.
+                // Hit - CORE_HIT already played by preUpdateActor damage hook.
                 // Hope/Fear sounds fire naturally from resource update hooks.
-                Logger.log(`⏱️ [${ts}]   SUCCESS — Roll stinger only (hope/fear from resource hooks)`);
+                Logger.log(`⏱️ [${ts}]   SUCCESS - Roll stinger only (hope/fear from resource hooks)`);
                 this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS);
 
             } else {
-                // Fail — no damage hook fires for a miss, so play miss whoosh here.
+                // Fail - no damage hook fires for a miss, so play miss whoosh here.
                 // Hope/Fear sounds fire naturally from resource update hooks.
-                Logger.log(`⏱️ [${ts}]   FAIL — Miss whoosh + fail stinger (hope/fear from resource hooks)`);
+                Logger.log(`⏱️ [${ts}]   FAIL - Miss whoosh + fail stinger (hope/fear from resource hooks)`);
                 const missOverride = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
                 const missKey = missOverride || this._deriveCategoryKey(data.attackSoundKey, "MISS");
                 this.handler.play(missKey);
@@ -742,7 +742,7 @@ export class DaggerheartAdapter extends SystemAdapter {
             }
 
         } else {
-            // Legacy fallback — assume miss (safe default)
+            // Legacy fallback - assume miss (safe default)
             Logger.log(`⏱️ [${ts}]   LEGACY - Miss + Hope/Fear stinger`);
             this.play(SOUND_EVENTS.MISS);
             if (hopeValue > fearValue) {

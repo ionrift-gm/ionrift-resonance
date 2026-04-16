@@ -2,6 +2,7 @@ import { SoundSystemValidator } from "./SoundSystemValidator.js";
 
 import { checkSheetCompatibility } from "./diagnostics/SheetCompatibility.js";
 import { OrchestratorDiagnostics } from "./diagnostics/OrchestratorDiagnostics.js";
+import { SoundPackLoader } from "./services/SoundPackLoader.js";
 import { Logger } from "./Logger.js";
 
 /**
@@ -9,9 +10,9 @@ import { Logger } from "./Logger.js";
  */
 export function registerDiagnostics() {
     Hooks.on("ionrift.runDiagnostics", (builder) => {
-        // Register async test functions
         builder.addAsync(runSoundDiagnostics(builder));
         builder.addAsync(checkSheetCompatibility(builder));
+        reportSoundPacks(builder);
     });
 
     // Expose Orchestrator test runner for console/macro access:
@@ -92,5 +93,42 @@ async function runSoundDiagnostics(builder) {
     } catch (err) {
         Logger.error("Diagnostic Error:", err);
         builder.addResult("Ionrift Resonance", "Critical Error", "FAIL", `Exception: ${err.message}`);
+    }
+}
+
+/**
+ * Reports sound pack status to the diagnostic builder.
+ * Informational only: PASS when packs are loaded, INFO otherwise.
+ * @param {ReportBuilder} builder
+ */
+function reportSoundPacks(builder) {
+    if (!SoundPackLoader.loaded) {
+        builder.addResult("Ionrift Resonance", "Sound Packs", "INFO", "Sound pack loader has not run yet.");
+        return;
+    }
+
+    const packs = SoundPackLoader.getLoadedPacks();
+    if (packs.length === 0) {
+        builder.addResult("Ionrift Resonance", "Sound Packs", "INFO", "No sound packs installed.");
+        return;
+    }
+
+    const enabled = packs.filter(p => p.enabled);
+    builder.addResult(
+        "Ionrift Resonance",
+        "Sound Packs",
+        "PASS",
+        `${packs.length} pack(s) found, ${enabled.length} enabled.`
+    );
+
+    for (const pack of packs) {
+        const status = pack.enabled ? "PASS" : "INFO";
+        const label = pack.enabled ? "enabled" : "disabled";
+        builder.addResult(
+            "Ionrift Resonance",
+            "Sound Packs",
+            status,
+            `${pack.name} v${pack.version}: ${pack.bindingCount} bindings (${label})`
+        );
     }
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.0] - Sound Pack Infrastructure
+
+*   **Feature**: Sound Pack system. Resonance now supports external sound packs — downloadable ZIP files that add or replace sound bindings without modifying the module itself. Each pack contains a `manifest.json` and a `bindings.json` using the same sound keys as Resonance Calibration.
+*   **Feature**: **Import Sound Pack** button in the Manage Sound Packs panel. Select a downloaded `.zip` file and Resonance extracts it, reads the manifest, and installs it to the right location automatically. No manual file placement needed.
+*   **Feature**: **Manage Sound Packs** panel in module settings. Lists every discovered pack with enable/disable toggles. Disabled packs are ignored; enabled packs merge their bindings into your active sound set (preset overrides still take priority).
+*   **Feature**: Pack-relative paths resolve automatically. Audio files referenced without a full path are resolved relative to the pack folder — no manual path editing required.
+*   **Improvement**: Multiple packs can be active at once. Array bindings (e.g. randomised hit sounds) concatenate across packs; single-value bindings use last-pack-wins order (alphabetical, deterministic).
+*   **Note**: Bundled SFX (`sounds/pack/`) continue to work exactly as before. The pack system is additive — nothing changes until you install a pack.
+
+
 ## [2.3.4] - Fix Expired Discord Link
 *   **Fix**: Updated the support Discord link in module settings and the `bugs` field. The previous invite had expired.
 
