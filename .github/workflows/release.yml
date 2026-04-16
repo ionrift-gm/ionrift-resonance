@@ -25,6 +25,7 @@ jobs:
           lfs: true
 
       - name: Validate Sound Files
+        if: github.event.inputs.dry_run_discord != 'true'
         run: |
           # Ensure LFS files are real audio, not pointer stubs
           FIRST_MP3=$(find sounds/pack -name '*.mp3' -type f | head -1)
@@ -40,11 +41,13 @@ jobs:
           echo "OK: Sound files are real audio (first file: $FIRST_MP3, ${SIZE} bytes)"
 
       - name: Zip Module
+        if: github.event.inputs.dry_run_discord != 'true'
         # Zips current directory, excluding git/github/dev files
         run: |
           zip -r module.zip . -x ".git/*" ".github/*" ".gitignore" "RELEASE_WORKFLOW.md" "task.md" "package.json" "package-lock.json" "node_modules/*" "scripts/utils/*" "scripts/debug_controls_structure.js" "debug_macro.js" "debug_pop.log" "audit_*.json" "audit_*.txt" "audit_*.js" "*.bak" "free_tier_candidates.md" "SETUP_GUIDE.md" "TEST_SCENARIOS.md" "docs/MIGRATION_STRATEGY.md" "docs/GUIDE.md"
 
       - name: Create Release
+        if: github.event.inputs.dry_run_discord != 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: |
@@ -58,7 +61,7 @@ jobs:
           make_latest: ${{ !(contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha')) }}
 
       - name: Notify Foundry VTT
-        if: success() && !contains(github.ref_name, '-rc') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-alpha')
+        if: github.event.inputs.dry_run_discord != 'true' && success() && !contains(github.ref_name, '-rc') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-alpha')
         uses: actions/github-script@v7
         env:
           FOUNDRY_TOKEN: ${{ secrets.FOUNDRY_PACKAGE_TOKEN }}
