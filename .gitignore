@@ -27,8 +27,7 @@ audit_*.txt
 debug_*.js
 debug_*.log
 
-# Diagnostics & test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
-scripts/diagnostics/
+# Test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
 scripts/tests/
 tests/
 

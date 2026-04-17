@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.5.1] - 2026-04-17
+
+### Fixed
+- Module failed to initialise on The Forge. Diagnostic files were excluded from the release archive, which caused a cascading import failure that prevented settings, sound packs, and combat triggers from loading. If you updated to v2.5.0 and saw only "Enable Debug Logging" in the settings panel, this is the fix.
+
 ## [2.5.0] - 2026-04-17
 
 ### Added
