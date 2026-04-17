@@ -54,6 +54,14 @@ Hooks.once('init', async function () {
         hint: "First-time setup: select a sound preset and optionally connect Syrinscape."
     });
 
+    // PACK BUTTON (via kernel)
+    SettingsLayout.registerPackButton("ionrift-resonance", ResonancePackRegistryApp, {
+        name: "Sound Packs",
+        label: "Manage Sound Packs",
+        hint: "Enable or disable installed sound packs. Packs add sound bindings at lower priority than presets.",
+        icon: "fas fa-music"
+    });
+
     // BODY: Calibration (resonance-specific tool)
     game.settings.registerMenu('ionrift-resonance', 'soundConfigMenu', {
         name: "Resonance Calibration",

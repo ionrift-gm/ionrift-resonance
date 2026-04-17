@@ -2,6 +2,7 @@ import { msgContains } from "./utils.js";
 import { SOUND_EVENTS } from "./constants.js";
 import { DaggerheartAdapter } from "./systems/DaggerheartAdapter.js";
 import { DnD5eAdapter } from "./systems/DnD5eAdapter.js";
+import { PF2eAdapter } from "./systems/PF2eAdapter.js";
 import { Logger } from "./Logger.js";
 import { ResonanceConfig } from "./ResonanceConfig.js";
 import { SoundResolver } from "./SoundResolver.js";
@@ -54,6 +55,8 @@ export class SoundHandler {
             this.system = new DaggerheartAdapter(this);
         } else if (game.system.id === "dnd5e") {
             this.system = new DnD5eAdapter(this);
+        } else if (game.system.id === "pf2e") {
+            this.system = new PF2eAdapter(this);
         } else {
             Logger.warn(`System '${game.system.id}' not strictly supported. Defaulting to Daggerheart logic.`);
             this.system = new DaggerheartAdapter(this);
@@ -295,6 +298,64 @@ export class SoundHandler {
         }
 
         return this.resolver.getPCSound(actor, type);
+    }
+
+    // --- Ambient Loop API (for cross-module integration) ---
+
+    /**
+     * Play an ambient loop by semantic key.
+     * Resolves the key through the standard binding chain,
+     * then delegates to SoundManager.playAmbient().
+     * Silent no-op if the key has no binding (no pack provides it).
+     *
+     * @param {string} key - Semantic key (e.g. "AMBIENT_CAMPFIRE")
+     * @param {object} [options] - { volume, fadeInMs }
+     */
+    playAmbient(key, options = {}) {
+        const resolved = this.resolver.resolveKey(key);
+        if (!resolved) {
+            Logger.log(`SoundHandler.playAmbient | No binding for "${key}", silent.`);
+            return;
+        }
+
+        const volume = options.volume ?? 0.3;
+        const fadeInMs = options.fadeInMs ?? 2000;
+
+        Logger.log(`SoundHandler.playAmbient | ${key} -> ${resolved}`);
+
+        if (game.ionrift.sounds?.manager) {
+            game.ionrift.sounds.manager.playAmbient(key, resolved, { volume, fadeInMs });
+            Hooks.call("ionrift.ambientStarted", key, resolved);
+        } else {
+            Logger.error("SoundHandler.playAmbient | Manager not available!");
+        }
+    }
+
+    /**
+     * Stop an ambient loop by semantic key.
+     * @param {string} key - The key used when starting the loop
+     * @param {object} [options] - { fadeOutMs }
+     */
+    stopAmbient(key, options = {}) {
+        const fadeOutMs = options.fadeOutMs ?? 1500;
+        Logger.log(`SoundHandler.stopAmbient | ${key} (fade: ${fadeOutMs}ms)`);
+
+        if (game.ionrift.sounds?.manager) {
+            game.ionrift.sounds.manager.stopAmbient(key, fadeOutMs);
+            Hooks.call("ionrift.ambientStopped", key);
+        }
+    }
+
+    /**
+     * Stop all active ambient loops.
+     */
+    stopAllAmbient() {
+        Logger.log("SoundHandler.stopAllAmbient | Stopping all ambient loops.");
+
+        if (game.ionrift.sounds?.manager) {
+            game.ionrift.sounds.manager.stopAllAmbient();
+            Hooks.call("ionrift.ambientStopped", "*");
+        }
     }
 
     // --- UI / Hooks ---

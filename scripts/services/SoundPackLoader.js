@@ -17,6 +17,17 @@ export class SoundPackLoader {
     /** Foundry v13 namespaced FilePicker; falls back to global for v12. */
     static #FP = foundry.applications?.apps?.FilePicker ?? FilePicker;
 
+    /**
+     * FilePicker source for pack file resolution.
+     * Always "data" — on The Forge, "forgevtt" (Asset Library) returns empty
+     * file arrays for world-data paths, preventing manifest.json resolution.
+     * The "data" source correctly returns full CDN URLs on both self-hosted
+     * and Forge-hosted Foundry instances.
+     */
+    static get _fileSource() {
+        return "data";
+    }
+
     /** @type {Map<string, {manifest: Object, bindings: Object}>} */
     static _packs = new Map();
 
@@ -136,7 +147,7 @@ export class SoundPackLoader {
      * @returns {Promise<string[]>} directory names (not full paths)
      */
     static async _listPackDirectories() {
-        const result = await SoundPackLoader.#FP.browse("data", PACK_ROOT);
+        const result = await SoundPackLoader.#FP.browse(this._fileSource, PACK_ROOT);
         return (result.dirs ?? []).map(d => d.split("/").pop());
     }
 
@@ -256,16 +267,36 @@ export class SoundPackLoader {
 
     /**
      * Fetches and parses a JSON file, returning null on failure.
+     * On The Forge, relative data paths don't resolve against the web root,
+     * so we browse the parent directory to discover the real asset URL first.
      * @param {string} path
      * @returns {Promise<Object|null>}
      */
     static async _fetchJson(path) {
         try {
-            const response = await fetch(path);
+            const url = await this._resolveAssetUrl(path);
+            const response = await fetch(url);
             if (!response.ok) return null;
             return await response.json();
         } catch {
             return null;
         }
+    }
+
+    /**
+     * Resolves a data-relative path to a fetchable URL.
+     * On self-hosted Foundry the relative path works as-is.
+     * On The Forge, browses the parent directory to find the real asset URL.
+     * @param {string} path
+     * @returns {Promise<string>}
+     */
+    static async _resolveAssetUrl(path) {
+        if (typeof ForgeVTT === "undefined" || !ForgeVTT.usingTheForge) return path;
+
+        const dir = path.substring(0, path.lastIndexOf("/"));
+        const fileName = path.substring(path.lastIndexOf("/") + 1);
+        const browseResult = await SoundPackLoader.#FP.browse(this._fileSource, dir);
+        const fullUrl = (browseResult.files ?? []).find(f => f.endsWith(`/${fileName}`));
+        return fullUrl ?? path;
     }
 }
