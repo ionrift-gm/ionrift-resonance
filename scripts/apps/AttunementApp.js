@@ -470,11 +470,31 @@ export class AttunementApp extends AbstractWelcomeApp {
 
 
     async _runDiagnostics() {
-        // Simple check for now
         if (game.ionrift?.integration) {
             game.ionrift.integration.refresh();
         }
         await new Promise(resolve => setTimeout(resolve, 1000)); // Visual delay
+
+        // Check whether the Creature Index is configured — Resonance needs it for Adaptive Sounds.
+        // The library no longer auto-pops the wizard; we surface a notice here instead.
+        try {
+            const INDEXING_PROTOCOL_VERSION = "1";
+            const indexVersion = game.settings.get("ionrift-library", "indexSetupVersion");
+            const isIndexReady = (indexVersion === INDEXING_PROTOCOL_VERSION);
+
+            if (!isIndexReady) {
+                ui.notifications.info(
+                    "Resonance | Adaptive Sounds works best with the Creature Index configured. " +
+                    "Open Module Settings → Ionrift Library → Creature Index to run setup.",
+                    { permanent: false }
+                );
+                Logger.log("Resonance Attunement | Creature Index not yet configured (indexSetupVersion !== 1). " +
+                    "Adaptive Sounds will use name-only heuristics until the index is set up.");
+            }
+        } catch (e) {
+            // Graceful fail — if library settings aren't available, don't block attunement
+            Logger.warn("Resonance Attunement | Could not read library index state:", e);
+        }
     }
 
     _checkTokenMismatch(token) {
