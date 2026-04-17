@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.5.0] - 2026-04-17
+
+### Added
+- **Pathfinder 2e support.** Resonance now automates combat sounds on PF2e the same way it does for DnD5e and Daggerheart. Attack rolls, spell casts, damage hits, AoE spreads, player vocals, and creature death sounds all trigger automatically — no setup beyond enabling the module. Degree-of-success outcomes (critical success, success, failure, critical failure) each map to the right stinger. Spell schools route to the correct elemental sound (fire, cold, lightning, acid, void, healing) using PF2e trait tags. Creature vocals use the Library classifier where available, with a clean fallback for unrecognised types.
+- **Ambient loop API.** Other Ionrift modules can now trigger keyed ambient sound loops through Resonance — including fade in and fade out. Respite uses this to play campfire ambience during rest scenes. The API is silent if no sound pack provides a binding for the requested loop, so there are no errors if you don't have a campfire sound installed.
+
+### Fixed
+- Sound packs now load correctly on The Forge. The pack scanner was using the wrong file source path for managed hosting — packs were found in the directory listing but their contents couldn't be read, so bindings were silently empty. Packs you have installed will now appear in Manage Sound Packs and populate the Calibration UI on next load.
+
 ## [2.4.0] - Sound Pack Infrastructure
 
 *   **Feature**: Sound Pack system. Resonance now supports external sound packs -- downloadable ZIP files that add or replace sound bindings without modifying the module itself. Each pack contains a `manifest.json` and a `bindings.json` using the same sound keys as Resonance Calibration.

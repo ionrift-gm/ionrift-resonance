@@ -134,6 +134,56 @@ export class SoundManager {
         Logger.log(`SoundManager | Searching via Syrinscape Provider`);
         return await this.syrinscapeProvider.search(query, options);
     }
+
+    /**
+     * Play an ambient loop via the local provider.
+     * Ambient loops are always local audio (never Syrinscape).
+     * @param {string} key - Semantic key for tracking (e.g. "AMBIENT_CAMPFIRE")
+     * @param {string|object} soundData - Sound ID or binding object
+     * @param {object} options - { volume, fadeInMs }
+     * @returns {Promise<object|undefined>}
+     */
+    async playAmbient(key, soundData, options = {}) {
+        if (!this.localProvider) return;
+
+        let soundId = soundData;
+        if (typeof soundData === "object" && soundData !== null) {
+            soundId = soundData.id ?? soundData;
+        }
+        // Pick randomly from arrays
+        if (Array.isArray(soundId)) {
+            const pick = soundId[Math.floor(Math.random() * soundId.length)];
+            soundId = (typeof pick === "object") ? pick.id : pick;
+        }
+
+        Logger.log(`SoundManager | playAmbient: ${key} -> ${soundId}`);
+        return this.localProvider.playSound(soundId, {
+            ...options,
+            loop: true,
+            key
+        });
+    }
+
+    /**
+     * Stop a specific ambient loop by key.
+     * @param {string} key - The key used when starting the loop
+     * @param {number} fadeOutMs - Fade-out duration (default 1500ms)
+     */
+    async stopAmbient(key, fadeOutMs = 1500) {
+        if (!this.localProvider) return;
+        Logger.log(`SoundManager | stopAmbient: ${key} (fade: ${fadeOutMs}ms)`);
+        return this.localProvider.stopSound(key, fadeOutMs);
+    }
+
+    /**
+     * Stop all active ambient loops.
+     */
+    stopAllAmbient() {
+        if (!this.localProvider) return;
+        Logger.log("SoundManager | stopAllAmbient");
+        this.localProvider.stopAll();
+    }
 }
 
 export const soundManager = new SoundManager();
+

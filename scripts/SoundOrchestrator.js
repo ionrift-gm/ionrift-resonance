@@ -65,6 +65,12 @@ export class SoundOrchestrator {
             "CORE_PAIN_MASCULINE", "CORE_PAIN_FEMININE",
             "CORE_DEATH_MASCULINE", "CORE_DEATH_FEMININE",
             "PC_DEATH", "VOCAL_GENERIC_DEATH"
+        ],
+        // Ambient loops - start/stop lifecycle, never throttled.
+        AMBIENT: [
+            "AMBIENT_CAMPFIRE",
+            "AMBIENT_CAMPFIRE_COOKING",
+            "AMBIENT_NIGHT_FOREST"
         ]
     };
 
@@ -83,7 +89,8 @@ export class SoundOrchestrator {
         DH_ARMOR_REPAIR: 5000,
         DH_OUTCOME: 0,       // unlimited - per-roll outcome events
         MONSTER_VOCAL: 2000,
-        PC_VOCAL: 0        // unlimited - PC deaths/pain always play
+        PC_VOCAL: 0,       // unlimited - PC deaths/pain always play
+        AMBIENT: 0         // unlimited - ambient loops are start/stop, not spam
     };
 
     // -------------------------------------------------------------------------

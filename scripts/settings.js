@@ -1,5 +1,3 @@
-import { ResonancePackRegistryApp } from "./apps/ResonancePackRegistryApp.js";
-
 export const registerSettings = function () {
     // Debug Mode
     game.settings.register('ionrift-resonance', 'debug', {
@@ -116,12 +114,4 @@ export const registerSettings = function () {
         default: {}
     });
 
-    game.settings.registerMenu("ionrift-resonance", "soundPackManager", {
-        name: "Sound Packs",
-        label: "Manage Sound Packs",
-        hint: "Enable or disable installed sound packs. Packs add sound bindings at lower priority than presets.",
-        icon: "fas fa-music",
-        type: ResonancePackRegistryApp,
-        restricted: true
-    });
 };
