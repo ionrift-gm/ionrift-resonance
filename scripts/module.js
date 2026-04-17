@@ -43,9 +43,13 @@ Hooks.once('init', async function () {
     const { soundManager } = await import("./SoundManager.js");
     game.ionrift.sounds.manager = soundManager;
 
-    // Diagnostic Integration
-    const { registerDiagnostics } = await import("./DiagnosticIntegration.js");
-    registerDiagnostics();
+    // Diagnostic Integration (optional — must never crash boot)
+    try {
+        const { registerDiagnostics } = await import("./DiagnosticIntegration.js");
+        registerDiagnostics();
+    } catch (e) {
+        console.warn("Ionrift Resonance | Diagnostics unavailable:", e.message);
+    }
 
 
     // HEADER
