@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.5.2] - 2026-04-18
+
+### Fixed
+- **Combat Turn Spotlight.** Fixed: sounds were not playing when an actor's turn began in combat. Turn-start audio now fires correctly for both mid-round advances and new-round rollovers, with per-actor override support.
+
 ## [2.5.1] - 2026-04-17
 
 ### Fixed

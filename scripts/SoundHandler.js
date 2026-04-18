@@ -358,12 +358,50 @@ export class SoundHandler {
         }
     }
 
+    // --- Combat Spotlight ---
+
+    /**
+     * Play the active combatant's "Your Turn" sound when combat turn advances.
+     * Checks for a per-actor override (sound_spotlight flag) first, then falls
+     * back to the SPOTLIGHT semantic key (bound through sound packs / presets).
+     *
+     * v13: combatTurn/combatRound fire BEFORE the DB update completes, so
+     * combat.combatant still points to the outgoing combatant. The incoming
+     * turn index lives in updateData.turn; use that to look up who is next.
+     */
+    _onSpotlight(combat, updateData = {}) {
+        if (!game.user.isGM) return;
+
+        const newTurn = updateData.turn ?? combat.turn;
+        const combatant = combat.turns?.[newTurn];
+        if (!combatant?.actor) return;
+
+        const actor = combatant.actor;
+        const override = actor.getFlag("ionrift-resonance", "sound_spotlight");
+
+        if (override) {
+            Logger.log(`Spotlight | ${actor.name} (override: ${override})`);
+            this.play(override);
+        } else {
+            Logger.log(`Spotlight | ${actor.name} (default)`);
+            this.play(SOUND_EVENTS.SPOTLIGHT);
+        }
+    }
+
     // --- UI / Hooks ---
 
     registerHooks() {
         if (this.system) {
             this.system.registerHooks();
         }
+
+        // Combat Turn Spotlight: fires the actor's "Your Turn" sound when
+        // initiative advances. combatTurn = mid-round advance, combatRound =
+        // new-round advance (first combatant). Both use the same handler.
+        // v13: these hooks fire BEFORE the DB update, so combat.combatant is
+        // still the outgoing combatant. The incoming turn index is in updateData.
+        Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));
+        Hooks.on("combatRound", (combat, updateData) => this._onSpotlight(combat, updateData));
 
         Hooks.on("chatMessage", (chatLog, message, chatData) => {
             if (message.trim() === "/iondebug") {

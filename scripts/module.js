@@ -139,6 +139,18 @@ Hooks.once('init', async function () {
                 await game.settings.set("ionrift-resonance", "lastNotifiedVersion", NOTIFY_VERSION);
             }
         }
+        // Forge safety tests (infrastructure, non-IP-sensitive)
+        if (game.ionrift?.library?.tests) {
+            game.ionrift.library.tests.register("ionrift-resonance-forge", {
+                name: "Resonance Forge Safety",
+                description: "SoundPackLoader smoke and partial registration checks",
+                runFn: async () => {
+                    const { ResonanceForgeTestRunner } = await import("./tests/ForgeTestRunner.js");
+                    return ResonanceForgeTestRunner.runAll();
+                }
+            });
+        }
+
         // Register Status Indicator (Generic Integration)
         if (game.ionrift?.integration) {
             game.ionrift.integration.registerApp('ionrift-resonance', {

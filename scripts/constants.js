@@ -214,6 +214,9 @@ export const SOUND_EVENTS = {
     VOCAL_GENERIC_DEATH: "CORE_MONSTER_DEATH",  // NPC/adversary death fallback
     VOCAL_GENERIC_PAIN: "CORE_MONSTER_PAIN",    // NPC/adversary pain fallback
 
+    // Combat Turn Spotlight (plays when a combatant's turn begins)
+    SPOTLIGHT: "SPOTLIGHT",
+
     // --- Legacy aliases (@v2) ---
     // @legacy: kept for backward compat and as chain terminal until default
     // preset migrates CORE_MELEE/CORE_RANGED bindings away from CORE_WHOOSH.
