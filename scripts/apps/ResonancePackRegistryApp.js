@@ -9,7 +9,7 @@
  * Extends AbstractPackRegistryApp from ionrift-library.
  */
 
-import { AbstractPackRegistryApp } from "../../../ionrift-library/scripts/apps/AbstractPackRegistryApp.js";
+const { AbstractPackRegistryApp } = await import("../../../ionrift-library/scripts/apps/AbstractPackRegistryApp.js");
 import { SoundPackLoader } from "../services/SoundPackLoader.js";
 
 export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
