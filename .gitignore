@@ -29,6 +29,7 @@ debug_*.log
 
 # Test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
 scripts/tests/
+!scripts/tests/ForgeTestRunner.js
 tests/
 
 # Development/Internal docs (excluded from releases)
