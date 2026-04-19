@@ -163,12 +163,13 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         // ZipImporterService creates ionrift-data/resonance and the pack subdirectory,
         // but the intermediate "packs" directory must exist first.
         const FP = foundry.applications?.apps?.FilePicker ?? FilePicker;
+        const source = (typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge) ? "forgevtt" : "data";
         const packsRoot = "ionrift-data/resonance/packs";
-        try { await FP.browse("data", packsRoot); } catch {
+        try { await FP.browse(source, packsRoot); } catch {
             try {
-                await FP.createDirectory("data", "ionrift-data/resonance/packs");
+                await FP.createDirectory(source, "ionrift-data/resonance/packs");
             } catch (e) {
-                // May already exist or platform-blocked — ZipImporter will retry
+                // May already exist or platform-blocked - ZipImporter will retry
                 console.warn("ResonancePackRegistry | Could not pre-create packs dir:", e.message);
             }
         }

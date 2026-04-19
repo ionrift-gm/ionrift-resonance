@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.3] - 2026-04-19
+
+### Fixed
+- Sound pack import now works correctly on The Forge. The directory pre-check was targeting the wrong file source on cloud-hosted instances, which could cause the first import to fail.
+
+
 ## [2.5.2] - 2026-04-18
 
 ### Fixed
