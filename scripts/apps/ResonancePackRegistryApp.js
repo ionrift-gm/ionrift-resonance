@@ -162,19 +162,9 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         // Ensure the packs root directory exists before importing.
         // ZipImporterService creates ionrift-data/resonance and the pack subdirectory,
         // but the intermediate "packs" directory must exist first.
-        // Forge patches the global FilePicker, not the v13 namespaced version
-        const FP = (typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge)
-            ? FilePicker
-            : (foundry.applications?.apps?.FilePicker ?? FilePicker);
-        const source = (typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge) ? "forgevtt" : "data";
-        const packsRoot = "ionrift-data/resonance/packs";
-        try { await FP.browse(source, packsRoot); } catch {
-            try {
-                await FP.createDirectory(source, "ionrift-data/resonance/packs");
-            } catch (e) {
-                // May already exist or platform-blocked - ZipImporter will retry
-                console.warn("ResonancePackRegistry | Could not pre-create packs dir:", e.message);
-            }
+        const platform = game.ionrift?.library?.platform;
+        if (platform) {
+            await platform.ensureDirectory("ionrift-data/resonance/packs");
         }
 
         // Delegate to ZipImporterService — routes to ionrift-data/resonance/packs/{packId}/
@@ -226,19 +216,20 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
      */
     async _readPackIdFromZip(file) {
         try {
-            // Load JSZip — it's vendored in ionrift-library
-            if (!window.JSZip) {
-                await new Promise((resolve, reject) => {
-                    const script = document.createElement("script");
-                    script.src = "modules/ionrift-library/scripts/vendor/jszip.min.js";
-                    script.onload = resolve;
-                    script.onerror = () => reject(new Error("Failed to load JSZip"));
-                    document.head.appendChild(script);
-                });
+            // Load JSZip via the kernel
+            const platform = game.ionrift?.library?.platform;
+            let JSZip;
+            if (platform) {
+                JSZip = await platform.loadJSZip();
+            } else if (window.JSZip) {
+                JSZip = window.JSZip;
+            } else {
+                console.warn("ResonancePackRegistry | JSZip not available.");
+                return null;
             }
 
             const buffer = await file.arrayBuffer();
-            const zip = await window.JSZip.loadAsync(buffer);
+            const zip = await JSZip.loadAsync(buffer);
 
             // Look for manifest.json at the root
             const manifestEntry = zip.file("manifest.json");
