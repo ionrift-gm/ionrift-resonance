@@ -14,8 +14,10 @@ const BINDINGS_NAME = "bindings.json";
  */
 export class SoundPackLoader {
 
-    /** Foundry v13 namespaced FilePicker; falls back to global for v12. */
-    static #FP = foundry.applications?.apps?.FilePicker ?? FilePicker;
+    /** Forge patches the global FilePicker, not the v13 namespaced version. */
+    static #FP = (typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge)
+        ? FilePicker
+        : (foundry.applications?.apps?.FilePicker ?? FilePicker);
 
     /**
      * FilePicker source for pack file resolution.
