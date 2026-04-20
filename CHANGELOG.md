@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.5.4] - 2026-04-20
+
+### Fixed
+- Forge v13 FilePicker compatibility. The v13 namespaced FilePicker bypasses the Forge module's monkey-patch, so browse and directory-creation calls silently failed. Now uses the correct (patched) FilePicker on Forge instances.
+
 ## [2.5.3] - 2026-04-19
 
 ### Fixed

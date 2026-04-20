@@ -162,7 +162,10 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         // Ensure the packs root directory exists before importing.
         // ZipImporterService creates ionrift-data/resonance and the pack subdirectory,
         // but the intermediate "packs" directory must exist first.
-        const FP = foundry.applications?.apps?.FilePicker ?? FilePicker;
+        // Forge patches the global FilePicker, not the v13 namespaced version
+        const FP = (typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge)
+            ? FilePicker
+            : (foundry.applications?.apps?.FilePicker ?? FilePicker);
         const source = (typeof ForgeVTT !== "undefined" && ForgeVTT.usingTheForge) ? "forgevtt" : "data";
         const packsRoot = "ionrift-data/resonance/packs";
         try { await FP.browse(source, packsRoot); } catch {
