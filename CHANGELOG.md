@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.5.6] - 2026-04-21
+
+### Added
+- **Daggerheart domains.** Blood, Dread, and Wonder now appear in the Calibration UI alongside the original nine domains.
+
+### Fixed
+- Sound picker buttons (Save, Preview) could become unresponsive when editing keys without pre-mapped pack sounds.
+- Startup integrity check no longer flags backward-compatible roll outcome aliases as missing.
+- Foundry V13 deprecation warnings for template loading and file browser resolved.
+
+
 ## [2.5.5] - 2026-04-20
 
 ### Changed
