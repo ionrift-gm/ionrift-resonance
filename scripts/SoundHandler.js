@@ -107,21 +107,28 @@ export class SoundHandler {
         if (!this.config) return;
         if (this.activePreset === "none") return;
 
-        // Abstract routing keys: resolved via alias chain, never need direct pack bindings.
-        // Known asset gaps: sounds not yet created - intentional, tracked in release plan.
+        // Keys that never need direct bindings: abstract routing targets,
+        // tiered parents, and backward-compat aliases.
         const SKIP_VALIDATION = new Set([
-            // Abstract mid-level routing (adapter resolves these -> specific attack sounds)
+            // Abstract mid-level routing (adapter resolves these to specific attack sounds)
             "CORE_MELEE", "CORE_RANGED", "CORE_MAGIC",
-            // Tiered keys - adapters always use the _LOW/_MED/_HIGH variants directly
+            // Tiered keys: adapters always use the _LOW/_MED/_HIGH variants directly
             "DAGGERHEART_FEAR_USE", "DAGGERHEART_FEAR",
+            // Backward-compat aliases: resolve to simplified DAGGERHEART_SUCCESS / DAGGERHEART_FAIL
+            "DAGGERHEART_SUCCESS_WITH_HOPE", "DAGGERHEART_SUCCESS_WITH_FEAR",
+            "DAGGERHEART_FAIL_WITH_HOPE", "DAGGERHEART_FAIL_WITH_FEAR",
+            "DAGGERHEART_ROLL_HOPE", "DAGGERHEART_ROLL_FEAR",
         ]);
 
         // Support both flat format {KEY: val} and structured format {bindings: {KEY: [...]}}
         const lookup = this.config?.bindings ?? this.config;
 
+        const checked = new Set();
         const missing = [];
         for (const [key, value] of Object.entries(SOUND_EVENTS)) {
-            if (SKIP_VALIDATION.has(value)) continue;
+            if (SKIP_VALIDATION.has(key) || SKIP_VALIDATION.has(value)) continue;
+            if (checked.has(value)) continue;
+            checked.add(value);
             const resolved = lookup[value];
             if (!resolved || (Array.isArray(resolved) && resolved.length === 0)) {
                 if (value.startsWith("CORE_") || value.startsWith("PC_") || value.startsWith("DAGGERHEART_")) {

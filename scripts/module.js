@@ -13,10 +13,12 @@ Hooks.once('init', async function () {
     Logger.log("Initializing Sound Engine");
 
     // Register Templates
-    loadTemplates([
+    const _loadTemplates = foundry.applications?.handlebars?.loadTemplates ?? loadTemplates;
+    _loadTemplates([
         "modules/ionrift-resonance/templates/partials/auditor-list.hbs",
         "modules/ionrift-resonance/templates/partials/sound-card-row.hbs",
-        "modules/ionrift-resonance/templates/partials/sound-group.hbs"
+        "modules/ionrift-resonance/templates/partials/sound-group.hbs",
+        "modules/ionrift-resonance/templates/partials/sound-picker-row.hbs"
     ]);
 
     // Register Settings (CRITICAL: Must be done early)
