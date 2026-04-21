@@ -324,13 +324,16 @@ export class SoundConfigApp extends FormApplication {
                 children: [
                     { label: "Arcana", id: "DOMAIN_ARCANA", description: "Innate, instinctual magic." },
                     { label: "Blade", id: "DOMAIN_BLADE", description: "Mastery of weapons." },
+                    { label: "Blood", id: "DOMAIN_BLOOD", description: "Vitality and life force." },
                     { label: "Bone", id: "DOMAIN_BONE", description: "Swiftness and tactical agility." },
                     { label: "Codex", id: "DOMAIN_CODEX", description: "Intensive magical study." },
+                    { label: "Dread", id: "DOMAIN_DREAD", description: "Terror and dark power." },
                     { label: "Grace", id: "DOMAIN_GRACE", description: "Charisma and persuasion." },
                     { label: "Midnight", id: "DOMAIN_MIDNIGHT", description: "Shadows and secrecy." },
                     { label: "Sage", id: "DOMAIN_SAGE", description: "Natural world magic." },
                     { label: "Splendor", id: "DOMAIN_SPLENDOR", description: "Life, healing, and death." },
-                    { label: "Valor", id: "DOMAIN_VALOR", description: "Protection and defense." }
+                    { label: "Valor", id: "DOMAIN_VALOR", description: "Protection and defense." },
+                    { label: "Wonder", id: "DOMAIN_WONDER", description: "Awe, illusion, and the extraordinary." }
                 ]
             });
         }

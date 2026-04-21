@@ -30,6 +30,7 @@ export class SoundPickerApp extends Application {
 
         // Cache pack sounds for this key
         this._packSounds = [];
+        this._packSoundsLoaded = false;
         this._loadPackSounds();
 
         // Also override defaultOptions title if provided
@@ -88,23 +89,22 @@ export class SoundPickerApp extends Application {
     async _render(force, options) {
         Logger.log("_render called with force:", force);
 
-        // Load pack sounds before rendering (avoids race condition from constructor)
-        if (this._packSounds.length === 0 && this.opts.soundKey) {
+        // Load pack sounds once before first render (flag prevents re-fetch loops for keys with no pack data)
+        if (!this._packSoundsLoaded && this.opts.soundKey) {
             await this._loadPackSounds();
         }
 
         // Guarantee partial registration before render
         const partialPath = "modules/ionrift-resonance/templates/partials/sound-picker-row.hbs";
         if (!Handlebars.partials[partialPath]) {
-            Logger.warn("PARTIAL MISSING at render time. Attempting late load:", partialPath);
+            Logger.warn("Partial missing at render time, attempting late load:", partialPath);
             try {
-                await loadTemplates([partialPath]);
+                const _loadTemplates = foundry.applications?.handlebars?.loadTemplates ?? loadTemplates;
+                await _loadTemplates([partialPath]);
                 Logger.log("Late load finished.");
             } catch (e) {
                 Logger.error("Late load FAILED:", e);
             }
-        } else {
-            Logger.log("Partial already registered.");
         }
 
         return super._render(force, options);
@@ -120,10 +120,11 @@ export class SoundPickerApp extends Application {
             const data = await res.json();
             const bindings = data.bindings || data;
             this._packSounds = bindings[this.opts.soundKey] || [];
-            // Re-render if already rendered to show pack sounds
-            if (this.rendered) this.render(false);
+            this._packSoundsLoaded = true;
+            if (this._packSounds.length > 0 && this.rendered) this.render(false);
         } catch (e) {
             Logger.warn("Failed to load pack sounds for picker:", e);
+            this._packSoundsLoaded = true;
         }
     }
 
@@ -559,7 +560,8 @@ export class SoundPickerApp extends Application {
      */
     _onBrowseLocal(event) {
         event.preventDefault();
-        const fp = new FilePicker({
+        const FP = foundry.applications?.apps?.FilePicker?.implementation ?? FilePicker;
+        const fp = new FP({
             type: "audio",
             current: "modules/ionrift-resonance/sounds/pack/",
             callback: (path) => {
