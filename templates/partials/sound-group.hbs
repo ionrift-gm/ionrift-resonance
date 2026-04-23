@@ -13,16 +13,41 @@
                 {{/if}}
             </div>
 
-            <!-- Group Level Sound (Optional Inheritance Source) -->
-            {{#if key}}
-            <div style="font-size: 0.9em; opacity: 0.8;">
-                {{#if value}}
-                <span class="ionrift-badge success">Overridden</span>
-                {{else}}
-                <span class="ionrift-badge" style="opacity: 0.5;">Inherited</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                {{#if volumeControl}}
+                <div class="taxonomy-volume-control" style="display: flex; align-items: center; gap: 6px;"
+                    onclick="event.stopPropagation();"
+                    title="Scale volume for all sounds in this category. Applies to local/pack audio. Syrinscape controls its own volume externally.{{#if volumeControl.inheritsFromMagic}} Currently inheriting from Magic (Spells).{{/if}}">
+                    <i class="fas fa-volume-down" style="color: #888; font-size: 0.75em;"></i>
+                    <input type="range" class="taxonomy-volume-slider"
+                        data-volume-key="{{volumeControl.key}}"
+                        min="0" max="100" step="5"
+                        value="{{volumeControl.percent}}" />
+                    <span class="taxonomy-volume-label"
+                        style="font-size: 0.75em; min-width: 32px; text-align: right; font-family: monospace; color: {{#if volumeControl.hasOverride}}#c4b5fd{{else}}#888{{/if}};">
+                        {{volumeControl.percent}}%
+                    </span>
+                    <i class="fas fa-info-circle" style="color: #555; font-size: 0.65em;"
+                        title="Scales playback volume for local and pack audio in this category. Syrinscape elements are not affected; use the Orchestration tab to control Syrinscape density."></i>
+                    <button type="button" class="taxonomy-volume-reset"
+                        data-volume-key="{{volumeControl.key}}"
+                        title="Reset to 100%"
+                        style="display:{{#if volumeControl.hasOverride}}inline-block{{else}}none{{/if}}; width:20px; height:20px; padding:0; font-size:0.65em; background:rgba(200,120,80,0.2); border:1px solid rgba(200,120,80,0.3); color:#c84; border-radius:3px; cursor:pointer; line-height:20px;">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+                {{/if}}
+
+                {{#if key}}
+                <div style="font-size: 0.9em; opacity: 0.8;">
+                    {{#if value}}
+                    <span class="ionrift-badge success">Overridden</span>
+                    {{else}}
+                    <span class="ionrift-badge" style="opacity: 0.5;">Inherited</span>
+                    {{/if}}
+                </div>
                 {{/if}}
             </div>
-            {{/if}}
         </summary>
 
         <!-- Group Content -->
@@ -64,5 +89,36 @@
 
     .summary-arrow {
         transition: transform 0.2s;
+    }
+
+    .taxonomy-volume-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 80px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 2px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .taxonomy-volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #c4b5fd;
+        border: 1px solid rgba(124, 58, 237, 0.5);
+        cursor: pointer;
+    }
+
+    .taxonomy-volume-slider::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #c4b5fd;
+        border: 1px solid rgba(124, 58, 237, 0.5);
+        cursor: pointer;
     }
 </style>

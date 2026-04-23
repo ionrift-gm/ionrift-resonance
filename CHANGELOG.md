@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0] - 2026-04-23
+
+### Added
+- **Per-category volume sliders.** Scale playback volume for entire Action Taxonomy roots - Melee, Ranged, Magic, Spell Schools, and Domains - directly from Resonance Calibration.
+- Spell Schools and Domains inherit from the Magic slider unless individually overridden, so one slider quiets all magic at once.
+- Volume scaling applies to local and pack audio only. Syrinscape elements are fire-and-forget and not affected.
+
 ## [2.5.6] - 2026-04-21
 
 ### Added
