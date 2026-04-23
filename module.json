@@ -3,11 +3,11 @@
     "title": "Ionrift Resonance",
     "description": "Automated audio triggers for Foundry VTT combat. Plays sound effects for melee attacks, ranged weapons, spells, and creature abilities. Covers sword swings, bow shots, fireballs, healing, and critical hits. Ships with 400+ local SFX (WAV/MP3). Supports Daggerheart (native), DnD5e (via Midi-QOL), and Pathfinder 2e. Optionally integrates with Syrinscape for cloud audio.",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
-    "version": "2.5.6",
+    "version": "2.6.0",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
     "bugs": "https://discord.gg/vFGXf7Fncj",
     "manifest": "https://github.com/ionrift-gm/ionrift-resonance/releases/latest/download/module.json",
-    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.5.6/module.zip",
+    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.6.0/module.zip",
     "license": "LICENSE",
     "compatibility": {
         "minimum": "12",

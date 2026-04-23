@@ -271,15 +271,43 @@ export class SoundHandler {
         if (!this.orchestrator.allow(key)) return;
         const offset = this.orchestrator.getOffset(key);
 
-        // 3. Delegate to SoundManager
+        // 3. Taxonomy volume multiplier
+        const taxonomyVolume = this._getTaxonomyVolume(key);
+        const playOptions = { delay: delay + offset };
+        if (taxonomyVolume !== 1.0) playOptions.volumeMultiplier = taxonomyVolume;
+
+        // 4. Delegate to SoundManager
         if (game.ionrift.sounds?.manager) {
-            game.ionrift.sounds.manager.play(finalData, { delay: delay + offset });
+            game.ionrift.sounds.manager.play(finalData, playOptions);
 
             // Notify visualizer + any other consumers
             Hooks.call("ionrift.soundPlayed", key, finalData);
         } else {
             Logger.error("SoundHandler.play | Manager not available!");
         }
+    }
+
+    /**
+     * Look up the volume multiplier for a sound key's taxonomy root.
+     * CORE_SCHOOL/CORE_DOMAIN inherit from CORE_MAGIC when not explicitly overridden.
+     */
+    _getTaxonomyVolume(key) {
+        const root = SoundResolver.getTaxonomyRoot(key);
+        if (!root) return 1.0;
+
+        let volumes;
+        try {
+            volumes = JSON.parse(game.settings.get("ionrift-resonance", "taxonomyVolume") || "{}");
+        } catch { return 1.0; }
+
+        if (volumes[root] !== undefined) return volumes[root];
+
+        // Inherit from CORE_MAGIC for child magic roots
+        if ((root === "CORE_SCHOOL" || root === "CORE_DOMAIN") && volumes["CORE_MAGIC"] !== undefined) {
+            return volumes["CORE_MAGIC"];
+        }
+
+        return 1.0;
     }
 
     // Legacy method for "Resolving what ID a Key maps to"

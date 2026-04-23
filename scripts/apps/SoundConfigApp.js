@@ -222,8 +222,23 @@ export class SoundConfigApp extends FormApplication {
                 children: [],
                 fields: [], // Leaf nodes
                 headerCard: node.id ? myState.getRenderData() : null,
-                isOpen: this._expandedGroups.has(node.label) || false
+                isOpen: this._expandedGroups.has(node.label) || false,
+                volumeControl: null
             };
+
+            if (node.id && VOLUME_ENABLED_ROOTS.has(node.id)) {
+                const vol = taxonomyVolumes[node.id];
+                const magicVol = taxonomyVolumes["CORE_MAGIC"];
+                const isChild = (node.id === "CORE_SCHOOL" || node.id === "CORE_DOMAIN");
+                const effectiveVol = vol ?? (isChild ? (magicVol ?? 1.0) : 1.0);
+                groupData.volumeControl = {
+                    key: node.id,
+                    volume: effectiveVol,
+                    percent: Math.round(effectiveVol * 100),
+                    hasOverride: vol !== undefined,
+                    inheritsFromMagic: isChild && vol === undefined && magicVol !== undefined
+                };
+            }
 
             // B. Process Children
             if (node.children) {
@@ -251,6 +266,16 @@ export class SoundConfigApp extends FormApplication {
 
             return groupData;
         };
+
+        // --- Taxonomy Volume Controls ---
+        let taxonomyVolumes = {};
+        try {
+            taxonomyVolumes = JSON.parse(game.settings.get("ionrift-resonance", "taxonomyVolume") || "{}");
+        } catch { /* empty */ }
+
+        const VOLUME_ENABLED_ROOTS = new Set([
+            "CORE_MELEE", "CORE_RANGED", "CORE_MAGIC", "CORE_SCHOOL", "CORE_DOMAIN"
+        ]);
 
         // --- TAXONOMY DEFINITIONS ---
 
@@ -820,6 +845,11 @@ export class SoundConfigApp extends FormApplication {
         // Mute Toggle
         html.on("click", ".toggle-mute", this._onToggleMute.bind(this));
 
+        // Taxonomy Volume Sliders
+        html.on("input", ".taxonomy-volume-slider", this._onTaxonomyVolumeInput.bind(this));
+        html.on("change", ".taxonomy-volume-slider", this._onTaxonomyVolumeChange.bind(this));
+        html.on("click", ".taxonomy-volume-reset", this._onTaxonomyVolumeReset.bind(this));
+
         // Auditor
         html.on("click", ".auditor-edit", this._onAuditorEdit.bind(this));
         html.on("click", ".auditor-delete", this._onAuditorDelete.bind(this));
@@ -912,6 +942,59 @@ export class SoundConfigApp extends FormApplication {
 
         // Full re-render to update the row state (muted badge, button icon)
         this.render(true);
+    }
+
+    // -------------------------------------------------------------------------
+    // Taxonomy Volume Handlers
+    // -------------------------------------------------------------------------
+
+    _onTaxonomyVolumeInput(event) {
+        const slider = event.currentTarget;
+        const label = slider.closest(".taxonomy-volume-control")?.querySelector(".taxonomy-volume-label");
+        if (label) label.textContent = `${slider.value}%`;
+    }
+
+    async _onTaxonomyVolumeChange(event) {
+        const slider = event.currentTarget;
+        const key = slider.dataset.volumeKey;
+        const value = parseInt(slider.value, 10) / 100;
+
+        let volumes = {};
+        try {
+            volumes = JSON.parse(game.settings.get("ionrift-resonance", "taxonomyVolume") || "{}");
+        } catch { /* empty */ }
+
+        if (value >= 0.99) {
+            delete volumes[key];
+        } else {
+            volumes[key] = Math.round(value * 100) / 100;
+        }
+
+        await game.settings.set("ionrift-resonance", "taxonomyVolume", JSON.stringify(volumes));
+
+        const resetBtn = slider.closest(".taxonomy-volume-control")?.querySelector(".taxonomy-volume-reset");
+        if (resetBtn) resetBtn.style.display = value < 0.99 ? "inline-block" : "none";
+    }
+
+    async _onTaxonomyVolumeReset(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const key = event.currentTarget.dataset.volumeKey;
+
+        let volumes = {};
+        try {
+            volumes = JSON.parse(game.settings.get("ionrift-resonance", "taxonomyVolume") || "{}");
+        } catch { /* empty */ }
+
+        delete volumes[key];
+        await game.settings.set("ionrift-resonance", "taxonomyVolume", JSON.stringify(volumes));
+
+        const container = event.currentTarget.closest(".taxonomy-volume-control");
+        const slider = container?.querySelector(".taxonomy-volume-slider");
+        const label = container?.querySelector(".taxonomy-volume-label");
+        if (slider) slider.value = 100;
+        if (label) label.textContent = "100%";
+        event.currentTarget.style.display = "none";
     }
 
     // -------------------------------------------------------------------------

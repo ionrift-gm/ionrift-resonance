@@ -91,10 +91,16 @@ export class SoundManager {
             finalId = target;
         }
 
-        // 3. Route to correct provider based on ID format
+        // 3. Apply taxonomy volume multiplier (from SoundHandler)
+        if (finalOptions.volumeMultiplier !== undefined) {
+            finalOptions.volume = (finalOptions.volume ?? 1.0) * finalOptions.volumeMultiplier;
+            delete finalOptions.volumeMultiplier;
+        }
+
+        // 4. Route to correct provider based on ID format
         const provider = this._getProvider(finalId);
 
-        // 4. Handle Delays (Manager handles waiting)
+        // 5. Handle Delays (Manager handles waiting)
         const delay = finalOptions.delay || 0;
         if (delay > 0) {
             setTimeout(() => {

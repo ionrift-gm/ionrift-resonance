@@ -106,6 +106,14 @@ export const registerSettings = function () {
         default: ""
     });
 
+    // Per-taxonomy-root volume multipliers (JSON map: { "CORE_MAGIC": 0.5, ... })
+    game.settings.register("ionrift-resonance", "taxonomyVolume", {
+        scope: "world",
+        config: false,
+        type: String,
+        default: "{}"
+    });
+
     // Sound Pack enable/disable state: { packId: boolean }
     game.settings.register("ionrift-resonance", "installedSoundPacks", {
         scope: "world",

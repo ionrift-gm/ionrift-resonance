@@ -260,6 +260,40 @@ export class SoundResolver {
         return null;
     }
 
+    /**
+     * Maps a sound key to the action taxonomy root it belongs to.
+     * Returns null for keys outside the action taxonomy (core mechanics, monsters, etc.).
+     */
+    static getTaxonomyRoot(key) {
+        if (!key || typeof key !== 'string') return null;
+
+        // Direct root matches
+        if (key === "CORE_MELEE" || key === "CORE_BRAWL") return "CORE_MELEE";
+        if (key === "CORE_RANGED") return "CORE_RANGED";
+        if (key === "CORE_MAGIC") return "CORE_MAGIC";
+        if (key === "CORE_SCHOOL") return "CORE_SCHOOL";
+        if (key === "CORE_DOMAIN") return "CORE_DOMAIN";
+
+        const MELEE_KEYS = new Set([
+            "ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE",
+            "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM",
+            "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"
+        ]);
+        if (MELEE_KEYS.has(key)) return "CORE_MELEE";
+
+        const RANGED_KEYS = new Set([
+            "ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING",
+            "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"
+        ]);
+        if (RANGED_KEYS.has(key)) return "CORE_RANGED";
+
+        if (key.startsWith("SPELL_")) return "CORE_MAGIC";
+        if (key.startsWith("SCHOOL_")) return "CORE_SCHOOL";
+        if (key.startsWith("DOMAIN_")) return "CORE_DOMAIN";
+
+        return null;
+    }
+
     getPCSound(actor, type = "PAIN") {
         let identity = actor.getFlag("ionrift-resonance", "identity");
 
