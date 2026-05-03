@@ -7,6 +7,7 @@ import { Logger } from "./Logger.js";
 import { ResonanceConfig } from "./ResonanceConfig.js";
 import { SoundResolver } from "./SoundResolver.js";
 import { SoundOrchestrator } from "./SoundOrchestrator.js";
+import { SoundPackLoader } from "./services/SoundPackLoader.js";
 
 
 export class SoundHandler {
@@ -29,16 +30,18 @@ export class SoundHandler {
             get: () => this.configService.config
         });
 
+        // Legacy compat: activePreset is no longer meaningful (SoundPackLoader handles bindings).
+        // Returns "none" for any consumer that still reads it.
         Object.defineProperty(this, 'activePreset', {
-            get: () => this.configService.activePreset,
-            set: (val) => { /* No-op or handle if needed */ }
+            get: () => "none",
+            set: (val) => { /* No-op */ }
         });
 
         // Reactivity: Listen for settings changes via Config Service
         Hooks.on("updateSetting", (setting, changes, options, userId) => {
             if (setting.key === "ionrift-resonance.customSoundBindings" ||
-                setting.key === "ionrift-resonance.soundPreset" ||
-                setting.key === "ionrift-resonance.configOverrides") {
+                setting.key === "ionrift-resonance.configOverrides" ||
+                setting.key === "ionrift-resonance.installedSoundPacks") {
                 this.loadConfig();
             }
             if (setting.key === "ionrift-resonance.orchestratorConfig") {
@@ -105,7 +108,8 @@ export class SoundHandler {
 
     validateMappings() {
         if (!this.config) return;
-        if (this.activePreset === "none") return;
+        const enabledPacks = SoundPackLoader.getLoadedPacks().filter(p => p.enabled);
+        if (enabledPacks.length === 0) return;
 
         // Keys that never need direct bindings: abstract routing targets,
         // tiered parents, and backward-compat aliases.

@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.7.0] - 2026-05-03
+
+### Changed
+- **Sound files are no longer bundled with the module.** The 550+ SFX that previously shipped inside the module download are now distributed as the free Core SFX Pack. Install it from Module Settings or download from Patreon. This cuts the module download size from ~80 MB to under 1 MB.
+- **Attunement Protocol redesigned.** The old "Apply Sound Preset" step has been replaced by a Sound Packs status step. It shows which packs are installed and lets you import a pack directly from the wizard.
+- Sound binding resolution no longer branches on a preset setting. Custom bindings, pack bindings, and Syrinscape defaults (when configured) are resolved in a single predictable cascade.
+
+### Fixed
+- Resonance Calibration now shows pack-provided sounds immediately instead of requiring a preset selection first.
+- Startup health checks no longer skip validation for users who had not selected a preset.
+
+### Removed
+- The "Sound Preset" setting is deprecated. Existing values are automatically cleared on first load. Sound packs and custom bindings handle everything the preset system used to do.
+
 ## [2.6.0] - 2026-04-23
 
 ### Added

@@ -1,4 +1,6 @@
 import { Logger } from "../Logger.js";
+import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
+import { SoundPackLoader } from "../services/SoundPackLoader.js";
 
 export class SoundPickerApp extends Application {
     static get defaultOptions() {
@@ -42,9 +44,8 @@ export class SoundPickerApp extends Application {
         this.isLoading = false;
         this.filterOneshots = true; // Default: Only show reactive sounds
 
-        // Track active tab (persist across re-renders)
-        const preset = game.settings.get("ionrift-resonance", "soundPreset");
-        this._activeTab = (preset === "pack") ? "local" : "syrinscape";
+        // Default to local tab when no Syrinscape token is configured
+        this._activeTab = SyrinscapeProvider.isConfigured() ? "syrinscape" : "local";
 
         // Pre-load cache if available
         const cache = game.settings.get('ionrift-resonance', 'oneshotCache');
@@ -111,15 +112,20 @@ export class SoundPickerApp extends Application {
     }
 
     /**
-     * Load pack.json sounds for the current soundKey.
+     * Load pack sounds for the current soundKey from SoundPackLoader.
      */
     async _loadPackSounds() {
         if (!this.opts.soundKey) return;
         try {
-            const res = await fetch("modules/ionrift-resonance/scripts/presets/pack.json");
-            const data = await res.json();
-            const bindings = data.bindings || data;
-            this._packSounds = bindings[this.opts.soundKey] || [];
+            const merged = SoundPackLoader.loaded ? SoundPackLoader.getMergedBindings() : {};
+            const entry = merged[this.opts.soundKey];
+            if (Array.isArray(entry)) {
+                this._packSounds = entry;
+            } else if (entry && typeof entry === "object" && entry.id) {
+                this._packSounds = [entry];
+            } else {
+                this._packSounds = [];
+            }
             this._packSoundsLoaded = true;
             if (this._packSounds.length > 0 && this.rendered) this.render(false);
         } catch (e) {

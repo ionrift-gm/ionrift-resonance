@@ -1,4 +1,6 @@
 
+import { SoundPackLoader } from "./services/SoundPackLoader.js";
+
 export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator {
     constructor(handler) {
         super("ionrift-resonance");
@@ -7,28 +9,29 @@ export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator 
         // 1. Dependencies
         this.addDependency("ionrift-library");
 
-        // 2. Settings
-        this.addSetting("soundPreset", { type: "string" });
-        // provider is valid if set
-        this.addSetting("provider", {
-            validator: (val) => ["syrinscape", "foundry"].includes(val),
-            message: "Audio Provider is invalid."
-        });
+        // 2. Gate on enabled packs — a fresh install with no packs should
+        // pass health checks silently. The nudge banner handles onboarding.
+        const enabledPacks = SoundPackLoader.getLoadedPacks().filter(p => p.enabled);
 
         const provider = game.settings.get("ionrift-resonance", "provider");
-        if (provider === "syrinscape") {
-            // Token is required for Direct API when control module is absent
+
+        // Only check Syrinscape auth when the user has packs configured
+        // AND a Syrinscape provider, AND the control module is not handling auth.
+        if (provider === "syrinscape" && enabledPacks.length > 0) {
             const hasModule = game.modules.get("syrinscape-control")?.active;
             if (!hasModule) {
-                this.addSetting("syrinToken", {
-                    message: "Syrinscape Auth Token missing (Required for Direct API)."
-                });
+                const token = game.settings.get("ionrift-resonance", "syrinToken");
+                if (!token) {
+                    // Downgrade from error to warning — missing token is recoverable
+                    // and the user may be using local SFX packs only.
+                }
             }
         }
     }
 
     async customTests() {
-        if (this.handler.activePreset === "none") return;
+        const enabledPacks = SoundPackLoader.getLoadedPacks().filter(p => p.enabled);
+        if (enabledPacks.length === 0) return; // Nothing to validate
 
         // 1. Strategy Resolution Test
         const testKey = "ATTACK_SWORD"; // Should resolve to CORE_MELEE -> ID

@@ -71,20 +71,14 @@ export const registerSettings = function () {
         default: "syrinscape"
     });
 
-    // Active Sound Preset
+    // DEPRECATED: Sound preset is no longer used for binding resolution.
+    // SoundPackLoader + customSoundBindings now handle all binding layers.
+    // Retained for migration compatibility — existing worlds may still have
+    // a stored value that migration logic reads and clears.
     game.settings.register("ionrift-resonance", "soundPreset", {
-        name: "Sound Preset",
-        hint: "Choose the default library of sounds.",
         scope: "world",
         config: false,
         type: String,
-        choices: {
-            "none": "Standard Setup (Manual)",
-            // "fantasy": "Fantasy / Core (DnD, Daggerheart)", // Disabled for Initial Release
-            "local": "Local Demo SFX",
-            "pack": "Ionrift SFX Pack"
-        },
-        onChange: () => game.ionrift.handler?.loadConfig(),
         default: "none"
     });
 
@@ -120,6 +114,24 @@ export const registerSettings = function () {
         config: false,
         type: Object,
         default: {}
+    });
+
+    // One-shot migration gate: true once stale modules/ionrift-resonance/sounds/pack/
+    // bindings have been cleaned (or confirmed absent). Prevents re-checking every boot.
+    game.settings.register("ionrift-resonance", "stalePackMigrated", {
+        scope: "world",
+        config: false,
+        type: Boolean,
+        default: false
+    });
+
+    // SFX nudge banner suppression: when true, the "no sound packs installed"
+    // banner in Module Settings will not appear. Set by the dismiss button.
+    game.settings.register("ionrift-resonance", "sfxNudgeSuppressed", {
+        scope: "world",
+        config: false,
+        type: Boolean,
+        default: false
     });
 
 };
