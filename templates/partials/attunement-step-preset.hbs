@@ -8,61 +8,68 @@
     </div>
     {{/if}}
 
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-
-        {{!-- Local SFX Pack --}}
-        <label
-            style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="pack" {{#if (eq defaultPreset "pack" )}}checked{{/if}} {{#if
-                isLocked}}disabled{{/if}}
-                style="margin-top: 4px; transform: scale(1.5); accent-color: #4ade80; cursor: pointer;">
-            <div style="flex: 1;">
-                <strong style="color: #4ade80; display: block; margin-bottom: 3px; font-size: 1.1em;">
-                    <i class="fas fa-box-open"></i> Ionrift SFX Pack
-                    {{#if isFirstSetup}}<span
-                        style="font-size:0.8em; opacity:0.7; font-weight:normal;">(Recommended)</span>{{/if}}
-                </strong>
-                <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
-                    370+ sounds across combat, weapons, spells, and system events.
-                </span>
-            </div>
-        </label>
-
-        {{!-- Keep Current --}}
-        <label
-            style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="keep" {{#if (eq defaultPreset "keep" )}}checked{{/if}} {{#if
-                isLocked}}disabled{{/if}}
-                style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
-            <div style="flex: 1;">
-                <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Keep Current
-                    Configuration</strong>
-                <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
-                    Preserve your existing sound bindings and overrides.
-                </span>
-            </div>
-        </label>
-
-        {{!-- Standard (Manual) --}}
-        <label
-            style="display:flex; align-items:flex-start; gap:15px; cursor:pointer; padding: 8px; border-radius: 4px; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-            <input type="radio" name="preset" value="empty" {{#if (eq defaultPreset "empty" )}}checked{{/if}} {{#if
-                isLocked}}disabled{{/if}}
-                style="margin-top: 4px; transform: scale(1.5); accent-color: #9b59b6; cursor: pointer;">
-            <div style="flex: 1;">
-                <strong style="color: #fff; display: block; margin-bottom: 3px; font-size: 1.1em;">Standard Setup
-                    (Manual)</strong>
-                <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
-                    Initialize with a clean slate. Bring your own sounds via the Calibration UI.
-                </span>
-            </div>
-        </label>
-
+    {{#if hasPacks}}
+    {{!-- Packs installed: show green status --}}
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.2); border-radius: 6px;">
+        <i class="fas fa-check-circle" style="font-size: 2em; color: #4ade80; flex-shrink: 0;"></i>
+        <div style="flex: 1;">
+            <strong style="color: #4ade80; display: block; margin-bottom: 3px; font-size: 1.1em;">
+                Sound Packs Ready
+            </strong>
+            <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
+                {{enabledCount}} pack{{#unless singlePack}}s{{/unless}} enabled with {{bindingCount}} sound bindings.
+            </span>
+        </div>
     </div>
 
-    <button type="button" class="apply-preset-btn" {{#if isLocked}}disabled{{/if}}
-        style="width:100%; padding:7px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold;">
-        <i class="fas fa-check"></i> Apply Selection
+    {{!-- Per-pack detail --}}
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 0 4px;">
+        {{#each packs}}
+        {{#if this.enabled}}
+        <div style="display: flex; align-items: center; gap: 10px; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 4px;">
+            <i class="fas fa-music" style="color: #58a6ff; font-size: 0.9em;"></i>
+            <span style="flex: 1; color: #c9d1d9; font-size: 0.9em;">
+                {{this.name}} <span style="color: #8b949e; font-size: 0.85em;">v{{this.version}}</span>
+            </span>
+            <span style="color: #8b949e; font-size: 0.8em;">{{this.bindingCount}} keys</span>
+        </div>
+        {{/if}}
+        {{/each}}
+    </div>
+
+    <button type="button" class="sound-packs-continue-btn" {{#if isLocked}}disabled{{/if}}
+        style="width:100%; padding:7px 12px; background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3); color:#4ade80; border-radius:3px; cursor:pointer; font-weight:bold;">
+        <i class="fas fa-check"></i> Continue
     </button>
 
+    {{else}}
+    {{!-- No packs: show nudge --}}
+    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: rgba(234,179,8,0.06); border: 1px solid rgba(234,179,8,0.2); border-radius: 6px;">
+        <i class="fas fa-box-open" style="font-size: 2em; color: #fbbf24; flex-shrink: 0; margin-top: 2px;"></i>
+        <div style="flex: 1;">
+            <strong style="color: #fbbf24; display: block; margin-bottom: 3px; font-size: 1.1em;">
+                No Sound Packs Installed
+            </strong>
+            <span style="font-size: 0.9em; opacity: 0.9; line-height: 1.4; display: block; color: #ddd;">
+                Download the Core SFX Pack to hear combat, spells, and creature sounds. Then import the <code>.zip</code> file using the button below.
+            </span>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <button type="button" class="sound-packs-download-btn"
+            style="flex: 1; padding: 7px 12px; background: rgba(88,166,255,0.15); border: 1px solid rgba(88,166,255,0.3); color: #58a6ff; border-radius: 3px; cursor: pointer; font-weight: bold;">
+            <i class="fas fa-download"></i> Get Core SFX Pack
+        </button>
+        <button type="button" class="sound-packs-import-btn"
+            style="flex: 1; padding: 7px 12px; background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; border-radius: 3px; cursor: pointer; font-weight: bold;">
+            <i class="fas fa-file-import"></i> Import .zip
+        </button>
+    </div>
+
+    <button type="button" class="sound-packs-continue-btn" {{#if isLocked}}disabled{{/if}}
+        style="width:100%; padding:7px 12px; background:rgba(139,92,246,0.2); border:1px solid #7c3aed; color:#c4b5fd; border-radius:3px; cursor:pointer; font-weight:bold;">
+        <i class="fas fa-forward"></i> Skip — I'll set up packs later
+    </button>
+    {{/if}}
 </div>

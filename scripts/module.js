@@ -24,7 +24,7 @@ Hooks.once('init', async function () {
     // Register Settings (CRITICAL: Must be done early)
     registerSettings();
 
-    // Internal Setting for Wizard UI State
+    // DEPRECATED: Was set by _applyPreset() in the Attunement wizard. No longer written or read.
     game.settings.register("ionrift-resonance", "soundCompleteness", {
         name: "Sound Preset Completeness (Internal)",
         hint: "Tracks whether the user selected Core or Full library.",
@@ -57,7 +57,7 @@ Hooks.once('init', async function () {
     // HEADER
     const { SettingsLayout } = await import("../../ionrift-library/scripts/SettingsLayout.js");
     SettingsLayout.registerHeader("ionrift-resonance", AttunementApp, {
-        hint: "First-time setup: select a sound preset and optionally connect Syrinscape."
+        hint: "First-time setup: install sound packs and optionally connect Syrinscape."
     });
 
     // PACK BUTTON (via kernel)
@@ -98,47 +98,56 @@ Hooks.once('init', async function () {
         // This sets up game.ionrift.handler
         new SoundHandler();
 
-        // [FIX] Robustly wait for 'syrinscape-control' to initialize its API
-        await waitForDependency();
+        // Wait for Syrinscape Control to initialize — only if it's actually installed.
+        // Skips the 2-second polling loop when the module isn't present.
+        if (game.modules.get("syrinscape-control")?.active) {
+            await waitForDependency();
+        }
 
         // Initialize Manager (Audio Player / Soundboard)
         await game.ionrift.sounds.manager.initialize();
 
-        if (game.user.isGM) {
-            // Check if we need to show the standardized Attunement Protocol
-            // We use the static helper from AbstractWelcomeApp (which AttunementApp extends)
-            // Note: We need to import the class or ensure it's available. It is imported above.
+        // ── Stale pack-preset migration ────────────────────────────────
+        // Prior releases baked 552 sound files into modules/ionrift-resonance/sounds/pack/.
+        // Those files are now removed; the same content ships as the downloadable
+        // Core SFX Pack (ionrift-soundpack-core). Detect and migrate stale bindings.
+        if (game.user.isGM && !game.settings.get("ionrift-resonance", "stalePackMigrated")) {
+            const raw = game.settings.get("ionrift-resonance", "customSoundBindings") || "{}";
+            const hasStale = raw.includes("modules/ionrift-resonance/sounds/pack/");
 
-            // Check if settings allow
-            // const currentVersion = game.modules.get("ionrift-resonance").version;
-            // if (AttunementApp.shouldShow("ionrift-resonance", "setupVersion", currentVersion)) {
-            //     new AttunementApp().render(true);
-            // }
+            if (hasStale) {
+                const loadedPacks = SoundPackLoader.getLoadedPacks();
+                const coreInstalled = loadedPacks.some(p => p.id === "ionrift-soundpack-core" && p.enabled);
 
-            // Attunement Protocol: Only show when the setup process itself changes.
-            // ATTUNEMENT_VERSION is a static constant - only bump it when setup steps
-            // change (new API, new required config), NOT on every module patch release.
-            const ATTUNEMENT_VERSION = "1";
-            const lastSetupVersion = game.settings.get("ionrift-resonance", "setupVersion");
-
-            // Backward compatibility: 2.0.0 users have semver strings (e.g. "2.0.0").
-            // Silently migrate them to the new protocol versioning without re-prompting.
-            if (lastSetupVersion.includes(".") && lastSetupVersion !== "0.0.0") {
-                await game.settings.set("ionrift-resonance", "setupVersion", ATTUNEMENT_VERSION);
-            } else if (lastSetupVersion !== ATTUNEMENT_VERSION) {
-                new AttunementApp(ATTUNEMENT_VERSION).render(true);
+                if (coreInstalled) {
+                    // Pack is installed — silently clear the stale bindings.
+                    // The pack layer now provides them via SoundPackLoader.getMergedBindings().
+                    await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
+                    await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
+                    Logger.log("Stale pack bindings cleared. Core SFX Pack provides sounds.");
+                    ui.notifications.info("Ionrift Resonance: Sounds migrated to the installed Core SFX Pack.");
+                } else {
+                    // Pack not installed — warn the GM so they can install it.
+                    ui.notifications.warn(
+                        "Ionrift Resonance: Built-in sound files have been removed. Install the free Core SFX Pack from Module Settings → Sound Packs to restore your sounds.",
+                        { permanent: true }
+                    );
+                }
+            } else {
+                // No stale paths — mark as migrated to skip future checks.
+                await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
             }
+        }
 
-            // One-time upgrade notification - shows new features to existing users
-            const NOTIFY_VERSION = "2.3.0";
-            const lastNotified = game.settings.get("ionrift-resonance", "lastNotifiedVersion");
-            if (lastNotified !== NOTIFY_VERSION && lastSetupVersion === ATTUNEMENT_VERSION) {
-                // Existing user who completed setup - tell them about the new feature
-                ui.notifications.info(
-                    `Ionrift Resonance ${NOTIFY_VERSION}: You can now mute individual sound events in the Calibration UI. Look for the speaker icon on each sound row.`,
-                    { permanent: true }
-                );
-                await game.settings.set("ionrift-resonance", "lastNotifiedVersion", NOTIFY_VERSION);
+        // ── soundPreset deprecation migration ─────────────────────────
+        // The soundPreset setting is vestigial — SoundPackLoader handles all
+        // binding resolution now. Normalize any non-"none" value so legacy
+        // code paths in third-party macros don't accidentally branch on it.
+        if (game.user.isGM) {
+            const currentPreset = game.settings.get("ionrift-resonance", "soundPreset");
+            if (currentPreset && currentPreset !== "none") {
+                await game.settings.set("ionrift-resonance", "soundPreset", "none");
+                Logger.log(`Migrated: soundPreset "${currentPreset}" → "none" (now handled by SoundPackLoader).`);
             }
         }
         // Forge safety tests (infrastructure, non-IP-sensitive)
@@ -256,61 +265,10 @@ async function waitForDependency() {
         }
         await new Promise(r => setTimeout(r, interval));
     }
-    Logger.warn("Ionrift Sounds | Syrinscape Control API not found after waiting. Initialization may be partial.");
+    Logger.log("Ionrift Sounds | Syrinscape Control module is active but its API did not initialize within 2s. Audio integration may be limited.");
 }
 
 
-
-// Prevent accidental preset switches if overrides exist
-Hooks.on('preUpdateSetting', (setting, changes, options, userId) => {
-    if (setting.key !== 'ionrift-resonance.soundPreset') return;
-    if (options.ionriftConfirmed) return;
-
-    const current = game.settings.get("ionrift-resonance", "soundPreset");
-    const target = changes.value;
-
-    // Clean values (remove quotes and whitespace)
-    const cleanCurrent = (typeof current === "string") ? current.replace(/^["']|["']$/g, '').trim() : current;
-    const cleanTarget = (typeof target === "string") ? target.replace(/^["']|["']$/g, '').trim() : target;
-
-    // Ignore identical updates
-    if (cleanCurrent === cleanTarget) return;
-
-    // BLOCK SYNC & Launch Async Check
-    // We strictly block the update here, then re-fire it if confirmed.
-    (async () => {
-        // Dynamic Import
-        const { PresetSafetyCheck } = await import("./PresetSafetyCheck.js");
-
-        // MITIGATION: Lock the Settings Config window
-        const settingsApp = Object.values(ui.windows).find(w => w.id === "client-settings");
-        if (settingsApp) {
-            settingsApp.element.css("pointer-events", "none");
-            settingsApp.element.css("opacity", "0.5");
-            settingsApp.element.find("button").prop("disabled", true);
-        }
-
-        try {
-            const safe = await PresetSafetyCheck.confirmSwitch(cleanCurrent, cleanTarget);
-
-            if (safe) {
-                // Re-apply the setting with the confirmation flag (and CLEANED value)
-                game.settings.set("ionrift-resonance", "soundPreset", cleanTarget, { ionriftConfirmed: true });
-            } else {
-                ui.notifications.warn("Ionrift Sounds: Preset switch cancelled.");
-            }
-        } finally {
-            // Unlock UI
-            if (settingsApp) {
-                settingsApp.element.css("pointer-events", "auto");
-                settingsApp.element.css("opacity", "1.0");
-                settingsApp.element.find("button").prop("disabled", false);
-            }
-        }
-    })();
-
-    return false; // Block the original request
-});
 
 // Hook into Settings Config to display status icon on load
 Hooks.on('renderSettingsConfig', (app, html, data) => {
@@ -319,7 +277,75 @@ Hooks.on('renderSettingsConfig', (app, html, data) => {
         game.ionrift.integration.renderSettingsIndicator(html, app);
     }
 
+    // SFX Pack Nudge: inline banner when no sound packs are installed
+    if (game.user.isGM && !game.settings.get("ionrift-resonance", "sfxNudgeSuppressed")) {
+        const loadedPacks = SoundPackLoader.getLoadedPacks();
+        const hasSfxPack = loadedPacks.some(p => p.enabled);
+        if (!hasSfxPack) {
+            _injectSfxNudgeBanner(html);
+        }
+    }
 });
+
+/**
+ * Injects the SFX nudge banner into the settings panel under the Resonance section.
+ * Uses the kernel's SettingsLayout data-key attribute to find the correct anchor point.
+ * Mirrors the Respite art-nudge pattern: dismiss (suppress) or snooze.
+ */
+function _injectSfxNudgeBanner(html) {
+    const $html = $(html);
+    // Find the Sound Packs button rendered by SettingsLayout.registerPackButton
+    const $packBtn = $html.find(`button[data-key="ionrift-resonance.contentPacks"]`);
+    const $anchor = $packBtn.length ? $packBtn.closest(".form-group") : null;
+    if (!$anchor?.length) return;
+
+    const banner = $(`
+        <div class="sfx-nudge-banner" style="
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(88, 166, 255, 0.25);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        ">
+            <i class="fas fa-music" style="font-size: 20px; color: #58a6ff; flex-shrink: 0;"></i>
+            <div style="flex: 1;">
+                <strong style="color: #c9d1d9;">No sound effects configured.</strong>
+                <span style="color: #8b949e;">Install the Core SFX Pack to hear combat, spells, and creatures.</span>
+            </div>
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                <button type="button" class="sfx-nudge-get" style="
+                    background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.3);
+                    color: #58a6ff; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px;
+                "><i class="fas fa-download"></i> Get Pack</button>
+                <button type="button" class="sfx-nudge-open" style="
+                    background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3);
+                    color: #a78bfa; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px;
+                "><i class="fas fa-folder-open"></i> Sound Packs</button>
+                <button type="button" class="sfx-nudge-dismiss" style="
+                    background: transparent; border: 1px solid rgba(139, 148, 158, 0.2);
+                    color: #8b949e; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px;
+                " title="Don't show again"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+    `);
+
+    banner.find(".sfx-nudge-get").on("click", () => {
+        window.open("https://www.patreon.com/posts/155880618", "_blank");
+    });
+    banner.find(".sfx-nudge-open").on("click", () => {
+        new ResonancePackRegistryApp().render(true);
+    });
+    banner.find(".sfx-nudge-dismiss").on("click", async () => {
+        await game.settings.set("ionrift-resonance", "sfxNudgeSuppressed", true);
+        banner.remove();
+    });
+
+    $anchor.after(banner);
+}
 
 // Sidebar Injection (Playlist Directory)
 Hooks.on("renderPlaylistDirectory", (app, html, data) => {

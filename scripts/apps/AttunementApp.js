@@ -2,11 +2,12 @@
 import { AbstractWelcomeApp } from "/modules/ionrift-library/scripts/apps/AbstractWelcomeApp.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
+import { SoundPackLoader } from "../services/SoundPackLoader.js";
 
 
 /**
  * Ionrift Resonance Attunement Protocol
- * Handles Syrinscape Connection and Sound Preset Configuration.
+ * Handles Syrinscape Connection and Sound Pack verification.
  */
 export class AttunementApp extends AbstractWelcomeApp {
     // Must match ATTUNEMENT_VERSION in module.js - bump both together at release
@@ -103,160 +104,20 @@ export class AttunementApp extends AbstractWelcomeApp {
         }
     }
 
-    // ... (rest of class) ...
-
-    async _applyPreset() {
-        const form = this.element.find("form");
-        let presetType = form.find("input[name='preset']:checked").val();
-
-        // Default to 'keep' if no selection made (Safety - preserve existing config)
-        if (!presetType) {
-            Logger.warn("Attunement | No preset selected, defaulting to 'keep'.");
-            presetType = "keep";
-        }
-
-        // Keep Current: Pass through without touching any settings
-        if (presetType === "keep") {
-            Logger.log("Attunement | Keeping current configuration. No changes applied.");
-            ui.notifications.info("Resonance | Existing configuration preserved.");
-            return true;
-        }
-
-        // Local SFX Pack - same overwrite guard as standard manual setup
-        if (presetType === "pack") {
-            const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
-            const existingOverrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
-            const hasCustom = Object.keys(existingBindings).length > 0;
-            const hasOverrides = Object.keys(existingOverrides).length > 0;
-
-            if (hasCustom || hasOverrides) {
-                const confirmed = await new Promise((resolve) => {
-                    new Dialog({
-                        title: "Overwrite Configuration?",
-                        content: `
-                            <div style="padding: 10px; text-align: center;">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #f87171; margin-bottom: 15px;"></i>
-                                <p style="font-size: 1.1em; margin-bottom: 10px;">You have active sound customizations.</p>
-                                <p style="color: #ccc;">Applying the <strong>Ionrift SFX Pack</strong> preset will <strong style="color: #f87171;">reset</strong> all custom bindings and overrides.</p>
-                            </div>
-                        `,
-                        buttons: {
-                            yes: { label: `<i class="fas fa-check"></i> Overwrite &amp; Reset`, callback: () => resolve(true) },
-                            no: { label: `<i class="fas fa-times"></i> Cancel`, callback: () => resolve(false) }
-                        },
-                        default: "no",
-                        close: () => resolve(false)
-                    }, { classes: ["ionrift", "ionrift-window", "glass-ui"], width: 400 }).render(true);
-                });
-                if (!confirmed) return false;
-            }
-
-            await game.settings.set("ionrift-resonance", "configOverrides", {});
-
-            // Load pack.json bindings and write to customSoundBindings so
-            // the Calibration UI resolveValue() finds them in the custom layer.
-            try {
-                const res = await fetch("modules/ionrift-resonance/scripts/presets/pack.json");
-                const packData = await res.json();
-                await game.settings.set("ionrift-resonance", "customSoundBindings", JSON.stringify(packData.bindings || {}));
-            } catch (e) {
-                Logger.error("Failed to load pack.json bindings:", e);
-                await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
-            }
-
-            await game.settings.set("ionrift-resonance", "soundPreset", "pack", { ionriftConfirmed: true });
-            await game.settings.set("ionrift-resonance", "soundCompleteness", "pack");
-            const calibrationWin = Object.values(ui.windows).find(w => w.id === "ionrift-sound-config");
-            if (calibrationWin) calibrationWin.render(true, { focus: false });
-            ui.notifications.info("Resonance | SFX Pack loaded. Your world is ready.");
-            return true;
-        }
-
-        // Import Defaults
-        const { SYRINSCAPE_PRESETS } = await import("../data/syrinscape_defaults.js");
-        const sysId = game.system.id === 'daggerheart' ? 'daggerheart' : 'dnd5e';
-        const presetKey = `${sysId}_${presetType}`;
-        const presetData = SYRINSCAPE_PRESETS[presetKey] || SYRINSCAPE_PRESETS[presetType];
-
-        if (!presetData) throw new Error(`Preset data not found for ${presetType} (${presetKey})`);
-
-        // Check for existing custom bindings OR config overrides
-        const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
-        const existingOverrides = game.settings.get("ionrift-resonance", "configOverrides") || {};
-
-        const hasCustom = Object.keys(existingBindings).length > 0;
-        const hasOverrides = Object.keys(existingOverrides).length > 0;
-
-        // Warn user if existing customizations will be overwritten
-        if (hasCustom || hasOverrides) {
-            // BRANDED DIALOG
-            const confirm = await new Promise((resolve) => {
-                new Dialog({
-                    title: "Overwrite Configuration?",
-                    content: `
-                        <div style="padding: 10px; text-align: center;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #f87171; margin-bottom: 15px;"></i>
-                            <p style="font-size: 1.1em; margin-bottom: 10px;">You have active sound customizations.</p>
-                            <p style="color: #ccc;">Applying the <strong>${presetType}</strong> preset will <strong style="color: #f87171;">reset</strong> all custom bindings and overrides to default.</p>
-                        </div>
-                    `,
-                    buttons: {
-                        yes: {
-                            label: `<i class="fas fa-check"></i> Overwrite &amp; Reset`,
-                            callback: () => resolve(true)
-                        },
-                        no: {
-                            label: `<i class="fas fa-times"></i> Cancel`,
-                            callback: () => resolve(false)
-                        }
-                    },
-                    default: "no",
-                    close: () => resolve(false)
-                }, {
-                    classes: ["ionrift", "ionrift-window", "glass-ui"],
-                    width: 400
-                }).render(true);
-            });
-
-            if (!confirm) return false; // Cancel operation
-        }
-
-        // Reset configuration to factory defaults
-
-        // 1. Clear Overrides (Campaign Settings)
-        await game.settings.set("ionrift-resonance", "configOverrides", {});
-
-        // 2. Clear Custom Bindings (Resets to Preset Defaults via SoundHandler layering)
-        await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
-
-        // 3. Set Sound Preset
-        // Map 'empty' to 'none', others to 'fantasy' (default)
-        const targetPreset = (presetType === "empty") ? "none" : "fantasy";
-        await game.settings.set("ionrift-resonance", "soundPreset", targetPreset, { ionriftConfirmed: true });
-
-
-        // 4. Save Completeness Preference
-        await game.settings.set("ionrift-resonance", "soundCompleteness", presetType);
-
-        // 5. Refresh "Resonance Calibration" UI if open
-        const calibrationWin = Object.values(ui.windows).find(w => w.id === "ionrift-sound-config");
-        if (calibrationWin) {
-            Logger.log("Resonance | Refreshing Calibration Window...");
-            calibrationWin.render(true, { focus: false });
-        }
-
-        // Ensure Attunement stays on top (with slight delay to beat render cycle)
-        if (this.rendered) {
-            setTimeout(() => this.bringToTop(), 100);
-        }
-
-        ui.notifications.info(`Resonance | Factory Reset Complete. Customizations cleared.`);
-        return true; // Explicit Success
+    /**
+     * Checks sound pack status. This is a verification step — no settings are
+     * written. The template shows pack status and provides download/import
+     * actions; the continue button simply advances the wizard.
+     */
+    async _checkSoundPacks() {
+        Logger.log("Attunement | Sound packs step completed.");
+        return true;
     }
+
     _getIntroText() { return ""; }
 
     _getCompleteMessage() {
-        return "Resonance is attuned and ready. You can re-run this protocol anytime to switch presets or update your token.";
+        return "Resonance is attuned and ready. You can re-run this protocol anytime to update your token or check sound pack status.";
     }
 
     getSteps() {
@@ -271,13 +132,13 @@ export class AttunementApp extends AbstractWelcomeApp {
                 content: () => this._getTokenStepContent()
             },
             {
-                id: "apply_preset",
-                title: "Apply Sound Preset",
-                icon: "fas fa-sliders-h",
-                description: "Set up your initial sound bindings. You can adjust these anytime via the Calibration UI.",
-                actionLabel: "Apply Preset",
-                actionHidden: true,
-                content: () => this._getPresetStepContent()
+                id: "sound_packs",
+                title: "Sound Packs",
+                icon: "fas fa-music",
+                description: "Verify your sound library is installed and ready.",
+                actionLabel: "Continue",
+                actionHidden: true, // Continue button is inside the template
+                content: () => this._getSoundPacksStepContent()
             },
             {
                 id: "verification",
@@ -306,24 +167,18 @@ export class AttunementApp extends AbstractWelcomeApp {
         });
     }
 
-    async _getPresetStepContent() {
-        const sysLabel = game.system.title;
-
-        // Detect empty / first-run state:
-        // Default to SFX Pack only if nothing is configured (no bindings, preset is 'none')
-        const existingBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
-        const currentPreset = game.settings.get("ionrift-resonance", "soundPreset") || "none";
-        const isEmpty = Object.keys(existingBindings).length === 0 && currentPreset === "none";
-
-        // Keep Current is the safe default for returning users; Pack is default for first-timers
-        const defaultPreset = isEmpty ? "pack" : "keep";
-
+    async _getSoundPacksStepContent() {
+        const packs = SoundPackLoader.getLoadedPacks();
+        const enabledPacks = packs.filter(p => p.enabled);
+        const totalBindings = enabledPacks.reduce((sum, p) => sum + p.bindingCount, 0);
         const isLocked = !this.completedSteps?.has("connect_syrinscape");
 
         return await renderTemplate("modules/ionrift-resonance/templates/partials/attunement-step-preset.hbs", {
-            sysLabel: sysLabel,
-            defaultPreset: defaultPreset,
-            isFirstSetup: isEmpty,
+            packs: packs,
+            hasPacks: enabledPacks.length > 0,
+            enabledCount: enabledPacks.length,
+            singlePack: enabledPacks.length === 1,
+            bindingCount: totalBindings,
             isLocked: isLocked
         });
     }
@@ -367,15 +222,76 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
         });
 
-        // Apply Preset button - fires the (hidden) step action btn
-        // Guard: Sound Provider (connect_syrinscape) must be complete first
-        html.find(".apply-preset-btn").click((ev) => {
+        // Sound Packs step — continue button fires the (hidden) step action
+        html.find(".sound-packs-continue-btn").click((ev) => {
             ev.preventDefault();
             if (!this.completedSteps?.has("connect_syrinscape")) {
-                ui.notifications.warn("Complete the Sound Provider step before applying a preset.");
+                ui.notifications.warn("Complete the Sound Provider step first.");
                 return;
             }
-            html.find(".step-action-btn[data-step='apply_preset']").trigger("click");
+            html.find(".step-action-btn[data-step='sound_packs']").trigger("click");
+        });
+
+        // Sound Packs step — download button
+        html.find(".sound-packs-download-btn").click((ev) => {
+            ev.preventDefault();
+            window.open("https://www.patreon.com/posts/155880618", "_blank");
+        });
+
+        // Sound Packs step — import .zip button
+        html.find(".sound-packs-import-btn").click(async (ev) => {
+            ev.preventDefault();
+            try {
+                const lib = game.ionrift?.library;
+                if (!lib?.importZipFromFile) {
+                    ui.notifications.error("Ionrift Library v1.7.0+ is required for sound pack imports.");
+                    return;
+                }
+
+                // Pick a zip file
+                const file = await this._pickZipFile();
+                if (!file) return;
+
+                // Pre-read manifest.json to get the pack ID
+                const packId = await this._readPackIdFromZip(file);
+                if (!packId) {
+                    ui.notifications.error("Sound pack ZIP must contain a manifest.json with an \"id\" field.");
+                    return;
+                }
+
+                // Ensure packs root exists
+                const platform = game.ionrift?.library?.platform;
+                if (platform) {
+                    await platform.ensureDirectory("ionrift-data/resonance/packs");
+                }
+
+                // Import into ionrift-data/resonance/packs/{packId}/
+                const result = await lib.importZipFromFile(file, {
+                    moduleId: "resonance",
+                    assetType: `packs/${packId}`,
+                    allowedExtensions: [".json", ".mp3", ".wav", ".ogg", ".webm", ".flac"],
+                    maxSizeMB: 200
+                });
+
+                if (!result || result.imported === 0) return;
+
+                // Auto-enable the newly imported pack
+                try {
+                    const settings = game.settings.get("ionrift-resonance", "installedSoundPacks") ?? {};
+                    settings[packId] = true;
+                    await game.settings.set("ionrift-resonance", "installedSoundPacks", settings);
+                } catch (e) {
+                    console.warn("Attunement | Failed to auto-enable pack:", e);
+                }
+
+                // Re-init SoundPackLoader and re-render to show updated status
+                await SoundPackLoader.init();
+                ui.notifications.info(`Sound pack "${packId}" imported. ${result.imported} files installed.`);
+                this.render();
+            } catch (e) {
+                Logger.error("Failed to import sound pack:", e);
+                ui.notifications.error("Import failed. Check the console for details.");
+            }
         });
 
         // Live Token Input
@@ -403,8 +319,8 @@ export class AttunementApp extends AbstractWelcomeApp {
     async executeStep(stepId) {
         if (stepId === "connect_syrinscape") {
             return await this._verifyConnection();
-        } else if (stepId === "apply_preset") {
-            return await this._applyPreset();
+        } else if (stepId === "sound_packs") {
+            return await this._checkSoundPacks();
         } else if (stepId === "verification") {
             return await this._runDiagnostics();
         }
@@ -504,5 +420,63 @@ export class AttunementApp extends AbstractWelcomeApp {
 
         const controlToken = game.settings.get("syrinscape-control", "authToken") || "";
         return controlToken.trim() !== token.trim();
+    }
+
+    /**
+     * Opens a browser file picker restricted to .zip files.
+     * @returns {Promise<File|null>}
+     */
+    _pickZipFile() {
+        return new Promise((resolve) => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".zip";
+            input.addEventListener("change", (e) => resolve(e.target.files?.[0] ?? null));
+            input.addEventListener("cancel", () => resolve(null));
+            input.click();
+        });
+    }
+
+    /**
+     * Reads the manifest.json from a zip file to extract the pack ID.
+     * Uses the library's vendored JSZip.
+     * @param {File} file
+     * @returns {Promise<string|null>}
+     */
+    async _readPackIdFromZip(file) {
+        try {
+            const platform = game.ionrift?.library?.platform;
+            let JSZip;
+            if (platform) {
+                JSZip = await platform.loadJSZip();
+            } else if (window.JSZip) {
+                JSZip = window.JSZip;
+            } else {
+                console.warn("Attunement | JSZip not available.");
+                return null;
+            }
+
+            const buffer = await file.arrayBuffer();
+            const zip = await JSZip.loadAsync(buffer);
+
+            const manifestEntry = zip.file("manifest.json");
+            if (!manifestEntry) {
+                console.warn("Attunement | No manifest.json found in zip root.");
+                return null;
+            }
+
+            const text = await manifestEntry.async("text");
+            const manifest = JSON.parse(text);
+
+            if (!manifest.id || typeof manifest.id !== "string") {
+                console.warn("Attunement | manifest.json missing 'id' field.");
+                return null;
+            }
+
+            return manifest.id;
+        } catch (e) {
+            console.error("Attunement | Failed to read pack manifest from zip:", e);
+            return null;
+        }
     }
 }

@@ -87,7 +87,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
             <div class="art-empty-state">
                 <i class="fas fa-music"></i>
                 <p>No sound packs installed.</p>
-                <span>Click <strong>Import Sound Pack</strong> below to install a downloaded pack.</span>
+                <span>Get the <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a> — 552 sounds for combat, spells, monsters, and stingers.</span>
+                <span style="margin-top: 6px; opacity: 0.7;">Download the ZIP, then click <strong>Import Sound Pack</strong> below to install.</span>
             </div>`;
         } else {
             html += `<div class="pack-section-header"><i class="fas fa-volume-up"></i> Installed Packs</div>`;
@@ -100,7 +101,7 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         html += `</div>`;
 
         html += this._renderFooterLinks([
-            { href: "https://www.patreon.com/collection/2079931?view=expanded", icon: "fas fa-download", label: "Get packs" },
+            { href: "https://www.patreon.com/posts/155880618", icon: "fas fa-download", label: "Core SFX Pack" },
             { href: "https://github.com/ionrift-gm/ionrift-library/wiki", icon: "fas fa-book", label: "Documentation" }
         ]);
 

@@ -27,6 +27,12 @@ audit_*.txt
 debug_*.js
 debug_*.log
 
+# Externalized content — distributed as ionrift-soundpack-core via Patreon
+sounds/pack/
+
+# Build tooling (not shipped)
+tools/
+
 # Test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
 scripts/tests/
 !scripts/tests/ForgeTestRunner.js

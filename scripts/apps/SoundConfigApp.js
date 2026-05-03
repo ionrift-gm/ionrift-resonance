@@ -3,6 +3,7 @@ import { SoundCardState } from "../models/SoundCardState.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
 import { SoundOrchestrator } from "../SoundOrchestrator.js";
+import { SoundPackLoader } from "../services/SoundPackLoader.js";
 
 export class SoundConfigApp extends FormApplication {
     constructor(object, options) {
@@ -161,14 +162,12 @@ export class SoundConfigApp extends FormApplication {
             // 1. Custom bindings always win
             if (customBindings[key]) return { value: customBindings[key], source: "custom" };
 
-            // 2. None preset: everything empty
-            const preset = game.settings.get("ionrift-resonance", "soundPreset");
-            if (preset === "none") return { value: null, source: null };
+            // 2. Pack bindings (from SoundPackLoader)
+            const packBindings = SoundPackLoader.loaded ? SoundPackLoader.getMergedBindings() : {};
+            if (packBindings[key]) return { value: packBindings[key], source: "pack" };
 
-            // 3. SYRINSCAPE_DEFAULTS fallback - skip for 'pack' users.
-            //    Pack users have pack.json loaded into customSoundBindings; Syrinscape IDs
-            //    would show as inherited but won't play locally.
-            if (preset !== "pack") {
+            // 3. Syrinscape defaults (only when Syrinscape is configured)
+            if (SyrinscapeProvider.isConfigured()) {
                 const def = SYRINSCAPE_DEFAULTS[key];
                 if (def) return { value: def, source: "default" };
             }
@@ -821,6 +820,10 @@ export class SoundConfigApp extends FormApplication {
     activateListeners(html) {
         super.activateListeners(html);
 
+        // SFX Pack Nudge: contextual banner when no packs are installed.
+        // Mirrors the Respite art-pack nudge — shows only in the workflow context.
+        this._injectCalibrationNudge(html);
+
         // Use delegation for robust handling of dynamic partial replacements
         html.on("click", ".play-preview", this._onPlayPreview.bind(this));
 
@@ -917,6 +920,72 @@ export class SoundConfigApp extends FormApplication {
             this._hooksRegistered = false;
         }
         return super.close(options);
+    }
+
+    /**
+     * Contextual SFX nudge banner — injected at the top of the Calibration
+     * content area when no sound packs are installed. Mirrors Respite's
+     * art-nudge pattern: visible only in the workflow the user is actively
+     * interacting with, dismissible, not a popup.
+     */
+    _injectCalibrationNudge(html) {
+        if (!game.user.isGM) return;
+        if (game.settings.get("ionrift-resonance", "sfxNudgeSuppressed")) return;
+
+        // Check if any sound packs are enabled
+        const packs = SoundPackLoader.getLoadedPacks();
+        const hasPacks = packs.some(p => p.enabled);
+        if (hasPacks) return;
+
+        // Also check if there are any custom bindings set
+        const raw = game.settings.get("ionrift-resonance", "customSoundBindings") || "{}";
+        if (raw !== "{}" && raw !== "") return;
+
+        const $content = html.find(".content");
+        if (!$content.length) return;
+        if ($content.find(".sfx-calibration-nudge").length) return;
+
+        const banner = $(`
+            <div class="sfx-calibration-nudge" style="
+                background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(139, 92, 246, 0.08));
+                border: 1px solid rgba(88, 166, 255, 0.25);
+                border-radius: 8px;
+                padding: 14px 18px;
+                margin: 0 0 16px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                font-size: 13px;
+            ">
+                <i class="fas fa-music" style="font-size: 22px; color: #58a6ff; flex-shrink: 0;"></i>
+                <div style="flex: 1;">
+                    <strong style="color: #c9d1d9;">No sound pack installed.</strong><br>
+                    <span style="color: #8b949e;">All sound slots are empty. Download and import the
+                    <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a>
+                    to populate 97 bindings across combat, spells, and monsters.</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;">
+                    <button type="button" class="sfx-cal-nudge-get" style="
+                        background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.3);
+                        color: #58a6ff; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 12px;
+                    "><i class="fas fa-download"></i> Get Pack</button>
+                    <button type="button" class="sfx-cal-nudge-dismiss" style="
+                        background: transparent; border: 1px solid rgba(139, 148, 158, 0.2);
+                        color: #8b949e; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 11px;
+                    "><i class="fas fa-times"></i> Dismiss</button>
+                </div>
+            </div>
+        `);
+
+        banner.find(".sfx-cal-nudge-get").on("click", () => {
+            window.open("https://www.patreon.com/posts/155880618", "_blank");
+        });
+        banner.find(".sfx-cal-nudge-dismiss").on("click", async () => {
+            await game.settings.set("ionrift-resonance", "sfxNudgeSuppressed", true);
+            banner.slideUp(200, () => banner.remove());
+        });
+
+        $content.prepend(banner);
     }
 
     /**
@@ -1243,20 +1312,17 @@ export class SoundConfigApp extends FormApplication {
         // Find current value (Source of Truth: Settings > DOM)
         let currentValue = "";
 
-        const preset = game.settings.get("ionrift-resonance", "soundPreset");
         const customBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
 
-        if (preset === "none") {
-            // Manual Mode: Strictly use settings. If deleted, it's empty.
-            // This prevents stale DOM inputs from ghosting deleted values.
-            currentValue = customBindings[key] || "";
+        // Cascade: custom → pack → syrinscape defaults (if configured)
+        if (customBindings[key]) {
+            currentValue = customBindings[key];
         } else {
-            // Default/Inheritance Mode: 
-            // 1. Check Custom first (fastest)
-            if (customBindings[key]) {
-                currentValue = customBindings[key];
+            const packBindings = SoundPackLoader.loaded ? SoundPackLoader.getMergedBindings() : {};
+            if (packBindings[key]) {
+                currentValue = packBindings[key];
             } else {
-                // 2. Fallback to DOM to catch Defaults/Inherited values rendered by Handlebars
+                // Fallback to DOM to catch defaults/inherited values rendered by Handlebars
                 const row = this.element.find(`.entity-row[data-key="${key}"]`);
                 if (row.length) {
                     const input = row.find("input");
