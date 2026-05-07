@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.4] - 2026-05-07
+
+### Fixed
+- **NPC attacks now play the correct miss sound when using DnD5e without Midi-QOL.** When an NPC swung and missed, a melee attack swing played instead of the miss whoosh. The attack roll result is now read directly from the dice and routes to the appropriate miss sound — melee, ranged, or spell — including fumble and critical hit stingers.
+- **Resonance Forge Safety tests no longer fail on The Forge.** The internal test suite used a dynamic module import that doesn't resolve correctly under Forge VTT's CDN hosting, causing a suite-execution error on every Forge-hosted world. The import is removed; the already-initialized loader is passed directly instead.
+
 ## [2.7.3] - 2026-05-07
 
 ### Added
