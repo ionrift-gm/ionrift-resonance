@@ -402,10 +402,85 @@ export class DnD5eAdapter extends SystemAdapter {
         return subtypeMap[compositeKey] || null;
     }
 
-    async handleNativeAttack(item, roll) {
+    /**
+     * Native dnd5e attack result handler (no Midi-QOL).
+     * Called from dnd5e.rollAttackV2 with the full D20Roll array and subject data.
+     *
+     * Phase 1 (swing sound) already fired via postUseActivity → handleWeaponSound.
+     * This handler is Phase 2: play the hit/miss/crit RESULT stinger based on the roll.
+     *
+     * Hit/miss detection logic (mirrors dnd5e's own chat card rendering):
+     *   isMiss = !isCritical && (total < target || isFumble)
+     *   isCritical = nat 20 (or criticalThreshold)
+     *   isFumble   = nat 1
+     *
+     * Limitations:
+     * - options.target (the single targeted AC) is only populated when exactly 1 target
+     *   is selected. With 0 or 2+ targets it is undefined — we skip result sounds in that
+     *   case since we cannot determine hit/miss without Midi-QOL.
+     * - No damage sounds in native mode (Midi-QOL's DamageRollComplete handles those).
+     *
+     * @param {Item5e}    item   The item that was used.
+     * @param {D20Roll[]} rolls  The rolls array from dnd5e.rollAttackV2.
+     */
+    handleNativeAttack(item, rolls) {
         if (!item) return;
-        // Resolver handles Metadata fallback now
-        const soundKey = this.handler.pickSound(item, item.actor?.name, item.actor);
-        if (soundKey) this.handler.playItemSound(soundKey);
+
+        // rolls is the D20Roll[] array from rollAttackV2 — not a single Roll object.
+        // Guard: if caller passes a single Roll (legacy code path), wrap it.
+        const rollArray = Array.isArray(rolls) ? rolls : (rolls ? [rolls] : []);
+        const roll = rollArray[0];
+
+        if (!roll) {
+            Logger.log("DnD5e Native | No roll object received, skipping result stinger");
+            return;
+        }
+
+        const isFumble   = roll.isFumble   ?? false;
+        const isCritical = roll.isCritical ?? false;
+        const total      = roll.total      ?? 0;
+        const target     = roll.options?.target; // target's AC — undefined if 0 or 2+ targets
+
+        Logger.log(`DnD5e Native | Attack result — total:${total}, target(AC):${target ?? "?"}, crit:${isCritical}, fumble:${isFumble}`);
+
+        const orch = this.handler?.orchestrator;
+
+        if (isFumble) {
+            // Nat 1: fumble stinger + miss sound
+            Logger.log("DnD5e Native | Fumble! Playing fumble + miss stingers");
+            this.play(SOUND_EVENTS.ROLL_FUMBLE);
+            const missKey = this._getMissKey(item);
+            const fumbleDelay = orch?.getNamedOffset("FUMBLE_MISS_DELAY") ?? 200;
+            this.play(missKey, fumbleDelay);
+            return;
+        }
+
+        if (isCritical) {
+            // Nat 20 / crit threshold: crit stinger
+            Logger.log("DnD5e Native | Critical hit! Playing crit stinger");
+            this.play(SOUND_EVENTS.ROLL_CRIT);
+            const critDelay = orch?.getNamedOffset("CRIT_DECORATION_DELAY") ?? 300;
+            this.play(SOUND_EVENTS.CRIT_DECORATION, critDelay);
+            return;
+        }
+
+        if (target === undefined || target === null) {
+            // No single target selected — cannot determine hit/miss without Midi-QOL.
+            // Swing sound already fired; silently skip the result stinger.
+            Logger.log("DnD5e Native | No single target selected — skipping result stinger (no Midi-QOL)");
+            return;
+        }
+
+        // Mirrors dnd5e's own isMiss formula from ChatMessage5e rendering (dnd5e.mjs):
+        //   const isMiss = !attackRoll.isCritical && ((attackRoll.total < ac) || attackRoll.isFumble);
+        const isMiss = total < target;
+        if (isMiss) {
+            const missKey = this._getMissKey(item);
+            Logger.log(`DnD5e Native | Miss (${total} < AC ${target}) — playing ${missKey}`);
+            this.play(missKey);
+        } else {
+            // Normal hit — damage sounds not available without Midi-QOL.
+            Logger.log(`DnD5e Native | Hit (${total} >= AC ${target}) — no extra stinger in native mode`);
+        }
     }
 }

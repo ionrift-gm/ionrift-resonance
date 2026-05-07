@@ -157,7 +157,9 @@ Hooks.once('init', async function () {
                 description: "SoundPackLoader smoke and partial registration checks",
                 runFn: async () => {
                     const { ResonanceForgeTestRunner } = await import("./tests/ForgeTestRunner.js");
-                    return ResonanceForgeTestRunner.runAll();
+                    // Pass SoundPackLoader directly — already imported and initialized above.
+                    // ForgeTestRunner must NOT re-import it; relative dynamic imports fail on Forge CDN.
+                    return ResonanceForgeTestRunner.runAll(SoundPackLoader);
                 }
             });
         }
