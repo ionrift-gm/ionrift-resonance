@@ -127,12 +127,22 @@ export class SoundResolver {
                 }
             }
 
-            // Weapons (Damage Type check)
+            // Weapons (Damage Type check — dnd5e / generic)
             if (type === "weapon" && item.system.damage?.parts?.length > 0) {
                 const dtype = item.system.damage.parts[0][1];
                 if (dtype === "slashing") return SOUND_EVENTS.ATTACK_SWORD_SLASH;
                 if (dtype === "bludgeoning") return SOUND_EVENTS.ATTACK_BLUDGEON_SWING;
                 if (dtype === "piercing") return SOUND_EVENTS.ATTACK_DAGGER_SLASH;
+            }
+
+            // sfrpg Weapon Type Classification (item.system.weaponType)
+            // Starfinder uses a weaponType key instead of damage type for melee/ranged routing.
+            const wType = item.system.weaponType;
+            if (wType) {
+                // Melee: basicM (basic melee), advancedM (advanced melee), solarian (energy melee)
+                if (["basicM", "advancedM", "solarian"].includes(wType)) return SOUND_EVENTS.ASK_GENERIC_MELEE;
+                // Ranged: smallA (pistols), longA (rifles), heavy, sniper, grenade, special
+                if (["smallA", "longA", "heavy", "sniper", "grenade", "special"].includes(wType)) return SOUND_EVENTS.ASK_GENERIC_RANGED;
             }
         }
 

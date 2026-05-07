@@ -88,7 +88,7 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
                 <i class="fas fa-music"></i>
                 <p>No sound packs installed.</p>
                 <span>Get the <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a> — 552 sounds for combat, spells, monsters, and stingers.</span>
-                <span style="margin-top: 6px; opacity: 0.7;">Download the ZIP, then click <strong>Import Sound Pack</strong> below to install.</span>
+                <span style="margin-top: 6px; opacity: 0.7;">Download the ZIP, then click <strong>Import Sound Pack</strong> below to install it.</span>
             </div>`;
         } else {
             html += `<div class="pack-section-header"><i class="fas fa-volume-up"></i> Installed Packs</div>`;
@@ -163,9 +163,11 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         // Ensure the packs root directory exists before importing.
         // ZipImporterService creates ionrift-data/resonance and the pack subdirectory,
         // but the intermediate "packs" directory must exist first.
+        // Wrap in withSuppressedToasts so Foundry's "Target directory does not exist"
+        // noise during recursive directory creation doesn't surface as red banners.
         const platform = game.ionrift?.library?.platform;
         if (platform) {
-            await platform.ensureDirectory("ionrift-data/resonance/packs");
+            await platform.withSuppressedToasts(() => platform.ensureDirectory("ionrift-data/resonance/packs"));
         }
 
         // Delegate to ZipImporterService — routes to ionrift-data/resonance/packs/{packId}/
