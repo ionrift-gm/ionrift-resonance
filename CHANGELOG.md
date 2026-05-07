@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.7.3] - 2026-05-07
+
+### Added
+- **Starfinder (sfrpg) support.** Weapon and spell sounds trigger automatically for Starfinder 1e campaigns. Melee, small arms, long arms, heavy weapons, and grenades each route to the appropriate sound category. Spells use the school fallback chain, and item-level overrides work the same way they do for DnD5e.
+
+### Fixed
+- Custom item sounds now play correctly in-game. When you assigned a sound to a specific weapon or spell in the item config, the correct sound played in the test panel but the school or category default played during actual use. That mismatch is resolved.
+- Sound pack install no longer shows "Target directory does not exist" errors. The red banners were noise from Foundry's directory creation process and did not affect whether files were actually installed - they are now suppressed.
+
 ## [2.7.0] - 2026-05-03
 
 ### Changed
