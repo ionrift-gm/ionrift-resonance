@@ -1,4 +1,4 @@
-import { msgContains } from "./utils.js";
+﻿import { msgContains } from "./utils.js";
 import { SOUND_EVENTS } from "./constants.js";
 import { DaggerheartAdapter } from "./systems/DaggerheartAdapter.js";
 import { DnD5eAdapter } from "./systems/DnD5eAdapter.js";
@@ -242,13 +242,13 @@ export class SoundHandler {
      * fall back to fallbackKey. Used for spells: effect key -> school key.
      *
      * If primaryKey is a raw file path (returned from an item flag override),
-     * it will never be in the bindings map — resolveKey() would return null
+     * it will never be in the bindings map -- resolveKey() would return null
      * and wrongly fall through to the school fallback. Detect raw paths and
      * play them directly, bypassing the bindings lookup entirely.
      */
     playItemSoundWithFallback(primaryKey, fallbackKey, item = null, delay = 0) {
         // Item flags store raw file paths, not semantic keys.
-        // A raw path contains "/" or "." — semantic keys are ALL_CAPS with underscores only.
+        // A raw path contains "/" or "." -- semantic keys are ALL_CAPS with underscores only.
         const isRawPath = primaryKey && (primaryKey.includes("/") || primaryKey.includes("."));
         if (isRawPath) {
             Logger.log(`playItemSoundWithFallback | ${primaryKey} is a raw file path -> playing directly (bypassing resolver)`);

@@ -1,4 +1,4 @@
-export class ResonanceForgeTestRunner {
+﻿export class ResonanceForgeTestRunner {
     /**
      * Run Forge-safety smoke tests.
      *
@@ -15,7 +15,7 @@ export class ResonanceForgeTestRunner {
 
         // 1. SoundPackLoader smoke
         // loader is already initialized (SoundPackLoader.init() ran during module ready).
-        // We only assert its post-init state — no re-import or re-init needed.
+        // We only assert its post-init state -- no re-import or re-init needed.
         try {
             if (!loader) throw new Error("SoundPackLoader not provided by caller");
 

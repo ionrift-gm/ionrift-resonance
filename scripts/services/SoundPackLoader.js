@@ -1,4 +1,4 @@
-import { Logger } from "../Logger.js";
+﻿import { Logger } from "../Logger.js";
 
 const PACK_ROOT = "ionrift-data/resonance/packs";
 const MANIFEST_NAME = "manifest.json";
@@ -114,11 +114,8 @@ export class SoundPackLoader {
         return this._loaded;
     }
 
-    // ───────────────────────────────────────────────────────────────
-    //  INTERNALS
-    // ───────────────────────────────────────────────────────────────
-
-    /**
+    // //  INTERNALS
+    // /**
      * Reads the installedSoundPacks setting to determine which pack IDs
      * the GM has toggled on.
      * @returns {Set<string>}
@@ -142,7 +139,7 @@ export class SoundPackLoader {
      * @returns {Promise<string[]>} directory names (not full paths)
      */
     static async _listPackDirectories() {
-        // Always use "data" source — on Forge, "forgevtt" returns empty results
+        // Always use "data" source -- on Forge, "forgevtt" returns empty results
         // for world-data paths. The "data" source correctly returns full CDN URLs.
         const result = await this._FP.browse("data", PACK_ROOT);
         return (result.dirs ?? []).map(d => d.split("/").pop());

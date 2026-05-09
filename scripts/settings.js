@@ -1,4 +1,4 @@
-export const registerSettings = function () {
+﻿export const registerSettings = function () {
     // Debug Mode
     game.settings.register('ionrift-resonance', 'debug', {
         name: "Enable Debug Logging",
@@ -73,7 +73,7 @@ export const registerSettings = function () {
 
     // DEPRECATED: Sound preset is no longer used for binding resolution.
     // SoundPackLoader + customSoundBindings now handle all binding layers.
-    // Retained for migration compatibility — existing worlds may still have
+    // Retained for migration compatibility -- existing worlds may still have
     // a stored value that migration logic reads and clears.
     game.settings.register("ionrift-resonance", "soundPreset", {
         scope: "world",

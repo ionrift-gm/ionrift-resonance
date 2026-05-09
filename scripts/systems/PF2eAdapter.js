@@ -1,4 +1,4 @@
-import { SystemAdapter } from "./SystemAdapter.js";
+﻿import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 
@@ -52,7 +52,7 @@ export class PF2eAdapter extends SystemAdapter {
         });
     }
 
-    // ── Phase 1 + 2: Attack roll (ASK swing + ANSWER outcome) ───────────
+    // Phase 1 + 2: Attack roll (ASK swing + ANSWER outcome) ───────────
 
     _handleAttackRoll(message, context) {
         const item = this._getItemFromMessage(message);
@@ -130,7 +130,7 @@ export class PF2eAdapter extends SystemAdapter {
         return SOUND_EVENTS.MISS;
     }
 
-    // ── Phase 3: Damage roll (hit impact + vocals) ──────────────────────
+    // Phase 3: Damage roll (hit impact + vocals) ──────────────────────
 
     _handleDamageRoll(message, context) {
         const item = this._getItemFromMessage(message);
@@ -235,7 +235,7 @@ export class PF2eAdapter extends SystemAdapter {
         return false;
     }
 
-    // ── Vocal layer (ported from DnD5eAdapter) ──────────────────────────
+    // Vocal layer (ported from DnD5eAdapter) ──────────────────────────
 
     _playVocalForTarget(actor, isPC, isDead, delay) {
         if (isDead) {
@@ -325,7 +325,7 @@ export class PF2eAdapter extends SystemAdapter {
         return subtypeMap[`${type}_${subtype}`] || null;
     }
 
-    // ── PF2e-specific spell trait mapping ────────────────────────────────
+    // PF2e-specific spell trait mapping ────────────────────────────────
 
     _getSpellTraitKey(item) {
         const traits = item?.system?.traits?.value ?? [];
@@ -341,7 +341,7 @@ export class PF2eAdapter extends SystemAdapter {
         return null;
     }
 
-    // ── Utilities ────────────────────────────────────────────────────────
+    // Utilities ────────────────────────────────────────────────────────
 
     _getItemFromMessage(message) {
         try {

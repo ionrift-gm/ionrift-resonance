@@ -1,9 +1,9 @@
-import { SystemAdapter } from "./SystemAdapter.js";
+﻿import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 
 /**
- * SFRPGAdapter — Starfinder (sfrpg) system adapter for Ionrift Resonance.
+ * SFRPGAdapter -- Starfinder (sfrpg) system adapter for Ionrift Resonance.
  *
  * Hook surface (sfrpg v0.03.x):
  *   attackRolled    { actor, item, roll, formula, rollMetadata }
@@ -11,15 +11,15 @@ import { Logger } from "../Logger.js";
  *   itemActivationChanged  { actor, item, isActive }   (toggled items, not attacks)
  *
  * Weapon type taxonomy (item.system.weaponType):
- *   basicM    → basic melee
- *   advancedM → advanced melee
- *   smallA    → small arms (pistols)
- *   longA     → long arms (rifles)
- *   heavy     → heavy weapons
- *   sniper    → sniper rifles
- *   grenade   → grenades (thrown/AoE)
- *   special   → special weapons
- *   solarian  → solarian crystals (melee)
+ *   basicM    -> basic melee
+ *   advancedM -> advanced melee
+ *   smallA    -> small arms (pistols)
+ *   longA     -> long arms (rifles)
+ *   heavy     -> heavy weapons
+ *   sniper    -> sniper rifles
+ *   grenade   -> grenades (thrown/AoE)
+ *   special   -> special weapons
+ *   solarian  -> solarian crystals (melee)
  *
  * Spell schools (item.system.school): abj, con, div, enc, evo, ill, nec, trs, uni
  */
@@ -51,21 +51,21 @@ export class SFRPGAdapter extends SystemAdapter {
     registerHooks() {
         Logger.log("SFRPG Adapter Active");
 
-        // Phase 1 — Attack swing sound: fires after the player confirms and the attack roll resolves.
+        // Phase 1 -- Attack swing sound: fires after the player confirms and the attack roll resolves.
         // Payload: { actor, item, roll, formula, rollMetadata }
         Hooks.on("attackRolled", ({ actor, item, roll }) => {
             if (!item) return;
             this._handleAttackSound(item, actor, roll);
         });
 
-        // Phase 2 — Damage / impact sound: fires after the damage roll.
+        // Phase 2 -- Damage / impact sound: fires after the damage roll.
         // Payload: { actor, item, roll, isCritical, formula, rollMetadata }
         Hooks.on("damageRolled", ({ actor, item, roll, isCritical }) => {
             if (!item) return;
             this._handleDamageSound(item, actor, isCritical);
         });
 
-        // Phase 3 — Generic item use (abilities, equipment activations, etc.)
+        // Phase 3 -- Generic item use (abilities, equipment activations, etc.)
         // Fires for toggled items (activated/deactivated), NOT for attacks or spells.
         Hooks.on("itemActivationChanged", ({ actor, item, isActive }) => {
             if (!item || !isActive) return; // Only play on activation, not deactivation
@@ -73,7 +73,7 @@ export class SFRPGAdapter extends SystemAdapter {
         });
     }
 
-    // ─── Phase 1: Attack / Cast ──────────────────────────────────────────────
+    // Phase 1: Attack / Cast ──────────────────────────────────────────────
 
     _handleAttackSound(item, actor, roll) {
         Logger.log(`SFRPG | Attack sound: ${item.name} (type: ${item.type}, weaponType: ${item.system?.weaponType})`);
@@ -93,7 +93,7 @@ export class SFRPGAdapter extends SystemAdapter {
         this.handler.playItemSound(soundKey, item);
     }
 
-    // ─── Phase 2: Damage / Impact ────────────────────────────────────────────
+    // Phase 2: Damage / Impact ────────────────────────────────────────────
 
     _handleDamageSound(item, actor, isCritical) {
         if (isCritical) {
@@ -101,12 +101,12 @@ export class SFRPGAdapter extends SystemAdapter {
             this.play(SOUND_EVENTS.ROLL_CRIT);
         }
 
-        // Play a hit sound — Resonance has no target list in this hook,
+        // Play a hit sound -- Resonance has no target list in this hook,
         // so we play a single generic BLOODY_HIT without per-target vocals.
         this.play(SOUND_EVENTS.BLOODY_HIT);
     }
 
-    // ─── Phase 3: Generic Activation ────────────────────────────────────────
+    // Phase 3: Generic Activation ────────────────────────────────────────
 
     _handleActivationSound(item, actor) {
         Logger.log(`SFRPG | Item activation: ${item.name} (type: ${item.type})`);
@@ -122,7 +122,7 @@ export class SFRPGAdapter extends SystemAdapter {
         this.play(SOUND_EVENTS.CORE_USE);
     }
 
-    // ─── Key Helpers ────────────────────────────────────────────────────────
+    // Key Helpers ────────────────────────────────────────────────────────
 
     /**
      * Maps sfrpg item to an appropriate Resonance semantic key.
@@ -130,7 +130,7 @@ export class SFRPGAdapter extends SystemAdapter {
      * This adapter extends detectSoundKey to understand Starfinder weapon taxonomy.
      *
      * NOTE: SoundResolver.detectSoundKey already handles generic string matching
-     * (fire, ice, etc.) — we only need to handle sfrpg-specific system data here.
+     * (fire, ice, etc.) -- we only need to handle sfrpg-specific system data here.
      * SoundResolver.pickSound calls item.getFlag first (highest priority), so
      * any item-level overrides are already handled before this runs.
      */
@@ -141,7 +141,7 @@ export class SFRPGAdapter extends SystemAdapter {
 
         // Melee weapons
         if (MELEE_TYPES.has(wType)) {
-            // Solarian crystals are energy melee — no specific key yet, fall to generic melee
+            // Solarian crystals are energy melee -- no specific key yet, fall to generic melee
             return SOUND_EVENTS.ASK_GENERIC_MELEE;
         }
 
@@ -150,7 +150,7 @@ export class SFRPGAdapter extends SystemAdapter {
             return SOUND_EVENTS.ASK_GENERIC_RANGED;
         }
 
-        // Spells — handled in _handleAttackSound via school fallback
+        // Spells -- handled in _handleAttackSound via school fallback
         if (item.type === "spell") {
             const schoolKey = this._getSchoolKey(item.system?.school);
             return schoolKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
@@ -175,7 +175,7 @@ export class SFRPGAdapter extends SystemAdapter {
             nec: "SCHOOL_NECROMANCY",
             trs: "SCHOOL_TRANSMUTATION",   // sfrpg uses "trs", dnd5e uses "tra"
             tra: "SCHOOL_TRANSMUTATION",   // include dnd5e alias for safety
-            uni: "SCHOOL_EVOCATION",       // Universal → closest generic is evocation
+            uni: "SCHOOL_EVOCATION",       // Universal -> closest generic is evocation
         };
         return schoolMap[school] || null;
     }

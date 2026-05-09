@@ -1,4 +1,4 @@
-import { Logger } from "./Logger.js";
+﻿import { Logger } from "./Logger.js";
 import { SYRINSCAPE_DEFAULTS } from "./data/syrinscape_defaults.js";
 import { SoundPackLoader } from "./services/SoundPackLoader.js";
 import { SyrinscapeProvider } from "./providers/SyrinscapeProvider.js";
@@ -10,7 +10,7 @@ export class ResonanceConfig {
 
     /**
      * Loads user overrides and campaign config.
-     * Preset file fetch is no longer needed — SoundPackLoader handles pack bindings.
+     * Preset file fetch is no longer needed -- SoundPackLoader handles pack bindings.
      */
     async load() {
         // Initialize default safe config
@@ -86,7 +86,7 @@ export class ResonanceConfig {
         const packKeyCount = Object.keys(packBindings).length;
 
         // Syrinscape defaults provide cloud IDs for users with a configured token.
-        // Without Syrinscape, these would be unplayable — skip the layer entirely.
+        // Without Syrinscape, these would be unplayable -- skip the layer entirely.
         const hasSyrinscape = SyrinscapeProvider.isConfigured();
 
         let effectiveBindings;

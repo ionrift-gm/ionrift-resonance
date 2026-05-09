@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ResonancePackRegistryApp
  *
  * GM-only pack management panel for Ionrift Resonance sound packs.
@@ -25,11 +25,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         classes: ["ionrift-window"]
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    //  BASE CLASS OVERRIDES
-    // ═══════════════════════════════════════════════════════════════
-
-    _getModuleId() {
+    // //  BASE CLASS OVERRIDES
+    // _getModuleId() {
         return "ionrift-resonance";
     }
 
@@ -67,11 +64,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         return update.packId?.startsWith("resonance-") || update.packType === "sound";
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    //  SOUNDS TAB
-    // ═══════════════════════════════════════════════════════════════
-
-    async _renderSoundsTab(context, panel) {
+    // //  SOUNDS TAB
+    // async _renderSoundsTab(context, panel) {
         let html = `<div class="pack-tab-content">`;
 
         html += this._renderSummaryBar([
@@ -87,7 +81,7 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
             <div class="art-empty-state">
                 <i class="fas fa-music"></i>
                 <p>No sound packs installed.</p>
-                <span>Get the <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a> — 552 sounds for combat, spells, monsters, and stingers.</span>
+                <span>Get the <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a> -- 552 sounds for combat, spells, monsters, and stingers.</span>
                 <span style="margin-top: 6px; opacity: 0.7;">Download the ZIP, then click <strong>Import Sound Pack</strong> below to install it.</span>
             </div>`;
         } else {
@@ -129,11 +123,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         return `<div class="pack-terrain-list">${authorBadge}${bindingBadge}</div>`;
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    //  IMPORT FLOW
-    // ═══════════════════════════════════════════════════════════════
-
-    /**
+    // //  IMPORT FLOW
+    // /**
      * Opens a file picker for a .zip sound pack, pre-reads the manifest
      * to determine the packId, then delegates to ZipImporterService to
      * extract into ionrift-data/resonance/packs/{packId}/.
@@ -170,7 +161,7 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
             await platform.withSuppressedToasts(() => platform.ensureDirectory("ionrift-data/resonance/packs"));
         }
 
-        // Delegate to ZipImporterService — routes to ionrift-data/resonance/packs/{packId}/
+        // Delegate to ZipImporterService -- routes to ionrift-data/resonance/packs/{packId}/
         const result = await lib.importZipFromFile(file, {
             moduleId: "resonance",
             assetType: `packs/${packId}`,
@@ -256,11 +247,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    //  SAVE
-    // ═══════════════════════════════════════════════════════════════
-
-    async _onSave(el) {
+    // //  SAVE
+    // async _onSave(el) {
         const updated = {};
         el.querySelectorAll(".pack-toggle-input").forEach(cb => {
             updated[cb.dataset.packId] = cb.checked;

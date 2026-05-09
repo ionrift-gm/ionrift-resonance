@@ -1,4 +1,4 @@
-import { Logger } from "./Logger.js";
+﻿import { Logger } from "./Logger.js";
 import { SOUND_EVENTS } from "./constants.js";
 
 export class SoundResolver {
@@ -127,7 +127,7 @@ export class SoundResolver {
                 }
             }
 
-            // Weapons (Damage Type check — dnd5e / generic)
+            // Weapons (Damage Type check -- dnd5e / generic)
             if (type === "weapon" && item.system.damage?.parts?.length > 0) {
                 const dtype = item.system.damage.parts[0][1];
                 if (dtype === "slashing") return SOUND_EVENTS.ATTACK_SWORD_SLASH;
