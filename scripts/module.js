@@ -1,4 +1,4 @@
-import { Logger } from "./Logger.js";
+﻿import { Logger } from "./Logger.js";
 import { SoundConfigApp } from "./apps/SoundConfigApp.js";
 import { AttunementApp } from "./apps/AttunementApp.js";
 import { SoundAuditor } from "./apps/SoundAuditor.js";
@@ -45,7 +45,7 @@ Hooks.once('init', async function () {
     const { soundManager } = await import("./SoundManager.js");
     game.ionrift.sounds.manager = soundManager;
 
-    // Diagnostic Integration (optional — must never crash boot)
+    // Diagnostic Integration (optional -- must never crash boot)
     try {
         const { registerDiagnostics } = await import("./DiagnosticIntegration.js");
         registerDiagnostics();
@@ -98,7 +98,7 @@ Hooks.once('init', async function () {
         // This sets up game.ionrift.handler
         new SoundHandler();
 
-        // Wait for Syrinscape Control to initialize — only if it's actually installed.
+        // Wait for Syrinscape Control to initialize -- only if it's actually installed.
         // Skips the 2-second polling loop when the module isn't present.
         if (game.modules.get("syrinscape-control")?.active) {
             await waitForDependency();
@@ -107,7 +107,7 @@ Hooks.once('init', async function () {
         // Initialize Manager (Audio Player / Soundboard)
         await game.ionrift.sounds.manager.initialize();
 
-        // ── Stale pack-preset migration ────────────────────────────────
+        // Stale pack-preset migration ────────────────────────────────
         // Prior releases baked 552 sound files into modules/ionrift-resonance/sounds/pack/.
         // Those files are now removed; the same content ships as the downloadable
         // Core SFX Pack (ionrift-soundpack-core). Detect and migrate stale bindings.
@@ -120,27 +120,27 @@ Hooks.once('init', async function () {
                 const coreInstalled = loadedPacks.some(p => p.id === "ionrift-soundpack-core" && p.enabled);
 
                 if (coreInstalled) {
-                    // Pack is installed — silently clear the stale bindings.
+                    // Pack is installed -- silently clear the stale bindings.
                     // The pack layer now provides them via SoundPackLoader.getMergedBindings().
                     await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
                     await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
                     Logger.log("Stale pack bindings cleared. Core SFX Pack provides sounds.");
                     ui.notifications.info("Ionrift Resonance: Sounds migrated to the installed Core SFX Pack.");
                 } else {
-                    // Pack not installed — warn the GM so they can install it.
+                    // Pack not installed -- warn the GM so they can install it.
                     ui.notifications.warn(
                         "Ionrift Resonance: Built-in sound files have been removed. Install the free Core SFX Pack from Module Settings → Sound Packs to restore your sounds.",
                         { permanent: true }
                     );
                 }
             } else {
-                // No stale paths — mark as migrated to skip future checks.
+                // No stale paths -- mark as migrated to skip future checks.
                 await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
             }
         }
 
-        // ── soundPreset deprecation migration ─────────────────────────
-        // The soundPreset setting is vestigial — SoundPackLoader handles all
+        // soundPreset deprecation migration ─────────────────────────
+        // The soundPreset setting is vestigial -- SoundPackLoader handles all
         // binding resolution now. Normalize any non-"none" value so legacy
         // code paths in third-party macros don't accidentally branch on it.
         if (game.user.isGM) {
@@ -157,7 +157,7 @@ Hooks.once('init', async function () {
                 description: "SoundPackLoader smoke and partial registration checks",
                 runFn: async () => {
                     const { ResonanceForgeTestRunner } = await import("./tests/ForgeTestRunner.js");
-                    // Pass SoundPackLoader directly — already imported and initialized above.
+                    // Pass SoundPackLoader directly -- already imported and initialized above.
                     // ForgeTestRunner must NOT re-import it; relative dynamic imports fail on Forge CDN.
                     return ResonanceForgeTestRunner.runAll(SoundPackLoader);
                 }
@@ -229,8 +229,13 @@ Hooks.once('init', async function () {
                     }
 
                     // 3. Standard Direct API (No Control Module)
+                    // A missing token means Syrinscape was never configured -- treat as
+                    // unconfigured (informational) rather than failed, so users who only
+                    // use local SFX packs don't see alarming red icons on startup.
                     if (!ionToken) {
-                        return { status: game.ionrift.integration.STATUS.OFFLINE, label: 'Missing Token', message: 'No Auth Token Configured. (Run Calibration)' };
+                        const INFO = game.ionrift.integration.STATUS.INFO
+                            ?? game.ionrift.integration.STATUS.WARNING;
+                        return { status: INFO, label: 'Not Configured', message: 'Syrinscape not set up. Local audio packs work without it.' };
                     }
 
                     try {
