@@ -1,4 +1,4 @@
-import { SystemAdapter } from "./SystemAdapter.js";
+﻿import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 
@@ -85,36 +85,58 @@ export class DnD5eAdapter extends SystemAdapter {
             }
         }
 
+        // Skip utility spells that have no attack or save action type.
+        // Spells like Fly, Haste, and Mage Armor fire postUseActivity but are not
+        // combat sounds - they would otherwise fall through to CORE_WHOOSH.
+        if (item.type === "spell") {
+            const actionType = activity?.actionType ?? item.system?.actionType ?? "";
+            const hasCombatAction = ["mwak", "rwak", "msak", "rsak", "save", "heal", "abil"].includes(actionType);
+            const hasExplicitBinding = item.getFlag("ionrift-resonance", "sound_attack");
+            if (!hasCombatAction && !hasExplicitBinding) {
+                Logger.log(`5e Weapon Sound: Skipping utility spell ${item.name} (actionType: '${actionType}')`);
+                return;
+            }
+        }
+
         Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
         const actor = item.actor || activity?.actor;
         const soundKey = this.handler.pickSound(item, actor?.name, actor);
 
-        // For spells: also try the school key if the effect key has no direct binding
-        if (item.type === "spell" && item.system?.school) {
-            const schoolKey = this._getSchoolKey(item.system.school);
+        // For spells: try school key first; fall back to ASK_GENERIC_MAGIC rather
+        // than letting the call bottom out at CORE_WHOOSH (a melee swing sound).
+        if (item.type === "spell") {
+            const schoolKey = item.system?.school ? this._getSchoolKey(item.system.school) : null;
+            const fallback = schoolKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
             if (schoolKey) {
                 Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey}`);
-                this.handler.playItemSoundWithFallback(soundKey, schoolKey, item);
-                return;
+            } else {
+                Logger.log(`5e Weapon Sound: no school key for ${item.name} -> falling back to ASK_GENERIC_MAGIC`);
             }
+            this.handler.playItemSoundWithFallback(soundKey, fallback, item);
+            return;
         }
 
         this.handler.playItemSound(soundKey, item);
     }
 
     _getSchoolKey(school) {
+        // All eight schools mapped. Keys that have a sound pack binding will play;
+        // unbound keys fall through to ASK_GENERIC_MAGIC in the caller.
         const schoolMap = {
-            abj: "SCHOOL_ABJURATION",
-            con: "SCHOOL_CONJURATION",
-            div: "SCHOOL_DIVINATION",
-            enc: "SCHOOL_ENCHANTMENT",
-            evo: "SCHOOL_EVOCATION",
+            // Damage / attack schools
+            evo:  "SCHOOL_EVOCATION",
             evoc: "SCHOOL_EVOCATION",
-            ill: "SCHOOL_ILLUSION",
-            nec: "SCHOOL_NECROMANCY",
-            tra: "SCHOOL_TRANSMUTATION"
+            nec:  "SCHOOL_NECROMANCY",
+            // Utility / defensive schools
+            abj:  "SCHOOL_ABJURATION",
+            div:  "SCHOOL_DIVINATION",
+            // Formerly unmapped - now route to generic magic as final fallback
+            con:  "SCHOOL_CONJURATION",
+            enc:  "SCHOOL_ENCHANTMENT",
+            ill:  "SCHOOL_ILLUSION",
+            tra:  "SCHOOL_TRANSMUTATION",
         };
-        return schoolMap[school] || null;
+        return schoolMap[school] ?? null;
     }
 
     handleAttackResult(workflow) {
@@ -406,7 +428,7 @@ export class DnD5eAdapter extends SystemAdapter {
      * Native dnd5e attack result handler (no Midi-QOL).
      * Called from dnd5e.rollAttackV2 with the full D20Roll array and subject data.
      *
-     * Phase 1 (swing sound) already fired via postUseActivity → handleWeaponSound.
+     * Phase 1 (swing sound) already fired via postUseActivity -> handleWeaponSound.
      * This handler is Phase 2: play the hit/miss/crit RESULT stinger based on the roll.
      *
      * Hit/miss detection logic (mirrors dnd5e's own chat card rendering):
@@ -416,7 +438,7 @@ export class DnD5eAdapter extends SystemAdapter {
      *
      * Limitations:
      * - options.target (the single targeted AC) is only populated when exactly 1 target
-     *   is selected. With 0 or 2+ targets it is undefined — we skip result sounds in that
+     *   is selected. With 0 or 2+ targets it is undefined -- we skip result sounds in that
      *   case since we cannot determine hit/miss without Midi-QOL.
      * - No damage sounds in native mode (Midi-QOL's DamageRollComplete handles those).
      *
@@ -426,7 +448,7 @@ export class DnD5eAdapter extends SystemAdapter {
     handleNativeAttack(item, rolls) {
         if (!item) return;
 
-        // rolls is the D20Roll[] array from rollAttackV2 — not a single Roll object.
+        // rolls is the D20Roll[] array from rollAttackV2 -- not a single Roll object.
         // Guard: if caller passes a single Roll (legacy code path), wrap it.
         const rollArray = Array.isArray(rolls) ? rolls : (rolls ? [rolls] : []);
         const roll = rollArray[0];
@@ -439,7 +461,7 @@ export class DnD5eAdapter extends SystemAdapter {
         const isFumble   = roll.isFumble   ?? false;
         const isCritical = roll.isCritical ?? false;
         const total      = roll.total      ?? 0;
-        const target     = roll.options?.target; // target's AC — undefined if 0 or 2+ targets
+        const target     = roll.options?.target; // target's AC -- undefined if 0 or 2+ targets
 
         Logger.log(`DnD5e Native | Attack result — total:${total}, target(AC):${target ?? "?"}, crit:${isCritical}, fumble:${isFumble}`);
 
@@ -465,7 +487,7 @@ export class DnD5eAdapter extends SystemAdapter {
         }
 
         if (target === undefined || target === null) {
-            // No single target selected — cannot determine hit/miss without Midi-QOL.
+            // No single target selected -- cannot determine hit/miss without Midi-QOL.
             // Swing sound already fired; silently skip the result stinger.
             Logger.log("DnD5e Native | No single target selected — skipping result stinger (no Midi-QOL)");
             return;
@@ -479,7 +501,7 @@ export class DnD5eAdapter extends SystemAdapter {
             Logger.log(`DnD5e Native | Miss (${total} < AC ${target}) — playing ${missKey}`);
             this.play(missKey);
         } else {
-            // Normal hit — damage sounds not available without Midi-QOL.
+            // Normal hit -- damage sounds not available without Midi-QOL.
             Logger.log(`DnD5e Native | Hit (${total} >= AC ${target}) — no extra stinger in native mode`);
         }
     }
