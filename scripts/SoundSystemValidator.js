@@ -1,4 +1,4 @@
-
+﻿
 import { SoundPackLoader } from "./services/SoundPackLoader.js";
 
 export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator {
@@ -9,7 +9,7 @@ export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator 
         // 1. Dependencies
         this.addDependency("ionrift-library");
 
-        // 2. Gate on enabled packs — a fresh install with no packs should
+        // 2. Gate on enabled packs -- a fresh install with no packs should
         // pass health checks silently. The nudge banner handles onboarding.
         const enabledPacks = SoundPackLoader.getLoadedPacks().filter(p => p.enabled);
 
@@ -22,7 +22,7 @@ export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator 
             if (!hasModule) {
                 const token = game.settings.get("ionrift-resonance", "syrinToken");
                 if (!token) {
-                    // Downgrade from error to warning — missing token is recoverable
+                    // Downgrade from error to warning -- missing token is recoverable
                     // and the user may be using local SFX packs only.
                 }
             }

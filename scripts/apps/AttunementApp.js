@@ -1,4 +1,4 @@
-
+﻿
 import { AbstractWelcomeApp } from "/modules/ionrift-library/scripts/apps/AbstractWelcomeApp.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
@@ -105,7 +105,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     }
 
     /**
-     * Checks sound pack status. This is a verification step — no settings are
+     * Checks sound pack status. This is a verification step -- no settings are
      * written. The template shows pack status and provides download/import
      * actions; the continue button simply advances the wizard.
      */
@@ -222,7 +222,7 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='connect_syrinscape']").trigger("click");
         });
 
-        // Sound Packs step — continue button fires the (hidden) step action
+        // Sound Packs step -- continue button fires the (hidden) step action
         html.find(".sound-packs-continue-btn").click((ev) => {
             ev.preventDefault();
             if (!this.completedSteps?.has("connect_syrinscape")) {
@@ -232,13 +232,13 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='sound_packs']").trigger("click");
         });
 
-        // Sound Packs step — download button
+        // Sound Packs step -- download button
         html.find(".sound-packs-download-btn").click((ev) => {
             ev.preventDefault();
             window.open("https://www.patreon.com/posts/155880618", "_blank");
         });
 
-        // Sound Packs step — import .zip button
+        // Sound Packs step -- import .zip button
         html.find(".sound-packs-import-btn").click(async (ev) => {
             ev.preventDefault();
             try {
@@ -391,7 +391,7 @@ export class AttunementApp extends AbstractWelcomeApp {
         }
         await new Promise(resolve => setTimeout(resolve, 1000)); // Visual delay
 
-        // Check whether the Creature Index is configured — Resonance needs it for Adaptive Sounds.
+        // Check whether the Creature Index is configured -- Resonance needs it for Adaptive Sounds.
         // The library no longer auto-pops the wizard; we surface a notice here instead.
         try {
             const INDEXING_PROTOCOL_VERSION = "1";
@@ -408,7 +408,7 @@ export class AttunementApp extends AbstractWelcomeApp {
                     "Adaptive Sounds will use name-only heuristics until the index is set up.");
             }
         } catch (e) {
-            // Graceful fail — if library settings aren't available, don't block attunement
+            // Graceful fail -- if library settings aren't available, don't block attunement
             Logger.warn("Resonance Attunement | Could not read library index state:", e);
         }
     }

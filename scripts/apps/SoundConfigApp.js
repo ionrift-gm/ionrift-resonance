@@ -1,4 +1,4 @@
-import { SYRINSCAPE_DEFAULTS, SYRINSCAPE_PRESETS } from "../data/syrinscape_defaults.js";
+﻿import { SYRINSCAPE_DEFAULTS, SYRINSCAPE_PRESETS } from "../data/syrinscape_defaults.js";
 import { SoundCardState } from "../models/SoundCardState.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
@@ -821,7 +821,7 @@ export class SoundConfigApp extends FormApplication {
         super.activateListeners(html);
 
         // SFX Pack Nudge: contextual banner when no packs are installed.
-        // Mirrors the Respite art-pack nudge — shows only in the workflow context.
+        // Mirrors the Respite art-pack nudge -- shows only in the workflow context.
         this._injectCalibrationNudge(html);
 
         // Use delegation for robust handling of dynamic partial replacements
@@ -923,7 +923,7 @@ export class SoundConfigApp extends FormApplication {
     }
 
     /**
-     * Contextual SFX nudge banner — injected at the top of the Calibration
+     * Contextual SFX nudge banner -- injected at the top of the Calibration
      * content area when no sound packs are installed. Mirrors Respite's
      * art-nudge pattern: visible only in the workflow the user is actively
      * interacting with, dismissible, not a popup.
@@ -1314,7 +1314,7 @@ export class SoundConfigApp extends FormApplication {
 
         const customBindings = JSON.parse(game.settings.get("ionrift-resonance", "customSoundBindings") || "{}");
 
-        // Cascade: custom → pack → syrinscape defaults (if configured)
+        // Cascade: custom -> pack -> syrinscape defaults (if configured)
         if (customBindings[key]) {
             currentValue = customBindings[key];
         } else {
