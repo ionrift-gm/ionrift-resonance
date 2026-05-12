@@ -1,4 +1,4 @@
-﻿import { Logger } from "./Logger.js";
+import { Logger } from "./Logger.js";
 import { SYRINSCAPE_DEFAULTS } from "./data/syrinscape_defaults.js";
 import { SoundPackLoader } from "./services/SoundPackLoader.js";
 import { SyrinscapeProvider } from "./providers/SyrinscapeProvider.js";

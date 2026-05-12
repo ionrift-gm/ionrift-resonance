@@ -1,4 +1,4 @@
-﻿import { msgContains } from "./utils.js";
+import { msgContains } from "./utils.js";
 import { SOUND_EVENTS } from "./constants.js";
 import { DaggerheartAdapter } from "./systems/DaggerheartAdapter.js";
 import { DnD5eAdapter } from "./systems/DnD5eAdapter.js";

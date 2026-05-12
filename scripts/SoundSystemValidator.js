@@ -1,4 +1,4 @@
-﻿
+
 import { SoundPackLoader } from "./services/SoundPackLoader.js";
 
 export class SoundSystemValidator extends game.ionrift.library.RuntimeValidator {

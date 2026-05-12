@@ -1,4 +1,4 @@
-﻿import { Logger } from "../Logger.js";
+import { Logger } from "../Logger.js";
 
 const PACK_ROOT = "ionrift-data/resonance/packs";
 const MANIFEST_NAME = "manifest.json";
@@ -114,8 +114,8 @@ export class SoundPackLoader {
         return this._loaded;
     }
 
-    // //  INTERNALS
-    // /**
+    // --  INTERNALS
+    /**
      * Reads the installedSoundPacks setting to determine which pack IDs
      * the GM has toggled on.
      * @returns {Set<string>}

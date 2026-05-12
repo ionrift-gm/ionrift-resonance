@@ -1,4 +1,4 @@
-﻿
+
 import { AbstractWelcomeApp } from "/modules/ionrift-library/scripts/apps/AbstractWelcomeApp.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ResonancePackRegistryApp
  *
  * GM-only pack management panel for Ionrift Resonance sound packs.
@@ -25,8 +25,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         classes: ["ionrift-window"]
     };
 
-    // //  BASE CLASS OVERRIDES
-    // _getModuleId() {
+    // --  BASE CLASS OVERRIDES
+    _getModuleId() {
         return "ionrift-resonance";
     }
 
@@ -64,8 +64,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         return update.packId?.startsWith("resonance-") || update.packType === "sound";
     }
 
-    // //  SOUNDS TAB
-    // async _renderSoundsTab(context, panel) {
+    // --  SOUNDS TAB
+    async _renderSoundsTab(context, panel) {
         let html = `<div class="pack-tab-content">`;
 
         html += this._renderSummaryBar([
@@ -123,8 +123,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         return `<div class="pack-terrain-list">${authorBadge}${bindingBadge}</div>`;
     }
 
-    // //  IMPORT FLOW
-    // /**
+    // --  IMPORT FLOW
+    /**
      * Opens a file picker for a .zip sound pack, pre-reads the manifest
      * to determine the packId, then delegates to ZipImporterService to
      * extract into ionrift-data/resonance/packs/{packId}/.
@@ -247,8 +247,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         }
     }
 
-    // //  SAVE
-    // async _onSave(el) {
+    // --  SAVE
+    async _onSave(el) {
         const updated = {};
         el.querySelectorAll(".pack-toggle-input").forEach(cb => {
             updated[cb.dataset.packId] = cb.checked;
