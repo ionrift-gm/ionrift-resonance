@@ -1,4 +1,4 @@
-﻿export const registerSettings = function () {
+export const registerSettings = function () {
     // Debug Mode
     game.settings.register('ionrift-resonance', 'debug', {
         name: "Enable Debug Logging",

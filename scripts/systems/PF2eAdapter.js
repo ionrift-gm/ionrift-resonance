@@ -1,4 +1,4 @@
-﻿import { SystemAdapter } from "./SystemAdapter.js";
+import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 

@@ -1,4 +1,4 @@
-﻿import { Logger } from "./Logger.js";
+import { Logger } from "./Logger.js";
 import { SOUND_EVENTS } from "./constants.js";
 
 export class SoundResolver {

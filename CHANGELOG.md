@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.7.6] - 2026-05-12
+
+### Fixed
+- **Module settings missing from Game Settings after updating to 2.7.5.** A batch comment-cleanup in 2.7.5 accidentally commented out method declarations in two internal files, producing syntax errors that prevented the module from loading. All settings, the Calibration panel, and the Sound Packs manager are restored.
+
 ## [2.7.5] - 2026-05-12
 
 ### Fixed
