@@ -1,4 +1,4 @@
-﻿import { Logger } from "./Logger.js";
+import { Logger } from "./Logger.js";
 import { SoundConfigApp } from "./apps/SoundConfigApp.js";
 import { AttunementApp } from "./apps/AttunementApp.js";
 import { SoundAuditor } from "./apps/SoundAuditor.js";
@@ -159,7 +159,7 @@ Hooks.once('init', async function () {
                     const { ResonanceForgeTestRunner } = await import("./tests/ForgeTestRunner.js");
                     // Pass SoundPackLoader directly -- already imported and initialized above.
                     // ForgeTestRunner must NOT re-import it; relative dynamic imports fail on Forge CDN.
-                    return ResonanceForgeTestRunner.runAll(SoundPackLoader);
+                    return ResonanceForgeTestRunner.runAll(SoundPackLoader, SoundConfigApp);
                 }
             });
         }
