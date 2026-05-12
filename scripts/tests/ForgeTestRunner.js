@@ -1,4 +1,4 @@
-﻿export class ResonanceForgeTestRunner {
+export class ResonanceForgeTestRunner {
     /**
      * Run Forge-safety smoke tests.
      *
@@ -7,8 +7,10 @@
      *   Accepting it as a parameter avoids a dynamic `await import()` which fails
      *   on Forge VTT because module files are served from a CDN and relative paths
      *   do not resolve from within an already-loaded module file.
+     * @param {typeof SoundConfigApp} soundConfigApp
+     *   The SoundConfigApp class, passed in by the caller for the same reason.
      */
-    static async runAll(loader) {
+    static async runAll(loader, soundConfigApp) {
         const results = [];
         let passed = 0;
         let failed = 0;
@@ -69,6 +71,60 @@
                 name: "Partial registration",
                 status: "fail",
                 message: err.message
+            });
+        }
+
+        // 3. SoundConfigApp._onSearch smoke — catches dangling variable references
+        // Regression guard for v2.7.5: a stale `preset` variable caused a
+        // ReferenceError the moment the sound picker opened. This test verifies
+        // _onSearch() completes without throwing when given minimal stub data.
+        try {
+            if (!soundConfigApp) throw new Error("SoundConfigApp not provided by caller");
+
+            const app = new soundConfigApp();
+
+            // Stub the minimal state _onSearch reads before touching any real UI
+            app._config = app._config ?? {};
+            app._pendingSearch = null;
+
+            // Call with a synthetic event pointing at a key that exists in SYRINSCAPE_DEFAULTS
+            // (or any key — we only care that no ReferenceError is thrown)
+            const fakeEvent = {
+                currentTarget: {
+                    closest: () => ({ dataset: { key: "combat-start" } })
+                }
+            };
+
+            let threw = null;
+            try {
+                await app._onSearch?.(fakeEvent);
+            } catch (err) {
+                // A ReferenceError here means a dangling variable — that's the regression.
+                // Other errors (e.g. UI not rendered) are acceptable.
+                if (err instanceof ReferenceError) threw = err;
+            }
+
+            if (threw) {
+                failed++;
+                results.push({
+                    name: "SoundConfigApp._onSearch no-throw",
+                    status: "fail",
+                    message: `ReferenceError in _onSearch: ${threw.message} — dangling variable reference`
+                });
+            } else {
+                passed++;
+                results.push({
+                    name: "SoundConfigApp._onSearch no-throw",
+                    status: "pass",
+                    message: "_onSearch completed without a ReferenceError"
+                });
+            }
+        } catch (err) {
+            failed++;
+            results.push({
+                name: "SoundConfigApp._onSearch no-throw",
+                status: "fail",
+                message: `Setup error: ${err.message}`
             });
         }
 
