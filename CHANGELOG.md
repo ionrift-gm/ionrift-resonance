@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.7.5] - 2026-05-12
+
+### Fixed
+- **Clicking the pick/search button on any sound binding now opens the sound picker correctly.** After updating to 2.7.4, the button showed a "Sound Config required for Search" error instead of opening the picker. A stale variable reference left over from the sound preset deprecation refactor caused a crash the moment you clicked the button.
+
 ## [2.7.4] - 2026-05-07
 
 ### Fixed

@@ -1,4 +1,4 @@
-﻿import { SYRINSCAPE_DEFAULTS, SYRINSCAPE_PRESETS } from "../data/syrinscape_defaults.js";
+import { SYRINSCAPE_DEFAULTS, SYRINSCAPE_PRESETS } from "../data/syrinscape_defaults.js";
 import { SoundCardState } from "../models/SoundCardState.js";
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
@@ -1448,7 +1448,8 @@ export class SoundConfigApp extends FormApplication {
                     // 2. Fallback to Default only if no custom value
                     // BUT: If in Manual Mode (None), defaults are disabled.
                     // We only want defaults if we are in a preset mode (Fantasy/Core)
-                    if (preset !== "none" && key && SYRINSCAPE_DEFAULTS[key]) {
+                    const soundPreset = game.settings.get("ionrift-resonance", "soundPreset") ?? "none";
+                    if (soundPreset !== "none" && key && SYRINSCAPE_DEFAULTS[key]) {
                         const def = SYRINSCAPE_DEFAULTS[key];
                         if (Array.isArray(def)) {
                             // Map to confirm structure
