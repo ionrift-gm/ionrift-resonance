@@ -1,6 +1,12 @@
 # Changelog
 
+## [2.7.7] - 2026-05-14
+
+### Fixed
+- **Item-specific sounds are now respected again in Daggerheart.** If you configured custom attack, impact, or miss sounds on a weapon (e.g. a Scepter with its own magical cast sound), those sounds were being ignored and the generic module defaults played instead. The root cause was that Resonance identified attacking items by matching their name against the roll card title — a format change in recent Daggerheart versions broke that match, so items resolved as unknown and their configured sounds were never read. Resonance now looks up the item's UUID from roll data first, then falls back to exact name matching, and finally to a prefix match that handles sub-titled item names. Custom item sounds now play correctly.
+
 ## [2.7.6] - 2026-05-12
+
 
 ### Fixed
 - **Module settings missing from Game Settings after updating to 2.7.5.** A batch comment-cleanup in 2.7.5 accidentally commented out method declarations in two internal files, producing syntax errors that prevented the module from loading. All settings, the Calibration panel, and the Sound Packs manager are restored.
