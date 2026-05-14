@@ -511,7 +511,7 @@ export class DaggerheartAdapter extends SystemAdapter {
         }
     }
 
-    handleInfo(message) {
+    async handleInfo(message) {
         Logger.log("handleInfo called", { isRoll: message.isRoll, rolls: message.rolls?.length });
 
         if (!message.isRoll && !message.rolls?.length) {
@@ -526,12 +526,24 @@ export class DaggerheartAdapter extends SystemAdapter {
             rollData: roll
         });
 
-        // Extract Item Name
+        // Extract Item Name from roll title.
+        // Daggerheart uses " - " as separator (e.g. "Scepter - Attack").
+        // Some systems/versions use ":" (e.g. "Scepter: Versatile Attack").
+        // Split on whichever appears first so we get the shortest (most specific) prefix.
         let itemName = "Generic";
-        if (roll.options && roll.options.title) {
-            itemName = roll.options.title.split(":")[0].trim();
-        } else if (roll.data && roll.data.name) {
-            itemName = roll.data.name; // Fallback
+        const rawTitle = roll.options?.title || roll.data?.name || "";
+        if (rawTitle) {
+            const colonIdx = rawTitle.indexOf(":");
+            const dashIdx = rawTitle.indexOf(" - ");
+            // Pick the separator that appears first (ignoring absent ones)
+            let sepIdx = -1;
+            let sepLen = 0;
+            if (colonIdx !== -1 && (dashIdx === -1 || colonIdx < dashIdx)) {
+                sepIdx = colonIdx; sepLen = 1;
+            } else if (dashIdx !== -1) {
+                sepIdx = dashIdx; sepLen = 3;
+            }
+            itemName = (sepIdx !== -1 ? rawTitle.slice(0, sepIdx) : rawTitle).trim();
         }
 
         // Actor Name
@@ -543,16 +555,51 @@ export class DaggerheartAdapter extends SystemAdapter {
             if (actor) actorName = actor.name;
         }
 
-        // Attempt to find the real Item object for Flag support
+        // Item Resolution: UUID (authoritative) -> exact name -> fuzzy title prefix
+        // Daggerheart v14 may attach the item UUID via roll options or message flags.
+        // Falling back to name-matching is fragile when roll title format changes.
         let item = null;
+        let itemResolutionPath = "none";
         if (actor) {
-            // Best effort: Try matching by name if we don't have UUID
-            // Ideally Daggerheart attaches item uuid to flags, but we can search for now.
-            // CAUTION: Name collision possible.
-            item = actor.items.getName(itemName);
+            // 1. UUID via roll options (most reliable - survives renames)
+            const itemUuid = roll.options?.itemUuid
+                || roll.options?.item?.uuid
+                || message.flags?.daggerheart?.itemUuid
+                || message.flags?.core?.itemUuid;
+            if (itemUuid) {
+                try {
+                    const uuidResolved = await fromUuid(itemUuid);
+                    // Ensure the resolved item belongs to this actor
+                    if (uuidResolved && uuidResolved.parent?.id === actor.id) {
+                        item = uuidResolved;
+                        itemResolutionPath = "uuid";
+                    }
+                } catch (e) {
+                    Logger.log(`handleInfo | UUID lookup failed for ${itemUuid}: ${e.message}`);
+                }
+            }
+
+            // 2. Exact name match on the colon-split prefix
+            if (!item) {
+                item = actor.items.getName(itemName) || null;
+                if (item) itemResolutionPath = "exact-name";
+            }
+
+            // 3. Fuzzy: item name starts with the extracted prefix (handles "Scepter" vs "Scepter (Magic)" etc.)
+            if (!item && itemName !== "Generic") {
+                const lower = itemName.toLowerCase();
+                item = actor.items.find(i => i.name.toLowerCase().startsWith(lower)) || null;
+                if (item) itemResolutionPath = "fuzzy-prefix";
+            }
+
+            // 4. Full raw title match (catches format where no colon present)
+            if (!item && rawTitle && rawTitle !== itemName) {
+                item = actor.items.getName(rawTitle) || null;
+                if (item) itemResolutionPath = "raw-title";
+            }
         }
 
-        Logger.log(`Processing Roll for Item: ${itemName} (Actor: ${actorName})`);
+        Logger.log(`handleInfo | Item: "${itemName}" (resolved via: ${itemResolutionPath}, found: ${item?.name ?? "null"}) | Actor: ${actorName}`);
 
         const attackSoundKey = this.handler.pickSound(item || itemName, actorName, actor);
 
@@ -635,8 +682,8 @@ export class DaggerheartAdapter extends SystemAdapter {
      * Phase 1: Play ONLY the attack sound (sword swing, spell cast)
      * Fires on the first renderChatMessage when the card shell appears.
      */
-    handleAttackSound(message) {
-        const data = this.handleInfo(message);
+    async handleAttackSound(message) {
+        const data = await this.handleInfo(message);
         if (!data) return;
 
         const ts = Date.now();
@@ -660,13 +707,13 @@ export class DaggerheartAdapter extends SystemAdapter {
      * Phase 2: Play result decorations (hit/miss/stingers)
      * Fires when the chat message re-renders with the visual result (~4s later).
      */
-    handleResultSound(message, html) {
+    async handleResultSound(message, html) {
         const phase = this.renderPhases.get(message.id);
         const data = phase?.data;
 
         if (!data) {
             Logger.log(`⏱️ [${Date.now()}] Phase 2: No stored data for ${message.id}, re-extracting`);
-            const freshData = this.handleInfo(message);
+            const freshData = await this.handleInfo(message);
             if (!freshData) return;
             this._playResultSounds(freshData, html);
             return;
