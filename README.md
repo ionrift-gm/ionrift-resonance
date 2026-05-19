@@ -7,7 +7,7 @@
 
 **Automated audio triggers for Foundry VTT.**
 
-Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (native support) and **DnD5e** (via Midi-QOL). Ships with local sound files (WAV/MP3). Optionally integrates with **Syrinscape** for cloud audio.
+Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (native support) and **DnD5e** (via Midi-QOL). Supports the free Core SFX Pack (WAV/MP3). Optionally integrates with **Syrinscape** for cloud audio.
 
 ### Support Ionrift
 
@@ -57,7 +57,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 4. Click **Open Attunement Protocol** (not the Library's "Begin Attunement", that's for creature indexing)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-5. Select the **Ionrift SFX Pack** preset. ~400 sounds activate immediately.
+5. Download and import the free **Core SFX Pack** to activate the core sounds.
 
 For detailed walkthrough, troubleshooting, and FAQ see the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)**.
 
@@ -78,9 +78,9 @@ Every actor and item sheet includes a **Sounds** button (header or overflow menu
 
 Custom bindings always take priority over global presets.
 
-## Ionrift SFX Pack
+## Core SFX Pack
 
-Resonance ships with **~400 local sound files** covering the full combat loop. Select **"Ionrift SFX Pack"** in the Attunement Protocol or Module Settings to activate.
+You can download the **Core SFX Pack**, which provides **~400 local sound files** covering the full combat loop. Import the pack via the Attunement Protocol to activate it.
 
 | Category | Sounds | Examples |
 |----------|--------|----------|
@@ -92,7 +92,7 @@ Resonance ships with **~400 local sound files** covering the full combat loop. S
 | Spells | 50+ | Fire, ice, lightning, necrotic, radiant, thunder, void |
 | Stingers | 40+ | Crits, fumbles, success/fail outcomes, Hope/Fear (Daggerheart) |
 
-All sounds are local MP3 files included in the module.
+All sounds are available as a downloadable pack and are no longer bundled directly with the module to reduce install size.
 
 ## Features
 *   **Duality Dice Support**: Hooks into Daggerheart roll mechanics.

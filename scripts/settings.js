@@ -4,7 +4,7 @@ export const registerSettings = function () {
         name: "Enable Debug Logging",
         hint: "Visible only in console. Useful for troubleshooting.",
         scope: "world",
-        config: true,
+        config: false,
         type: Boolean,
         default: false
     });
