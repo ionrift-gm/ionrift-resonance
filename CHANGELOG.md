@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.7.8] - 2026-05-19
+
+### Changed
+- Sound packs now reload automatically when content updates are applied.
+
 ## [2.7.7] - 2026-05-14
 
 ### Fixed

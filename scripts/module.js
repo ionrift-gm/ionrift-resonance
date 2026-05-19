@@ -60,13 +60,14 @@ Hooks.once('init', async function () {
         hint: "First-time setup: install sound packs and optionally connect Syrinscape."
     });
 
-    // PACK BUTTON (via kernel)
-    SettingsLayout.registerPackButton("ionrift-resonance", ResonancePackRegistryApp, {
-        name: "Sound Packs",
-        label: "Manage Sound Packs",
-        hint: "Enable or disable installed sound packs. Packs add sound bindings at lower priority than presets.",
-        icon: "fas fa-music"
-    });
+    if (!game.ionrift?.library?.isOverlayDistributionActive?.()) {
+        SettingsLayout.registerPackButton("ionrift-resonance", ResonancePackRegistryApp, {
+            name: "Sound Packs",
+            label: "Manage Sound Packs",
+            hint: "Enable or disable installed sound packs. Packs add sound bindings at lower priority than presets.",
+            icon: "fas fa-music"
+        });
+    }
 
     // BODY: Calibration (resonance-specific tool)
     game.settings.registerMenu('ionrift-resonance', 'soundConfigMenu', {
@@ -81,7 +82,11 @@ Hooks.once('init', async function () {
     // FOOTER
     SettingsLayout.registerFooter("ionrift-resonance");
 
-
+    Hooks.on("ionrift.overlayContentChanged", async (detail) => {
+        if (detail?.moduleId !== "ionrift-resonance") return;
+        const { SoundPackLoader } = await import("./services/SoundPackLoader.js");
+        await SoundPackLoader.init();
+    });
 
 
 
