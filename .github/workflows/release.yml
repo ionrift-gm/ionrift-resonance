@@ -37,6 +37,10 @@ jobs:
           fi
           echo "OK: module.json version $MODULE_VERSION matches tag $TAG_VERSION"
 
+      - name: Validate CHANGELOG
+        if: github.event.inputs.dry_run_discord != 'true'
+        run: node tools/validate-changelog.mjs
+
       - name: Zip Module
         if: github.event.inputs.dry_run_discord != 'true'
         # Zips current directory, excluding git/github/dev files
