@@ -57,7 +57,10 @@ Hooks.once('init', async function () {
     // HEADER
     const { SettingsLayout } = await import("../../ionrift-library/scripts/SettingsLayout.js");
     SettingsLayout.registerHeader("ionrift-resonance", AttunementApp, {
-        hint: "First-time setup: install sound packs and optionally connect Syrinscape."
+        name: "Resonance Setup",
+        label: "Open Resonance Setup",
+        hint: "First-time setup: Core SFX Pack and optional Syrinscape connection.",
+        icon: "fas fa-sliders-h"
     });
 
     if (!game.ionrift?.library?.isOverlayDistributionActive?.()) {
@@ -73,7 +76,7 @@ Hooks.once('init', async function () {
     game.settings.registerMenu('ionrift-resonance', 'soundConfigMenu', {
         name: "Resonance Calibration",
         label: "Open Calibration",
-        hint: "Configure custom sounds and attunement.",
+        hint: "Configure custom sounds and per-actor overrides.",
         icon: "fas fa-sliders-h",
         type: SoundConfigApp,
         restricted: true
@@ -86,9 +89,44 @@ Hooks.once('init', async function () {
         if (detail?.moduleId !== "ionrift-resonance") return;
         const { SoundPackLoader } = await import("./services/SoundPackLoader.js");
         await SoundPackLoader.init();
+
+        for (const app of Object.values(ui.applications ?? {})) {
+            if (!app) continue;
+            const isAttunement = app.id === "ionrift-resonance-attunement";
+            const isCalibration = app.id === "ionrift-sound-config" || app instanceof SoundConfigApp;
+            if (!isAttunement && !isCalibration) continue;
+            try {
+                if (isCalibration) {
+                    app.render(true);
+                } else {
+                    app.render();
+                }
+            } catch (e) {
+                Logger.warn("overlayContentChanged | re-render failed:", e?.message ?? e);
+            }
+        }
+    });
+
+    Hooks.on("ionrift.collectDestructiveWarnings", ({ moduleId, action, warnings, context }) => {
+        if (moduleId !== "ionrift-resonance") return;
+        try {
+            _appendResonanceDestructiveWarnings(warnings, action, context);
+        } catch (e) {
+            Logger.warn("collectDestructiveWarnings | resonance check failed:", e?.message ?? e);
+        }
     });
 
 
+
+    // Register the shared pack-nudge configuration with the library
+    // service. Settings panel and Calibration surfaces both inject via
+    // game.ionrift.library.packNudge.inject() once registered.
+    try {
+        const { registerSfxPackNudge } = await import("./sfxPackNudge.js");
+        registerSfxPackNudge();
+    } catch (e) {
+        Logger.warn("Pack nudge registration failed:", e);
+    }
 
     // Start Engine (After Settings Registered & Modules Ready)
     Hooks.once('ready', async () => {
@@ -174,9 +212,39 @@ Hooks.once('init', async function () {
             game.ionrift.integration.registerApp('ionrift-resonance', {
                 settingsKey: ['ionrift-resonance.setupWizard'],
                 checkStatus: async () => {
-                    // console.log("Ionrift Sounds | Running Status Check...");
-
                     const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
+
+                    const { hasActiveSfxContent } = await import("./sfxPackNudge.js");
+                    const enabledPacks = SoundPackLoader.getLoadedPacks().filter(
+                        (pack) => pack.enabled && pack.bindingCount > 0
+                    );
+                    if (hasActiveSfxContent()) {
+                        const names = enabledPacks.map(p => p.name).join(", ");
+                        return {
+                            status: game.ionrift.integration.STATUS.CONNECTED,
+                            label: 'Ready',
+                            message: `Sound packs active (${names}). Local audio does not require Syrinscape.`
+                        };
+                    }
+
+                    if (game.ionrift?.library?.isOverlayDistributionActive?.()) {
+                        try {
+                            const overlayState = await game.ionrift.library.getOverlayState(
+                                "resonance-core-overlay",
+                                "ionrift-resonance",
+                                "free"
+                            );
+                            if (overlayState?.installed && overlayState?.active) {
+                                return {
+                                    status: game.ionrift.integration.STATUS.WARNING,
+                                    label: 'Pack bindings missing',
+                                    message: 'Core SFX overlay is on but Calibration has no pack bindings. Install the Core SFX zip from Patreon Library so slots populate.'
+                                };
+                            }
+                        } catch (e) {
+                            Logger.warn("Resonance status | Overlay check failed:", e);
+                        }
+                    }
                     const controlModule = game.modules.get("syrinscape-control");
                     const controlActive = controlModule?.active || !!globalThis.syrinscapeControl;
                     const controlToken = controlActive ? game.settings.get("syrinscape-control", "authToken") : null;
@@ -234,13 +302,12 @@ Hooks.once('init', async function () {
                     }
 
                     // 3. Standard Direct API (No Control Module)
-                    // A missing token means Syrinscape was never configured -- treat as
-                    // unconfigured (informational) rather than failed, so users who only
-                    // use local SFX packs don't see alarming red icons on startup.
                     if (!ionToken) {
-                        const INFO = game.ionrift.integration.STATUS.INFO
-                            ?? game.ionrift.integration.STATUS.WARNING;
-                        return { status: INFO, label: 'Not Configured', message: 'Syrinscape not set up. Local audio packs work without it.' };
+                        return {
+                            status: game.ionrift.integration.STATUS.WARNING,
+                            label: 'Setup needed',
+                            message: 'Install the Core SFX Pack or connect Syrinscape in Resonance Setup.'
+                        };
                     }
 
                     try {
@@ -259,6 +326,97 @@ Hooks.once('init', async function () {
         }
     });
 });
+
+/**
+ * Build the resonance-specific destructive-action warnings for the
+ * `ionrift.collectDestructiveWarnings` hook. Pushes preserved/replaced/note
+ * entries describing what a content-pack install or reinstall will affect.
+ *
+ * @param {Array} warnings   Mutable list to append to.
+ * @param {string} action    "install" | "reinstall" | "zipImport"
+ * @param {Object} [context]
+ */
+function _appendResonanceDestructiveWarnings(warnings, action, context = {}) {
+    const incomingPackId = typeof context?.packId === "string" ? context.packId : null;
+    const candidatePackIds = new Set();
+    if (incomingPackId) candidatePackIds.add(incomingPackId);
+
+    const existingPacks = SoundPackLoader.loaded ? SoundPackLoader.getLoadedPacks() : [];
+    for (const pack of existingPacks) {
+        if (candidatePackIds.has(pack.id) || pack.id === incomingPackId || action === "reinstall") {
+            warnings.push({
+                severity: "replaced",
+                title: `Pack "${pack.name || pack.id}" (v${pack.version})`,
+                detail: pack.source === "overlay"
+                    ? "Currently installed via Patreon Library. Files will be overwritten."
+                    : "Already installed from a .zip. Shadowed by the new copy until removed."
+            });
+            break;
+        }
+    }
+
+    if (action === "reinstall" || existingPacks.length > 0) {
+        const customRaw = (() => {
+            try {
+                return game.settings.get("ionrift-resonance", "customSoundBindings") || "";
+            } catch {
+                return "";
+            }
+        })();
+        const trimmed = customRaw.trim();
+        const hasCustom = trimmed && trimmed !== "{}";
+        if (hasCustom) {
+            warnings.push({
+                severity: "preserved",
+                title: "Custom sound bindings",
+                detail: "Resonance Calibration overrides stay in place across installs."
+            });
+        }
+
+        const flagsCount = _countResonanceFlags();
+        if (flagsCount > 0) {
+            warnings.push({
+                severity: "preserved",
+                title: `Per-actor and per-item sound overrides (${flagsCount})`,
+                detail: "Token and item flags assigned in Calibration are untouched."
+            });
+        }
+    }
+}
+
+/**
+ * Cheap presence-count for actor/item ionrift-resonance flags. Mirrors the
+ * filter in SoundConfigApp._getAuditorData. Used only for destructive-action
+ * detection, not for rendering, so it returns a count and stops at the first
+ * meaningful flag per actor.
+ * @returns {number}
+ */
+function _countResonanceFlags() {
+    let count = 0;
+    const IGNORED = new Set(["identity", "soundPreset", "sound_config"]);
+    const meaningful = (key, val) => {
+        if (!val) return false;
+        if (IGNORED.has(key)) return false;
+        if (key.endsWith("_name") || key.endsWith("_meta")) return false;
+        return true;
+    };
+
+    for (const actor of game.actors ?? []) {
+        const flags = actor.flags?.["ionrift-resonance"];
+        if (!flags) continue;
+        for (const [key, val] of Object.entries(flags)) {
+            if (meaningful(key, val)) { count++; break; }
+        }
+    }
+    for (const item of game.items ?? []) {
+        const flags = item.flags?.["ionrift-resonance"];
+        if (!flags) continue;
+        for (const [key, val] of Object.entries(flags)) {
+            if (meaningful(key, val)) { count++; break; }
+        }
+    }
+    return count;
+}
 
 /**
  * Polls for the existence of the Syrinscape Control API.
@@ -282,82 +440,14 @@ async function waitForDependency() {
 
 
 
-// Hook into Settings Config to display status icon on load
+// Hook into Settings Config to display status icon on load.
+// Pack-nudge banner injection is handled centrally by ionrift-library
+// (PackNudgeService.injectAllInSettings) once the module registers its config.
 Hooks.on('renderSettingsConfig', (app, html, data) => {
-    // Inject status icon via centralized interface
     if (game.ionrift?.integration) {
         game.ionrift.integration.renderSettingsIndicator(html, app);
     }
-
-    // SFX Pack Nudge: inline banner when no sound packs are installed
-    if (game.user.isGM && !game.settings.get("ionrift-resonance", "sfxNudgeSuppressed")) {
-        const loadedPacks = SoundPackLoader.getLoadedPacks();
-        const hasSfxPack = loadedPacks.some(p => p.enabled);
-        if (!hasSfxPack) {
-            _injectSfxNudgeBanner(html);
-        }
-    }
 });
-
-/**
- * Injects the SFX nudge banner into the settings panel under the Resonance section.
- * Uses the kernel's SettingsLayout data-key attribute to find the correct anchor point.
- * Mirrors the Respite art-nudge pattern: dismiss (suppress) or snooze.
- */
-function _injectSfxNudgeBanner(html) {
-    const $html = $(html);
-    // Find the Sound Packs button rendered by SettingsLayout.registerPackButton
-    const $packBtn = $html.find(`button[data-key="ionrift-resonance.contentPacks"]`);
-    const $anchor = $packBtn.length ? $packBtn.closest(".form-group") : null;
-    if (!$anchor?.length) return;
-
-    const banner = $(`
-        <div class="sfx-nudge-banner" style="
-            background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(139, 92, 246, 0.08));
-            border: 1px solid rgba(88, 166, 255, 0.25);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin: 8px 0 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-        ">
-            <i class="fas fa-music" style="font-size: 20px; color: #58a6ff; flex-shrink: 0;"></i>
-            <div style="flex: 1;">
-                <strong style="color: #c9d1d9;">No sound effects configured.</strong>
-                <span style="color: #8b949e;">Install the Core SFX Pack to hear combat, spells, and creatures.</span>
-            </div>
-            <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                <button type="button" class="sfx-nudge-get" style="
-                    background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.3);
-                    color: #58a6ff; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px;
-                "><i class="fas fa-download"></i> Get Pack</button>
-                <button type="button" class="sfx-nudge-open" style="
-                    background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3);
-                    color: #a78bfa; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px;
-                "><i class="fas fa-folder-open"></i> Sound Packs</button>
-                <button type="button" class="sfx-nudge-dismiss" style="
-                    background: transparent; border: 1px solid rgba(139, 148, 158, 0.2);
-                    color: #8b949e; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px;
-                " title="Don't show again"><i class="fas fa-times"></i></button>
-            </div>
-        </div>
-    `);
-
-    banner.find(".sfx-nudge-get").on("click", () => {
-        window.open("https://www.patreon.com/posts/155880618", "_blank");
-    });
-    banner.find(".sfx-nudge-open").on("click", () => {
-        new ResonancePackRegistryApp().render(true);
-    });
-    banner.find(".sfx-nudge-dismiss").on("click", async () => {
-        await game.settings.set("ionrift-resonance", "sfxNudgeSuppressed", true);
-        banner.remove();
-    });
-
-    $anchor.after(banner);
-}
 
 // Sidebar Injection (Playlist Directory)
 Hooks.on("renderPlaylistDirectory", (app, html, data) => {

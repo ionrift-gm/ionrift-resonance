@@ -54,7 +54,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 1. Install from Foundry VTT package manager
 2. Install **Ionrift Library** (required dependency)
 3. Open **Game Settings > Module Settings > Ionrift Resonance**
-4. Click **Open Attunement Protocol** (not the Library's "Begin Attunement", that's for creature indexing)
+4. Click **Open Resonance Setup** (not the Library's **Begin Attunement**, which is for creature indexing)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
 5. Download and import the free **Core SFX Pack** to activate the core sounds.
@@ -80,7 +80,7 @@ Custom bindings always take priority over global presets.
 
 ## Core SFX Pack
 
-You can download the **Core SFX Pack**, which provides **~400 local sound files** covering the full combat loop. Import the pack via the Attunement Protocol to activate it.
+You can install the **Core SFX Pack**, which provides **~400 local sound files** covering the full combat loop. Use **Resonance Setup** or **Patreon Library** to install it.
 
 | Category | Sounds | Examples |
 |----------|--------|----------|

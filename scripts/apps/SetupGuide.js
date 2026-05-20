@@ -3,7 +3,7 @@ import { Logger } from "../Logger.js";
 export class SetupGuide extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
-            title: "Attunement Protocol",
+            title: "Resonance Setup",
             id: "ionrift-resonance-setup",
             template: "modules/ionrift-resonance/templates/setup-guide.html",
             classes: ["ionrift-window", "ionrift"],

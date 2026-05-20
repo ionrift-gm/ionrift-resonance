@@ -5,6 +5,8 @@ import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
 import { SoundOrchestrator } from "../SoundOrchestrator.js";
 import { SoundPackLoader } from "../services/SoundPackLoader.js";
 
+const RESONANCE_MODULE_ID = "ionrift-resonance";
+
 export class SoundConfigApp extends FormApplication {
     constructor(object, options) {
         super(object, options);
@@ -190,20 +192,30 @@ export class SoundConfigApp extends FormApplication {
                 if (check.value) {
                     // We have explicit value
                     myResolved = check;
+                    const isCustom = check.source === "custom";
+                    // Non-custom sources (pack / syrinscape default) populate defaultValue
+                    // so the row renders the resolved sounds as default pills. For custom
+                    // overrides keep the Syrinscape default for the "reset to default" path.
+                    const displayDefault = isCustom
+                        ? SYRINSCAPE_DEFAULTS[node.id]
+                        : check.value;
                     myState = new SoundCardState(node.id,
-                        (check.source === "custom" ? check.value : null),
-                        SYRINSCAPE_DEFAULTS[node.id],
+                        isCustom ? check.value : null,
+                        displayDefault,
                         node.cardLabel || node.label,
                         node.description
                     );
+                    // Expose resolved value to child nodes for inheritance lookups even
+                    // when there is no explicit user override. _parse() has already run,
+                    // so this only affects parentState.value reads by descendants.
+                    if (!isCustom) myState.value = check.value;
                 } else {
                     // No explicit value -> Check Parent
                     if (parentState && parentState.value) {
-                        // Inherit from parent
+                        // Inherit from parent - parent value drives display
                         myResolved = { value: parentState.value, source: "inherited" };
-                        myState = new SoundCardState(node.id, null, SYRINSCAPE_DEFAULTS[node.id], node.cardLabel || node.label, node.description, parentState.label);
-                        myState.value = myResolved.value; // Force value for playback/display
-                        myState.isInherited = true;
+                        myState = new SoundCardState(node.id, null, parentState.value, node.cardLabel || node.label, node.description, parentState.label);
+                        myState.value = myResolved.value;
                     } else {
                         // No parent value either -> Empty
                         myState = new SoundCardState(node.id, null, null, node.cardLabel || node.label, node.description);
@@ -924,68 +936,22 @@ export class SoundConfigApp extends FormApplication {
 
     /**
      * Contextual SFX nudge banner -- injected at the top of the Calibration
-     * content area when no sound packs are installed. Mirrors Respite's
-     * art-nudge pattern: visible only in the workflow the user is actively
-     * interacting with, dismissible, not a popup.
+     * content area when no sound packs are installed. Delegates rendering to
+     * the shared library PackNudgeService; dismiss state is shared with the
+     * Settings panel surface so one dismiss applies everywhere.
      */
-    _injectCalibrationNudge(html) {
-        if (!game.user.isGM) return;
-        if (game.settings.get("ionrift-resonance", "sfxNudgeSuppressed")) return;
-
-        // Check if any sound packs are enabled
-        const packs = SoundPackLoader.getLoadedPacks();
-        const hasPacks = packs.some(p => p.enabled);
-        if (hasPacks) return;
-
-        // Also check if there are any custom bindings set
-        const raw = game.settings.get("ionrift-resonance", "customSoundBindings") || "{}";
-        if (raw !== "{}" && raw !== "") return;
+    async _injectCalibrationNudge(html) {
+        const packNudge = game.ionrift?.library?.packNudge;
+        if (!packNudge) return;
 
         const $content = html.find(".content");
         if (!$content.length) return;
-        if ($content.find(".sfx-calibration-nudge").length) return;
 
-        const banner = $(`
-            <div class="sfx-calibration-nudge" style="
-                background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(139, 92, 246, 0.08));
-                border: 1px solid rgba(88, 166, 255, 0.25);
-                border-radius: 8px;
-                padding: 14px 18px;
-                margin: 0 0 16px;
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                font-size: 13px;
-            ">
-                <i class="fas fa-music" style="font-size: 22px; color: #58a6ff; flex-shrink: 0;"></i>
-                <div style="flex: 1;">
-                    <strong style="color: #c9d1d9;">No sound pack installed.</strong><br>
-                    <span style="color: #8b949e;">All sound slots are empty. Download and import the
-                    <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a>
-                    to populate 97 bindings across combat, spells, and monsters.</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;">
-                    <button type="button" class="sfx-cal-nudge-get" style="
-                        background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.3);
-                        color: #58a6ff; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 12px;
-                    "><i class="fas fa-download"></i> Get Pack</button>
-                    <button type="button" class="sfx-cal-nudge-dismiss" style="
-                        background: transparent; border: 1px solid rgba(139, 148, 158, 0.2);
-                        color: #8b949e; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 11px;
-                    "><i class="fas fa-times"></i> Dismiss</button>
-                </div>
-            </div>
-        `);
-
-        banner.find(".sfx-cal-nudge-get").on("click", () => {
-            window.open("https://www.patreon.com/posts/155880618", "_blank");
+        await packNudge.inject(RESONANCE_MODULE_ID, $content, {
+            position: "prepend",
+            scope: $content,
+            layout: "stacked"
         });
-        banner.find(".sfx-cal-nudge-dismiss").on("click", async () => {
-            await game.settings.set("ionrift-resonance", "sfxNudgeSuppressed", true);
-            banner.slideUp(200, () => banner.remove());
-        });
-
-        $content.prepend(banner);
     }
 
     /**

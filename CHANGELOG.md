@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.7.9] - 2026-05-20
+
+### Fixed
+- Monster sounds and any other pack-bound rows outside the core Syrinscape
+  set now appear in Sound Configuration with their pack defaults visible.
+  Previously they showed as "No Sound Bound" until you edited and applied an
+  override; resetting an override would make the sounds appear to vanish.
+  The fix preserves any custom bindings you have already configured.
+- Sounds delivered through a Library content pack install now
+  populate Calibration automatically, the same way a manually imported zip
+  pack does. Status returns CONNECTED and the install nudge hides on its own.
+
+### Changed
+- The Sound Configuration content nudge now uses the shared Ionrift Library
+  banner. Your prior "snooze" or "don't show again" choices carry over.
+- Attunement Protocol setup has been tightened. Steps the overlay system
+  already covers are removed. Existing attuned users are not re-prompted.
+
 ## [2.7.8] - 2026-05-19
 
 ### Changed
