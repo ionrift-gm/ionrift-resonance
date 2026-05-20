@@ -32,6 +32,7 @@ sounds/pack/
 
 # Build tooling (not shipped)
 tools/
+!tools/validate-changelog.mjs
 
 # Test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
 scripts/tests/
