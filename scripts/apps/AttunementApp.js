@@ -3,11 +3,13 @@ import { AbstractWelcomeApp } from "/modules/ionrift-library/scripts/apps/Abstra
 import { Logger } from "../Logger.js";
 import { SyrinscapeProvider } from "../providers/SyrinscapeProvider.js";
 import { SoundPackLoader } from "../services/SoundPackLoader.js";
+import { CORE_SFX_PATREON_URL } from "../constants.js";
+import { openResonancePackLibrary } from "../openResonancePackLibrary.js";
 
 
 /**
- * Ionrift Resonance Attunement Protocol
- * Handles Syrinscape Connection and Sound Pack verification.
+ * Ionrift Resonance Setup wizard.
+ * Syrinscape connection and Core SFX Pack via Patreon Library.
  */
 export class AttunementApp extends AbstractWelcomeApp {
     // Must match ATTUNEMENT_VERSION in module.js - bump both together at release
@@ -16,7 +18,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     constructor(attunementVersion, options = {}) {
         // Fall back to static VERSION so module-settings instantiation (no args)
         // still gets the correct version and shows the Protocol Complete state.
-        super("Resonance: Attunement Protocol", "setupVersion", attunementVersion ?? AttunementApp.VERSION);
+        super("Resonance Setup", "setupVersion", attunementVersion ?? AttunementApp.VERSION);
 
         // State for Token Input
         this.pendingToken = "";
@@ -32,7 +34,7 @@ export class AttunementApp extends AbstractWelcomeApp {
             height: "auto",
             classes: ["ionrift", "ionrift-window", "welcome-window"],
             moduleId: "ionrift-resonance",
-            title: "Attunement Protocol"
+            title: "Resonance Setup"
         });
     }
 
@@ -117,7 +119,7 @@ export class AttunementApp extends AbstractWelcomeApp {
     _getIntroText() { return ""; }
 
     _getCompleteMessage() {
-        return "Resonance is attuned and ready. You can re-run this protocol anytime to update your token or check sound pack status.";
+        return "Resonance is ready. Re-run setup anytime to update your Syrinscape token or manage sound packs.";
     }
 
     getSteps() {
@@ -232,66 +234,14 @@ export class AttunementApp extends AbstractWelcomeApp {
             html.find(".step-action-btn[data-step='sound_packs']").trigger("click");
         });
 
-        // Sound Packs step -- download button
         html.find(".sound-packs-download-btn").click((ev) => {
             ev.preventDefault();
-            window.open("https://www.patreon.com/posts/155880618", "_blank");
+            window.open(CORE_SFX_PATREON_URL, "_blank");
         });
 
-        // Sound Packs step -- import .zip button
-        html.find(".sound-packs-import-btn").click(async (ev) => {
+        html.find(".sound-packs-library-btn").click(async (ev) => {
             ev.preventDefault();
-            try {
-                const lib = game.ionrift?.library;
-                if (!lib?.importZipFromFile) {
-                    ui.notifications.error("Ionrift Library v1.7.0+ is required for sound pack imports.");
-                    return;
-                }
-
-                // Pick a zip file
-                const file = await this._pickZipFile();
-                if (!file) return;
-
-                // Pre-read manifest.json to get the pack ID
-                const packId = await this._readPackIdFromZip(file);
-                if (!packId) {
-                    ui.notifications.error("Sound pack ZIP must contain a manifest.json with an \"id\" field.");
-                    return;
-                }
-
-                // Ensure packs root exists
-                const platform = game.ionrift?.library?.platform;
-                if (platform) {
-                    await platform.ensureDirectory("ionrift-data/resonance/packs");
-                }
-
-                // Import into ionrift-data/resonance/packs/{packId}/
-                const result = await lib.importZipFromFile(file, {
-                    moduleId: "resonance",
-                    assetType: `packs/${packId}`,
-                    allowedExtensions: [".json", ".mp3", ".wav", ".ogg", ".webm", ".flac"],
-                    maxSizeMB: 200
-                });
-
-                if (!result || result.imported === 0) return;
-
-                // Auto-enable the newly imported pack
-                try {
-                    const settings = game.settings.get("ionrift-resonance", "installedSoundPacks") ?? {};
-                    settings[packId] = true;
-                    await game.settings.set("ionrift-resonance", "installedSoundPacks", settings);
-                } catch (e) {
-                    console.warn("Attunement | Failed to auto-enable pack:", e);
-                }
-
-                // Re-init SoundPackLoader and re-render to show updated status
-                await SoundPackLoader.init();
-                ui.notifications.info(`Sound pack "${packId}" imported. ${result.imported} files installed.`);
-                this.render();
-            } catch (e) {
-                Logger.error("Failed to import sound pack:", e);
-                ui.notifications.error("Import failed. Check the console for details.");
-            }
+            await this._openResonancePackLibrary();
         });
 
         // Live Token Input
@@ -385,6 +335,10 @@ export class AttunementApp extends AbstractWelcomeApp {
 
 
 
+    async _openResonancePackLibrary() {
+        await openResonancePackLibrary();
+    }
+
     async _runDiagnostics() {
         if (game.ionrift?.integration) {
             game.ionrift.integration.refresh();
@@ -422,61 +376,4 @@ export class AttunementApp extends AbstractWelcomeApp {
         return controlToken.trim() !== token.trim();
     }
 
-    /**
-     * Opens a browser file picker restricted to .zip files.
-     * @returns {Promise<File|null>}
-     */
-    _pickZipFile() {
-        return new Promise((resolve) => {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = ".zip";
-            input.addEventListener("change", (e) => resolve(e.target.files?.[0] ?? null));
-            input.addEventListener("cancel", () => resolve(null));
-            input.click();
-        });
-    }
-
-    /**
-     * Reads the manifest.json from a zip file to extract the pack ID.
-     * Uses the library's vendored JSZip.
-     * @param {File} file
-     * @returns {Promise<string|null>}
-     */
-    async _readPackIdFromZip(file) {
-        try {
-            const platform = game.ionrift?.library?.platform;
-            let JSZip;
-            if (platform) {
-                JSZip = await platform.loadJSZip();
-            } else if (window.JSZip) {
-                JSZip = window.JSZip;
-            } else {
-                console.warn("Attunement | JSZip not available.");
-                return null;
-            }
-
-            const buffer = await file.arrayBuffer();
-            const zip = await JSZip.loadAsync(buffer);
-
-            const manifestEntry = zip.file("manifest.json");
-            if (!manifestEntry) {
-                console.warn("Attunement | No manifest.json found in zip root.");
-                return null;
-            }
-
-            const text = await manifestEntry.async("text");
-            const manifest = JSON.parse(text);
-
-            if (!manifest.id || typeof manifest.id !== "string") {
-                console.warn("Attunement | manifest.json missing 'id' field.");
-                return null;
-            }
-
-            return manifest.id;
-        } catch (e) {
-            console.error("Attunement | Failed to read pack manifest from zip:", e);
-            return null;
-        }
-    }
 }

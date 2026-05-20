@@ -134,4 +134,11 @@ export const registerSettings = function () {
         default: false
     });
 
+    game.settings.register("ionrift-resonance", "sfxNudgeSnoozedUntil", {
+        scope: "world",
+        config: false,
+        type: String,
+        default: ""
+    });
+
 };

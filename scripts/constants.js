@@ -1,3 +1,6 @@
+/** Public Patreon post for the free Core SFX Pack zip download. */
+export const CORE_SFX_PATREON_URL = "https://www.patreon.com/posts/155880618";
+
 export const SOUND_EVENTS = {
     // Combat Status
     BLOODY_HIT: "CORE_HIT",

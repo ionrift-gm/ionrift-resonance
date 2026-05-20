@@ -1,12 +1,24 @@
 import { Logger } from "../Logger.js";
 
 const PACK_ROOT = "ionrift-data/resonance/packs";
+const OVERLAY_ROOT = "ionrift-data/overlays/ionrift-resonance";
 const MANIFEST_NAME = "manifest.json";
 const BINDINGS_NAME = "bindings.json";
+const OVERLAY_MANIFEST_NAME = "overlay-manifest.json";
 
 /**
- * Scans ionrift-data/resonance/packs/, validates each pack manifest + bindings,
+ * Scans Resonance pack roots, validates each pack manifest + bindings,
  * resolves pack-relative audio paths, and exposes the merged result.
+ *
+ * Two roots are scanned:
+ *   1. ionrift-data/resonance/packs/{packDir}/   (legacy + zip-imported packs)
+ *   2. ionrift-data/overlays/ionrift-resonance/{sublayer}/   (Patreon Library overlays)
+ *
+ * Overlay bundle layout contract (see LIB_API_REFERENCE.md): manifest.json
+ * and bindings.json must sit at the sublayer root, alongside overlay-manifest.json.
+ *
+ * Pack id collision: overlay wins. The legacy copy stays on disk and reactivates
+ * if the overlay is uninstalled, but is shadowed while both are present.
  *
  * Priority: preset keys > pack bindings > defaults.
  * Pack bindings are additive: multiple packs contribute without overwriting
@@ -23,7 +35,9 @@ export class SoundPackLoader {
         return game.ionrift?.library?.platform?.FP ?? FilePicker;
     }
 
-    /** @type {Map<string, {manifest: Object, bindings: Object}>} */
+    /**
+     * @type {Map<string, {manifest: Object, bindings: Object, source: "legacy"|"overlay", path: string, overlayId?: string, sublayer?: string}>}
+     */
     static _packs = new Map();
 
     /** Merged binding map across all enabled packs. */
@@ -33,7 +47,7 @@ export class SoundPackLoader {
     static _loaded = false;
 
     /**
-     * Scans the pack directory, loads manifests and bindings, resolves paths.
+     * Scans both pack roots, loads manifests and bindings, resolves paths.
      * Safe to call at boot; swallows errors per-pack so one broken pack
      * does not block the rest.
      */
@@ -41,40 +55,66 @@ export class SoundPackLoader {
         this._packs.clear();
         this._mergedBindings = {};
 
-        const enabledPacks = this._getEnabledPackIds();
+        const overlayActive = this._getOverlayActiveMap();
 
-        let packDirs;
-        try {
-            packDirs = await this._listPackDirectories();
-        } catch (err) {
-            Logger.log(`SoundPackLoader | Pack root not found or unreadable (${PACK_ROOT}). No packs loaded.`);
-            this._loaded = true;
-            return;
-        }
+        const legacyDirs = await this._safeListDirectories(PACK_ROOT);
+        const overlaySublayers = await this._safeListDirectories(OVERLAY_ROOT);
 
-        if (packDirs.length === 0) {
-            Logger.log("SoundPackLoader | No pack directories found.");
-            this._loaded = true;
-            return;
-        }
-
-        // Sort alphabetical so collision order is deterministic
-        packDirs.sort();
-
-        for (const dir of packDirs) {
+        // Load overlay packs first so they claim ids; legacy packs that collide
+        // are skipped with a console note (overlay-wins rule).
+        overlaySublayers.sort();
+        for (const sublayer of overlaySublayers) {
             try {
-                await this._loadPack(dir, enabledPacks);
+                await this._loadOverlayPack(sublayer, overlayActive);
+            } catch (err) {
+                Logger.warn(`SoundPackLoader | Failed to load overlay sublayer "${sublayer}":`, err.message);
+            }
+        }
+
+        legacyDirs.sort();
+        for (const dir of legacyDirs) {
+            try {
+                await this._loadLegacyPack(dir);
             } catch (err) {
                 Logger.warn(`SoundPackLoader | Failed to load pack "${dir}":`, err.message);
             }
         }
 
+        const enabledPacks = this._computeEnabledPackIds(overlayActive);
         this._rebuildMergedBindings(enabledPacks);
         this._loaded = true;
 
         const total = this._packs.size;
         const enabled = [...this._packs.values()].filter(p => enabledPacks.has(p.manifest.id)).length;
         Logger.log(`SoundPackLoader | ${total} pack(s) scanned, ${enabled} enabled, ${Object.keys(this._mergedBindings).length} merged binding keys.`);
+    }
+
+    /**
+     * Lists subdirectories at a root path, returning [] when the root is missing
+     * or unreadable rather than throwing.
+     * @param {string} root
+     * @returns {Promise<string[]>}
+     */
+    static async _safeListDirectories(root) {
+        try {
+            const result = await this._FP.browse("data", root);
+            return (result.dirs ?? []).map(d => d.split("/").pop());
+        } catch {
+            Logger.log(`SoundPackLoader | Root not found or unreadable: ${root}`);
+            return [];
+        }
+    }
+
+    /**
+     * Reads ionrift-library's overlayWorldState once per init.
+     * @returns {Record<string, { active?: boolean }>}
+     */
+    static _getOverlayActiveMap() {
+        try {
+            return game.settings.get("ionrift-library", "overlayWorldState") ?? {};
+        } catch {
+            return {};
+        }
     }
 
     /**
@@ -89,10 +129,11 @@ export class SoundPackLoader {
 
     /**
      * Returns metadata for every loaded pack (enabled or not).
-     * @returns {Array<{id: string, name: string, version: string, description: string, author: string, enabled: boolean, bindingCount: number}>}
+     * @returns {Array<{id: string, name: string, version: string, description: string, author: string, enabled: boolean, bindingCount: number, source: "legacy"|"overlay"}>}
      */
     static getLoadedPacks() {
-        const enabledPacks = this._getEnabledPackIds();
+        const overlayActive = this._getOverlayActiveMap();
+        const enabledPacks = this._computeEnabledPackIds(overlayActive);
         const result = [];
         for (const [, entry] of this._packs) {
             const m = entry.manifest;
@@ -103,10 +144,20 @@ export class SoundPackLoader {
                 description: m.description ?? "",
                 author: m.author ?? "",
                 enabled: enabledPacks.has(m.id),
-                bindingCount: Object.keys(entry.bindings).length
+                bindingCount: Object.keys(entry.bindings).length,
+                source: entry.source
             });
         }
         return result;
+    }
+
+    /**
+     * Look up a loaded pack by id.
+     * @param {string} packId
+     * @returns {{manifest: Object, bindings: Object, source: "legacy"|"overlay", path: string, overlayId?: string, sublayer?: string}|null}
+     */
+    static getPackInfo(packId) {
+        return this._packs.get(packId) ?? null;
     }
 
     /** @returns {boolean} */
@@ -115,66 +166,112 @@ export class SoundPackLoader {
     }
 
     // --  INTERNALS
+
     /**
-     * Reads the installedSoundPacks setting to determine which pack IDs
-     * the GM has toggled on.
+     * Compute the effective enabled pack ids.
+     *
+     * Legacy packs follow the `installedSoundPacks` setting.
+     * Overlay-derived packs follow `overlayWorldState[overlayId].active`, so the
+     * Patreon Library toggle drives enable/disable without write-through.
+     *
+     * @param {Record<string, { active?: boolean }>} overlayActive
      * @returns {Set<string>}
      */
-    static _getEnabledPackIds() {
+    static _computeEnabledPackIds(overlayActive) {
+        const enabled = new Set();
+        let legacyToggles = {};
         try {
-            const setting = game.settings.get("ionrift-resonance", "installedSoundPacks") ?? {};
-            const ids = new Set();
-            for (const [id, enabled] of Object.entries(setting)) {
-                if (enabled) ids.add(id);
+            legacyToggles = game.settings.get("ionrift-resonance", "installedSoundPacks") ?? {};
+        } catch { /* setting unregistered during early boot; treat as empty */ }
+
+        for (const [, entry] of this._packs) {
+            const id = entry.manifest.id;
+            if (entry.source === "overlay") {
+                const state = overlayActive[entry.overlayId];
+                if (state?.active !== false) enabled.add(id);
+            } else if (legacyToggles[id]) {
+                enabled.add(id);
             }
-            return ids;
-        } catch {
-            return new Set();
         }
+        return enabled;
     }
 
     /**
-     * Lists subdirectories under the pack root using FilePicker.
-     * Each subdirectory is expected to contain manifest.json + bindings.json.
-     * @returns {Promise<string[]>} directory names (not full paths)
-     */
-    static async _listPackDirectories() {
-        // Always use "data" source -- on Forge, "forgevtt" returns empty results
-        // for world-data paths. The "data" source correctly returns full CDN URLs.
-        const result = await this._FP.browse("data", PACK_ROOT);
-        return (result.dirs ?? []).map(d => d.split("/").pop());
-    }
-
-    /**
-     * Loads a single pack: validates manifest, loads bindings, resolves paths.
+     * Loads a legacy pack from ionrift-data/resonance/packs/{dirName}/.
      * @param {string} dirName
-     * @param {Set<string>} enabledPacks
      */
-    static async _loadPack(dirName, enabledPacks) {
+    static async _loadLegacyPack(dirName) {
         const basePath = `${PACK_ROOT}/${dirName}`;
+        const { manifest, bindings } = await this._readPackFiles(basePath, dirName);
 
+        if (this._packs.has(manifest.id)) {
+            const incumbent = this._packs.get(manifest.id);
+            Logger.log(`SoundPackLoader | Legacy pack "${dirName}" shadowed by ${incumbent.source} pack with same id "${manifest.id}".`);
+            return;
+        }
+        this._packs.set(manifest.id, { manifest, bindings, source: "legacy", path: basePath });
+    }
+
+    /**
+     * Loads an overlay-installed pack from ionrift-data/overlays/ionrift-resonance/{sublayer}/.
+     * Reads overlay-manifest.json to recover the overlayId for enable-state lookup.
+     * @param {string} sublayer
+     * @param {Record<string, { active?: boolean }>} overlayActive
+     */
+    static async _loadOverlayPack(sublayer, overlayActive) {
+        const basePath = `${OVERLAY_ROOT}/${sublayer}`;
+
+        const overlayMeta = await this._fetchJson(`${basePath}/${OVERLAY_MANIFEST_NAME}`);
+        if (!overlayMeta?.overlayId) {
+            Logger.log(`SoundPackLoader | Overlay sublayer "${sublayer}" has no overlay-manifest.json; skipping.`);
+            return;
+        }
+
+        const probeManifest = await this._fetchJson(`${basePath}/${MANIFEST_NAME}`);
+        if (!probeManifest) {
+            Logger.log(`SoundPackLoader | Overlay sublayer "${sublayer}" has no pack manifest.json; skipping.`);
+            return;
+        }
+
+        const { manifest, bindings } = await this._readPackFiles(basePath, sublayer);
+
+        this._packs.set(manifest.id, {
+            manifest,
+            bindings,
+            source: "overlay",
+            path: basePath,
+            overlayId: overlayMeta.overlayId,
+            sublayer
+        });
+    }
+
+    /**
+     * Reads manifest.json + bindings.json from a pack base path.
+     * @param {string} basePath
+     * @param {string} label  Used in error messages
+     * @returns {Promise<{manifest: Object, bindings: Object}>}
+     */
+    static async _readPackFiles(basePath, label) {
         const manifest = await this._fetchJson(`${basePath}/${MANIFEST_NAME}`);
         if (!manifest) throw new Error(`Missing or invalid ${MANIFEST_NAME}`);
         if (!manifest.id || typeof manifest.id !== "string") {
-            throw new Error(`Manifest missing required "id" field`);
+            throw new Error(`Manifest at "${label}" missing required "id" field`);
         }
 
         let rawBindings = {};
         try {
             rawBindings = await this._fetchJson(`${basePath}/${BINDINGS_NAME}`) ?? {};
         } catch {
-            Logger.warn(`SoundPackLoader | Pack "${dirName}" has no ${BINDINGS_NAME}, treating as empty.`);
+            Logger.warn(`SoundPackLoader | Pack "${label}" has no ${BINDINGS_NAME}, treating as empty.`);
         }
 
-        // If bindings use the versioned envelope, unwrap
+        // If bindings use the versioned envelope, unwrap.
         if (rawBindings.bindings && typeof rawBindings.bindings === "object") {
             rawBindings = rawBindings.bindings;
         }
 
-        // Resolve pack-relative paths to full Foundry-accessible paths
-        const resolvedBindings = this._resolvePaths(rawBindings, basePath);
-
-        this._packs.set(manifest.id, { manifest, bindings: resolvedBindings });
+        const bindings = this._resolvePaths(rawBindings, basePath);
+        return { manifest, bindings };
     }
 
     /**
