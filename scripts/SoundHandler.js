@@ -48,6 +48,11 @@ export class SoundHandler {
             if (setting.key === "ionrift-resonance.orchestratorConfig") {
                 this.orchestrator.loadConfig();
             }
+            // GM toggled a pack: non-GM clients adopt the new cache so playback
+            // stays in sync without requiring a refresh.
+            if (setting.key === "ionrift-resonance.cachedMergedBindings" && !game.user.isGM) {
+                SoundPackLoader.refreshFromCache();
+            }
         });
 
         this.init();

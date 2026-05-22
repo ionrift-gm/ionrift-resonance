@@ -50,6 +50,13 @@ export class SoundPackLoader {
      * Scans both pack roots, loads manifests and bindings, resolves paths.
      * Safe to call at boot; swallows errors per-pack so one broken pack
      * does not block the rest.
+     *
+     * Player-side fallback: in Foundry v13+, FILES_BROWSE defaults to
+     * Trusted+ so regular players (role 1) get an empty result from
+     * FilePicker.browse and would otherwise end up with zero bindings.
+     * The GM publishes the merged result to the `cachedMergedBindings`
+     * world setting after every successful init, and non-GM clients that
+     * end up with an empty merged map fall back to that cache.
      */
     static async init() {
         this._packs.clear();
@@ -82,11 +89,74 @@ export class SoundPackLoader {
 
         const enabledPacks = this._computeEnabledPackIds(overlayActive);
         this._rebuildMergedBindings(enabledPacks);
+
+        const isGM = !!game.user?.isGM;
+        if (isGM) {
+            // GM owns the cache. Publish even when empty so a player who
+            // joins after a pack is uninstalled gets the cleared state.
+            await this._publishCachedBindings();
+        } else if (Object.keys(this._mergedBindings).length === 0) {
+            // Non-GM browse returned nothing (typical for role < TRUSTED).
+            // Adopt whatever the GM last published so playback works locally.
+            const cached = this._readCachedBindings();
+            const cachedKeys = Object.keys(cached).length;
+            if (cachedKeys > 0) {
+                this._mergedBindings = cached;
+                Logger.log(`SoundPackLoader | Adopted ${cachedKeys} cached binding keys from GM (player fallback).`);
+            }
+        }
+
         this._loaded = true;
 
         const total = this._packs.size;
         const enabled = [...this._packs.values()].filter(p => enabledPacks.has(p.manifest.id)).length;
         Logger.log(`SoundPackLoader | ${total} pack(s) scanned, ${enabled} enabled, ${Object.keys(this._mergedBindings).length} merged binding keys.`);
+    }
+
+    /**
+     * Read the GM-published cache. Returns {} on parse failure or when
+     * the setting is unregistered (defensive: SoundPackLoader can run
+     * before settings registration in tests).
+     * @returns {Object}
+     */
+    static _readCachedBindings() {
+        try {
+            const raw = game.settings?.get?.("ionrift-resonance", "cachedMergedBindings") ?? "{}";
+            if (!raw || raw === "{}") return {};
+            return JSON.parse(raw);
+        } catch (err) {
+            Logger.warn("SoundPackLoader | Failed to parse cachedMergedBindings:", err?.message ?? err);
+            return {};
+        }
+    }
+
+    /**
+     * Persist the merged bindings to the world-scoped cache so non-GM
+     * clients can read it. Idempotent: skips the write when the
+     * serialized payload matches the existing setting value.
+     */
+    static async _publishCachedBindings() {
+        try {
+            const serialized = JSON.stringify(this._mergedBindings ?? {});
+            const current = game.settings?.get?.("ionrift-resonance", "cachedMergedBindings") ?? "{}";
+            if (current === serialized) return;
+            await game.settings.set("ionrift-resonance", "cachedMergedBindings", serialized);
+            Logger.log(`SoundPackLoader | Published ${Object.keys(this._mergedBindings).length} merged binding keys for player clients.`);
+        } catch (err) {
+            Logger.warn("SoundPackLoader | Failed to publish cachedMergedBindings:", err?.message ?? err);
+        }
+    }
+
+    /**
+     * Reload merged bindings from the GM-published cache without
+     * re-scanning the pack root. Called from SoundHandler when the
+     * cachedMergedBindings setting changes (GM toggled a pack).
+     */
+    static refreshFromCache() {
+        const cached = this._readCachedBindings();
+        this._mergedBindings = cached;
+        this._loaded = true;
+        Logger.log(`SoundPackLoader | Refreshed bindings from cache (${Object.keys(cached).length} keys).`);
     }
 
     /**
