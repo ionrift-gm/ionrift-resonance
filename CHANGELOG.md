@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.0] - 2026-05-22
+
+### Fixed
+- **Sounds now play for non-GM players whose Foundry role lacks file-browse permission.** Players below Trusted could end up with empty sound bindings and silent combat. The GM's resolved bindings are now shared to all clients automatically and stay in sync when packs are toggled.
+
+### Changed
+- Verified compatible with Foundry V14.
+
 ## [2.7.9] - 2026-05-20
 
 ### Fixed
