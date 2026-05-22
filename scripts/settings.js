@@ -116,6 +116,18 @@ export const registerSettings = function () {
         default: {}
     });
 
+    // GM-published merged bindings cache. Players (role < TRUSTED) cannot
+    // browse the data root in v13+, which previously left their merged
+    // bindings empty and silenced all sound dispatch on player clients.
+    // The GM publishes this after each SoundPackLoader.init(); non-GM
+    // clients fall back to it when their own browse yields nothing.
+    game.settings.register("ionrift-resonance", "cachedMergedBindings", {
+        scope: "world",
+        config: false,
+        type: String,
+        default: "{}"
+    });
+
     // One-shot migration gate: true once stale modules/ionrift-resonance/sounds/pack/
     // bindings have been cleaned (or confirmed absent). Prevents re-checking every boot.
     game.settings.register("ionrift-resonance", "stalePackMigrated", {
