@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.8.1] - 2026-05-26
+
+### Fixed
+- Evocation spells now resolve correctly on DnD5e versions that use the short school code `evo` instead of `evoc`.
+
 ## [2.8.0] - 2026-05-22
 
 ### Fixed
