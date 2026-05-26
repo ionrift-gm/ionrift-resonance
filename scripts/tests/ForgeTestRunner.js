@@ -48,7 +48,12 @@ export class ResonanceForgeTestRunner {
                 "modules/ionrift-resonance/templates/partials/sound-group"
             ];
 
-            const missing = expected.filter(key => !Handlebars.partials[key]);
+            // Accept either key form ("path" or "path.hbs"). Foundry's
+            // loadTemplates registration form varies by version.
+            const isRegistered = (key) => !!(
+                Handlebars.partials[key] || Handlebars.partials[`${key}.hbs`]
+            );
+            const missing = expected.filter(key => !isRegistered(key));
 
             if (missing.length === 0) {
                 passed++;

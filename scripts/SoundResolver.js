@@ -119,7 +119,8 @@ export class SoundResolver {
             if (type === "spell" && item.system.school) {
                 const school = item.system.school;
                 switch (school) {
-                    case "evoc": return SOUND_EVENTS.SPELL_FIRE; // Generalized
+                    case "evo":
+                    case "evoc": return SOUND_EVENTS.SPELL_FIRE;
                     case "nec": return SOUND_EVENTS.SPELL_VOID;
                     case "div": return SOUND_EVENTS.SPELL_PSYCHIC;
                     case "abj": return SOUND_EVENTS.SPELL_HEAL;
