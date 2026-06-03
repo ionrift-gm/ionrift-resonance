@@ -65,7 +65,7 @@ export class SystemAdapter {
      * @param {SoundResolver} resolver - The resolver instance (for resolveKey calls)
      * @returns {string|null} A sound key if resolved, or null to continue the chain
      */
-    resolveSystemSound(item, actor, resolver) {
+    resolveSystemSound(_item, _actor, _resolver) {
         return null;
     }
 
