@@ -47,8 +47,13 @@ export class ActorSoundConfig extends FormApplication {
                 { key: "sound_stress_clear", label: "Stress Cleared", icon: "fas fa-feather-alt", hint: "Override the sound when this character recovers Stress." },
                 { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
             ];
+        } else if (game.system.id === "pf2e") {
+            systemSlots = [
+                { key: "sound_hero_point_gain", label: "Hero Point Gained", icon: "fas fa-star", hint: "Override the sound when this character gains a Hero Point." },
+                { key: "sound_hero_point_use", label: "Hero Point Spent", icon: "fas fa-hand-sparkles", hint: "Override the sound when this character spends a Hero Point." },
+                { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
+            ];
         } else {
-            // DnD 5e and other systems
             systemSlots = [
                 { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
             ];
