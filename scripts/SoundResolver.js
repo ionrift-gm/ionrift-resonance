@@ -51,37 +51,11 @@ export class SoundResolver {
 
         const lower = itemName.toLowerCase();
 
-        // 3.5. Daggerheart Domain Resolution
-        // Priority: item.system.domain (domainCards) -> actor.system.domains (class fallback)
-        // Guard: Only spell-like items enter domain resolution. Weapons/armor/equipment skip this entirely.
-        const weaponTypes = ["weapon", "armor", "equipment", "loot", "consumable"];
-        const isWeaponLike = item?.type && weaponTypes.includes(item.type);
-
-        if (game.system.id === "daggerheart" && item?.system && !isWeaponLike) {
-            // A) Direct domain on item (domainCard type items have this)
-            const itemDomain = item.system.domain;
-            if (itemDomain) {
-                const domainKey = `DOMAIN_${itemDomain.toUpperCase()}`;
-                const resolved = this.resolveKey(domainKey);
-                if (resolved) {
-                    Logger.log(`pickSound | Daggerheart item domain: ${itemDomain} -> ${domainKey}`);
-                    return domainKey;
-                }
-            }
-
-            // B) Fallback: actor's class domains (features don't carry domain metadata)
-            //    Try each domain - first one with a bound sound wins
-            const actorDomains = actor?.system?.domains;
-            if (actorDomains?.length && !itemDomain) {
-                for (const domain of actorDomains) {
-                    const domainKey = `DOMAIN_${domain.toUpperCase()}`;
-                    const resolved = this.resolveKey(domainKey);
-                    if (resolved) {
-                        Logger.log(`pickSound | Daggerheart actor domain fallback: ${domain} -> ${domainKey}`);
-                        return domainKey;
-                    }
-                }
-            }
+        // 3.5. System-specific resolution (e.g. DH domains)
+        const adapter = game.ionrift?.handler?.system;
+        if (adapter?.resolveSystemSound) {
+            const systemResult = adapter.resolveSystemSound(item, actor, this);
+            if (systemResult) return systemResult;
         }
 
         // 4. Classifier Logic (Ionrift Library)

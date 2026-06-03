@@ -323,33 +323,34 @@ export class SoundConfigApp extends FormApplication {
         ];
 
         // System-specific spell traditions
-        if (game.system.id === 'dnd5e') {
-            // Effect-type children (DnD5e has explicit damage types)
+        if (game.system.id === 'dnd5e' || game.system.id === 'pf2e') {
             actionTaxonomy[actionTaxonomy.length - 1].children = [
                 { label: "Fire / Heat", id: "SPELL_FIRE" },
                 { label: "Ice / Cold", id: "SPELL_ICE" },
                 { label: "Lightning / Storm", id: "SPELL_LIGHTNING" },
                 { label: "Acid / Poison", id: "SPELL_ACID" },
                 { label: "Healing / Radiant", id: "SPELL_HEAL" },
-                { label: "Psychic / Divination", id: "SPELL_PSYCHIC" },
-                { label: "Necrotic / Void", id: "SPELL_VOID" }
+                { label: "Psychic / Sonic", id: "SPELL_PSYCHIC" },
+                { label: "Void / Negative", id: "SPELL_VOID" }
             ];
 
-            actionTaxonomy.push({
-                label: "Spell Schools",
-                id: "CORE_SCHOOL",
-                description: "Where the magic comes from - match by arcane tradition. Unset schools fall back to Magic (Spells).",
-                children: [
-                    { label: "Abjuration", id: "SCHOOL_ABJURATION", description: "Protective wards and barriers." },
-                    { label: "Conjuration", id: "SCHOOL_CONJURATION", description: "Summoning creatures and objects." },
-                    { label: "Divination", id: "SCHOOL_DIVINATION", description: "Perceiving hidden truths." },
-                    { label: "Enchantment", id: "SCHOOL_ENCHANTMENT", description: "Influencing minds." },
-                    { label: "Evocation", id: "SCHOOL_EVOCATION", description: "Raw elemental energy." },
-                    { label: "Illusion", id: "SCHOOL_ILLUSION", description: "Deceptive phantasms." },
-                    { label: "Necromancy", id: "SCHOOL_NECROMANCY", description: "Death and undeath magic." },
-                    { label: "Transmutation", id: "SCHOOL_TRANSMUTATION", description: "Altering physical properties." }
-                ]
-            });
+            if (game.system.id === 'dnd5e') {
+                actionTaxonomy.push({
+                    label: "Spell Schools",
+                    id: "CORE_SCHOOL",
+                    description: "Where the magic comes from - match by arcane tradition. Unset schools fall back to Magic (Spells).",
+                    children: [
+                        { label: "Abjuration", id: "SCHOOL_ABJURATION", description: "Protective wards and barriers." },
+                        { label: "Conjuration", id: "SCHOOL_CONJURATION", description: "Summoning creatures and objects." },
+                        { label: "Divination", id: "SCHOOL_DIVINATION", description: "Perceiving hidden truths." },
+                        { label: "Enchantment", id: "SCHOOL_ENCHANTMENT", description: "Influencing minds." },
+                        { label: "Evocation", id: "SCHOOL_EVOCATION", description: "Raw elemental energy." },
+                        { label: "Illusion", id: "SCHOOL_ILLUSION", description: "Deceptive phantasms." },
+                        { label: "Necromancy", id: "SCHOOL_NECROMANCY", description: "Death and undeath magic." },
+                        { label: "Transmutation", id: "SCHOOL_TRANSMUTATION", description: "Altering physical properties." }
+                    ]
+                });
+            }
         }
 
         if (game.system.id === 'daggerheart') {
@@ -664,13 +665,21 @@ export class SoundConfigApp extends FormApplication {
                 ]
             });
         } else if (game.system.id === 'dnd5e') {
-            // DnD 5e Roll Stingers
             coreTaxonomy.push({
                 label: "D&D 5e: Roll Stingers",
                 description: "Celebratory/failure stingers for natural 20s and natural 1s.",
                 children: [
                     { id: "ROLL_CRIT", label: "Natural 20", description: "Stinger played when a d20 rolls a natural 20." },
                     { id: "ROLL_FUMBLE", label: "Natural 1", description: "Stinger played when a d20 rolls a natural 1." }
+                ]
+            });
+        } else if (game.system.id === 'pf2e') {
+            coreTaxonomy.push({
+                label: "PF2e: Roll Stingers",
+                description: "Outcome stingers for Critical Success and Critical Failure (Degrees of Success).",
+                children: [
+                    { id: "ROLL_CRIT", label: "Critical Success", description: "Stinger played on a Critical Success result." },
+                    { id: "ROLL_FUMBLE", label: "Critical Failure", description: "Stinger played on a Critical Failure result." }
                 ]
             });
         }
