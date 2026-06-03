@@ -225,12 +225,14 @@ export class PF2eAdapter extends SystemAdapter {
 
     _isHealing(message, item) {
         const traits = item?.system?.traits?.value ?? [];
-        if (traits.includes("healing")) return true;
+        if (traits.includes("healing") || traits.includes("vitality")) return true;
 
-        // Check damage types on the roll
         const damageInstances = message.flags?.pf2e?.damageRoll?.instances;
         if (Array.isArray(damageInstances)) {
-            return damageInstances.every(i => i.type === "healing" || i.type === "temphp");
+            return damageInstances.every(i =>
+                i.type === "healing" || i.type === "temphp" ||
+                i.type === "vitality" || i.type === "positive"
+            );
         }
         return false;
     }

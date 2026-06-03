@@ -13,6 +13,51 @@ export class DaggerheartAdapter extends SystemAdapter {
     }
 
     /**
+     * Daggerheart uses a DAMAGE-UP HP model: the HP value represents accumulated
+     * damage. An increase in HP value means damage was taken. Reaching maxHp = death.
+     * This is the OPPOSITE of DnD5e/PF2e where HP decreases on damage.
+     */
+    isDamage(oldHp, newHp) {
+        return newHp > oldHp;
+    }
+
+    isDeath(newHp, maxHp, _isPC) {
+        return maxHp > 0 && newHp >= maxHp;
+    }
+
+    resolveSystemSound(item, actor, resolver) {
+        if (!item?.system) return null;
+        const weaponTypes = ["weapon", "armor", "equipment", "loot", "consumable"];
+        if (item.type && weaponTypes.includes(item.type)) return null;
+
+        // A) Direct domain on item (domainCard type items have this)
+        const itemDomain = item.system.domain;
+        if (itemDomain) {
+            const domainKey = `DOMAIN_${itemDomain.toUpperCase()}`;
+            const resolved = resolver.resolveKey(domainKey);
+            if (resolved) {
+                Logger.log(`DH | Item domain: ${itemDomain} -> ${domainKey}`);
+                return domainKey;
+            }
+        }
+
+        // B) Fallback: actor's class domains
+        const actorDomains = actor?.system?.domains;
+        if (actorDomains?.length && !itemDomain) {
+            for (const domain of actorDomains) {
+                const domainKey = `DOMAIN_${domain.toUpperCase()}`;
+                const resolved = resolver.resolveKey(domainKey);
+                if (resolved) {
+                    Logger.log(`DH | Actor domain fallback: ${domain} -> ${domainKey}`);
+                    return domainKey;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Derive a category-aware hit or miss key from the attack sound key.
      * Priority: RANGED (bow/crossbow/sling) > MAGIC (spell_*) > generic fallback.
      * @param {string} attackKey - The attack sound key from Phase 1
@@ -268,7 +313,8 @@ export class DaggerheartAdapter extends SystemAdapter {
                 ? (getProperty(actor, "system.resources.hitPoints.max") || 0)
                 : (getProperty(actor, "system.hp.max") || 0);
 
-            if (newHp > oldHp) {
+            // Daggerheart damage-UP model: HP value INCREASES when damage is taken
+            if (this.isDamage(oldHp, newHp)) {
                 Logger.log(`⏱️ [${Date.now()}] Damage Taken (Value Increased). Playing 'Blood Splat'`);
                 Logger.log(`⏱️ [${Date.now()}] DH | HP Change: ${oldHp} -> ${newHp} (Max: ${maxHp})`);
 
@@ -284,7 +330,7 @@ export class DaggerheartAdapter extends SystemAdapter {
                 }
 
                 const VOCAL_STAGGER = this.handler?.orchestrator?.getNamedOffset("VOCAL_STAGGER") ?? 400;
-                const isDeath = maxHp > 0 && newHp >= maxHp && oldHp < maxHp;
+                const isDeath = this.isDeath(newHp, maxHp) && oldHp < maxHp;
 
                 if (isDeath) {
                     // Killing blow - skip pain, go straight to death cry
