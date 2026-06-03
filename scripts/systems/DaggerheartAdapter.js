@@ -177,8 +177,17 @@ export class DaggerheartAdapter extends SystemAdapter {
         return issues;
     }
 
+    static TESTED_DH_VERSION = "0.4.0";
+
     registerHooks() {
         Logger.log("Daggerheart Adapter Active");
+
+        const sysVersion = game.system.version ?? "unknown";
+        if (sysVersion !== "unknown" && !foundry.utils.isNewerVersion(sysVersion, DaggerheartAdapter.TESTED_DH_VERSION)
+            && sysVersion !== DaggerheartAdapter.TESTED_DH_VERSION) {
+            Logger.warn(`Daggerheart system version ${sysVersion} is older than tested version ${DaggerheartAdapter.TESTED_DH_VERSION}. Some data paths may not work correctly.`);
+        }
+        Logger.log(`Daggerheart system version: ${sysVersion} (tested against: ${DaggerheartAdapter.TESTED_DH_VERSION})`);
 
         // Two-phase sound playback for Daggerheart:
         // Phase 1 (first render): Attack sound only (sword swing, spell cast)
@@ -227,8 +236,8 @@ export class DaggerheartAdapter extends SystemAdapter {
         // The FearTracker UI calls game.settings.set() which fires updateSetting.
         Hooks.on("updateSetting", (setting) => {
             if (!game.user.isGM) return;
-            // Match the Daggerheart fear setting key (format: "daggerheart.<key>")
-            if (setting.key?.includes("Fear") || setting.key?.includes("fear")) {
+            if (!setting.key?.startsWith("daggerheart.")) return;
+            if (setting.key.toLowerCase().includes("fear")) {
                 Logger.log(`⏱️ [${Date.now()}] updateSetting HOOK FIRED for: ${setting.key}`);
                 this.handleFearSettingChange(setting);
             }
@@ -456,11 +465,8 @@ export class DaggerheartAdapter extends SystemAdapter {
                     this.handler.play("DAGGERHEART_STRESS_CLEAR");
                 }
             }
-        } else {
-            // Log keys if stress update suspect but not found
-            if (JSON.stringify(changes).includes("stress")) {
-                Logger.log("Potential Stress Update Missed? Keys:", Object.keys(changes));
-            }
+        } else if (JSON.stringify(changes).includes("stress")) {
+            Logger.warn(`DH | Stress update detected in changes but no known path matched. Probed: ${stressPaths.join(", ")}. Actor keys: ${Object.keys(actor.system || {}).join(", ")}`);
         }
 
         // 5. Armor Detection
@@ -490,6 +496,8 @@ export class DaggerheartAdapter extends SystemAdapter {
                 Logger.log(`Armor Slot Restored(${oldArmor} -> ${newArmor})`);
                 this.handler.play("DAGGERHEART_ARMOR_REPAIR");
             }
+        } else if (JSON.stringify(changes).includes("armor")) {
+            Logger.warn(`DH | Armor update detected in changes but no known path matched. Probed: ${armorPaths.join(", ")}. Actor keys: ${Object.keys(actor.system || {}).join(", ")}`);
         }
     }
 
@@ -756,6 +764,9 @@ export class DaggerheartAdapter extends SystemAdapter {
     async handleResultSound(message, html) {
         const phase = this.renderPhases.get(message.id);
         const data = phase?.data;
+
+        // Clean up completed phase entry to prevent unbounded Map growth
+        this.renderPhases.delete(message.id);
 
         if (!data) {
             Logger.log(`⏱️ [${Date.now()}] Phase 2: No stored data for ${message.id}, re-extracting`);

@@ -1,6 +1,7 @@
 import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
+import { getSubtypeVocalKey } from "../data/MonsterVocalMap.js";
 
 export class PF2eAdapter extends SystemAdapter {
 
@@ -123,7 +124,7 @@ export class PF2eAdapter extends SystemAdapter {
             const group = item.system?.group;
             const traits = item.system?.traits?.value ?? [];
             const isRanged = group === "bow" || group === "dart" || group === "sling"
-                || traits.some(t => t === "thrown" || t.startsWith("thrown-"));
+                || traits.some(t => t === "thrown" || t.startsWith("thrown-") || t === "propulsive");
             if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
         }
 
@@ -295,36 +296,7 @@ export class PF2eAdapter extends SystemAdapter {
     }
 
     _getSubtypeVocalKey(type, subtype) {
-        const subtypeMap = {
-            elemental_fire: "SFX_FIRE",
-            elemental_water: "SFX_WATER_ENTITY",
-            elemental_air: "SFX_WIND",
-            elemental_earth: "elemental_earth",
-            beast_ursine: "MONSTER_BEAR",
-            beast_canine: "MONSTER_WOLF",
-            beast_feline: "MONSTER_CAT",
-            beast_avian: "MONSTER_BIRD",
-            beast_equine: "MONSTER_HORSE",
-            beast_reptile: "MONSTER_REPTILE",
-            beast_insect: "SFX_INSECT",
-            undead_zombie: "MONSTER_ZOMBIE",
-            undead_skeleton: "MONSTER_SKELETON",
-            undead_ghost: "MONSTER_GHOST",
-            fiend_demon: "MONSTER_DEMON",
-            humanoid_goblin: "MONSTER_GOBLIN",
-            humanoid_lycanthrope: "MONSTER_LYCANTHROPE",
-            construct_golem: "construct_golem",
-            construct_animated_object: "construct_animated_object",
-            dragon_wyvern: "dragon_wyvern",
-            aberration_beholder: "aberration_beholder",
-            aberration_mind_flayer: "aberration_mind_flayer",
-            aberration_chuul: "aberration_chuul",
-            plant_treant: "plant_treant",
-            plant_myconid: "plant_myconid",
-            plant_shambling_mound: "plant_shambling_mound"
-        };
-
-        return subtypeMap[`${type}_${subtype}`] || null;
+        return getSubtypeVocalKey(type, subtype);
     }
 
     // PF2e-specific spell trait mapping ────────────────────────────────

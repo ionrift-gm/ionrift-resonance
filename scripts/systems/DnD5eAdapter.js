@@ -1,6 +1,7 @@
 import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
+import { getSubtypeVocalKey } from "../data/MonsterVocalMap.js";
 
 
 
@@ -377,51 +378,8 @@ export class DnD5eAdapter extends SystemAdapter {
         return SOUND_EVENTS.MONSTER_GENERIC;
     }
 
-    /**
-     * Maps classifier type+subtype to the UI sound key used in the Monsters config.
-     * These must match the `id` values in SoundConfigApp's monster hierarchy.
-     */
     _getSubtypeVocalKey(type, subtype) {
-        const subtypeMap = {
-            // Elementals
-            elemental_fire: "SFX_FIRE",
-            elemental_water: "SFX_WATER_ENTITY",
-            elemental_air: "SFX_WIND",
-            elemental_earth: "elemental_earth",
-            // Beasts
-            beast_ursine: "MONSTER_BEAR",
-            beast_canine: "MONSTER_WOLF",
-            beast_feline: "MONSTER_CAT",
-            beast_avian: "MONSTER_BIRD",
-            beast_equine: "MONSTER_HORSE",
-            beast_reptile: "MONSTER_REPTILE",
-            beast_insect: "SFX_INSECT",
-            // Undead
-            undead_zombie: "MONSTER_ZOMBIE",
-            undead_skeleton: "MONSTER_SKELETON",
-            undead_ghost: "MONSTER_GHOST",
-            // Fiends
-            fiend_demon: "MONSTER_DEMON",
-            // Humanoids
-            humanoid_goblin: "MONSTER_GOBLIN",
-            humanoid_lycanthrope: "MONSTER_LYCANTHROPE",
-            // Constructs
-            construct_golem: "construct_golem",
-            construct_animated_object: "construct_animated_object",
-            // Dragons
-            dragon_wyvern: "dragon_wyvern",
-            // Aberrations
-            aberration_beholder: "aberration_beholder",
-            aberration_mind_flayer: "aberration_mind_flayer",
-            aberration_chuul: "aberration_chuul",
-            // Plants
-            plant_treant: "plant_treant",
-            plant_myconid: "plant_myconid",
-            plant_shambling_mound: "plant_shambling_mound"
-        };
-
-        const compositeKey = `${type}_${subtype}`;
-        return subtypeMap[compositeKey] || null;
+        return getSubtypeVocalKey(type, subtype);
     }
 
     /**
