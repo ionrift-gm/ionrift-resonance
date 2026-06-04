@@ -51,7 +51,30 @@ export class PF2eAdapter extends SystemAdapter {
                 this._handleDamageRoll(message, context);
             }
         });
+
+        // Hero Point gain/spend sounds.
+        // Config slots (sound_hero_point_gain / sound_hero_point_use) exist in ActorSoundConfig
+        // but had no runtime hook — sounds were configurable but never played.
+        Hooks.on("preUpdateActor", (actor, changes, _options, _userId) => {
+            if (!game.user.isGM) return;
+            if (actor.type !== "character") return;
+            const newVal = foundry.utils.getProperty(changes, "system.resources.heroPoints.value");
+            if (newVal === undefined) return;
+            const oldVal = actor.system?.resources?.heroPoints?.value ?? 0;
+            if (newVal === oldVal) return;
+            Logger.log(`PF2e | Hero Points: ${oldVal} -> ${newVal}`);
+            if (newVal > oldVal) {
+                const gainSound = actor.getFlag("ionrift-resonance", "sound_hero_point_gain");
+                if (gainSound) this.handler.play(gainSound);
+                else this.play("HERO_POINT_GAIN");
+            } else {
+                const spendSound = actor.getFlag("ionrift-resonance", "sound_hero_point_use");
+                if (spendSound) this.handler.play(spendSound);
+                else this.play("HERO_POINT_USE");
+            }
+        });
     }
+
 
     // Phase 1 + 2: Attack roll (ASK swing + ANSWER outcome) ───────────
 
