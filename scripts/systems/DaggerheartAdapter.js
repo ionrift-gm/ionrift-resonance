@@ -10,6 +10,7 @@ export class DaggerheartAdapter extends SystemAdapter {
         this.renderPhases = new Map(); // Track render phases: { timestamp, phase: 1|2 }
         this.lastAttackItem = null; // Cache the last attacking item for hit override lookup
         this.lastAttackKey = null; // Cache the attack sound key for category derivation
+        this._resolvedPaths = new Set(); // Track first-hit path logs (fire once per session)
     }
 
     /**
@@ -310,6 +311,12 @@ export class DaggerheartAdapter extends SystemAdapter {
         const pcHpDiff = getProperty(changes, "system.hp.value");
 
         const newHp = advHpDiff !== undefined ? advHpDiff : pcHpDiff;
+        // First-hit diagnostic: log which HP path is active (fires once per session)
+        if (newHp !== undefined && !this._resolvedPaths.has("hp")) {
+            const activePath = advHpDiff !== undefined ? "system.resources.hitPoints.value" : "system.hp.value";
+            Logger.log(`DH | HP path resolved via: ${activePath}`);
+            this._resolvedPaths.add("hp");
+        }
 
         if (newHp !== undefined) {
             // Get Old HP (Current Value on Actor)
@@ -434,6 +441,11 @@ export class DaggerheartAdapter extends SystemAdapter {
                 newStressVal = val;
                 foundPath = path;
                 oldStressVal = getProperty(actor, path);
+                // First-hit diagnostic: log which stress path is active (fires once per session)
+                if (!this._resolvedPaths.has("stress")) {
+                    Logger.log(`DH | Stress path resolved via: ${foundPath}`);
+                    this._resolvedPaths.add("stress");
+                }
                 break;
             }
         }
@@ -479,6 +491,11 @@ export class DaggerheartAdapter extends SystemAdapter {
             if (val !== undefined) {
                 newArmorVal = val;
                 armorPath = path;
+                // First-hit diagnostic: log which armor path is active (fires once per session)
+                if (!this._resolvedPaths.has("armor")) {
+                    Logger.log(`DH | Armor path resolved via: ${armorPath}`);
+                    this._resolvedPaths.add("armor");
+                }
                 break;
             }
         }
