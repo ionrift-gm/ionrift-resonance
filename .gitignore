@@ -53,3 +53,7 @@ CURSOR_SPEC_*
 CURSOR_PLAN_*
 
 scripts/utils/
+
+# Internal brand/workspace content - must never be committed to public module repos
+ionrift-brand/
+
