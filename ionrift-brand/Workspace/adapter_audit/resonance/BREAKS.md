@@ -4,60 +4,41 @@ Active 🔴 BREAK-severity findings that require immediate attention.
 
 ---
 
-## 2026-06-03
+## Active Breaks
 
-### BREAK-1: PF2e Spell Effect-Type Config Missing (B-2)
+**None.** All previously identified BREAK items have been resolved as of 2026-06-04.
+
+---
+
+## Resolved Breaks
+
+### ~~BREAK-1: PF2e Spell Effect-Type Config Missing (B-2)~~ — RESOLVED 2026-06-04
 
 **File:** `scripts/apps/SoundConfigApp.js:326`
-**Code:** `if (game.system.id === 'dnd5e')`
-
-**Impact:** PF2e users see an empty "Magic (Spells)" group with zero configurable children. The SPELL_FIRE, SPELL_ICE, SPELL_LIGHTNING, SPELL_ACID, SPELL_HEAL, SPELL_PSYCHIC, and SPELL_VOID keys are used by the PF2e adapter's `_getSpellTraitKey()` at runtime, but users have no config UI to customize or preview these bindings. They are stuck with whatever the sound pack defaults provide, with no ability to override or verify via the Calibration UI.
-
-**Fix:** Change the condition to include PF2e:
-```js
-if (game.system.id === 'dnd5e' || game.system.id === 'pf2e') {
-```
-Or add a separate PF2e block with appropriate labels (PF2e calls these "energy types" or "damage traits", not "spell schools").
+**Resolution:** Condition changed to `if (game.system.id === 'dnd5e' || game.system.id === 'pf2e')`. PF2e users now see and can configure SPELL_FIRE, SPELL_ICE, SPELL_LIGHTNING, SPELL_ACID, SPELL_HEAL, SPELL_PSYCHIC, and SPELL_VOID bindings under the "Magic (Spells)" group.
 
 ---
 
-### BREAK-2: PF2e Roll Stinger Config Missing (B-4 / B-5)
+### ~~BREAK-2: PF2e Roll Stinger Config Missing (B-4 / B-5)~~ — RESOLVED 2026-06-04
 
-**File:** `scripts/apps/SoundConfigApp.js:619-676`
-**Code:** `if (game.system.id === 'daggerheart') { ... } else if (game.system.id === 'dnd5e') { ... }`
+**File:** `scripts/apps/SoundConfigApp.js:676`
+**Resolution:** Dedicated `else if (game.system.id === 'pf2e')` block added with PF2e-appropriate labels:
+- "Critical Success" (maps to ROLL_CRIT)
+- "Critical Failure" (maps to ROLL_FUMBLE)
 
-**Impact:** PF2e falls through both conditions with NO roll stinger section rendered. The PF2e adapter's `_handleOutcome()` method plays `ROLL_CRIT` on critical success and `ROLL_FUMBLE` on critical failure. These keys work at runtime (bindings resolve through the pack/default chain), but PF2e users cannot:
-- See that these stingers exist in their config
-- Preview them
-- Override them with custom sounds
-- Mute them individually
-
-This is a functional gap: the feature works but is invisible and unconfigurable for PF2e users.
-
-**Fix:** Extend the condition:
-```js
-} else if (game.system.id === 'dnd5e' || game.system.id === 'pf2e') {
-```
-Consider PF2e-appropriate labels:
-- "Critical Success" instead of "Natural 20"
-- "Critical Failure" instead of "Natural 1"
+PF2e users can now see, preview, override, and mute roll stingers.
 
 ---
 
-### BREAK-3: DH HP Inversion Leak Risk (D-1)
+### ~~BREAK-3: DH HP Inversion Leak Risk (D-1)~~ — RESOLVED 2026-06-04
 
-**File:** `scripts/systems/DaggerheartAdapter.js:271`
-**Code:** `if (newHp > oldHp)` — damage detection
+**File:** `scripts/systems/SystemAdapter.js`
+**Resolution:** Abstract base class now provides `isDamage(oldHp, newHp)` and `isDeath(newHp, maxHp, isPC)` methods with standard HP-down semantics. `DaggerheartAdapter` overrides both with its damage-UP logic:
+- `isDamage()`: returns `newHp > oldHp`
+- `isDeath()`: returns `newHp >= maxHp`
 
-**Impact:** Daggerheart uses a damage-UP HP model (HP value increases = damage taken, HP reaching max = death). This is the opposite of every other supported system. Currently the inversion is correctly contained within DaggerheartAdapter, but:
-- No code comments explain WHY the comparison is inverted
-- No shared abstraction prevents future shared utilities from assuming HP-down
-- If any future cross-adapter code (e.g. a shared `assessTarget()` utility) assumes standard HP direction, DH will silently break
-
-**Status:** Currently working correctly. Flagged as BREAK because the failure mode (playing death sounds on healing, or no sounds on damage) would be severe and hard to diagnose.
-
-**Fix:** Add explicit code documentation. Consider an adapter-level `isDamage(oldHp, newHp)` method that each adapter implements with its system's direction semantics.
+Shared utilities and future cross-adapter code should use these methods rather than comparing HP values directly. The inversion is now contained by design, not by convention.
 
 ---
 
-*Last updated: 2026-06-03T02:00:00Z*
+*Last updated: 2026-06-04T02:00:00Z*
