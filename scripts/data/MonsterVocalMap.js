@@ -48,5 +48,58 @@ export const SUBTYPE_VOCAL_MAP = {
  * @returns {string|null}
  */
 export function getSubtypeVocalKey(type, subtype) {
-    return SUBTYPE_VOCAL_MAP[`${type}_${subtype}`] || null;
+    if (!type || !subtype) return null;
+
+    const composite = `${type}_${subtype}`;
+    if (SUBTYPE_VOCAL_MAP[composite]) return SUBTYPE_VOCAL_MAP[composite];
+
+    // Prefix fallback: beast_canine_domestic -> beast_canine -> MONSTER_WOLF
+    const parts = subtype.split("_");
+    while (parts.length > 1) {
+        parts.pop();
+        const shorter = `${type}_${parts.join("_")}`;
+        if (SUBTYPE_VOCAL_MAP[shorter]) return SUBTYPE_VOCAL_MAP[shorter];
+    }
+
+    return null;
+}
+
+/**
+ * Pick the first monster pain key that has an audio binding in the active pack.
+ * @param {object|null} classification  Output from ionrift-library classifyCreature()
+ * @param {import("../SoundResolver.js").SoundResolver} resolver
+ * @param {object} soundEvents            SOUND_EVENTS constant object
+ * @returns {string|null}
+ */
+export function pickBoundMonsterPainKey(classification, resolver, soundEvents) {
+    if (!resolver) return soundEvents.VOCAL_GENERIC_PAIN ?? soundEvents.CORE_MONSTER_PAIN ?? null;
+
+    const candidates = [];
+
+    if (classification?.type && classification?.subtype) {
+        const subtypeKey = getSubtypeVocalKey(classification.type, classification.subtype);
+        if (subtypeKey) candidates.push(subtypeKey);
+    }
+
+    if (classification?.sound) candidates.push(classification.sound);
+
+    if (classification?.type) {
+        const typeUpper = String(classification.type).toUpperCase();
+        candidates.push(`MONSTER_${typeUpper}`);
+    }
+
+    candidates.push(
+        soundEvents.MONSTER_GENERIC,
+        soundEvents.VOCAL_GENERIC_PAIN,
+        soundEvents.CORE_MONSTER_PAIN
+    );
+
+    const seen = new Set();
+    for (const key of candidates) {
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        if (resolver.resolveKey(key)) return key;
+    }
+
+    return soundEvents.VOCAL_GENERIC_PAIN ?? soundEvents.CORE_MONSTER_PAIN ?? null;
 }

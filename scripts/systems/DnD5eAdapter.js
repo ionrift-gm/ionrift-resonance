@@ -1,11 +1,88 @@
-import { SystemAdapter } from "./SystemAdapter.js";
+﻿import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
-import { getSubtypeVocalKey } from "../data/MonsterVocalMap.js";
+import { getSubtypeVocalKey, pickBoundMonsterPainKey } from "../data/MonsterVocalMap.js";
 
 
 
 export class DnD5eAdapter extends SystemAdapter {
+    static NATIVE_TRACE_PREFIX = "[Native5e]";
+
+    /**
+     * Always-on combat trace for native (no Midi) debugging.
+     * Filter the browser console on "Native5e" to see only these lines.
+     * Verbose Logger.log lines still require game.settings debug mode.
+     */
+    _traceNative(step, detail = null) {
+        if (detail === null || detail === undefined) {
+            Logger.info(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} ${step}`);
+            return;
+        }
+        if (typeof detail === "string") {
+            Logger.info(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} ${step} | ${detail}`);
+            return;
+        }
+        try {
+            Logger.info(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} ${step} | ${JSON.stringify(detail)}`);
+        } catch {
+            Logger.info(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} ${step} | (detail not serializable)`);
+        }
+    }
+
+    _summarizeToken(token) {
+        if (!token) return null;
+        return {
+            id: token.id ?? token.document?.id ?? null,
+            name: token.name ?? token.document?.name ?? null,
+            actor: token.actor?.name ?? null,
+            actorUuid: token.actor?.uuid ?? null,
+            actorType: token.actor?.type ?? null
+        };
+    }
+
+    _summarizeItem(item) {
+        if (!item) return null;
+        return { id: item.id ?? null, name: item.name ?? null, type: item.type ?? null };
+    }
+
+    _summarizeActivity(activity) {
+        if (!activity) return null;
+        return {
+            uuid: activity.uuid ?? null,
+            type: activity.type ?? null,
+            item: this._summarizeItem(activity.item)
+        };
+    }
+
+    _summarizeRoll(roll) {
+        if (!roll) return null;
+        return {
+            total: roll.total ?? null,
+            formula: roll.formula ?? null,
+            isCritical: roll.isCritical ?? false,
+            isFumble: roll.isFumble ?? false,
+            rollTargetAc: roll.options?.target ?? null,
+            damageType: roll.options?.type ?? null
+        };
+    }
+
+    _playTraced(key, delay, reason) {
+        const resolved = this.handler?.resolver?.resolveKey(key);
+        const orch = this.handler?.orchestrator;
+        const category = orch?.getCategory?.(key) ?? null;
+        this._traceNative("play.request", {
+            reason,
+            key,
+            delayMs: delay,
+            resolved: resolved ?? null,
+            orchestratorCategory: category
+        });
+        if (!resolved && /^[A-Z][A-Z0-9_]+$/.test(key)) {
+            Logger.warn(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} play blocked? semantic key has no binding: ${key} (${reason})`);
+        }
+        this.play(key, delay);
+    }
+
     validateSchema() {
         const issues = [];
         let actor = game.actors.find(a => a.type === "character" || a.type === "npc");
@@ -42,11 +119,19 @@ export class DnD5eAdapter extends SystemAdapter {
         // dnd5e.postUseActivity fires AFTER confirmation dialog + activity processing
         Hooks.on("dnd5e.postUseActivity", (activity, config, results) => {
             const item = activity?.item;
+            if (!game.modules.get("midi-qol")?.active) {
+                this._traceNative("hook.postUseActivity", {
+                    activity: this._summarizeActivity(activity),
+                    item: this._summarizeItem(item),
+                    userTargetCount: game.user?.targets?.size ?? 0
+                });
+            }
             if (item) this.handleWeaponSound(item, activity);
         });
 
         if (game.modules.get("midi-qol")?.active) {
             Logger.log("Hooking into Midi-QOL...");
+            Logger.info(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} Midi-QOL active. Native trace OFF. Damage/attack use midi-qol hooks.`);
 
             // Phase 2: Result stinger fires after the attack roll resolves
             Hooks.on("midi-qol.AttackRollComplete", (workflow) => {
@@ -59,18 +144,34 @@ export class DnD5eAdapter extends SystemAdapter {
             });
         } else {
             Logger.log("Midi-QOL inactive. Using native dnd5e hooks.");
+            Logger.info(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} Native combat trace ON. Filter console on "Native5e". Verbose logs: game.settings.set("ionrift-resonance", "debug", true)`);
 
             // V2 Hooks
             Hooks.on("dnd5e.rollAttackV2", (roll, data) => {
-                let item = data.subject || data.item;
-                if (item && item.item) item = item.item;
-                this.handleNativeAttack(item, roll);
+                let item = data?.subject?.item ?? data?.subject ?? data?.item;
+                if (item?.item) item = item.item;
+                this._traceNative("hook.rollAttackV2", {
+                    item: this._summarizeItem(item),
+                    activity: this._summarizeActivity(data?.subject),
+                    rollCount: Array.isArray(roll) ? roll.length : (roll ? 1 : 0),
+                    firstRoll: this._summarizeRoll(Array.isArray(roll) ? roll[0] : roll),
+                    userTargetCount: game.user?.targets?.size ?? 0
+                });
+                this._cacheNativeAttackContext(item, data?.subject);
+                this.handleNativeAttack(item, roll, data?.subject);
             });
 
-            Hooks.on("dnd5e.rollDamageV2", (roll, data) => {
-                let item = data.subject || data.item;
-                if (item && item.item) item = item.item;
-                // Native damage currently no-op until mapped
+            Hooks.on("dnd5e.rollDamageV2", (rolls, data) => {
+                const rollArray = Array.isArray(rolls) ? rolls : (rolls ? [rolls] : []);
+                this._traceNative("hook.rollDamageV2", {
+                    activity: this._summarizeActivity(data?.subject),
+                    item: this._summarizeItem(data?.subject?.item),
+                    rollCount: rollArray.length,
+                    rolls: rollArray.map(r => this._summarizeRoll(r)),
+                    userTargetCount: game.user?.targets?.size ?? 0,
+                    cachePresent: Boolean(this._cachedNativeAttackContext)
+                });
+                this.handleNativeDamage(rolls, data?.subject);
             });
         }
     }
@@ -217,14 +318,6 @@ export class DnD5eAdapter extends SystemAdapter {
 
         // AoE mitigation constants
         const MAX_TARGETS = 20;       // Hard cap - never process more than this
-        const AOE_THRESHOLD = 3;      // 4+ targets = AoE mode
-        const MAX_AOE_VOCALS = 5;     // Max distinct vocals in AoE mode
-
-        // Timing offsets - read from orchestrator (configurable)
-        const orch = this.handler?.orchestrator;
-        const VOCAL_STAGGER = orch?.getNamedOffset("VOCAL_STAGGER") ?? 400;
-        const AOE_VOCAL_MAX = orch?.getNamedOffset("AOE_VOCAL_MAX") ?? 400;
-        const SPELL_BONUS = (item?.type === "spell") ? (orch?.getNamedOffset("SPELL_AUDIO_BONUS") ?? 150) : 0;
 
         // Build complete target set: hitTargets (failed saves) + saves (made saves, half dmg)
         // For save-based AoE, workflow.targets has the full scope
@@ -235,147 +328,167 @@ export class DnD5eAdapter extends SystemAdapter {
         // Use workflow.targets (full AoE scope) for threshold detection if available
         const scopeSize = workflow.targets?.size ?? targetSet.size;
         const allTargets = [...targetSet].slice(0, MAX_TARGETS);
-        const isAoE = scopeSize > AOE_THRESHOLD;
 
-        Logger.log(`DnD5e | Damage scope: ${scopeSize} total targets, ${allTargets.length} to process, AoE=${isAoE}`);
+        this._processDamageTargets(allTargets, totalDamage, item, scopeSize, "DnD5e");
+    }
+
+    /**
+     * Shared impact + vocal routing for Midi-QOL and native damage rolls.
+     */
+    _processDamageTargets(allTargets, totalDamage, item, scopeSize, logPrefix = "DnD5e", trace = false) {
+        const AOE_THRESHOLD = 3;
+        const MAX_AOE_VOCALS = 5;
+
+        const orch = this.handler?.orchestrator;
+        const VOCAL_STAGGER = orch?.getNamedOffset("VOCAL_STAGGER") ?? 400;
+        const AOE_VOCAL_MAX = orch?.getNamedOffset("AOE_VOCAL_MAX") ?? 400;
+        const SPELL_BONUS = (item?.type === "spell") ? (orch?.getNamedOffset("SPELL_AUDIO_BONUS") ?? 150) : 0;
+        const isAoE = scopeSize > AOE_THRESHOLD;
+        const emit = (key, delay, reason) => trace ? this._playTraced(key, delay, reason) : this.play(key, delay);
+
+        if (trace) {
+            this._traceNative("damage.process", {
+                scopeSize,
+                targetCount: allTargets.length,
+                totalDamage,
+                isAoE,
+                vocalStaggerMs: VOCAL_STAGGER + SPELL_BONUS,
+                targets: allTargets.map(t => this._summarizeToken(t))
+            });
+        }
+
+        Logger.log(`${logPrefix} | Damage scope: ${scopeSize} total targets, ${allTargets.length} to process, AoE=${isAoE}`);
 
         if (isAoE) {
-            Logger.log(`DnD5e | AoE detected. Playing single hit + up to ${MAX_AOE_VOCALS} vocals.`);
+            Logger.log(`${logPrefix} | AoE detected. Playing single hit + up to ${MAX_AOE_VOCALS} vocals.`);
+            emit(SOUND_EVENTS.BLOODY_HIT, 0, "aoe-impact");
 
-            // Single impact sound for the entire AoE
-            this.play(SOUND_EVENTS.BLOODY_HIT);
-
-            // Classify each target (dead/alive) for vocal selection
             const vocalCandidates = [];
             for (const token of allTargets) {
                 const actor = token.actor;
                 if (!actor) continue;
-
-                const hp = actor.system?.attributes?.hp;
-                const isPC = actor.type === 'character';
-                const currentHp = hp?.value ?? 0;
-                const estimatedHp = currentHp - totalDamage;
-                const maxHp = hp?.max ?? 1;
-
-                let isDead;
-                if (isPC) {
-                    const overflow = Math.abs(Math.min(0, estimatedHp));
-                    isDead = overflow >= maxHp;
-                } else {
-                    isDead = estimatedHp <= 0;
-                }
-
-                vocalCandidates.push({ token, actor, isPC, isDead });
+                vocalCandidates.push({ actor, ...this._assessDamageTarget(actor, totalDamage) });
             }
 
-            // Pick up to MAX_AOE_VOCALS random targets for vocals
             const shuffled = vocalCandidates.sort(() => Math.random() - 0.5);
-            const vocalTargets = shuffled.slice(0, MAX_AOE_VOCALS);
-
-            vocalTargets.forEach((target) => {
-                // Random micro-stagger (0–AOE_VOCAL_MAX ms) so vocals overlap like a chorus
+            shuffled.slice(0, MAX_AOE_VOCALS).forEach((target) => {
                 const stagger = Math.floor(Math.random() * AOE_VOCAL_MAX) + SPELL_BONUS;
-                this._playVocalForTarget(target.actor, target.isPC, target.isDead, stagger);
+                this._playVocalForTarget(target.actor, target.isPC, target.isDead, stagger, trace);
             });
-
-        } else {
-            // Standard per-target handling (1–3 targets)
-            for (const token of allTargets) {
-                const actor = token.actor;
-                if (!actor) {
-                    Logger.log("DnD5e | No actor for token, skipping");
-                    continue;
-                }
-
-                const hp = actor.system?.attributes?.hp;
-                const isPC = actor.type === 'character';
-                const currentHp = hp?.value ?? 0;
-                const estimatedHp = currentHp - totalDamage;
-                Logger.log(`DnD5e | ${actor.name} HP: ${currentHp}/${hp?.max} -> est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
-
-                const maxHp = hp?.max ?? 1;
-                let isDead;
-                if (isPC) {
-                    const overflow = Math.abs(Math.min(0, estimatedHp));
-                    isDead = overflow >= maxHp;
-                    Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} -> ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
-                } else {
-                    isDead = estimatedHp <= 0;
-                }
-
-                this.play(SOUND_EVENTS.BLOODY_HIT);
-                this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER + SPELL_BONUS);
-            }
+            return;
         }
+
+        if (allTargets.length === 0) {
+            if (trace) this._traceNative("damage.noTargets", "playing generic CORE_HIT only; no pain/death vocals");
+            Logger.log(`${logPrefix} | No targets resolved, playing generic hit impact`);
+            emit(SOUND_EVENTS.BLOODY_HIT, 0, "generic-impact-no-targets");
+            return;
+        }
+
+        for (const token of allTargets) {
+            const actor = token.actor;
+            if (!actor) {
+                Logger.log(`${logPrefix} | No actor for token, skipping`);
+                if (trace) this._traceNative("damage.skipToken", { reason: "no actor on token", token: this._summarizeToken(token) });
+                continue;
+            }
+
+            const { isDead, isPC, currentHp, maxHp, estimatedHp } = this._assessDamageTarget(actor, totalDamage);
+            Logger.log(`${logPrefix} | ${actor.name} HP: ${currentHp}/${maxHp} -> est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
+            if (trace) {
+                this._traceNative("damage.target", {
+                    actor: actor.name,
+                    isPC,
+                    isDead,
+                    currentHp,
+                    maxHp,
+                    estimatedHp,
+                    totalDamage
+                });
+            }
+
+            emit(SOUND_EVENTS.BLOODY_HIT, 0, `impact-${actor.name}`);
+            this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER + SPELL_BONUS, trace);
+        }
+    }
+
+    _assessDamageTarget(actor, totalDamage) {
+        const hp = actor.system?.attributes?.hp;
+        const isPC = actor.type === "character";
+        const currentHp = hp?.value ?? 0;
+        const maxHp = hp?.max ?? 1;
+        const estimatedHp = currentHp - totalDamage;
+
+        let isDead;
+        if (isPC) {
+            const overflow = Math.abs(Math.min(0, estimatedHp));
+            isDead = overflow >= maxHp;
+            Logger.log(`DnD5e | PC death check: overflow ${overflow} vs maxHP ${maxHp} -> ${isDead ? "INSTANT DEATH" : "unconscious/pain"}`);
+        } else {
+            isDead = estimatedHp <= 0;
+        }
+
+        return { isDead, isPC, currentHp, maxHp, estimatedHp };
     }
 
     /**
      * Play the appropriate pain or death vocal for a single target.
      */
-    _playVocalForTarget(actor, isPC, isDead, delay) {
+    _playVocalForTarget(actor, isPC, isDead, delay, trace = false) {
+        const emit = (key, reason) => trace ? this._playTraced(key, delay, reason) : this.play(key, delay);
+        const emitRaw = (key, reason) => trace ? this._playTraced(key, delay, reason) : this.handler.play(key, delay);
+
         if (isDead) {
             Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
             const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
+            if (trace) this._traceNative("vocal.death", { actor: actor.name, override: deathOverride ?? null, isPC });
             if (deathOverride) {
-                this.handler.play(deathOverride, delay);
+                emitRaw(deathOverride, `death-override-${actor.name}`);
             } else if (isPC) {
-                this.play(this.handler.getPCSound(actor, "DEATH"), delay);
+                emit(this.handler.getPCSound(actor, "DEATH"), `pc-death-${actor.name}`);
             } else {
-                this.play(SOUND_EVENTS.CORE_MONSTER_DEATH, delay);
+                emit(SOUND_EVENTS.CORE_MONSTER_DEATH, `monster-death-${actor.name}`);
             }
         } else {
             Logger.log(`DnD5e | ${actor.name} took damage, playing pain`);
             const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
+            if (trace) this._traceNative("vocal.pain", { actor: actor.name, override: painOverride ?? null, isPC });
             if (painOverride) {
-                this.handler.play(painOverride, delay);
+                emitRaw(painOverride, `pain-override-${actor.name}`);
             } else if (isPC) {
                 const pcPain = this.handler.getPCSound(actor, "PAIN");
                 Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${delay}ms)`);
-                this.play(pcPain, delay);
+                emit(pcPain, `pc-pain-${actor.name}`);
             } else {
                 const painSound = this.detectMonsterPain(actor);
                 Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
-                if (painSound) this.play(painSound, delay);
+                if (trace) this._traceNative("vocal.monsterPainKey", { actor: actor.name, painSound });
+                if (painSound) emit(painSound, `monster-pain-${actor.name}`);
+                else if (trace) this._traceNative("vocal.monsterPainKey", "detectMonsterPain returned empty key");
             }
         }
     }
 
     detectMonsterPain(actor) {
-        // Null check for library
         if (!game.ionrift?.library?.classifyCreature) {
             Logger.warn("DnD5e | Library not loaded, using generic monster sound");
-            return SOUND_EVENTS.MONSTER_GENERIC;
+            return pickBoundMonsterPainKey(null, this.handler?.resolver, SOUND_EVENTS);
         }
 
         const classification = game.ionrift.library.classifyCreature(actor);
         Logger.log(`DnD5e | Classification for ${actor.name}:`, classification);
         Logger.log(`DnD5e | -> type: "${classification?.type}", subtype: "${classification?.subtype}", sound: "${classification?.sound}"`);
 
-        if (!classification) return SOUND_EVENTS.MONSTER_GENERIC;
-
-        // Try subtype-specific key first (e.g. SFX_FIRE for elemental_fire)
-        if (classification.subtype) {
-            const subtypeKey = this._getSubtypeVocalKey(classification.type, classification.subtype);
-            Logger.log(`DnD5e | -> compositeKey: "${classification.type}_${classification.subtype}" -> subtypeKey: "${subtypeKey}"`);
-            if (subtypeKey) {
-                const resolved = this.handler.resolver.resolveKey(subtypeKey);
-                Logger.log(`DnD5e | -> resolveKey("${subtypeKey}") -> "${resolved}"`);
-                if (resolved) {
-                    Logger.log(`DnD5e | Monster pain: subtype ${subtypeKey} has binding -> using it`);
-                    return subtypeKey;
-                }
-                Logger.log(`DnD5e | Monster pain: subtype ${subtypeKey} unbound, trying category`);
-            }
+        const subtypeKey = classification?.type && classification?.subtype
+            ? getSubtypeVocalKey(classification.type, classification.subtype)
+            : null;
+        if (subtypeKey) {
+            Logger.log(`DnD5e | -> subtypeKey (with prefix fallback): "${subtypeKey}"`);
         }
 
-        // Fall back to broad classifier key (e.g. MONSTER_ELEMENTAL)
-        if (classification.sound) {
-            Logger.log(`DnD5e | -> Fallback to classification.sound: "${classification.sound}"`);
-            if (Object.values(SOUND_EVENTS).includes(classification.sound)) return classification.sound;
-            if (SOUND_EVENTS[classification.sound]) return SOUND_EVENTS[classification.sound];
-        }
-        Logger.log(`DnD5e | -> All resolution failed, using MONSTER_GENERIC`);
-        return SOUND_EVENTS.MONSTER_GENERIC;
+        const painKey = pickBoundMonsterPainKey(classification, this.handler?.resolver, SOUND_EVENTS);
+        Logger.log(`DnD5e | Monster pain resolved to bound key: ${painKey}`);
+        return painKey;
     }
 
     _getSubtypeVocalKey(type, subtype) {
@@ -398,13 +511,17 @@ export class DnD5eAdapter extends SystemAdapter {
      * - options.target (the single targeted AC) is only populated when exactly 1 target
      *   is selected. With 0 or 2+ targets it is undefined -- we skip result sounds in that
      *   case since we cannot determine hit/miss without Midi-QOL.
-     * - No damage sounds in native mode (Midi-QOL's DamageRollComplete handles those).
+     * - Normal hits defer impact and pain sounds to handleNativeDamage (dnd5e.rollDamageV2).
      *
-     * @param {Item5e}    item   The item that was used.
-     * @param {D20Roll[]} rolls  The rolls array from dnd5e.rollAttackV2.
+     * @param {Item5e}         item      The item that was used.
+     * @param {D20Roll[]}      rolls     The rolls array from dnd5e.rollAttackV2.
+     * @param {Activity|null}  activity  The attack activity, when available.
      */
-    handleNativeAttack(item, rolls) {
-        if (!item) return;
+    handleNativeAttack(item, rolls, activity = null) {
+        if (!item) {
+            this._traceNative("attack.skip", "no item on rollAttackV2 payload");
+            return;
+        }
 
         // rolls is the D20Roll[] array from rollAttackV2 -- not a single Roll object.
         // Guard: if caller passes a single Roll (legacy code path), wrap it.
@@ -412,6 +529,7 @@ export class DnD5eAdapter extends SystemAdapter {
         const roll = rollArray[0];
 
         if (!roll) {
+            this._traceNative("attack.skip", "no roll object in rollAttackV2 payload");
             Logger.log("DnD5e Native | No roll object received, skipping result stinger");
             return;
         }
@@ -419,48 +537,319 @@ export class DnD5eAdapter extends SystemAdapter {
         const isFumble   = roll.isFumble   ?? false;
         const isCritical = roll.isCritical ?? false;
         const total      = roll.total      ?? 0;
-        const target     = roll.options?.target; // target's AC -- undefined if 0 or 2+ targets
+        const rollTargetAc = roll.options?.target ?? null;
+        const target     = this._resolveNativeAttackAc(roll);
 
-        Logger.log(`DnD5e Native | Attack result — total:${total}, target(AC):${target ?? "?"}, crit:${isCritical}, fumble:${isFumble}`);
+        this._traceNative("attack.evaluate", {
+            item: this._summarizeItem(item),
+            activity: this._summarizeActivity(activity),
+            roll: this._summarizeRoll(roll),
+            rollTargetAc,
+            resolvedTargetAc: target,
+            isFumble,
+            isCritical,
+            total
+        });
+
+        Logger.log(`DnD5e Native | Attack result - total:${total}, target(AC):${target ?? "?"}, crit:${isCritical}, fumble:${isFumble}`);
 
         const orch = this.handler?.orchestrator;
 
         if (isFumble) {
-            // Nat 1: fumble stinger + miss sound
+            this._traceNative("attack.outcome", "fumble -> ROLL_FUMBLE + miss");
             Logger.log("DnD5e Native | Fumble! Playing fumble + miss stingers");
-            this.play(SOUND_EVENTS.ROLL_FUMBLE);
+            this._playTraced(SOUND_EVENTS.ROLL_FUMBLE, 0, "attack-fumble");
             const missKey = this._getMissKey(item);
             const fumbleDelay = orch?.getNamedOffset("FUMBLE_MISS_DELAY") ?? 200;
-            this.play(missKey, fumbleDelay);
+            this._playTraced(missKey, fumbleDelay, "attack-fumble-miss");
             return;
         }
 
         if (isCritical) {
-            // Nat 20 / crit threshold: crit stinger
+            this._traceNative("attack.outcome", "critical -> ROLL_CRIT + decoration");
             Logger.log("DnD5e Native | Critical hit! Playing crit stinger");
-            this.play(SOUND_EVENTS.ROLL_CRIT);
+            this._playTraced(SOUND_EVENTS.ROLL_CRIT, 0, "attack-crit");
             const critDelay = orch?.getNamedOffset("CRIT_DECORATION_DELAY") ?? 300;
-            this.play(SOUND_EVENTS.CRIT_DECORATION, critDelay);
+            this._playTraced(SOUND_EVENTS.CRIT_DECORATION, critDelay, "attack-crit-decoration");
             return;
         }
 
         if (target === undefined || target === null) {
-            // No single target selected -- cannot determine hit/miss without Midi-QOL.
-            // Swing sound already fired; silently skip the result stinger.
-            Logger.log("DnD5e Native | No single target selected — skipping result stinger (no Midi-QOL)");
+            this._traceNative("attack.outcome", "skip stinger -> could not resolve target AC (need exactly 1 target with known AC)");
+            Logger.log("DnD5e Native | No single target selected - skipping result stinger (no Midi-QOL)");
             return;
         }
 
-        // Mirrors dnd5e's own isMiss formula from ChatMessage5e rendering (dnd5e.mjs):
-        //   const isMiss = !attackRoll.isCritical && ((attackRoll.total < ac) || attackRoll.isFumble);
         const isMiss = total < target;
         if (isMiss) {
             const missKey = this._getMissKey(item);
-            Logger.log(`DnD5e Native | Miss (${total} < AC ${target}) — playing ${missKey}`);
-            this.play(missKey);
+            this._traceNative("attack.outcome", { result: "miss", missKey, total, targetAc: target });
+            Logger.log(`DnD5e Native | Miss (${total} < AC ${target}) - playing ${missKey}`);
+            this._playTraced(missKey, 0, "attack-miss");
         } else {
-            // Normal hit -- damage sounds not available without Midi-QOL.
-            Logger.log(`DnD5e Native | Hit (${total} >= AC ${target}) — no extra stinger in native mode`);
+            this._traceNative("attack.outcome", { result: "hit", total, targetAc: target, note: "impact deferred to rollDamageV2" });
+            Logger.log(`DnD5e Native | Hit (${total} >= AC ${target}) - deferring impact to damage roll`);
         }
+    }
+
+    /**
+     * Native dnd5e damage handler (no Midi-QOL).
+     * Called from dnd5e.rollDamageV2 after the damage roll resolves.
+     *
+     * Phase 1 (swing) fires via postUseActivity. Phase 2 (miss/crit/fumble) fires via
+     * rollAttackV2. This handler is Phase 3: strike landed + target pain/death vocals.
+     *
+     * Targets come from game.user.targets at roll time. If none are selected, a generic
+     * impact still plays so damage rolls are not silent.
+     *
+     * @param {DamageRoll[]} rolls
+     * @param {Activity|null} activity
+     */
+    handleNativeDamage(rolls, activity) {
+        const rollArray = Array.isArray(rolls) ? rolls : (rolls ? [rolls] : []);
+        if (!rollArray.length) {
+            this._traceNative("damage.skip", "no rolls in rollDamageV2 payload");
+            Logger.log("DnD5e Native | No damage rolls received, skipping");
+            return;
+        }
+
+        const item = activity?.item ?? null;
+        const totalDamage = rollArray.reduce((sum, roll) => sum + Math.max(0, roll.total ?? 0), 0);
+
+        const sig = `${item?.id ?? "unknown"}:${totalDamage}:${rollArray.map(r => r.formula).join("|")}`;
+        if (sig && this._lastNativeDamageSig === sig) {
+            this._traceNative("damage.skip", { reason: "duplicate signature", sig });
+            Logger.log(`DnD5e Native | Duplicate damage roll ${sig}, skipping`);
+            return;
+        }
+        this._lastNativeDamageSig = sig;
+
+        this._traceNative("damage.start", {
+            item: this._summarizeItem(item),
+            activity: this._summarizeActivity(activity),
+            totalDamage,
+            rollTypes: rollArray.map(r => r.options?.type ?? null)
+        });
+
+        Logger.log(`DnD5e Native | Damage roll - total:${totalDamage}, item:${item?.name ?? "unknown"}`);
+
+        if (item?.type === "consumable") {
+            this._traceNative("damage.skip", { reason: "consumable", item: item.name });
+            Logger.log(`DnD5e Native | Skipping damage sounds for consumable: ${item.name}`);
+            return;
+        }
+
+        const healingTypes = CONFIG.DND5E?.healingTypes ?? {};
+        const isHealing = rollArray.every((roll) => {
+            const type = roll.options?.type;
+            return type === "healing" || type === "temphp" || type in healingTypes;
+        });
+        if (isHealing) {
+            this._traceNative("damage.skip", { reason: "healing roll types", types: rollArray.map(r => r.options?.type ?? null) });
+            Logger.log("DnD5e Native | Skipping damage sounds - healing effect");
+            return;
+        }
+
+        const MAX_TARGETS = 20;
+        const targets = this._getNativeTargets(item, activity, true);
+        const scopeSize = targets.length;
+        const allTargets = targets.slice(0, MAX_TARGETS);
+
+        this._processDamageTargets(allTargets, totalDamage, item, scopeSize, "DnD5e Native", true);
+        this._cachedNativeAttackContext = null;
+    }
+
+    _cacheNativeAttackContext(item, activity) {
+        const targets = game.user?.targets?.size ? [...game.user.targets] : [];
+        const descriptors = this._buildTargetDescriptors(targets);
+
+        this._cachedNativeAttackContext = {
+            itemId: item?.id ?? null,
+            activityUuid: activity?.uuid ?? null,
+            targets,
+            descriptors,
+            at: Date.now()
+        };
+
+        this._traceNative("attack.cacheContext", {
+            item: this._summarizeItem(item),
+            activityUuid: activity?.uuid ?? null,
+            targetCount: targets.length,
+            targets: targets.map(t => this._summarizeToken(t)),
+            descriptors
+        });
+    }
+
+    _buildTargetDescriptors(tokens) {
+        const descriptors = [];
+        for (const token of tokens) {
+            const actor = token.actor;
+            if (!actor?.uuid) continue;
+            const hasTotalCover = actor.statuses?.has?.("coverTotal") ?? false;
+            const ac = hasTotalCover ? null : actor.system?.attributes?.ac?.value;
+            descriptors.push({ uuid: actor.uuid, ac: ac ?? null, name: token.name ?? actor.name });
+        }
+        return descriptors;
+    }
+
+    _resolveNativeAttackAc(roll) {
+        if (Number.isNumeric(roll?.options?.target)) {
+            this._traceNative("attack.acSource", { source: "roll.options.target", ac: roll.options.target });
+            return roll.options.target;
+        }
+
+        const ctx = this._cachedNativeAttackContext;
+        if (ctx?.descriptors?.length === 1 && Number.isNumeric(ctx.descriptors[0].ac)) {
+            this._traceNative("attack.acSource", { source: "cached descriptor", ac: ctx.descriptors[0].ac, name: ctx.descriptors[0].name });
+            return ctx.descriptors[0].ac;
+        }
+
+        const userTargets = game.user?.targets;
+        if (userTargets?.size === 1) {
+            const ac = userTargets.first().actor?.system?.attributes?.ac?.value;
+            if (Number.isNumeric(ac)) {
+                this._traceNative("attack.acSource", { source: "live user.targets", ac, target: this._summarizeToken(userTargets.first()) });
+                return ac;
+            }
+        }
+
+        this._traceNative("attack.acSource", {
+            source: "none",
+            rollTargetAc: roll?.options?.target ?? null,
+            cachedDescriptorCount: ctx?.descriptors?.length ?? 0,
+            userTargetCount: userTargets?.size ?? 0
+        });
+        return null;
+    }
+
+    _getNativeTargets(item, activity = null, trace = false) {
+        const traceStep = (step, detail) => { if (trace) this._traceNative(step, detail); };
+
+        const userTargets = game.user?.targets;
+        if (userTargets?.size > 0) {
+            const resolved = [...userTargets];
+            traceStep("targets.source", { source: "game.user.targets", count: resolved.length, targets: resolved.map(t => this._summarizeToken(t)) });
+            return resolved;
+        }
+        traceStep("targets.source.miss", "game.user.targets empty at damage time");
+
+        const ctx = this._cachedNativeAttackContext;
+        const cacheAgeMs = ctx ? (Date.now() - ctx.at) : Infinity;
+        const cacheValid = ctx && cacheAgeMs < 120000;
+        const itemMatches = !item?.id || !ctx?.itemId || ctx.itemId === item.id;
+
+        traceStep("targets.cacheState", {
+            cacheValid,
+            cacheAgeMs,
+            itemMatches,
+            cachedItemId: ctx?.itemId ?? null,
+            incomingItemId: item?.id ?? null,
+            cachedTargetCount: ctx?.targets?.length ?? 0,
+            cachedDescriptorCount: ctx?.descriptors?.length ?? 0,
+            cachedActivityUuid: ctx?.activityUuid ?? null
+        });
+
+        if (cacheValid && itemMatches) {
+            if (ctx.targets?.length) {
+                traceStep("targets.source", { source: "attack cache tokens", count: ctx.targets.length });
+                Logger.log(`DnD5e Native | Using cached targets from attack roll (${ctx.targets.length})`);
+                return ctx.targets;
+            }
+
+            const fromDescriptors = this._tokensFromDescriptors(ctx.descriptors, trace);
+            if (fromDescriptors.length) {
+                traceStep("targets.source", { source: "attack cache descriptors", count: fromDescriptors.length });
+                Logger.log(`DnD5e Native | Resolved ${fromDescriptors.length} target(s) from attack descriptors`);
+                return fromDescriptors;
+            }
+            traceStep("targets.cacheMiss", "cache valid but no tokens resolved from descriptors");
+        } else if (!cacheValid) {
+            traceStep("targets.cacheMiss", "cache missing or expired");
+        } else if (!itemMatches) {
+            traceStep("targets.cacheMiss", "cache item id mismatch");
+        }
+
+        const activityUuid = activity?.uuid ?? ctx?.activityUuid ?? null;
+        traceStep("targets.messageLookup", { activityUuid });
+        const fromAttackMessage = this._resolveTargetsFromAttackMessage(activityUuid, trace);
+        if (fromAttackMessage.length) {
+            traceStep("targets.source", { source: "attack chat message flags", count: fromAttackMessage.length });
+            Logger.log(`DnD5e Native | Resolved ${fromAttackMessage.length} target(s) from attack chat message`);
+            return fromAttackMessage;
+        }
+
+        traceStep("targets.source", { source: "none", count: 0 });
+        return [];
+    }
+
+    _resolveTargetsFromAttackMessage(activityUuid, trace = false) {
+        if (!activityUuid) {
+            if (trace) this._traceNative("targets.messageMiss", "no activity UUID for message lookup");
+            return [];
+        }
+
+        const recent = game.messages.contents.slice(-30).reverse();
+        const attackMessages = recent.filter(msg => msg.flags?.dnd5e?.roll?.type === "attack");
+        if (trace) {
+            this._traceNative("targets.messageScan", {
+                activityUuid,
+                recentMessageCount: recent.length,
+                attackMessageCount: attackMessages.length,
+                attackActivityUuids: attackMessages.map(m => m.flags?.dnd5e?.activity?.uuid ?? null)
+            });
+        }
+
+        for (const msg of recent) {
+            const dnd5e = msg.flags?.dnd5e;
+            if (dnd5e?.roll?.type !== "attack") continue;
+            if (dnd5e?.activity?.uuid !== activityUuid) continue;
+            if (trace) {
+                this._traceNative("targets.messageHit", {
+                    messageId: msg.id,
+                    targetDescriptors: dnd5e.targets ?? []
+                });
+            }
+            return this._tokensFromDescriptors(dnd5e.targets ?? [], trace);
+        }
+
+        if (trace) this._traceNative("targets.messageMiss", "no attack message matched activity UUID");
+        return [];
+    }
+
+    _tokensFromDescriptors(descriptors, trace = false) {
+        if (!Array.isArray(descriptors) || !descriptors.length) {
+            if (trace) this._traceNative("targets.descriptorMiss", "empty descriptor list");
+            return [];
+        }
+
+        const tokens = [];
+        for (const desc of descriptors) {
+            if (!desc?.uuid) {
+                if (trace) this._traceNative("targets.descriptorSkip", { reason: "missing uuid", desc });
+                continue;
+            }
+            try {
+                const doc = fromUuidSync(desc.uuid);
+                let token = doc?.object ?? null;
+
+                if (!token && doc instanceof Actor) {
+                    token = doc.getActiveTokens()?.[0]
+                        ?? canvas.tokens?.placeables?.find(t => t.actor?.uuid === doc.uuid)
+                        ?? null;
+                }
+
+                if (token) {
+                    tokens.push(token);
+                    if (trace) this._traceNative("targets.descriptorResolved", { uuid: desc.uuid, token: this._summarizeToken(token) });
+                } else if (trace) {
+                    this._traceNative("targets.descriptorMiss", { uuid: desc.uuid, docType: doc?.constructor?.name ?? "unknown" });
+                }
+            } catch (err) {
+                if (trace) this._traceNative("targets.descriptorError", { uuid: desc.uuid, error: err.message });
+                Logger.log(`DnD5e Native | Failed to resolve target ${desc.uuid}: ${err.message}`);
+            }
+        }
+
+        return tokens;
     }
 }
