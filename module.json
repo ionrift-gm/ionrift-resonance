@@ -1,13 +1,13 @@
 {
     "id": "ionrift-resonance",
     "title": "Ionrift Resonance",
-    "description": "Automated audio triggers for Foundry VTT combat. Plays sound effects for melee attacks, ranged weapons, spells, and creature abilities. Install the free Core SFX Pack for 550+ sounds covering sword swings, bow shots, fireballs, healing, and critical hits. Supports Daggerheart (native), DnD5e (via Midi-QOL), Pathfinder 2e, and Starfinder 1e. Optionally integrates with Syrinscape for cloud audio.",
+    "description": "Automated audio triggers for Foundry VTT combat. Plays sound effects for melee attacks, ranged weapons, spells, and creature abilities. Install the free Core SFX Pack for 550+ sounds covering sword swings, bow shots, fireballs, healing, and critical hits. Supports DnD5e, Daggerheart, Pathfinder 2e, and Starfinder 1e. Optionally integrates with Midi-QOL for enhanced DnD5e automation and Syrinscape for cloud audio.",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
-    "version": "2.8.1",
+    "version": "2.8.2",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
     "bugs": "https://discord.gg/vFGXf7Fncj",
     "manifest": "https://github.com/ionrift-gm/ionrift-resonance/releases/latest/download/module.json",
-    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.8.1/module.zip",
+    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.8.2/module.zip",
     "license": "LICENSE",
     "compatibility": {
         "minimum": "12",
@@ -32,7 +32,7 @@
             {
                 "id": "midi-qol",
                 "type": "module",
-                "reason": "Required for DnD 5e automation support."
+                "reason": "Optional. Enhances DnD5e combat with richer roll detection."
             }
         ]
     },
