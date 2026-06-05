@@ -1644,21 +1644,46 @@ export class SoundConfigApp extends FormApplication {
             else playOptions.type = "element"; // Default fallback
         }
 
-        // Unified Playback via SoundManager
-        if (game.ionrift.handler) {
-            // If it's a Semantic Key (e.g. "ATTACK_SWORD"), resolve it first
-            // But if it's a numeric ID or complex object, treat as direct.
-            const resolved = game.ionrift.handler.resolveSound(idToPlay);
+        const semanticKey = typeof soundKeyOrId === "string" ? soundKeyOrId.trim() : "";
+        const isDirectAsset = this._isDirectPreviewAsset(idToPlay);
 
+        // Calibration preview: play what the row displays before chasing combat fallbacks.
+        // MONSTER_*_ATTACK keys otherwise resolve to CORE_MELEE -> generic sword swing.
+        if (!isDirectAsset && game.ionrift.handler?.resolver) {
+            const direct = game.ionrift.handler.resolver.resolveKeyDirect(semanticKey);
+            if (direct) {
+                idToPlay = direct;
+            } else {
+                const fromRow = this._pickPreviewFromRowTags(row);
+                if (fromRow) {
+                    idToPlay = fromRow;
+                } else if (semanticKey.endsWith("_ATTACK")) {
+                    ui.notifications.warn("No preview audio for this attack slot. It is unbound; combat uses weapon sounds instead.");
+                    return;
+                } else {
+                    const resolved = game.ionrift.handler.resolveSound(idToPlay);
+                    if (resolved) {
+                        if (typeof resolved === 'string') {
+                            idToPlay = resolved;
+                        } else if (typeof resolved === 'object') {
+                            idToPlay = resolved.id;
+                            if (resolved.type) {
+                                soundType = resolved.type;
+                                if (soundType === "global-oneshot") playOptions.type = "global-element";
+                                else if (soundType === "mood") playOptions.type = "mood";
+                                else playOptions.type = "element";
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (!isDirectAsset && game.ionrift.handler) {
+            const resolved = game.ionrift.handler.resolveSound(idToPlay);
             if (resolved) {
-                if (typeof resolved === 'string') {
-                    // It resolved to a string ID
-                    idToPlay = resolved;
-                } else if (typeof resolved === 'object') {
-                    // It resolved to a full object (e.g. { id: 123, type: 'global-oneshot' })
+                if (typeof resolved === 'string') idToPlay = resolved;
+                else if (typeof resolved === 'object') {
                     idToPlay = resolved.id;
                     if (resolved.type) {
-                        // Re-map type if resolved object has it
                         soundType = resolved.type;
                         if (soundType === "global-oneshot") playOptions.type = "global-element";
                         else if (soundType === "mood") playOptions.type = "mood";
@@ -1673,6 +1698,32 @@ export class SoundConfigApp extends FormApplication {
         if (game.ionrift.sounds?.manager) {
             game.ionrift.sounds.manager.play(idToPlay, playOptions);
         }
+    }
+
+    _isDirectPreviewAsset(value) {
+        if (!value || typeof value !== "string") return false;
+        const trimmed = value.trim();
+        if (trimmed.startsWith("{") || trimmed.startsWith("[")) return false;
+        return trimmed.includes("/")
+            || trimmed.includes("\\")
+            || /\.(mp3|wav|ogg|flac|m4a)$/i.test(trimmed)
+            || /^\d+$/.test(trimmed);
+    }
+
+    _pickPreviewFromRowTags(row) {
+        if (!row || row.classList.contains("muted-row")) return null;
+
+        const badges = row.querySelectorAll(".entity-badges .ionrift-badge[title]");
+        const candidates = [];
+        for (const badge of badges) {
+            const id = badge.getAttribute("title")?.trim();
+            if (!id) continue;
+            if (badge.textContent?.includes("No Sound Bound")) continue;
+            candidates.push(id);
+        }
+
+        if (!candidates.length) return null;
+        return candidates[Math.floor(Math.random() * candidates.length)];
     }
 
 
