@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.8.2] - 2026-06-05
+
+### Fixed
+- **NPC and monster attack sounds now play correctly.** Creature-specific vocal sounds (roars, growls, hisses) were being skipped in favour of generic weapon swing sounds. Monsters now resolve their species vocals before falling back to weapon type.
+- **DnD5e combat sounds now work without Midi-QOL.** Attack hits, misses, crits, fumbles, and monster pain sounds were completely silent for games not running Midi-QOL. Native DnD5e roll detection now handles the full strike-and-damage cycle independently.
+- **Calibration preview now plays the correct sound.** Clicking Preview on a row in Resonance Calibration played a default instead of the actual bound or inherited sound for that slot.
+- **Pathfinder 2e hero point sounds.** Gaining or spending a hero point now triggers a sound. Per-actor overrides are supported through the Actor Sound Config panel.
+- Weapon name matching no longer produces false positives on partial word overlaps.
+
 ## [2.8.1] - 2026-05-26
 
 ### Fixed
