@@ -1,7 +1,7 @@
-import { SystemAdapter } from "./SystemAdapter.js";
+﻿import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
-import { getSubtypeVocalKey } from "../data/MonsterVocalMap.js";
+import { getSubtypeVocalKey, pickBoundMonsterPainKey } from "../data/MonsterVocalMap.js";
 
 export class PF2eAdapter extends SystemAdapter {
 
@@ -54,7 +54,7 @@ export class PF2eAdapter extends SystemAdapter {
 
         // Hero Point gain/spend sounds.
         // Config slots (sound_hero_point_gain / sound_hero_point_use) exist in ActorSoundConfig
-        // but had no runtime hook — sounds were configurable but never played.
+        // but had no runtime hook - sounds were configurable but never played.
         Hooks.on("preUpdateActor", (actor, changes, _options, _userId) => {
             if (!game.user.isGM) return;
             if (actor.type !== "character") return;
@@ -294,28 +294,15 @@ export class PF2eAdapter extends SystemAdapter {
     _detectMonsterPain(actor) {
         if (!game.ionrift?.library?.classifyCreature) {
             Logger.warn("PF2e | Library not loaded, using generic monster sound");
-            return SOUND_EVENTS.VOCAL_GENERIC_PAIN;
+            return pickBoundMonsterPainKey(null, this.handler?.resolver, SOUND_EVENTS);
         }
 
         const classification = game.ionrift.library.classifyCreature(actor);
         Logger.log(`PF2e | Classification for ${actor.name}:`, classification);
 
-        if (!classification) return SOUND_EVENTS.VOCAL_GENERIC_PAIN;
-
-        if (classification.subtype) {
-            const subtypeKey = this._getSubtypeVocalKey(classification.type, classification.subtype);
-            if (subtypeKey) {
-                const resolved = this.handler.resolver.resolveKey(subtypeKey);
-                if (resolved) return subtypeKey;
-            }
-        }
-
-        if (classification.sound) {
-            if (Object.values(SOUND_EVENTS).includes(classification.sound)) return classification.sound;
-            if (SOUND_EVENTS[classification.sound]) return SOUND_EVENTS[classification.sound];
-        }
-
-        return SOUND_EVENTS.VOCAL_GENERIC_PAIN;
+        const painKey = pickBoundMonsterPainKey(classification, this.handler?.resolver, SOUND_EVENTS);
+        Logger.log(`PF2e | Monster pain resolved to bound key: ${painKey}`);
+        return painKey;
     }
 
     _getSubtypeVocalKey(type, subtype) {
