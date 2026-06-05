@@ -103,3 +103,61 @@ export function pickBoundMonsterPainKey(classification, resolver, soundEvents) {
 
     return soundEvents.VOCAL_GENERIC_PAIN ?? soundEvents.CORE_MONSTER_PAIN ?? null;
 }
+
+/**
+ * Pick the first monster attack key that has an audio binding.
+ * Falls back to bound vocal keys (MONSTER_WOLF, MONSTER_BEAST) when attack slots are unbound.
+ * @param {object|null} classification
+ * @param {import("../SoundResolver.js").SoundResolver} resolver
+ * @param {object} soundEvents
+ * @param {string} [itemName=""]
+ * @returns {string|null}
+ */
+export function pickBoundMonsterAttackKey(classification, resolver, soundEvents, itemName = "") {
+    if (!resolver || !classification) return null;
+
+    const lower = (itemName || "").toLowerCase();
+    const candidates = [];
+
+    const subtypeBase = classification.type && classification.subtype
+        ? getSubtypeVocalKey(classification.type, classification.subtype)
+        : null;
+
+    if (subtypeBase) {
+        if (lower.includes("bite")) candidates.push(`${subtypeBase}_BITE`);
+        if (lower.includes("claw") || lower.includes("scratch")) candidates.push(`${subtypeBase}_CLAW`);
+        if (lower.includes("slam") || lower.includes("smash")) candidates.push(`${subtypeBase}_SLAM`);
+        candidates.push(`${subtypeBase}_ATTACK`);
+    }
+
+    if (classification.type) {
+        candidates.push(`MONSTER_${String(classification.type).toUpperCase()}_ATTACK`);
+    }
+
+    if (classification.sound?.startsWith("MONSTER_")) {
+        candidates.push(`${classification.sound}_ATTACK`);
+    }
+
+    // Vocal keys as attack fallback when species attack slots are unbound in the pack
+    if (subtypeBase) candidates.push(subtypeBase);
+    if (classification.sound?.startsWith("MONSTER_")) candidates.push(classification.sound);
+    if (classification.type) candidates.push(`MONSTER_${String(classification.type).toUpperCase()}`);
+
+    candidates.push(soundEvents.MONSTER_GENERIC, soundEvents.CORE_MONSTER_PAIN);
+
+    const seen = new Set();
+    for (const key of candidates) {
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+
+        // Attack slots must not chase the combat fallback chain (MONSTER_*_ATTACK -> CORE_MELEE -> sword)
+        if (key.endsWith("_ATTACK") || key.endsWith("_BITE") || key.endsWith("_CLAW") || key.endsWith("_SLAM")) {
+            if (resolver.resolveKeyDirect(key)) return key;
+            continue;
+        }
+
+        if (resolver.resolveKey(key)) return key;
+    }
+
+    return null;
+}

@@ -1,5 +1,6 @@
 import { Logger } from "./Logger.js";
 import { SOUND_EVENTS } from "./constants.js";
+import { pickBoundMonsterAttackKey } from "./data/MonsterVocalMap.js";
 
 export class SoundResolver {
     constructor(configService) {
@@ -49,8 +50,6 @@ export class SoundResolver {
         if (mappings.weapons && mappings.weapons[itemName]) return mappings.weapons[itemName];
         if (mappings.spells && mappings.spells[itemName]) return mappings.spells[itemName];
 
-        const lower = itemName.toLowerCase();
-
         // 3.5. System-specific resolution (e.g. DH domains)
         const adapter = game.ionrift?.handler?.system;
         if (adapter?.resolveSystemSound) {
@@ -58,20 +57,18 @@ export class SoundResolver {
             if (systemResult) return systemResult;
         }
 
-        // 4. Classifier Logic (Ionrift Library)
-        if (actor && game.ionrift?.library?.classifyCreature) {
-            const classifierResult = game.ionrift.library.classifyCreature(actor);
-            const monsterKey = classifierResult?.sound;
-
-            if (monsterKey && monsterKey !== "MONSTER_GENERIC") {
-                let action = "";
-                if (lower.includes("bite")) action = "BITE";
-                else if (lower.includes("claw") || lower.includes("scratch")) action = "CLAW";
-                else if (lower.includes("slam") || lower.includes("smash")) action = "SLAM";
-
-                if (action) {
-                    return `${monsterKey}_${action}`;
-                }
+        // 4. NPC creature attack sounds (before weapon damage-type guessing)
+        if (actor && actor.type !== "character" && game.ionrift?.library?.classifyCreature) {
+            const classification = game.ionrift.library.classifyCreature(actor);
+            const monsterAttackKey = pickBoundMonsterAttackKey(
+                classification,
+                this,
+                SOUND_EVENTS,
+                itemName
+            );
+            if (monsterAttackKey) {
+                Logger.log(`SoundResolver | NPC attack for ${actor.name}: ${monsterAttackKey} (item: ${itemName})`);
+                return monsterAttackKey;
             }
         }
 
@@ -183,6 +180,25 @@ export class SoundResolver {
         }
 
         return null;
+    }
+
+    /**
+     * Resolve a key to its direct binding only. Does not walk the combat fallback chain.
+     * Used by calibration preview so inherited/displayed sounds match what the user sees.
+     */
+    resolveKeyDirect(key) {
+        if (!key || typeof key !== "string") return null;
+
+        const bindings = this.configService.getEffectiveBindings();
+        let resolved = bindings[key];
+
+        if (resolved === "__MUTED__") return null;
+
+        if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
+            return resolved.map(r => r.id).join(",");
+        }
+
+        return resolved || null;
     }
 
     getFallbackKey(specificKey) {
