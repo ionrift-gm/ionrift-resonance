@@ -105,15 +105,17 @@ export function pickBoundMonsterPainKey(classification, resolver, soundEvents) {
 }
 
 /**
- * Pick the first monster attack key that has an audio binding.
- * Falls back to bound vocal keys (MONSTER_WOLF, MONSTER_BEAST) when attack slots are unbound.
+ * Pick the first bound monster *attack* key for Phase 1 (swing/cast).
+ * Only considers explicit attack slots (*_ATTACK, *_BITE, *_CLAW, *_SLAM).
+ * Vocal keys (MONSTER_WOLF, CORE_MONSTER_PAIN) are damage-phase only; when no
+ * attack slot is bound, returns null so weapon/item taxonomy handles the swing.
  * @param {object|null} classification
  * @param {import("../SoundResolver.js").SoundResolver} resolver
- * @param {object} soundEvents
+ * @param {object} _soundEvents
  * @param {string} [itemName=""]
  * @returns {string|null}
  */
-export function pickBoundMonsterAttackKey(classification, resolver, soundEvents, itemName = "") {
+export function pickBoundMonsterAttackKey(classification, resolver, _soundEvents, itemName = "") {
     if (!resolver || !classification) return null;
 
     const lower = (itemName || "").toLowerCase();
@@ -134,16 +136,9 @@ export function pickBoundMonsterAttackKey(classification, resolver, soundEvents,
         candidates.push(`MONSTER_${String(classification.type).toUpperCase()}_ATTACK`);
     }
 
-    if (classification.sound?.startsWith("MONSTER_")) {
+    if (classification.sound) {
         candidates.push(`${classification.sound}_ATTACK`);
     }
-
-    // Vocal keys as attack fallback when species attack slots are unbound in the pack
-    if (subtypeBase) candidates.push(subtypeBase);
-    if (classification.sound?.startsWith("MONSTER_")) candidates.push(classification.sound);
-    if (classification.type) candidates.push(`MONSTER_${String(classification.type).toUpperCase()}`);
-
-    candidates.push(soundEvents.MONSTER_GENERIC, soundEvents.CORE_MONSTER_PAIN);
 
     const seen = new Set();
     for (const key of candidates) {
@@ -153,10 +148,7 @@ export function pickBoundMonsterAttackKey(classification, resolver, soundEvents,
         // Attack slots must not chase the combat fallback chain (MONSTER_*_ATTACK -> CORE_MELEE -> sword)
         if (key.endsWith("_ATTACK") || key.endsWith("_BITE") || key.endsWith("_CLAW") || key.endsWith("_SLAM")) {
             if (resolver.resolveKeyDirect(key)) return key;
-            continue;
         }
-
-        if (resolver.resolveKey(key)) return key;
     }
 
     return null;
