@@ -171,6 +171,11 @@ These are not required but significantly improve the experience:
 
 ## Supported Systems
 
+- **Daggerheart** (native) - Hope/Fear mechanics, Duality Dice rolls, Fear Tracker thresholds, and resource changes all have sound hooks. No additional modules needed.
+- **DnD5e** (via Midi-QOL) - full attack/damage/healing workflow support. Two-beat sequences: weapon swing, then hit or miss result.
+- **Pathfinder 2e & Starfinder 1e** (native) - Full attack, damage, spell, and healing hooks.
+- **Expanded Native Integrations:** Full automatic sound hooks for weapons, spells, and damage events across **Pathfinder 1e, D&D 3.5e, Old-School Essentials, Call of Cthulhu 7e, Savage Worlds (SWADE), Warhammer Fantasy Roleplay 4e, Cyberpunk RED,** and **Blades in the Dark**. No manual configuration or additional modules required.
+
 ### 1. Daggerheart
 **Native Support**. No external modules required (other than core dependencies).
 
