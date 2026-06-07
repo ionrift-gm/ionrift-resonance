@@ -1,9 +1,17 @@
 import { msgContains } from "./utils.js";
 import { SOUND_EVENTS } from "./constants.js";
+import { BladesInTheDarkAdapter } from "./systems/BladesInTheDarkAdapter.js";
+import { CoC7Adapter } from "./systems/CoC7Adapter.js";
+import { CyberpunkREDAdapter } from "./systems/CyberpunkREDAdapter.js";
 import { DaggerheartAdapter } from "./systems/DaggerheartAdapter.js";
+import { DnD35eAdapter } from "./systems/DnD35eAdapter.js";
 import { DnD5eAdapter } from "./systems/DnD5eAdapter.js";
+import { OSEAdapter } from "./systems/OSEAdapter.js";
+import { PF1eAdapter } from "./systems/PF1eAdapter.js";
 import { PF2eAdapter } from "./systems/PF2eAdapter.js";
 import { SFRPGAdapter } from "./systems/SFRPGAdapter.js";
+import { SWADEAdapter } from "./systems/SWADEAdapter.js";
+import { WFRP4eAdapter } from "./systems/WFRP4eAdapter.js";
 import { Logger } from "./Logger.js";
 import { ResonanceConfig } from "./ResonanceConfig.js";
 import { SoundResolver } from "./SoundResolver.js";
@@ -68,6 +76,22 @@ export class SoundHandler {
             this.system = new PF2eAdapter(this);
         } else if (game.system.id === "sfrpg") {
             this.system = new SFRPGAdapter(this);
+        } else if (game.system.id === "pf1") {
+            this.system = new PF1eAdapter(this);
+        } else if (game.system.id === "D35E") {
+            this.system = new DnD35eAdapter(this);
+        } else if (game.system.id === "ose") {
+            this.system = new OSEAdapter(this);
+        } else if (game.system.id === "CoC7") {
+            this.system = new CoC7Adapter(this);
+        } else if (game.system.id === "swade") {
+            this.system = new SWADEAdapter(this);
+        } else if (game.system.id === "wfrp4e") {
+            this.system = new WFRP4eAdapter(this);
+        } else if (game.system.id === "cyberpunk-red-core") {
+            this.system = new CyberpunkREDAdapter(this);
+        } else if (game.system.id === "blades-in-the-dark") {
+            this.system = new BladesInTheDarkAdapter(this);
         } else {
             Logger.warn(`System '${game.system.id}' not strictly supported. Defaulting to DnD5e generic logic.`);
             this.system = new DnD5eAdapter(this);
