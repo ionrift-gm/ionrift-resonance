@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.9.1] - 2026-06-07
+
+### Fixed
+- **NPC and monster attack sounds.** Fixed an issue where non-player character attacks incorrectly triggered injury audio on swing instead of weapon audio.
+
 ## [2.9.0] - 2026-06-07
 
 ### Added
