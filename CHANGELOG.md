@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.9.0] - 2026-06-07
+
+### Added
+- **Expanded system compatibility.** Adds full audio support for Pathfinder 1e, DnD 3.5e, Old-School Essentials, Call of Cthulhu 7e, SWADE, WFRP4e, Cyberpunk RED, and Blades in the Dark.
+- **System-specific audio hooks.** Native weapons, spells, and damage events now trigger automatically in the newly supported systems without requiring manual configuration.
+
 ## [2.8.2] - 2026-06-05
 
 ### Fixed
