@@ -1,4 +1,8 @@
 {
   "name": "ionrift-resonance",
-  "private": true
+  "private": true,
+  "scripts": {
+    "check": "node tools/check-local-paths.mjs",
+    "hooks": "node tools/install-hooks.mjs"
+  }
 }
