@@ -43,6 +43,15 @@ export class SoundPackLoader {
     /** Merged binding map across all enabled packs. */
     static _mergedBindings = {};
 
+    /**
+     * Dynamic classifier bindings contributed by sound packs.
+     * Maps subtype composite keys (e.g. "undead_vampire") to sound event
+     * keys (e.g. "MONSTER_VAMPIRE"). Populated from pack manifest
+     * `classifierBindings` fields during init.
+     * @type {Map<string, string>}
+     */
+    static _dynamicClassifierBindings = new Map();
+
     /** True once init() has completed (success or not). */
     static _loaded = false;
 
@@ -61,6 +70,7 @@ export class SoundPackLoader {
     static async init() {
         this._packs.clear();
         this._mergedBindings = {};
+        this._dynamicClassifierBindings.clear();
 
         const overlayActive = this._getOverlayActiveMap();
 
@@ -195,6 +205,28 @@ export class SoundPackLoader {
      */
     static getMergedBindings() {
         return this._mergedBindings;
+    }
+
+    /**
+     * Get the dynamic classifier binding for a subtype composite key.
+     * Returns null if no pack has declared a mapping for this subtype.
+     * Used by MonsterVocalMap to resolve pack-contributed creature types.
+     * @param {string} compositeKey - e.g. "undead_vampire"
+     * @returns {string|null} - e.g. "MONSTER_VAMPIRE"
+     */
+    static getDynamicClassifierBinding(compositeKey) {
+        const binding = this._dynamicClassifierBindings.get(compositeKey);
+        return binding ? binding.soundKey : null;
+    }
+
+    /**
+     * Returns all dynamic classifier bindings from enabled packs.
+     * Used by SoundConfigApp to inject pack-contributed creature types
+     * into the monster taxonomy UI.
+     * @returns {Map<string, {soundKey: string, packName: string}>} compositeKey → binding info
+     */
+    static getAllDynamicClassifierBindings() {
+        return this._dynamicClassifierBindings;
     }
 
     /**
@@ -352,9 +384,30 @@ export class SoundPackLoader {
      */
     static _rebuildMergedBindings(enabledPacks) {
         const merged = {};
+        this._dynamicClassifierBindings.clear();
 
         for (const [, entry] of this._packs) {
             if (!enabledPacks.has(entry.manifest.id)) continue;
+
+            // Extract classifier bindings from manifest (plug-in architecture)
+            const cb = entry.manifest.classifierBindings;
+            if (cb && typeof cb === "object") {
+                let packName = entry.manifest.title || entry.manifest.name || entry.manifest.id;
+                // Make the badge title more terse by stripping common suffixes
+                packName = packName.replace(/\s+(Creature SFX|SFX|Sound Pack|Pack)$/i, '');
+                
+                const packIcon = entry.manifest.icon || "fa-layer-group";
+
+                for (const [subtypeKey, soundKey] of Object.entries(cb)) {
+                    if (typeof subtypeKey === "string" && typeof soundKey === "string") {
+                        this._dynamicClassifierBindings.set(subtypeKey, {
+                            soundKey: soundKey,
+                            packName: packName,
+                            packIcon: packIcon
+                        });
+                    }
+                }
+            }
 
             for (const [key, value] of Object.entries(entry.bindings)) {
                 if (!value) continue;
