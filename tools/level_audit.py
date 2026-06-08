@@ -11,7 +11,7 @@ import subprocess, re
 from pathlib import Path
 from collections import defaultdict
 
-SOUNDS = Path(r"C:\Users\geoff\AppData\Local\FoundryVTT\Data\modules\ionrift-resonance\sounds\pack")
+SOUNDS = Path(__file__).parent.parent / "sounds" / "pack"
 
 # Category-specific target peaks (dB). Used for flagging outliers.
 CATEGORY_TARGETS = {

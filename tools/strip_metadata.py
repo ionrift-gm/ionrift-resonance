@@ -8,7 +8,7 @@ Usage: python strip_metadata.py [--dry-run]
 import subprocess, sys, shutil
 from pathlib import Path
 
-SOUNDS = Path(r"C:\Users\geoff\AppData\Local\FoundryVTT\Data\modules\ionrift-resonance\sounds\pack")
+SOUNDS = Path(__file__).parent.parent / "sounds" / "pack"
 DRY_RUN = "--dry-run" in sys.argv
 
 def has_metadata(path):

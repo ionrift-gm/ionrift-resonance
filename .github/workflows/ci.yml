@@ -39,3 +39,14 @@ jobs:
       testharness_config: 'vitest/forge-safety/vitest.config.js'
     secrets:
       CI_PAT: ${{ secrets.IONRIFT_CI_PAT }}
+
+  path-hygiene:
+    name: Path Hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check for hardcoded local paths
+        run: node tools/check-local-paths.mjs

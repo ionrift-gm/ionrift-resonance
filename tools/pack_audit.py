@@ -8,7 +8,7 @@ Usage: python pack_audit.py
 import json, re, os, sys
 from pathlib import Path
 
-MODULE = Path(r"C:\Users\geoff\AppData\Local\FoundryVTT\Data\modules\ionrift-resonance")
+MODULE = Path(__file__).parent.parent
 PACK   = MODULE / "scripts" / "presets" / "pack.json"
 CONST  = MODULE / "scripts" / "constants.js"
 UI     = MODULE / "scripts" / "apps" / "SoundConfigApp.js"
