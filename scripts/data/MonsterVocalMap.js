@@ -43,6 +43,8 @@ export const SUBTYPE_VOCAL_MAP = {
 
 /**
  * Look up the sound key for a given creature type + subtype.
+ * Checks dynamic (pack-contributed) classifier bindings first,
+ * then the static SUBTYPE_VOCAL_MAP, then prefix fallback.
  * @param {string} type - Creature type (e.g. "elemental", "beast")
  * @param {string} subtype - Creature subtype (e.g. "fire", "ursine")
  * @returns {string|null}
@@ -51,6 +53,17 @@ export function getSubtypeVocalKey(type, subtype) {
     if (!type || !subtype) return null;
 
     const composite = `${type}_${subtype}`;
+
+    // Check pack-declared classifier bindings first (plug-in architecture)
+    try {
+        const { SoundPackLoader } = game.ionrift?.resonance ?? {};
+        if (SoundPackLoader) {
+            const dynamicKey = SoundPackLoader.getDynamicClassifierBinding(composite);
+            if (dynamicKey) return dynamicKey;
+        }
+    } catch { /* SoundPackLoader not available yet — fall through */ }
+
+    // Check static map (hardcoded known subtypes)
     if (SUBTYPE_VOCAL_MAP[composite]) return SUBTYPE_VOCAL_MAP[composite];
 
     // Prefix fallback: beast_canine_domestic -> beast_canine -> MONSTER_WOLF
@@ -58,6 +71,16 @@ export function getSubtypeVocalKey(type, subtype) {
     while (parts.length > 1) {
         parts.pop();
         const shorter = `${type}_${parts.join("_")}`;
+
+        // Check dynamic bindings for shorter key too
+        try {
+            const { SoundPackLoader } = game.ionrift?.resonance ?? {};
+            if (SoundPackLoader) {
+                const dynamicKey = SoundPackLoader.getDynamicClassifierBinding(shorter);
+                if (dynamicKey) return dynamicKey;
+            }
+        } catch { /* fall through */ }
+
         if (SUBTYPE_VOCAL_MAP[shorter]) return SUBTYPE_VOCAL_MAP[shorter];
     }
 

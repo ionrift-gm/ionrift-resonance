@@ -230,6 +230,8 @@ export class SoundConfigApp extends FormApplication {
                 label: node.label,
                 key: node.id,
                 description: node.description,
+                packName: node.packName || null,
+                packIcon: node.packIcon || null,
                 children: [],
                 fields: [], // Leaf nodes
                 headerCard: node.id ? myState.getRenderData() : null,
@@ -569,6 +571,90 @@ export class SoundConfigApp extends FormApplication {
                 ]
             }
         ];
+
+        // --- Dynamic Pack Taxonomy Injection ---
+        // Sound packs contribute new creature subtypes via classifierBindings.
+        // Inject these as child nodes under the appropriate parent group so
+        // the GM can preview pack sounds in the calibrator. Nodes appear when
+        // the pack is enabled and disappear when it is disabled.
+        if (SoundPackLoader.loaded) {
+            const dynamicBindings = SoundPackLoader.getAllDynamicClassifierBindings();
+
+            if (dynamicBindings.size > 0) {
+                // Collect every id already present in the hardcoded taxonomy
+                const existingIds = new Set();
+                const collectIds = (nodes) => {
+                    for (const node of nodes) {
+                        if (node.id) existingIds.add(node.id);
+                        if (node.children) collectIds(node.children);
+                    }
+                };
+                collectIds(monsterTaxonomy);
+
+                // Classifier type prefix → parent taxonomy node id
+                const TYPE_TO_PARENT = {
+                    undead:      "MONSTER_UNDEAD",
+                    beast:       "MONSTER_BEAST",
+                    humanoid:    "MONSTER_HUMANOID",
+                    fiend:       "MONSTER_FIEND",
+                    elemental:   "MONSTER_ELEMENTAL",
+                    dragon:      "MONSTER_DRAGON",
+                    giant:       "MONSTER_GIANT",
+                    construct:   "MONSTER_CONSTRUCT",
+                    aberration:  "MONSTER_ALIEN",
+                    plant:       "MONSTER_PLANT",
+                    ooze:        "SFX_SLIME"
+                };
+
+                // Walk the taxonomy tree to find a node by id
+                const findNode = (nodes, targetId) => {
+                    for (const node of nodes) {
+                        if (node.id === targetId) return node;
+                        if (node.children) {
+                            const found = findNode(node.children, targetId);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                };
+
+                for (const [compositeKey, binding] of dynamicBindings) {
+                    const soundKey = binding.soundKey;
+                    const packName = binding.packName;
+                    const packIcon = binding.packIcon;
+
+                    // Skip keys that already exist in the hardcoded taxonomy
+                    if (existingIds.has(soundKey)) continue;
+
+                    const parts = compositeKey.split("_");
+                    const typePart = parts[0];
+                    const subtypePart = parts.slice(1).join("_");
+                    const parentId = TYPE_TO_PARENT[typePart];
+                    if (!parentId) continue;
+
+                    const parent = findNode(monsterTaxonomy, parentId);
+                    if (!parent || !parent.children) continue;
+
+                    // Derive a human-readable label from the subtype
+                    const label = subtypePart
+                        .split("_")
+                        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+                        .join(" ");
+
+                    parent.children.push({
+                        label: label, id: soundKey, cardLabel: "Vocal / Pain Sound",
+                        packName: packName,
+                        packIcon: packIcon,
+                        children: [{
+                            label: "Default Attack", id: `${soundKey}_ATTACK`,
+                            description: "Species-specific attack override. Leave unbound - attack sounds route through the weapon/item taxonomy. Bind here only to make this creature type sound distinct from its weapon category."
+                        }]
+                    });
+
+                    existingIds.add(soundKey);
+                }
+            }
+        }
 
         // --- CORE TAXONOMY (Tier 1: Results Only) ---
         const coreTaxonomy = [

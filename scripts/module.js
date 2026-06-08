@@ -134,6 +134,10 @@ Hooks.once('init', async function () {
         // bindings are available to ResonanceConfig.getEffectiveBindings().
         await SoundPackLoader.init();
 
+        // Expose SoundPackLoader for plug-in architecture (MonsterVocalMap
+        // reads dynamic classifier bindings from pack manifests)
+        game.ionrift.resonance.SoundPackLoader = SoundPackLoader;
+
         // Expose the registry app for console/macro access
         game.ionrift.resonance.ResonancePackRegistryApp = ResonancePackRegistryApp;
 
