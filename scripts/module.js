@@ -1,6 +1,6 @@
 import { Logger } from "./Logger.js";
 import { SoundConfigApp } from "./apps/SoundConfigApp.js";
-import { AttunementApp } from "./apps/AttunementApp.js";
+import { SyrinscapeConfigApp } from "./apps/SyrinscapeConfigApp.js";
 import { SoundAuditor } from "./apps/SoundAuditor.js";
 import { SoundHandler } from "./SoundHandler.js";
 import { registerSettings } from "./settings.js";
@@ -56,11 +56,11 @@ Hooks.once('init', async function () {
 
     // HEADER
     const { SettingsLayout } = await import("../../ionrift-library/scripts/SettingsLayout.js");
-    SettingsLayout.registerHeader("ionrift-resonance", AttunementApp, {
-        name: "Resonance Setup",
-        label: "Open Resonance Setup",
-        hint: "First-time setup: Core SFX Pack and optional Syrinscape connection.",
-        icon: "fas fa-sliders-h"
+    SettingsLayout.registerHeader("ionrift-resonance", SyrinscapeConfigApp, {
+        name: "Audio Mode",
+        label: "Configure Audio Mode",
+        hint: "Choose Foundry audio only or add Syrinscape for per-slot overrides in Calibration.",
+        icon: "fas fa-volume-up"
     });
 
     if (!game.ionrift?.library?.isOverlayDistributionActive?.()) {
@@ -92,15 +92,11 @@ Hooks.once('init', async function () {
 
         for (const app of Object.values(ui.applications ?? {})) {
             if (!app) continue;
-            const isAttunement = app.id === "ionrift-resonance-attunement";
+            const isSyrinscapeConfig = app.id === "ionrift-resonance-syrinscape";
             const isCalibration = app.id === "ionrift-sound-config" || app instanceof SoundConfigApp;
-            if (!isAttunement && !isCalibration) continue;
+            if (!isSyrinscapeConfig && !isCalibration) continue;
             try {
-                if (isCalibration) {
-                    app.render(true);
-                } else {
-                    app.render();
-                }
+                app.render(true);
             } catch (e) {
                 Logger.warn("overlayContentChanged | re-render failed:", e?.message ?? e);
             }
@@ -214,7 +210,6 @@ Hooks.once('init', async function () {
         // Register Status Indicator (Generic Integration)
         if (game.ionrift?.integration) {
             game.ionrift.integration.registerApp('ionrift-resonance', {
-                settingsKey: ['ionrift-resonance.setupWizard'],
                 checkStatus: async () => {
                     const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
 
@@ -310,7 +305,7 @@ Hooks.once('init', async function () {
                         return {
                             status: game.ionrift.integration.STATUS.WARNING,
                             label: 'Setup needed',
-                            message: 'Install the Core SFX Pack or connect Syrinscape in Resonance Setup.'
+                            message: 'Install the Core SFX Pack from Patreon Library, or set Audio Mode to add a Syrinscape token.'
                         };
                     }
 
