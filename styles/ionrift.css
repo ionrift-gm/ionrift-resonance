@@ -1,6 +1,386 @@
 /* Ionrift Sounds - Module Specific Styles */
 /* Core Window & UI styles are loaded from ionrift-lib */
 
+/* ── Purple Scrollbar Override (Syrinscape config) ─────────────────
+   See IONRIFT_UI_HANDBOOK.md §2 — module-specific app class.      */
+.ionrift-resonance-syrinscape-app,
+.ionrift-resonance-syrinscape-app * {
+    scrollbar-color: #6d28d9 rgba(0, 0, 0, 0.4) !important;
+    scrollbar-width: thin !important;
+}
+
+.ionrift-resonance-syrinscape-app ::-webkit-scrollbar,
+.ionrift-resonance-syrinscape-app *::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+}
+
+.ionrift-resonance-syrinscape-app ::-webkit-scrollbar-thumb,
+.ionrift-resonance-syrinscape-app *::-webkit-scrollbar-thumb {
+    background: #6d28d9 !important;
+    border-radius: 4px !important;
+}
+
+/* ── Syrinscape Connection dialog ─────────────────────────────────
+   Scrollable body + pinned footer (welcome-window pattern).
+   Content gutter per IONRIFT_UI_HANDBOOK.md §4–§5.                */
+.ionrift-resonance-syrinscape-app .window-content {
+    overflow: hidden !important;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-form {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* !important: overrides .ionrift-window .window-content { padding: 0 } */
+    padding: 0.75rem 1.25rem 0.5rem !important;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-body {
+    display: none;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-body.is-open {
+    display: block;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-header {
+    margin-bottom: 1rem;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-lead {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95em;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-lead-icon {
+    color: var(--ionrift-accent, #a78bfa);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-intro {
+    margin: 0;
+    font-size: 0.88em;
+    line-height: 1.5;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card {
+    border-radius: 4px;
+    overflow: hidden;
+    transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card--foundry {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card--syrin {
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive {
+    opacity: 0.5;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive .syrinscape-provider-toggle {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive .syrinscape-provider-toggle-icon {
+    color: rgba(167, 139, 250, 0.45);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-active {
+    opacity: 1;
+    border-color: rgba(74, 222, 128, 0.55);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.12);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card--foundry.is-active .syrinscape-provider-toggle {
+    background: rgba(74, 222, 128, 0.08);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card--syrin.is-active .syrinscape-provider-toggle--accent {
+    background: rgba(74, 222, 128, 0.08);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-toggle-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-status--active {
+    color: #4ade80;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-active-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.75rem;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.35);
+    border-radius: 4px;
+    color: #86efac;
+    font-size: 0.88em;
+    line-height: 1.45;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-active-banner > i {
+    color: #4ade80;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    user-select: none;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.9em;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-toggle--accent {
+    background: rgba(139, 92, 246, 0.06);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-toggle-label {
+    display: inline-flex;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    gap: 0.65rem;
+    line-height: 1.4;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-title {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-tagline {
+    font-size: 0.82em;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.35;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-note {
+    margin: 0 0 0.85rem 0;
+    font-size: 0.86em;
+    line-height: 1.45;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-toggle-icon {
+    color: var(--ionrift-accent, #a78bfa);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-chevron {
+    opacity: 0.45;
+    font-size: 0.8em;
+    flex-shrink: 0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-body.is-open {
+    padding: 0.85rem 1rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-body--syrin.is-open {
+    border-top-color: rgba(139, 92, 246, 0.15);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.55rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-action--muted,
+.ionrift-resonance-syrinscape-app .syrinscape-provider-action--select {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive .syrinscape-provider-action--select:hover {
+    border-color: rgba(74, 222, 128, 0.45);
+    color: #bbf7d0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-action--primary {
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid #7c3aed;
+    color: #c4b5fd;
+    margin-bottom: 0.75rem;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-token-label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin: 0 0 0.65rem 0;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-token-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+    margin-bottom: 0.85rem;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-token-input {
+    flex: 1;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.55rem 0.75rem;
+    border-radius: 4px;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-token-visibility {
+    flex: 0 0 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-inline-notice {
+    padding: 0.65rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+    line-height: 1.45;
+    margin-bottom: 0.75rem;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-inline-notice--warning {
+    background: rgba(234, 179, 8, 0.12);
+    border: 1px solid #facc15;
+    color: #facc15;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-inline-notice--info {
+    background: rgba(34, 211, 238, 0.07);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    color: #cffafe;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-inline-notice--info strong {
+    color: #22d3ee;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-token-help {
+    font-size: 0.85em;
+    opacity: 0.75;
+    margin: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    line-height: 1.45;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-token-help a {
+    color: #a29bfe;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-mismatch-banner {
+    margin-top: 0.85rem;
+    padding: 0.75rem 1rem;
+    background: rgba(234, 179, 8, 0.12);
+    border: 1px solid #facc15;
+    border-radius: 4px;
+    color: #fde68a;
+    font-size: 0.88em;
+    line-height: 1.45;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-mismatch-detail {
+    margin: 0.5rem 0 0.75rem 0;
+    color: #e5e7eb;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-sync-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.9em;
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-config-footer {
+    flex-shrink: 0;
+    justify-content: stretch;
+    gap: 0.75rem;
+    margin-top: 0;
+    padding: 0.75rem 1.25rem 1rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(10, 10, 18, 0.55);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-footer-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 0.55rem 1rem;
+}
+
 /* Distinct Auditor Tab (Specific to Sound Config) */
 .ionrift-window nav.tabs .item.auditor-tab {
     background: rgba(255, 255, 255, 0.85);

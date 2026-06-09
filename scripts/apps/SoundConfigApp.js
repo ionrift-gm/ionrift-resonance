@@ -1600,17 +1600,8 @@ export class SoundConfigApp extends FormApplication {
         event.preventDefault();
 
         // Dynamic Import to avoid circular dependencies if any
-        const { AttunementApp } = await import("./AttunementApp.js");
-
-        // Open the Attunement App
-        // We can optionally pass data to jump to a specific step, 
-        // but for now just opening it is sufficient functionality (users can skip step 1).
-        const app = new AttunementApp();
-        app.render(true);
-
-        // Ideally we'd jump to step 2, but AbstractWelcomeApp starts at 0.
-        // We can close this config window effectively "handing off" control
-        // this.close(); 
+        const { SyrinscapeConfigApp } = await import("./SyrinscapeConfigApp.js");
+        new SyrinscapeConfigApp().render(true);
     }
 
     async _onImportConfig(event) {
