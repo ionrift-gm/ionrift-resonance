@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.10.0] - 2026-06-09
+
+### Added
+- **Plugin pack attack bindings.** Sound packs can now declare explicit attack and spell attack sounds per monster, alongside existing pain and death vocals. Each creature entry supports a basic attack key (checked before composite key synthesis) and an ordered list of spell attack matchers that match by school, delivery type (touch, ranged, save), and whether the monster vocal replaces or layers over the spell effect sound.
+- **Spell attack layering.** When a bound spell vocal is set to layer, the monster incantation plays first and the spell effect follows 250ms later. When set to replace, only the monster vocal plays - useful for creatures whose spellcasting is inseparable from their voice (e.g. a lich's Vampiric Touch).
+- **Sound pack overlay architecture.** SoundPackLoader now supports overlay packs that extend a base pack's sound map without replacing it. Documented in SOUND_PACK_ARCHITECTURE.md.
+
+### Changed
+- **Audio Mode replaces the Attunement Wizard.** Pack install and library readiness are now handled through the Patreon Library. The Resonance settings panel opens a focused Audio Mode dialog for choosing between Foundry-native and Syrinscape token playback, with clear active-state cards and a tidy scroll layout. The old multi-step wizard is retired.
+
+### Fixed
+- **Portable path resolution.** Internal tooling and the pre-commit hygiene gate now resolve paths correctly regardless of where the repo is checked out. Fixes CI failures on machines where the repo lives outside the standard Data path.
+
 ## [2.9.1] - 2026-06-07
 
 ### Fixed
