@@ -1,6 +1,6 @@
 import { Logger } from "./Logger.js";
 import { SOUND_EVENTS } from "./constants.js";
-import { pickBoundMonsterAttackKey } from "./data/MonsterVocalMap.js";
+import { pickBoundMonsterAttackKey, pickBoundMonsterSpellAttackKey } from "./data/MonsterVocalMap.js";
 
 export class SoundResolver {
     constructor(configService) {
@@ -60,6 +60,19 @@ export class SoundResolver {
         // 4. NPC creature attack sounds (before weapon damage-type guessing)
         if (actor && actor.type !== "character" && game.ionrift?.library?.classifyCreature) {
             const classification = game.ionrift.library.classifyCreature(actor);
+
+            // 4a. Spell attacks — check matcher list from pack (item must be a spell)
+            if (item?.type === "spell" && classification) {
+                const spellContext = this._buildSpellContext(item);
+                const spellResult = pickBoundMonsterSpellAttackKey(classification, this, spellContext);
+                if (spellResult) {
+                    this._lastSpellAttackOverride = spellResult.overrideSpellEffect;
+                    Logger.log(`SoundResolver | NPC spell attack for ${actor.name}: ${spellResult.key} (override: ${spellResult.overrideSpellEffect}, context: school=${spellContext.school} delivery=${spellContext.delivery})`);
+                    return spellResult.key;
+                }
+            }
+
+            // 4b. Basic attack — existing composite key synthesis
             const monsterAttackKey = pickBoundMonsterAttackKey(
                 classification,
                 this,
@@ -67,10 +80,12 @@ export class SoundResolver {
                 itemName
             );
             if (monsterAttackKey) {
+                this._lastSpellAttackOverride = false;
                 Logger.log(`SoundResolver | NPC attack for ${actor.name}: ${monsterAttackKey} (item: ${itemName})`);
                 return monsterAttackKey;
             }
         }
+        this._lastSpellAttackOverride = false;
 
         // 5. Fallback Matching (Unified Logic)
         return this.detectSoundKey(itemName, item ? item.type : null, item) ||
@@ -316,5 +331,36 @@ export class SoundResolver {
         } else {
             return isFem ? SOUND_EVENTS.PC_PAIN_FEMININE : SOUND_EVENTS.PC_PAIN_MASCULINE;
         }
+    }
+
+    /**
+     * Build the spell context object used for pack matcher evaluation.
+     * Translates system-specific action type values to the system-neutral
+     * `delivery` abstraction defined in the pack manifest schema:
+     *   msak (melee spell attack) → "touch"
+     *   rsak (ranged spell attack) → "ranged"
+     *   save                       → "save"
+     *   anything else              → "ranged" (safe default)
+     *
+     * The `activity` property on the item is not reliably set outside of
+     * hook context; fall back to item.system.actionType when absent.
+     *
+     * @param {Item} item
+     * @returns {{ school: string, delivery: string }}
+     */
+    _buildSpellContext(item) {
+        const actionType = item._currentActivity?.actionType
+            ?? item.system?.actionType
+            ?? "";
+
+        let delivery = "ranged"; // safe default
+        if (actionType === "msak") delivery = "touch";
+        else if (actionType === "save") delivery = "save";
+        // rsak → "ranged" (default already set)
+
+        return {
+            school: item.system?.school ?? "",
+            delivery
+        };
     }
 }

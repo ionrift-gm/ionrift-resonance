@@ -52,6 +52,15 @@ export class SoundPackLoader {
      */
     static _dynamicClassifierBindings = new Map();
 
+    /**
+     * Dynamic attack bindings contributed by sound packs.
+     * Maps monster sound keys (e.g. "MONSTER_LICH") to their attack binding
+     * config, which may include a basic `attack` key and/or a `spellAttacks`
+     * matcher list. Populated from pack manifest `attackBindings` fields during init.
+     * @type {Map<string, { attack?: string, spellAttacks?: Array<{key: string, match: object, overrideSpellEffect?: boolean}> }>}
+     */
+    static _dynamicAttackBindings = new Map();
+
     /** True once init() has completed (success or not). */
     static _loaded = false;
 
@@ -71,6 +80,7 @@ export class SoundPackLoader {
         this._packs.clear();
         this._mergedBindings = {};
         this._dynamicClassifierBindings.clear();
+        this._dynamicAttackBindings.clear();
 
         const overlayActive = this._getOverlayActiveMap();
 
@@ -230,6 +240,27 @@ export class SoundPackLoader {
     }
 
     /**
+     * Get the attack binding config for a monster sound key.
+     * Returns null if no pack has declared attack bindings for this creature.
+     * Used by MonsterVocalMap to resolve pack-contributed attack and spell
+     * attack sounds.
+     * @param {string} monsterKey - e.g. "MONSTER_LICH"
+     * @returns {{ attack?: string, spellAttacks?: Array<{key: string, match: object, overrideSpellEffect?: boolean}> } | null}
+     */
+    static getAttackBinding(monsterKey) {
+        return this._dynamicAttackBindings.get(monsterKey) ?? null;
+    }
+
+    /**
+     * Returns all dynamic attack bindings from enabled packs.
+     * Used by diagnostics and config UI.
+     * @returns {Map<string, { attack?: string, spellAttacks?: Array }>}
+     */
+    static getAllAttackBindings() {
+        return this._dynamicAttackBindings;
+    }
+
+    /**
      * Returns metadata for every loaded pack (enabled or not).
      * @returns {Array<{id: string, name: string, version: string, description: string, author: string, enabled: boolean, bindingCount: number, source: "legacy"|"overlay"}>}
      */
@@ -385,6 +416,7 @@ export class SoundPackLoader {
     static _rebuildMergedBindings(enabledPacks) {
         const merged = {};
         this._dynamicClassifierBindings.clear();
+        this._dynamicAttackBindings.clear();
 
         for (const [, entry] of this._packs) {
             if (!enabledPacks.has(entry.manifest.id)) continue;
@@ -395,7 +427,7 @@ export class SoundPackLoader {
                 let packName = entry.manifest.title || entry.manifest.name || entry.manifest.id;
                 // Make the badge title more terse by stripping common suffixes
                 packName = packName.replace(/\s+(Creature SFX|SFX|Sound Pack|Pack)$/i, '');
-                
+
                 const packIcon = entry.manifest.icon || "fa-layer-group";
 
                 for (const [subtypeKey, soundKey] of Object.entries(cb)) {
@@ -405,6 +437,26 @@ export class SoundPackLoader {
                             packName: packName,
                             packIcon: packIcon
                         });
+                    }
+                }
+            }
+
+            // Extract attack bindings from manifest (basic attack + spell attack matchers)
+            const ab = entry.manifest.attackBindings;
+            if (ab && typeof ab === "object") {
+                for (const [monsterKey, config] of Object.entries(ab)) {
+                    if (typeof monsterKey !== "string" || !config || typeof config !== "object") continue;
+                    // Validate shape: attack must be string if present,
+                    // spellAttacks must be array if present.
+                    const normalized = {};
+                    if (typeof config.attack === "string") normalized.attack = config.attack;
+                    if (Array.isArray(config.spellAttacks) && config.spellAttacks.length > 0) {
+                        normalized.spellAttacks = config.spellAttacks.filter(
+                            m => m && typeof m === "object" && typeof m.key === "string"
+                        );
+                    }
+                    if (normalized.attack || normalized.spellAttacks) {
+                        this._dynamicAttackBindings.set(monsterKey, normalized);
                     }
                 }
             }

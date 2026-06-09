@@ -202,19 +202,50 @@ export class DnD5eAdapter extends SystemAdapter {
 
         Logger.log(`5e Weapon Sound: ${item.name} (${item.type})`);
         const actor = item.actor || activity?.actor;
-        const soundKey = this.handler.pickSound(item, actor?.name, actor);
 
-        // For spells: try school key first; fall back to ASK_GENERIC_MAGIC rather
-        // than letting the call bottom out at CORE_WHOOSH (a melee swing sound).
+        // Stash the activity on the item so SoundResolver._buildSpellContext()
+        // can read the accurate actionType from the hook context when classifying
+        // the spell's delivery method (touch vs ranged vs save).
+        if (item.type === "spell" && activity) item._currentActivity = activity;
+        const soundKey = this.handler.pickSound(item, actor?.name, actor);
+        if (item.type === "spell") delete item._currentActivity;
+
+        // For spells: three-way routing depending on whether a pack has declared
+        // a monster spell attack binding for this actor's creature type.
         if (item.type === "spell") {
+            const resolver = this.handler?.resolver;
+            const overrideSpellEffect = resolver?._lastSpellAttackOverride ?? false;
+            const hasMonsterSpellVocal = overrideSpellEffect !== undefined
+                && resolver?._lastSpellAttackOverride !== null;
             const schoolKey = item.system?.school ? this._getSchoolKey(item.system.school) : null;
-            const fallback = schoolKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
-            if (schoolKey) {
-                Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey}`);
+            const effectKey = schoolKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
+            const orch = this.handler?.orchestrator;
+
+            if (overrideSpellEffect) {
+                // Exclusive: monster spell vocal replaces the spell effect entirely.
+                // e.g. lich Vampiric Touch — the creature IS the effect at touch range.
+                Logger.log(`5e Weapon Sound: monster spell override — ${soundKey} only (no effect sound)`);
+                this.handler.playItemSound(soundKey, item);
+
+            } else if (soundKey && soundKey !== effectKey
+                       && resolver?.resolveKey(soundKey)) {
+                // Additive: a monster spell vocal resolved AND override=false.
+                // Play the monster vocal, then the spell effect sound with a stagger.
+                // e.g. lich Fireball — incantation vocalization + fireball explosion.
+                const effectDelay = orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250;
+                Logger.log(`5e Weapon Sound: monster spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
+                this.handler.playItemSound(soundKey, item);
+                this.handler.playItemSound(effectKey, item, effectDelay);
+
             } else {
-                Logger.log(`5e Weapon Sound: no school key for ${item.name} -> falling back to ASK_GENERIC_MAGIC`);
+                // Standard: no monster spell binding — normal spell school flow.
+                if (schoolKey) {
+                    Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey}`);
+                } else {
+                    Logger.log(`5e Weapon Sound: no school key for ${item.name} -> falling back to ASK_GENERIC_MAGIC`);
+                }
+                this.handler.playItemSoundWithFallback(soundKey, effectKey, item);
             }
-            this.handler.playItemSoundWithFallback(soundKey, fallback, item);
             return;
         }
 
