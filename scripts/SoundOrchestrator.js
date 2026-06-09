@@ -58,7 +58,13 @@ export class SoundOrchestrator {
             "construct_golem", "construct_animated_object",
             "aberration_beholder", "aberration_mind_flayer", "aberration_chuul",
             "SFX_INSECT", "SFX_FIRE", "SFX_WATER_ENTITY", "SFX_WIND", "SFX_SLIME",
-            "elemental_earth"
+            "elemental_earth",
+            // Bone & Dust attack/spell vocals (pack-provided)
+            "MONSTER_VAMPIRE", "MONSTER_VAMPIRE_ATTACK", "MONSTER_VAMPIRE_SPELL",
+            "MONSTER_MUMMY", "MONSTER_MUMMY_ATTACK",
+            "MONSTER_LICH", "MONSTER_LICH_ATTACK", "MONSTER_LICH_SPELL_TOUCH", "MONSTER_LICH_SPELL_CAST",
+            "MONSTER_WRAITH", "MONSTER_WRAITH_ATTACK", "MONSTER_WRAITH_SPELL",
+            "MONSTER_RAT", "MONSTER_RAT_ATTACK"
         ],
         // PC vocals - always play (deaths/pain are important individual events).
         PC_VOCAL: [
@@ -98,11 +104,12 @@ export class SoundOrchestrator {
     // Adapters reference these by name instead of hardcoding constants.
     // -------------------------------------------------------------------------
     static DEFAULT_OFFSETS = {
-        VOCAL_STAGGER: 1400,      // Delay between impact sound and pain/death vocal
-        AOE_VOCAL_MAX: 400,       // Max random stagger for AoE chorus effect
-        SPELL_AUDIO_BONUS: 150,   // Extra clearance for spell audio effects
-        FUMBLE_MISS_DELAY: 200,   // Delay before miss sound after fumble stinger
-        CRIT_DECORATION_DELAY: 300 // Delay before decoration sound after crit stinger
+        VOCAL_STAGGER: 1400,           // Delay between impact sound and pain/death vocal
+        AOE_VOCAL_MAX: 400,            // Max random stagger for AoE chorus effect
+        SPELL_AUDIO_BONUS: 150,        // Extra clearance for spell audio effects
+        FUMBLE_MISS_DELAY: 200,        // Delay before miss sound after fumble stinger
+        CRIT_DECORATION_DELAY: 300,    // Delay before decoration sound after crit stinger
+        MONSTER_SPELL_EFFECT_DELAY: 250 // Stagger between monster spell vocal and consequential spell effect
     };
 
     static OFFSET_LABELS = {
@@ -110,7 +117,8 @@ export class SoundOrchestrator {
         AOE_VOCAL_MAX: "AoE Vocal Stagger (max)",
         SPELL_AUDIO_BONUS: "Spell Audio Bonus",
         FUMBLE_MISS_DELAY: "Fumble -> Miss Delay",
-        CRIT_DECORATION_DELAY: "Crit -> Decoration Delay"
+        CRIT_DECORATION_DELAY: "Crit -> Decoration Delay",
+        MONSTER_SPELL_EFFECT_DELAY: "Monster Spell Effect Delay"
     };
 
     constructor() {

@@ -88,6 +88,104 @@ export function getSubtypeVocalKey(type, subtype) {
 }
 
 /**
+ * Resolve the primary monster sound key (e.g. "MONSTER_LICH") from a
+ * classifier output. Used by both attack and spell attack pickers to
+ * look up the creature's attackBinding entry.
+ * Checks dynamic pack bindings first, then the static SUBTYPE_VOCAL_MAP,
+ * then the type-level prefix.
+ * @param {object|null} classification - Output from classifyCreature()
+ * @returns {string|null}
+ */
+export function resolveMonsterKeyFromClassification(classification) {
+    if (!classification) return null;
+
+    // 1. Subtype composite key (pack dynamic or static map)
+    if (classification.type && classification.subtype) {
+        const subtypeKey = getSubtypeVocalKey(classification.type, classification.subtype);
+        if (subtypeKey) return subtypeKey;
+    }
+
+    // 2. Explicit sound key from classifier
+    if (classification.sound) return classification.sound;
+
+    // 3. Type-level key (e.g. MONSTER_UNDEAD)
+    if (classification.type) {
+        return `MONSTER_${String(classification.type).toUpperCase()}`;
+    }
+
+    return null;
+}
+
+/**
+ * Evaluate a single spell matcher's criteria against the current spell context.
+ * All specified criteria must match (AND logic). An empty or missing match
+ * object is a catch-all that matches everything.
+ * @param {object} match - { school?: string[], delivery?: string }
+ * @param {{ school: string, delivery: string }} context
+ * @returns {boolean}
+ */
+export function matchesSpellCriteria(match, context) {
+    if (!match || Object.keys(match).length === 0) return true; // catch-all
+
+    if (Array.isArray(match.school) && match.school.length > 0) {
+        if (!match.school.includes(context.school)) return false;
+    }
+
+    if (typeof match.delivery === "string") {
+        if (match.delivery !== context.delivery) return false;
+    }
+
+    return true;
+}
+
+/**
+ * Pick the monster's spell attack vocal key by matching the spell context
+ * against the `spellAttacks` matcher list declared by an active pack.
+ * Evaluated top-down — first match wins.
+ *
+ * Returns null when:
+ *   - The creature has no attack binding in any active pack
+ *   - The binding has no `spellAttacks` array
+ *   - No matcher matches the spell context
+ *   - The matched key has no audio binding (resolveKeyDirect returns null)
+ *
+ * @param {object|null} classification - Output from classifyCreature()
+ * @param {import("../SoundResolver.js").SoundResolver} resolver
+ * @param {{ school: string, delivery: string }} spellContext
+ * @returns {{ key: string, overrideSpellEffect: boolean } | null}
+ */
+export function pickBoundMonsterSpellAttackKey(classification, resolver, spellContext) {
+    if (!classification || !resolver || !spellContext) return null;
+
+    const monsterKey = resolveMonsterKeyFromClassification(classification);
+    if (!monsterKey) return null;
+
+    let SoundPackLoader;
+    try {
+        SoundPackLoader = game.ionrift?.resonance?.SoundPackLoader;
+    } catch { /* SoundPackLoader not available yet */ }
+    if (!SoundPackLoader) return null;
+
+    const attackBinding = SoundPackLoader.getAttackBinding(monsterKey);
+    if (!attackBinding?.spellAttacks?.length) return null;
+
+    for (const matcher of attackBinding.spellAttacks) {
+        if (!matcher?.key) continue;
+        if (matchesSpellCriteria(matcher.match ?? {}, spellContext)) {
+            // Only use this key if a binding actually exists for it
+            if (resolver.resolveKeyDirect(matcher.key)) {
+                return {
+                    key: matcher.key,
+                    overrideSpellEffect: matcher.overrideSpellEffect ?? false
+                };
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
  * Pick the first monster pain key that has an audio binding in the active pack.
  * @param {object|null} classification  Output from ionrift-library classifyCreature()
  * @param {import("../SoundResolver.js").SoundResolver} resolver
@@ -147,6 +245,22 @@ export function pickBoundMonsterAttackKey(classification, resolver, _soundEvents
     const subtypeBase = classification.type && classification.subtype
         ? getSubtypeVocalKey(classification.type, classification.subtype)
         : null;
+
+    // Check pack-declared explicit attack key first (highest priority)
+    // A pack that ships MONSTER_LICH_ATTACK explicitly knows what the creature
+    // sounds like on a basic attack — trust that over name synthesis.
+    const monsterKey = resolveMonsterKeyFromClassification(classification);
+    if (monsterKey) {
+        try {
+            const SoundPackLoader = game.ionrift?.resonance?.SoundPackLoader;
+            if (SoundPackLoader) {
+                const attackBinding = SoundPackLoader.getAttackBinding(monsterKey);
+                if (attackBinding?.attack && resolver.resolveKeyDirect(attackBinding.attack)) {
+                    return attackBinding.attack;
+                }
+            }
+        } catch { /* fall through to composite synthesis */ }
+    }
 
     if (subtypeBase) {
         if (lower.includes("bite")) candidates.push(`${subtypeBase}_BITE`);

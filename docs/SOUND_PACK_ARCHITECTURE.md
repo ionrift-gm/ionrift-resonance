@@ -116,6 +116,97 @@ When the pack **is installed**:
 
 1. Dynamic classifier binding → `MONSTER_VAMPIRE` → binding found → **plays vampire clip**
 
+## Attack and Spell Attack Bindings
+
+Packs can ship per-monster attack vocalizations alongside pain/death vocals.
+The `attackBindings` field in `manifest.json` declares:
+
+- **`attack`** — Phase 1 (ASK) sound key for basic/melee attacks. Played when the
+  creature uses a non-spell item. Takes priority over the synthesised composite key
+  (`*_BITE`, `*_CLAW`, etc.), giving packs explicit control over what "attacking"
+  sounds like for their creature.
+- **`spellAttacks`** — ordered list of spell matchers. Only consulted when the item
+  is a spell and the actor is an NPC with a recognized creature classification.
+  First matching entry wins.
+
+### attackBindings schema
+
+```json
+"attackBindings": {
+    "MONSTER_RAT": {
+        "attack": "MONSTER_RAT_ATTACK"
+    },
+    "MONSTER_LICH": {
+        "attack": "MONSTER_LICH_ATTACK",
+        "spellAttacks": [
+            {
+                "key": "MONSTER_LICH_SPELL_TOUCH",
+                "match": { "school": ["nec"], "delivery": "touch" },
+                "overrideSpellEffect": true
+            },
+            {
+                "key": "MONSTER_LICH_SPELL_CAST",
+                "match": {},
+                "overrideSpellEffect": false
+            }
+        ]
+    }
+}
+```
+
+### spellAttacks matcher fields
+
+| Field | Type | Description |
+|---|---|---|
+| `key` | `string` | Sound event key to play when this matcher hits. Must have a binding in `bindings.json`. |
+| `match` | `object` | Criteria object. All specified fields must match (AND). Empty `{}` = catch-all. |
+| `match.school` | `string[]` | Spell school abbreviations (`nec`, `evo`, `abj`, `div`, `con`, `enc`, `ill`, `tra`). |
+| `match.delivery` | `string` | `"touch"` · `"ranged"` · `"save"`. System-neutral abstraction over action type. |
+| `overrideSpellEffect` | `boolean` | See below. |
+
+### delivery abstraction
+
+`delivery` maps to the system's action type so pack manifests stay system-neutral:
+
+| Delivery | dnd5e actionType | Meaning |
+|---|---|---|
+| `"touch"` | `msak` | Melee spell attack (Vampiric Touch, Shocking Grasp) |
+| `"ranged"` | `rsak` | Ranged spell attack (Fire Bolt, Ray of Frost) |
+| `"save"` | `save` | Save-based (Fireball, Hold Person) |
+
+### overrideSpellEffect behaviour
+
+Controls what happens in Phase 1 (ASK) when a spell is cast:
+
+**`overrideSpellEffect: true`** — Monster vocal *replaces* the spell effect sound.
+Use for close-range spells where the creature IS the effect (e.g. Vampiric Touch —
+the lich's dark hand is the whole event, no separate spell blast sound makes sense).
+
+```
+Lich casts Vampiric Touch: MONSTER_LICH_SPELL_TOUCH plays. No SPELL_VOID.
+```
+
+**`overrideSpellEffect: false`** — Monster vocal plays first, then the spell effect
+sound follows with a short stagger (default 250ms, configurable via
+`MONSTER_SPELL_EFFECT_DELAY` orchestrator offset). Use for ranged or area spells
+where the creature vocalizes an incantation and the spell effect is a separate event.
+
+```
+Lich casts Fireball: MONSTER_LICH_SPELL_CAST plays, then SPELL_FIRE 250ms later.
+```
+
+**No match** — If no spell matcher hits (or the matched key has no audio binding),
+the standard spell school flow fires unchanged.
+
+### Sound file conventions for attack/spell clips
+
+- Directory: `sounds/monsters/{creature}/`
+- Naming:
+  - Basic attacks: `MONSTER_{TYPE}_ATTACK_{NN}.mp3`
+  - Spell vocalizations: `MONSTER_{TYPE}_SPELL_{NN}.mp3` or `MONSTER_{TYPE}_SPELL_{VARIANT}_{NN}.mp3`
+- Duration: 0.5–2.5 seconds (slightly longer than pain vocals — attack/cast buildup)
+- Count: 3 clips minimum for pool variety
+
 ## Sound file conventions
 
 - Directory: `sounds/monsters/{creature}/`
