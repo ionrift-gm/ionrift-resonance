@@ -193,19 +193,6 @@ Hooks.once('init', async function () {
                 Logger.log(`Migrated: soundPreset "${currentPreset}" → "none" (now handled by SoundPackLoader).`);
             }
         }
-        // Forge safety tests (infrastructure, non-IP-sensitive)
-        if (game.ionrift?.library?.tests) {
-            game.ionrift.library.tests.register("ionrift-resonance-forge", {
-                name: "Resonance Forge Safety",
-                description: "SoundPackLoader smoke and partial registration checks",
-                runFn: async () => {
-                    const { ResonanceForgeTestRunner } = await import("./tests/ForgeTestRunner.js");
-                    // Pass SoundPackLoader directly -- already imported and initialized above.
-                    // ForgeTestRunner must NOT re-import it; relative dynamic imports fail on Forge CDN.
-                    return ResonanceForgeTestRunner.runAll(SoundPackLoader, SoundConfigApp);
-                }
-            });
-        }
 
         // Register Status Indicator (Generic Integration)
         if (game.ionrift?.integration) {
