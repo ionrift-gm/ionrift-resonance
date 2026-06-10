@@ -139,7 +139,6 @@ export class SoundHandler {
     }
 
     validateMappings() {
-        if (!this.config) return;
         const enabledPacks = SoundPackLoader.getLoadedPacks().filter(p => p.enabled);
         if (enabledPacks.length === 0) return;
 
@@ -156,8 +155,8 @@ export class SoundHandler {
             "DAGGERHEART_ROLL_HOPE", "DAGGERHEART_ROLL_FEAR",
         ]);
 
-        // Support both flat format {KEY: val} and structured format {bindings: {KEY: [...]}}
-        const lookup = this.config?.bindings ?? this.config;
+        const isDaggerheart = game.system.id === "daggerheart";
+        const lookup = this.configService.getEffectiveBindings();
 
         const checked = new Set();
         const missing = [];
@@ -165,6 +164,7 @@ export class SoundHandler {
             if (SKIP_VALIDATION.has(key) || SKIP_VALIDATION.has(value)) continue;
             if (checked.has(value)) continue;
             checked.add(value);
+            if (value.startsWith("DAGGERHEART_") && !isDaggerheart) continue;
             const resolved = lookup[value];
             if (!resolved || (Array.isArray(resolved) && resolved.length === 0)) {
                 if (value.startsWith("CORE_") || value.startsWith("PC_") || value.startsWith("DAGGERHEART_")) {
