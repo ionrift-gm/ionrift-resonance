@@ -804,7 +804,9 @@ export class SoundConfigApp extends FormApplication {
                     players: configOverrides.players || []
                 },
                 orchestrator: this._getOrchestratorData(),
-                config: configOverrides
+                config: configOverrides,
+                // Feature toggle states surfaced to the Orchestration tab template
+                spellVocalLayer: game.settings.get("ionrift-resonance", "spellVocalLayer") ?? false
             }
         };
     }
@@ -994,6 +996,9 @@ export class SoundConfigApp extends FormApplication {
         html.on("change", ".orchestrator-offset-input", this._onOrchestratorOffsetChange.bind(this));
         html.on("click", ".orchestrator-reset-offset", this._onOrchestratorResetOffset.bind(this));
         html.on("click", ".orchestrator-reset-all", this._onOrchestratorResetAll.bind(this));
+
+        // Feature toggle buttons (generic boolean setting toggle)
+        html.on("click", ".orchestrator-toggle-setting", this._onToggleSetting.bind(this));
 
         // Prevent Enter from submitting the FormApplication (which closes the window).
         // Instead: commit the value via change event and blur.
@@ -1236,6 +1241,21 @@ export class SoundConfigApp extends FormApplication {
             config.offsets = {};
             return config;
         });
+        this.render(false);
+    }
+
+    /**
+     * Generic toggle handler for simple boolean world settings exposed in the
+     * Orchestration tab. The button must carry a data-setting attribute with the
+     * full dot-notation key, e.g. data-setting="ionrift-resonance.spellVocalLayer".
+     */
+    async _onToggleSetting(event) {
+        event.preventDefault();
+        const settingKey = event.currentTarget.dataset.setting;
+        if (!settingKey) return;
+        const [namespace, key] = settingKey.split(".");
+        const current = game.settings.get(namespace, key);
+        await game.settings.set(namespace, key, !current);
         this.render(false);
     }
 

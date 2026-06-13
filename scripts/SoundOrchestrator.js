@@ -77,6 +77,19 @@ export class SoundOrchestrator {
             "AMBIENT_CAMPFIRE",
             "AMBIENT_CAMPFIRE_COOKING",
             "AMBIENT_NIGHT_FOREST"
+        ],
+        // Spell vocal layer - incantation that leads in before the spell effect.
+        // One vocal fires per spell cast; no throttle needed.
+        SPELL_VOCAL: [
+            "SPELL_VOCAL_CAST",
+            "SPELL_VOCAL_EVOCATION",
+            "SPELL_VOCAL_NECROMANCY",
+            "SPELL_VOCAL_CONJURATION",
+            "SPELL_VOCAL_ENCHANTMENT",
+            "SPELL_VOCAL_ILLUSION",
+            "SPELL_VOCAL_DIVINATION",
+            "SPELL_VOCAL_TRANSMUTATION",
+            "SPELL_VOCAL_ABJURATION"
         ]
     };
 
@@ -96,7 +109,8 @@ export class SoundOrchestrator {
         DH_OUTCOME: 0,       // unlimited - per-roll outcome events
         MONSTER_VOCAL: 2000,
         PC_VOCAL: 0,       // unlimited - PC deaths/pain always play
-        AMBIENT: 0         // unlimited - ambient loops are start/stop, not spam
+        AMBIENT: 0,        // unlimited - ambient loops are start/stop, not spam
+        SPELL_VOCAL: 0     // unlimited - one vocal per spell cast
     };
 
     // -------------------------------------------------------------------------
@@ -109,7 +123,8 @@ export class SoundOrchestrator {
         SPELL_AUDIO_BONUS: 150,        // Extra clearance for spell audio effects
         FUMBLE_MISS_DELAY: 200,        // Delay before miss sound after fumble stinger
         CRIT_DECORATION_DELAY: 300,    // Delay before decoration sound after crit stinger
-        MONSTER_SPELL_EFFECT_DELAY: 250 // Stagger between monster spell vocal and consequential spell effect
+        MONSTER_SPELL_EFFECT_DELAY: 250, // Stagger between monster spell vocal and consequential spell effect
+        SPELL_VOCAL_LEAD_IN: 400       // Delay between vocal incantation start and spell effect (Spell Vocal Layer)
     };
 
     static OFFSET_LABELS = {
@@ -118,7 +133,8 @@ export class SoundOrchestrator {
         SPELL_AUDIO_BONUS: "Spell Audio Bonus",
         FUMBLE_MISS_DELAY: "Fumble -> Miss Delay",
         CRIT_DECORATION_DELAY: "Crit -> Decoration Delay",
-        MONSTER_SPELL_EFFECT_DELAY: "Monster Spell Effect Delay"
+        MONSTER_SPELL_EFFECT_DELAY: "Monster Spell Effect Delay",
+        SPELL_VOCAL_LEAD_IN: "Spell Vocal Lead-in (before effect)"
     };
 
     constructor() {

@@ -28,9 +28,22 @@ export class ItemSoundConfig extends FormApplication {
             { key: "sound_unequip", label: "Unequip", icon: "fas fa-box-open", hint: "Played when item is unequipped" }
         ];
 
+        // Spell Vocal Layer — shown for spell items (or items with the flag already set)
+        const isSpell = this.item.type === "spell"
+            || !!this.item.getFlag("ionrift-resonance", "spellVocal")
+            || !!this.item.getFlag("ionrift-resonance", "spellVocalOverride");
+
+        const spellVocal = !!this.item.getFlag("ionrift-resonance", "spellVocal");
+        const spellVocalOverride = this.item.getFlag("ionrift-resonance", "spellVocalOverride") || null;
+        const spellVocalOverrideName = this.item.getFlag("ionrift-resonance", "spellVocalOverride_name") || null;
+
         return {
             itemName: this.item.name,
             itemImg: this.item.img,
+            isSpell,
+            spellVocal,
+            spellVocalOverride,
+            spellVocalOverrideName,
             slots: slots.map(slot => {
                 const val = this.item.getFlag("ionrift-resonance", slot.key);
                 const name = this.item.getFlag("ionrift-resonance", slot.key + "_name");
@@ -54,6 +67,11 @@ export class ItemSoundConfig extends FormApplication {
         html.find(".action-play").click(this._onPlay.bind(this));
         html.find(".action-clear").click(this._onClear.bind(this));
         html.find(".action-mute").click(this._onToggleMute.bind(this));
+        // Spell Vocal Layer controls
+        html.find(".spell-vocal-toggle").click(this._onToggleSpellVocal.bind(this));
+        html.find(".spell-vocal-override-search").click(this._onSearchSpellVocalOverride.bind(this));
+        html.find(".spell-vocal-override-clear").click(this._onClearSpellVocalOverride.bind(this));
+        html.find(".spell-vocal-override-play").click(this._onPlaySpellVocalOverride.bind(this));
     }
 
     async _onSearch(event) {
@@ -136,5 +154,53 @@ export class ItemSoundConfig extends FormApplication {
         const key = event.currentTarget.dataset.key;
         await this.item.unsetFlag("ionrift-resonance", key);
         this.render();
+    }
+
+    // -------------------------------------------------------------------------
+    // Spell Vocal Layer Handlers
+    // -------------------------------------------------------------------------
+
+    async _onToggleSpellVocal(event) {
+        event.preventDefault();
+        const current = !!this.item.getFlag("ionrift-resonance", "spellVocal");
+        await this.item.setFlag("ionrift-resonance", "spellVocal", !current);
+        this.render();
+    }
+
+    async _onSearchSpellVocalOverride(event) {
+        event.preventDefault();
+        const { SoundPickerApp } = await import("./SoundPickerApp.js");
+        const currentId = this.item.getFlag("ionrift-resonance", "spellVocalOverride");
+        const currentName = this.item.getFlag("ionrift-resonance", "spellVocalOverride_name");
+        new SoundPickerApp(async (result) => {
+            if (result === null) {
+                await this.item.unsetFlag("ionrift-resonance", "spellVocalOverride");
+                await this.item.unsetFlag("ionrift-resonance", "spellVocalOverride_name");
+            } else {
+                await this.item.setFlag("ionrift-resonance", "spellVocalOverride", result.id);
+                await this.item.setFlag("ionrift-resonance", "spellVocalOverride_name", result.name);
+            }
+            this.render();
+        }, {
+            currentSoundId: currentId,
+            currentSoundName: currentName,
+            title: `Pick Vocal Override: ${this.item.name}`
+        }).render(true);
+    }
+
+    async _onClearSpellVocalOverride(event) {
+        event.preventDefault();
+        await this.item.unsetFlag("ionrift-resonance", "spellVocalOverride");
+        await this.item.unsetFlag("ionrift-resonance", "spellVocalOverride_name");
+        this.render();
+    }
+
+    async _onPlaySpellVocalOverride(event) {
+        event.preventDefault();
+        const val = this.item.getFlag("ionrift-resonance", "spellVocalOverride");
+        if (val) {
+            const manager = game.ionrift?.sounds?.manager;
+            if (manager) manager.play(val);
+        }
     }
 }

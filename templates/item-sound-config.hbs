@@ -59,5 +59,73 @@
             </div>
             {{/each}}
         </section>
+
+        {{!-- Spell Vocal Layer section: shown for spell items or items with the flag set --}}
+        {{#if isSpell}}
+        <section style="margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+            <div style="font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 8px;">
+                <i class="fas fa-microphone-lines"></i> Spell Vocal Layer
+            </div>
+            <p style="font-size: 0.8em; opacity: 0.6; margin: 0 0 10px 0;">
+                When enabled globally, a caster incantation plays before the spell's effect sound.
+                Use the toggle below to force this item to trigger the vocal layer regardless of its components,
+                or pick a specific vocal clip that overrides the global <code>SPELL_VOCAL_CAST</code> key.
+            </p>
+
+            {{!-- Force Vocal Toggle --}}
+            <div class="ionrift-list-item" style="margin-bottom: 6px;">
+                <div class="entity-info" style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px;"
+                    title="Force vocal layer for this item even if it has no Verbal component">
+                    <i class="fas fa-microphone" style="width: 16px; text-align: center; opacity: 0.8;"></i>
+                    <span class="entity-name">Force Vocal Layer</span>
+                </div>
+                <div class="badges" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+                    {{#if spellVocal}}
+                    <span class="ionrift-badge success">Enabled</span>
+                    {{else}}
+                    <span class="ionrift-badge loading">Off</span>
+                    {{/if}}
+                </div>
+                <div class="entity-actions" style="flex: 0 0 auto;">
+                    <button type="button" class="spell-vocal-toggle"
+                        title="{{#if spellVocal}}Disable forced vocal layer{{else}}Force vocal layer for this item{{/if}}"
+                        style="{{#if spellVocal}}background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.4);{{/if}}">
+                        <i class="fas {{#if spellVocal}}fa-toggle-on{{else}}fa-toggle-off{{/if}}"
+                            style="{{#if spellVocal}}color: rgba(180,160,255,0.9);{{/if}}"></i>
+                    </button>
+                </div>
+            </div>
+
+            {{!-- Vocal Override Sound --}}
+            <div class="ionrift-list-item">
+                <div class="entity-info" style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px;"
+                    title="Override SPELL_VOCAL_CAST with a specific sound clip for this item">
+                    <i class="fas fa-wand-sparkles" style="width: 16px; text-align: center; opacity: 0.8;"></i>
+                    <span class="entity-name">Vocal Override</span>
+                </div>
+                <div class="badges" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+                    {{#if spellVocalOverride}}
+                    <span class="ionrift-badge success">{{spellVocalOverrideName}}</span>
+                    {{else}}
+                    <span class="ionrift-badge loading">Uses SPELL_VOCAL_CAST</span>
+                    {{/if}}
+                </div>
+                <div class="entity-actions" style="flex: 0 0 auto; display: flex; gap: 4px;">
+                    {{#if spellVocalOverride}}
+                    <button type="button" class="spell-vocal-override-play" title="Preview">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button type="button" class="spell-vocal-override-clear" title="Clear override">
+                        <i class="fas fa-undo" style="color: #ef4444;"></i>
+                    </button>
+                    {{/if}}
+                    <button type="button" class="spell-vocal-override-search" title="Pick override sound">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+        {{/if}}
     </div>
-</form>
+
+</form>
