@@ -153,4 +153,17 @@ export const registerSettings = function () {
         default: ""
     });
 
+    // Spell Vocal Layer: play a caster incantation clip before the spell effect sound.
+    // Triggers when a spell item has the Vocal component (dnd5e: system.components.vocal)
+    // or a per-item override flag (ionrift-resonance.spellVocal = true).
+    // Managed via the Orchestration tab in Resonance Calibration (GM only).
+    game.settings.register("ionrift-resonance", "spellVocalLayer", {
+        name: "Spell Vocal Layer",
+        hint: "Play a vocal incantation sound slightly before each spell's effect triggers. Requires a sound pack that provides SPELL_VOCAL_CAST (or school variants).",
+        scope: "world",
+        config: false,
+        type: Boolean,
+        default: false
+    });
+
 };

@@ -114,7 +114,40 @@
                         to disable throttling.
                     </p>
 
+                    <!-- Feature Toggles -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">
+                            Feature Toggles</div>
+
+                        <div class="ionrift-list-item" id="spell-vocal-layer-toggle-row"
+                            style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-bottom: 4px;">
+                            <div class="entity-info" style="flex: 0 0 auto; display:flex; align-items:center; gap:8px;"
+                                title="Play a caster incantation before each spell effect (requires SPELL_VOCAL_CAST binding in a sound pack)">
+                                <i class="fas fa-microphone-lines" style="width:16px; text-align:center; opacity:0.8;"></i>
+                                <div>
+                                    <span class="entity-name" style="display:block;">Spell Vocal Layer</span>
+                                    <span style="font-size:0.75em; opacity:0.55;">Plays an incantation before spell effects. Configure timing via Spell Vocal Lead-in below.</span>
+                                </div>
+                            </div>
+                            <div style="flex:1;"></div>
+                            <div class="entity-actions" style="flex:0 0 auto; display:flex; align-items:center; gap:8px;">
+                                <span class="ionrift-badge {{#if tiers.spellVocalLayer}}success{{else}}loading{{/if}}"
+                                    style="font-size:0.8em;">
+                                    {{#if tiers.spellVocalLayer}}On{{else}}Off{{/if}}
+                                </span>
+                                <button type="button" class="orchestrator-toggle-setting" id="spell-vocal-layer-btn"
+                                    data-setting="ionrift-resonance.spellVocalLayer"
+                                    title="{{#if tiers.spellVocalLayer}}Disable Spell Vocal Layer{{else}}Enable Spell Vocal Layer{{/if}}"
+                                    style="{{#if tiers.spellVocalLayer}}background:rgba(124,58,237,0.2); border-color:rgba(124,58,237,0.4);{{/if}}">
+                                    <i class="fas {{#if tiers.spellVocalLayer}}fa-toggle-on{{else}}fa-toggle-off{{/if}}"
+                                        style="{{#if tiers.spellVocalLayer}}color:rgba(180,160,255,0.9);{{/if}}"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Budget Table -->
+
                     <div style="margin-bottom: 24px;">
                         <div
                             style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">

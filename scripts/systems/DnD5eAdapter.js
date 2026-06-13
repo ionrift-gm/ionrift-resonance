@@ -2,6 +2,7 @@ import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 import { getSubtypeVocalKey, pickBoundMonsterPainKey } from "../data/MonsterVocalMap.js";
+import { VocalLayerService } from "../services/VocalLayerService.js";
 
 
 
@@ -221,30 +222,36 @@ export class DnD5eAdapter extends SystemAdapter {
             const effectKey = schoolKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
             const orch = this.handler?.orchestrator;
 
+            // Spell Vocal Layer: play incantation lead-in and get the delay to
+            // shift the effect sound. Returns 0 (no-op) when disabled or unbound.
+            const vocalDelay = VocalLayerService.shouldTrigger(item)
+                ? VocalLayerService.playAndGetDelay(this.handler, item)
+                : 0;
+
             if (overrideSpellEffect) {
                 // Exclusive: monster spell vocal replaces the spell effect entirely.
                 // e.g. lich Vampiric Touch — the creature IS the effect at touch range.
                 Logger.log(`5e Weapon Sound: monster spell override — ${soundKey} only (no effect sound)`);
-                this.handler.playItemSound(soundKey, item);
+                this.handler.playItemSound(soundKey, item, vocalDelay);
 
             } else if (soundKey && soundKey !== effectKey
                        && resolver?.resolveKey(soundKey)) {
                 // Additive: a monster spell vocal resolved AND override=false.
                 // Play the monster vocal, then the spell effect sound with a stagger.
                 // e.g. lich Fireball — incantation vocalization + fireball explosion.
-                const effectDelay = orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250;
+                const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
                 Logger.log(`5e Weapon Sound: monster spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
-                this.handler.playItemSound(soundKey, item);
+                this.handler.playItemSound(soundKey, item, vocalDelay);
                 this.handler.playItemSound(effectKey, item, effectDelay);
 
             } else {
                 // Standard: no monster spell binding — normal spell school flow.
                 if (schoolKey) {
-                    Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey}`);
+                    Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey} (vocalDelay: ${vocalDelay}ms)`);
                 } else {
-                    Logger.log(`5e Weapon Sound: no school key for ${item.name} -> falling back to ASK_GENERIC_MAGIC`);
+                    Logger.log(`5e Weapon Sound: no school key for ${item.name} -> falling back to ASK_GENERIC_MAGIC (vocalDelay: ${vocalDelay}ms)`);
                 }
-                this.handler.playItemSoundWithFallback(soundKey, effectKey, item);
+                this.handler.playItemSoundWithFallback(soundKey, effectKey, item, vocalDelay);
             }
             return;
         }

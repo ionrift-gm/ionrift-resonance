@@ -250,4 +250,18 @@ export const SOUND_EVENTS = {
     CRIT_DECORATION: "CORE_CRIT",
     BLOODY_HIT: "CORE_HIT",
     MISS: "CORE_MISS",
+
+    // --- Spell Vocal Layer ---
+    // Played BEFORE the spell effect sound when the Spell Vocal Layer feature is enabled.
+    // SPELL_VOCAL_CAST is the generic fallback. School variants play instead when bound
+    // by a pack; if a school variant has no binding, SPELL_VOCAL_CAST is used.
+    SPELL_VOCAL_CAST: "SPELL_VOCAL_CAST",           // Generic caster incantation (all spells)
+    SPELL_VOCAL_EVOCATION: "SPELL_VOCAL_EVOCATION",  // Evocation school variant
+    SPELL_VOCAL_NECROMANCY: "SPELL_VOCAL_NECROMANCY",// Necromancy school variant
+    SPELL_VOCAL_CONJURATION: "SPELL_VOCAL_CONJURATION",
+    SPELL_VOCAL_ENCHANTMENT: "SPELL_VOCAL_ENCHANTMENT",
+    SPELL_VOCAL_ILLUSION: "SPELL_VOCAL_ILLUSION",
+    SPELL_VOCAL_DIVINATION: "SPELL_VOCAL_DIVINATION",
+    SPELL_VOCAL_TRANSMUTATION: "SPELL_VOCAL_TRANSMUTATION",
+    SPELL_VOCAL_ABJURATION: "SPELL_VOCAL_ABJURATION",
 };
