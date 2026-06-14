@@ -768,6 +768,14 @@ export class SoundConfigApp extends FormApplication {
                     { id: "ROLL_FUMBLE", label: "Critical Failure", description: "Stinger played on a Critical Failure result." }
                 ]
             });
+            coreTaxonomy.push({
+                label: "PF2e: Hero Points",
+                description: "Sounds for Hero Point gain and spend.",
+                children: [
+                    { id: "HERO_POINT_GAIN", label: "Hero Point Gained", description: "Played when a character gains a Hero Point." },
+                    { id: "HERO_POINT_USE", label: "Hero Point Spent", description: "Played when a character spends a Hero Point." }
+                ]
+            });
         }
 
         // Process Roots
