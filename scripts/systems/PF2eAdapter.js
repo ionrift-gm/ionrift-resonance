@@ -2,6 +2,7 @@ import { SystemAdapter } from "./SystemAdapter.js";
 import { SOUND_EVENTS } from "../constants.js";
 import { Logger } from "../Logger.js";
 import { getSubtypeVocalKey, pickBoundMonsterPainKey } from "../data/MonsterVocalMap.js";
+import { VocalLayerService } from "../services/VocalLayerService.js";
 
 export class PF2eAdapter extends SystemAdapter {
 
@@ -87,12 +88,16 @@ export class PF2eAdapter extends SystemAdapter {
             const soundKey = this.handler.pickSound(item, actor?.name, actor);
 
             if (item.type === "spell") {
+                const vocalDelay = VocalLayerService.shouldTrigger(item)
+                    ? VocalLayerService.playAndGetDelay(this.handler, item)
+                    : 0;
+
                 const traitKey = this._getSpellTraitKey(item);
                 if (traitKey) {
-                    Logger.log(`PF2e | Spell trait key: ${traitKey}`);
-                    this.handler.playItemSoundWithFallback(soundKey, traitKey, item);
+                    Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
+                    this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay);
                 } else {
-                    this.handler.playItemSound(soundKey, item);
+                    this.handler.playItemSound(soundKey, item, vocalDelay);
                 }
             } else {
                 this.handler.playItemSound(soundKey, item);
