@@ -139,7 +139,7 @@ export class SoundResolver {
         // Spells
         if (lower.includes("fire") || lower.includes("flame") || lower.includes("burn") || lower.includes("scorching")) return SOUND_EVENTS.SPELL_FIRE;
         if (lower.includes("ice") || lower.includes("frost") || lower.includes("cold") || lower.includes("chill")) return SOUND_EVENTS.SPELL_ICE;
-        if (lower.includes("zap") || lower.includes("light") || lower.includes("shock") || lower.includes("thunder")) return SOUND_EVENTS.SPELL_LIGHTNING;
+        if (lower.includes("zap") || lower.includes("lightning") || lower.includes("shock") || lower.includes("thunder")) return SOUND_EVENTS.SPELL_LIGHTNING;
         if (lower.includes("chaos") || lower.includes("void") || lower.includes("blast") || lower.includes("necro")) return SOUND_EVENTS.SPELL_VOID;
         if (lower.includes("heal") || lower.includes("cure") || lower.includes("life") || lower.includes("preserve")) return SOUND_EVENTS.SPELL_HEAL;
         if (lower.includes("mind") || lower.includes("psychic") || lower.includes("mock") || lower.includes("vicious")) return SOUND_EVENTS.SPELL_PSYCHIC;
@@ -151,7 +151,7 @@ export class SoundResolver {
         if (lower.includes("slam")) return (mappings.generic?.slam || SOUND_EVENTS.ATTACK_SLAM);
 
         // Weapons (more specific keywords BEFORE general ones - e.g. crossbow contains 'bow')
-        if (lower.includes("crossbow") || lower.includes("bolt")) return SOUND_EVENTS.ATTACK_CROSSBOW;
+        if (lower.includes("crossbow") || (lower.includes("bolt") && !lower.includes("lightning"))) return SOUND_EVENTS.ATTACK_CROSSBOW;
         if (lower.includes("bow") || lower.includes("arrow")) return (mappings.generic?.bow || SOUND_EVENTS.ATTACK_BOW);
         if (lower.includes("axe") || lower.includes("hammer") || lower.includes("maul")) return SOUND_EVENTS.ATTACK_BLUDGEON;
         if (lower.includes("dagger") || lower.includes("knife")) return SOUND_EVENTS.ATTACK_DAGGER;
