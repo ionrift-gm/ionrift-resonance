@@ -476,6 +476,16 @@ export class SoundHandler {
     // --- Encounter & Progression ---
 
     /**
+     * Play the encounter-start sound when a new combat is created. GM-only so the
+     * cue dispatches once and broadcasts to every client.
+     */
+    _onCombatStart(combat) {
+        if (!game.user.isGM) return;
+        Logger.log("Combat started, playing COMBAT_START");
+        this.play(SOUND_EVENTS.COMBAT_START);
+    }
+
+    /**
      * Play the encounter-resolved sound when a combat is removed. GM-only so the
      * cue dispatches once and broadcasts to every client.
      */
@@ -541,7 +551,8 @@ export class SoundHandler {
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));
         Hooks.on("combatRound", (combat, updateData) => this._onSpotlight(combat, updateData));
 
-        // Encounter close: deleting the combat tracker ends the fight.
+        // Encounter open/close: combat tracker created or removed.
+        Hooks.on("createCombat", (combat) => this._onCombatStart(combat));
         Hooks.on("deleteCombat", (combat) => this._onCombatEnd(combat));
 
         // Level-up milestone: capture the pre-update XP, then on commit check

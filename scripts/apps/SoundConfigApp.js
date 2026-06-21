@@ -708,6 +708,7 @@ export class SoundConfigApp extends FormApplication {
                 label: "Encounter",
                 description: "Session milestones - the close of a fight and character progression.",
                 children: [
+                    { id: "COMBAT_START", label: "Battle Started", description: "Plays once when a new encounter begins and the combat tracker is created." },
                     { id: "COMBAT_END", label: "Battle Resolved", description: "Plays once when an encounter ends and the combat tracker closes." },
                     { id: "LEVEL_UP", label: "Level Up", description: "Plays the first time a character earns enough XP to reach the next level. Fires once per threshold, not on every XP gain. Requires an XP-based system (e.g. D&D 5e, Pathfinder 2e)." }
                 ]

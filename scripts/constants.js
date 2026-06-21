@@ -260,6 +260,7 @@ export const SOUND_EVENTS = {
     SPOTLIGHT: "SPOTLIGHT",
 
     // Encounter & Progression milestones
+    COMBAT_START: "COMBAT_START", // Plays once when a new encounter begins (combat tracker created)
     COMBAT_END: "COMBAT_END", // Plays once when an encounter ends (combat tracker closed)
     LEVEL_UP: "LEVEL_UP",     // Plays when a character first crosses an XP level threshold
 
