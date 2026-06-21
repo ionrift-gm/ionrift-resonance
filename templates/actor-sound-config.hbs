@@ -9,25 +9,48 @@
                     style="background: transparent; border: none; font-weight: bold; font-size: 1.2em; color: #fff; width: 100%; padding: 0;" />
             </h1>
 
-            <!-- Voice Selection (PCs only) -->
-            {{#if isPC}}
+            <!-- Voice Selection: PCs always show; monsters show when opted in -->
+            {{#if showVoice}}
             <div class="voice-config"
                 style="display: flex; align-items: center; gap: 10px; font-size: 0.9em; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
-                <label style="white-space: nowrap; color: #bbb;"><i class="fas fa-volume-up"></i> Voice Tone:</label>
+                <label style="white-space: nowrap; color: #bbb;"><i class="fas fa-microphone"></i> Voice Tone:</label>
                 <select name="identity"
                     style="height: 24px; font-size: 0.9em; flex: 1; background: transparent; color: #fff; border: none; padding: 0; line-height: 1.2; padding-top: 2px;">
                     {{selectOptions voiceOptions selected=voice}}
                 </select>
+                {{#if isMonster}}
+                <button type="button" class="action-remove-voice"
+                    title="Remove humanoid voice — revert to generic monster sounds"
+                    style="padding: 0 6px; height: 22px; font-size: 0.8em; background: rgba(200,80,80,0.15); border: 1px solid rgba(200,80,80,0.3); color: #e07070; border-radius: 3px; cursor: pointer; white-space: nowrap;">
+                    <i class="fas fa-times"></i>
+                </button>
+                {{/if}}
             </div>
 
+            {{#if isPC}}
             <p class="notes" style="margin: 5px 0 0 0; font-style: italic; opacity: 0.6; font-size: 0.8em;">
                 Optional overrides. Defaults to Voice Tone.
             </p>
             {{else}}
             <p class="notes" style="margin: 5px 0 0 0; font-style: italic; opacity: 0.6; font-size: 0.8em;">
-                <i class="fas fa-paw" style="margin-right: 4px;"></i>Vocal defaults resolve from monster type.
+                <i class="fas fa-users" style="margin-right: 4px;"></i>Humanoid voice active. Pain &amp; death route through the shared humanoid chain.
             </p>
             {{/if}}
+
+            {{else if isMonster}}
+            <!-- Monster with no identity set — offer opt-in -->
+            <div class="voice-config"
+                style="display: flex; align-items: center; gap: 10px; font-size: 0.9em; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.07);">
+                <i class="fas fa-paw" style="opacity: 0.5; width: 16px; text-align: center;"></i>
+                <span style="flex: 1; opacity: 0.6; font-size: 0.85em;">Vocal defaults resolve from monster type.</span>
+                <button type="button" class="action-enable-voice"
+                    title="Enable humanoid voice identity — overrides pain &amp; death with masc/fem humanoid sounds"
+                    style="padding: 0 8px; height: 22px; font-size: 0.8em; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); color: rgba(180,160,255,0.85); border-radius: 3px; cursor: pointer; white-space: nowrap;">
+                    <i class="fas fa-microphone"></i> Enable Humanoid Voice
+                </button>
+            </div>
+            {{/if}}
+
         </div>
     </header>
 

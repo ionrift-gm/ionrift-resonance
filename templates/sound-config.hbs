@@ -14,6 +14,9 @@
                     <a class="item" data-tab="tier1"><i class="fas fa-cube"></i> Essentials</a>
                     <a class="item" data-tab="tier2"><i class="fas fa-hammer"></i> Combat Actions</a>
                     <a class="item" data-tab="tier3"><i class="fas fa-skull"></i> Monsters</a>
+                    {{#if features.sharedMonsterVoices}}
+                    <a class="item" data-tab="shared-monster"><i class="fas fa-users"></i> Shared Monster Voices</a>
+                    {{/if}}
                     <!-- <a class="item" data-tab="tier4"><i class="fas fa-cloud-showers-heavy"></i> Weather</a> -->
                 </div>
             </div>
@@ -65,6 +68,25 @@
                     {{/each}}
                 </div>
             </div>
+
+            <!-- SHARED MONSTER VOICES -->
+            {{#if features.sharedMonsterVoices}}
+            <div class="tab" data-tab="shared-monster">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-users"></i> Shared Monster Voices</div>
+
+                    <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                        <i class="fas fa-info-circle"></i>
+                        These sounds play for monsters with a <strong>Voice Identity</strong> set in their Sound Configuration.
+                        They currently inherit from PC pain/death sounds. Bind them here when a dedicated Humanoid Monster voice pack is available.
+                    </p>
+
+                    {{#each tiers.sharedMonster.paramounts as |group|}}
+                    {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
 
             <!-- AUDITOR -->
             <div class="tab" data-tab="auditor">

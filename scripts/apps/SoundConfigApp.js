@@ -7,6 +7,11 @@ import { SoundPackLoader } from "../services/SoundPackLoader.js";
 
 const RESONANCE_MODULE_ID = "ionrift-resonance";
 
+// Feature flag: Shared Monster Voices is not ready for release. While false the
+// calibration tab and its taxonomy stay hidden. Runtime fallback to PC pain/death
+// is unaffected. Flip to true to surface the binding UI again.
+const FEATURE_SHARED_MONSTER_VOICES = false;
+
 export class SoundConfigApp extends FormApplication {
     constructor(object, options) {
         super(object, options);
@@ -698,6 +703,14 @@ export class SoundConfigApp extends FormApplication {
                     { id: "CORE_MONSTER_PAIN", label: "Monster Pain", description: "Reaction growl/grunt when a non-humanoid creature takes a hit." },
                     { id: "CORE_MONSTER_DEATH", label: "Monster Death", description: "Death sound for non-humanoid creatures. Falls back when no type-specific death is set." }
                 ]
+            },
+            {
+                label: "Encounter",
+                description: "Session milestones - the close of a fight and character progression.",
+                children: [
+                    { id: "COMBAT_END", label: "Battle Resolved", description: "Plays once when an encounter ends and the combat tracker closes." },
+                    { id: "LEVEL_UP", label: "Level Up", description: "Plays the first time a character earns enough XP to reach the next level. Fires once per threshold, not on every XP gain. Requires an XP-based system (e.g. D&D 5e, Pathfinder 2e)." }
+                ]
             }
         ];
 
@@ -783,8 +796,58 @@ export class SoundConfigApp extends FormApplication {
         const tier2Roots = actionTaxonomy.map(node => processHierarchy(node));
         const tier3Roots = monsterTaxonomy.map(node => processHierarchy(node));
 
+        // --- SHARED MONSTER VOICES TAXONOMY ---
+        // Surfaces the four CORE_HUMANOID_* keys so GMs can see / bind them.
+        // These keys fall back to PC pain/death until a dedicated monster voice
+        // pack provides its own bindings — at which point the tab will show the
+        // pack source automatically.
+        const sharedMonsterTaxonomy = [
+            {
+                label: "Humanoid Masculine",
+                description: "Fallback voices used by monsters with a Masculine voice identity set. Bind these to give humanoid monsters a distinct sound from PC characters.",
+                children: [
+                    {
+                        id: "CORE_HUMANOID_PAIN_MASCULINE",
+                        label: "Pain (Masculine)",
+                        cardLabel: "Humanoid Pain (Masculine)",
+                        description: "Played when a masculine-voiced humanoid monster takes damage. Falls back to PC Masculine Pain until a dedicated monster voice pack is installed."
+                    },
+                    {
+                        id: "CORE_HUMANOID_DEATH_MASCULINE",
+                        label: "Death (Masculine)",
+                        cardLabel: "Humanoid Death (Masculine)",
+                        description: "Played when a masculine-voiced humanoid monster dies. Falls back to PC Masculine Death until a dedicated monster voice pack is installed."
+                    }
+                ]
+            },
+            {
+                label: "Humanoid Feminine",
+                description: "Fallback voices used by monsters with a Feminine voice identity set.",
+                children: [
+                    {
+                        id: "CORE_HUMANOID_PAIN_FEMININE",
+                        label: "Pain (Feminine)",
+                        cardLabel: "Humanoid Pain (Feminine)",
+                        description: "Played when a feminine-voiced humanoid monster takes damage. Falls back to PC Feminine Pain until a dedicated monster voice pack is installed."
+                    },
+                    {
+                        id: "CORE_HUMANOID_DEATH_FEMININE",
+                        label: "Death (Feminine)",
+                        cardLabel: "Humanoid Death (Feminine)",
+                        description: "Played when a feminine-voiced humanoid monster dies. Falls back to PC Feminine Death until a dedicated monster voice pack is installed."
+                    }
+                ]
+            }
+        ];
+        const sharedMonsterRoots = FEATURE_SHARED_MONSTER_VOICES
+            ? sharedMonsterTaxonomy.map(node => processHierarchy(node))
+            : [];
+
         return {
             hasSyrinscape: SyrinscapeProvider.isConfigured(),
+            features: {
+                sharedMonsterVoices: FEATURE_SHARED_MONSTER_VOICES
+            },
             tiers: {
                 tier1: {
                     label: "Essentials",
@@ -800,6 +863,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Tier 3: Monsters",
                     active: false,
                     paramounts: tier3Roots
+                },
+                sharedMonster: {
+                    label: "Shared Monster Voices",
+                    active: false,
+                    paramounts: sharedMonsterRoots
                 },
                 auditor: {
                     label: "Auditor",

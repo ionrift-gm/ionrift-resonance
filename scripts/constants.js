@@ -214,6 +214,16 @@ export const SOUND_EVENTS = {
     // VOCAL - creature response (pain / death)
     VOCAL_GENERIC_PAIN: "CORE_MONSTER_PAIN",
     VOCAL_GENERIC_DEATH: "CORE_MONSTER_DEATH",
+
+    // Vocals - Humanoid Monster (identity-aware)
+    // Routes through its own keys first so a future "Humanoid Monster Voices" pack
+    // can bind them independently. Falls back to PC pain/death until then.
+    CORE_HUMANOID_PAIN_MASCULINE:  "CORE_HUMANOID_PAIN_MASCULINE",
+    CORE_HUMANOID_PAIN_FEMININE:   "CORE_HUMANOID_PAIN_FEMININE",
+    CORE_HUMANOID_DEATH_MASCULINE: "CORE_HUMANOID_DEATH_MASCULINE",
+    CORE_HUMANOID_DEATH_FEMININE:  "CORE_HUMANOID_DEATH_FEMININE",
+
+    // Vocals - PC
     VOCAL_PC_PAIN_MASCULINE: "CORE_PAIN_MASCULINE",
     VOCAL_PC_PAIN_FEMININE: "CORE_PAIN_FEMININE",
     VOCAL_PC_DEATH_MASCULINE: "CORE_DEATH_MASCULINE",
@@ -248,6 +258,10 @@ export const SOUND_EVENTS = {
 
     // Combat Turn Spotlight (plays when a combatant's turn begins)
     SPOTLIGHT: "SPOTLIGHT",
+
+    // Encounter & Progression milestones
+    COMBAT_END: "COMBAT_END", // Plays once when an encounter ends (combat tracker closed)
+    LEVEL_UP: "LEVEL_UP",     // Plays when a character first crosses an XP level threshold
 
     // --- Legacy aliases (@v2) ---
     // @legacy: kept for backward compat and as chain terminal until default

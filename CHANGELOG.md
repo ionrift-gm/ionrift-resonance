@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.11.0] - 2026-06-21
+
+### Added
+- **Battle Resolved sound.** A new slot in Calibration > Essentials plays once when an encounter ends and the combat tracker closes.
+- **Level Up sound.** Another new Essentials slot fires the first time a character earns enough XP to reach the next level. It plays once per threshold rather than on every XP gain, and works in XP-based systems such as D&D 5e and Pathfinder 2e.
+
 ## [2.10.1] - 2026-06-09
 
 ### Added

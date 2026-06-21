@@ -27,12 +27,18 @@ export class ActorSoundConfig extends FormApplication {
 
     getData() {
         // Voice / Identity
-        const currentIdentity = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
-        // Ensure legacy "female" converts to "feminine" just in case
-        const identityLabel = (currentIdentity === "feminine" || currentIdentity === "female") ? "Feminine" : "Masculine";
-
-        // Define Actor-specific sound slots (system-aware)
+        const currentIdentity = this.actor.getFlag("ionrift-resonance", "identity") || null;
         const isPC = this.actor.type === "character";
+        const isMonster = !isPC;
+        // Monsters need an explicit identity flag to opt in to humanoid voice routing.
+        // PCs always show the selector (identity defaults to masculine when unset).
+        const identityEnabled = isPC || !!currentIdentity;
+        const identity = currentIdentity || "masculine";
+        const isFem = identity.toLowerCase() === "feminine";
+        const identityLabel = isFem ? "Feminine" : "Masculine";
+        // Show voice selector if: PC, or monster that has explicitly opted in
+        const showVoice = isPC || (isMonster && !!currentIdentity);
+
         const sharedSlots = [
             { key: "sound_pain", label: "Vocal (Pain)", icon: "fas fa-heart-broken", hint: "Played when this character takes damage." },
             { key: "sound_death", label: "Vocal (Death)", icon: "fas fa-skull", hint: "Played when this character dies." }
@@ -64,8 +70,10 @@ export class ActorSoundConfig extends FormApplication {
         return {
             actorName: this.actor.name,
             actorImg: this.actor.img,
-            voice: currentIdentity,
-            isPC: isPC,
+            voice: identity,
+            isPC,
+            isMonster,
+            showVoice,
             voiceOptions: { masculine: "Deep / Low (Masculine)", feminine: "Bright / High (Feminine)" },
             slots: slots.map(slot => {
                 const val = this.actor.getFlag("ionrift-resonance", slot.key);
@@ -84,7 +92,14 @@ export class ActorSoundConfig extends FormApplication {
 
                 if (!val) {
                     if (slot.key === "sound_pain" || slot.key === "sound_death") {
-                        display = isPC ? `Default (${identityLabel})` : "Default (Monster)";
+                        if (isPC) {
+                            display = `Default (${identityLabel})`;
+                        } else if (identityEnabled) {
+                            // Monster with identity set — routes through humanoid voice chain
+                            display = `Default (${identityLabel} Humanoid)`;
+                        } else {
+                            display = "Default (Monster)";
+                        }
                     } else {
                         display = "Default (System)";
                     }
@@ -104,10 +119,22 @@ export class ActorSoundConfig extends FormApplication {
     activateListeners(html) {
         super.activateListeners(html);
 
-        // Voice
+        // Voice identity selector (present for PCs always; for monsters when opted in)
         html.find("select[name='identity']").change(async (ev) => {
             const val = ev.target.value;
             await this.actor.setFlag("ionrift-resonance", "identity", val);
+            this.render();
+        });
+
+        // Enable humanoid voice for a monster (opts in, defaults to masculine)
+        html.find(".action-enable-voice").click(async () => {
+            await this.actor.setFlag("ionrift-resonance", "identity", "masculine");
+            this.render();
+        });
+
+        // Remove humanoid voice identity from a monster (reverts to generic monster chain)
+        html.find(".action-remove-voice").click(async () => {
+            await this.actor.unsetFlag("ionrift-resonance", "identity");
             this.render();
         });
 
@@ -158,15 +185,22 @@ export class ActorSoundConfig extends FormApplication {
                     defaultSoundName = `Default (${identityLabel} Death)`;
                 }
             } else {
-                // Monster/NPC - resolve via monster sound chain
+                // Monster/NPC — getMonsterSound routes through humanoid chain if identity is set
+                const identity = this.actor.getFlag("ionrift-resonance", "identity");
+                const identityLabel = identity === "feminine" ? "Feminine" : (identity === "masculine" ? "Masculine" : null);
+
                 if (key === "sound_pain") {
-                    const keyId = h.getMonsterSound?.(this.actor, "PAIN") || "CORE_MONSTER_PAIN";
+                    const keyId = h.resolver.getMonsterSound(this.actor, "PAIN");
                     defaultSoundId = h.resolveSound(keyId);
-                    defaultSoundName = "Default (Monster Pain)";
+                    defaultSoundName = identityLabel
+                        ? `Default (${identityLabel} Humanoid Pain)`
+                        : "Default (Monster Pain)";
                 } else if (key === "sound_death") {
-                    const keyId = h.getMonsterSound?.(this.actor, "DEATH") || "CORE_MONSTER_DEATH";
+                    const keyId = h.resolver.getMonsterSound(this.actor, "DEATH");
                     defaultSoundId = h.resolveSound(keyId);
-                    defaultSoundName = "Default (Monster Death)";
+                    defaultSoundName = identityLabel
+                        ? `Default (${identityLabel} Humanoid Death)`
+                        : "Default (Monster Death)";
                 }
             }
         }
