@@ -88,16 +88,35 @@ export class PF2eAdapter extends SystemAdapter {
             const soundKey = this.handler.pickSound(item, actor?.name, actor);
 
             if (item.type === "spell") {
+                const resolver = this.handler?.resolver;
+                const overrideSpellEffect = resolver?._lastSpellAttackOverride ?? false;
+
                 const vocalDelay = VocalLayerService.shouldTrigger(item)
                     ? VocalLayerService.playAndGetDelay(this.handler, item)
                     : 0;
 
                 const traitKey = this._getSpellTraitKey(item);
-                if (traitKey) {
-                    Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
-                    this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay);
-                } else {
+                const effectKey = traitKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
+
+                if (overrideSpellEffect) {
+                    Logger.log(`PF2e | NPC spell override — ${soundKey} only (no effect sound)`);
                     this.handler.playItemSound(soundKey, item, vocalDelay);
+
+                } else if (soundKey && soundKey !== effectKey
+                           && resolver?.resolveKey(soundKey)) {
+                    const orch = this.handler?.orchestrator;
+                    const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
+                    Logger.log(`PF2e | NPC spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
+                    this.handler.playItemSound(soundKey, item, vocalDelay);
+                    this.handler.playItemSound(effectKey, item, effectDelay);
+
+                } else {
+                    if (traitKey) {
+                        Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
+                        this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay);
+                    } else {
+                        this.handler.playItemSound(soundKey, item, vocalDelay);
+                    }
                 }
             } else {
                 this.handler.playItemSound(soundKey, item);
