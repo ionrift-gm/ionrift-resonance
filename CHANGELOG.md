@@ -7,6 +7,11 @@
 - **Battle Resolved sound.** A new slot in Calibration > Essentials plays once when an encounter ends and the combat tracker closes.
 - **Level Up sound.** Another new Essentials slot fires the first time a character earns enough XP to reach the next level. It plays once per threshold rather than on every XP gain, and works in XP-based systems such as D&D 5e and Pathfinder 2e.
 
+### Fixed
+- Light crossbows now play their own sound instead of the lightning effect.
+- PF2e NPC spell attacks route to the correct sound across all three attack paths, with a generic monster fallback so creatures without a specific profile still get audio.
+- Vocal layer stays in sync after rapid successive triggers.
+
 ## [2.10.1] - 2026-06-09
 
 ### Added
