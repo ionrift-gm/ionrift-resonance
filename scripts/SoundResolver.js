@@ -246,6 +246,12 @@ export class SoundResolver {
         if (specificKey === "CRIT_DECORATION") return "CORE_CRIT";
         if (specificKey === "FUMBLE_DECORATION") return "CORE_FUMBLE";
 
+        // Vocals - Humanoid Monster (new keys fall back to PC sounds until a dedicated pack binds them)
+        if (specificKey === "CORE_HUMANOID_PAIN_MASCULINE")  return "CORE_PAIN_MASCULINE";
+        if (specificKey === "CORE_HUMANOID_PAIN_FEMININE")   return "CORE_PAIN_FEMININE";
+        if (specificKey === "CORE_HUMANOID_DEATH_MASCULINE") return "CORE_DEATH_MASCULINE";
+        if (specificKey === "CORE_HUMANOID_DEATH_FEMININE")  return "CORE_DEATH_FEMININE";
+
         // Vocals - PC
         if (specificKey === "PC_PAIN_MALE") return "CORE_PAIN_MASCULINE";
         if (specificKey === "PC_PAIN_FEMALE") return "CORE_PAIN_FEMININE";
@@ -330,6 +336,34 @@ export class SoundResolver {
             return isFem ? SOUND_EVENTS.PC_DEATH_FEMININE : SOUND_EVENTS.PC_DEATH_MASCULINE;
         } else {
             return isFem ? SOUND_EVENTS.PC_PAIN_FEMININE : SOUND_EVENTS.PC_PAIN_MASCULINE;
+        }
+    }
+
+    /**
+     * Returns the sound key for a monster/NPC vocal (pain or death).
+     * When the actor has an `identity` flag set, routes through the dedicated
+     * humanoid monster voice chain (CORE_HUMANOID_PAIN/DEATH_MASCULINE/FEMININE).
+     * Those keys fall back to PC sounds via getFallbackKey() until a future
+     * "Humanoid Monster Voices" sound pack provides its own bindings.
+     * Without an identity flag the generic monster chain is used unchanged.
+     *
+     * @param {Actor} actor
+     * @param {"PAIN"|"DEATH"} type
+     * @returns {string} semantic sound key
+     */
+    getMonsterSound(actor, type = "PAIN") {
+        const identity = actor.getFlag("ionrift-resonance", "identity");
+        if (!identity) {
+            // No voice identity — use the generic monster chain (unchanged behaviour)
+            return type === "DEATH" ? SOUND_EVENTS.VOCAL_GENERIC_DEATH : SOUND_EVENTS.VOCAL_GENERIC_PAIN;
+        }
+        // Identity set — route through humanoid monster keys.
+        // Falls back to PC pain/death until a dedicated monster voice pack binds them.
+        const isFem = identity.toLowerCase() === "feminine";
+        if (type === "DEATH") {
+            return isFem ? SOUND_EVENTS.CORE_HUMANOID_DEATH_FEMININE : SOUND_EVENTS.CORE_HUMANOID_DEATH_MASCULINE;
+        } else {
+            return isFem ? SOUND_EVENTS.CORE_HUMANOID_PAIN_FEMININE : SOUND_EVENTS.CORE_HUMANOID_PAIN_MASCULINE;
         }
     }
 

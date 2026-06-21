@@ -473,6 +473,59 @@ export class SoundHandler {
         }
     }
 
+    // --- Encounter & Progression ---
+
+    /**
+     * Play the encounter-resolved sound when a combat is removed. GM-only so the
+     * cue dispatches once and broadcasts to every client.
+     */
+    _onCombatEnd(combat) {
+        if (!game.user.isGM) return;
+        Logger.log("Combat ended, playing COMBAT_END");
+        this.play(SOUND_EVENTS.COMBAT_END);
+    }
+
+    /**
+     * Stash the pre-update XP value/threshold so _onActorXpUpdate can detect a
+     * fresh threshold crossing. Only runs when the incoming change touches XP.
+     */
+    _cacheXpBeforeUpdate(actor, changed) {
+        if (!game.user.isGM) return;
+        const incoming = foundry.utils.getProperty(changed, "system.details.xp.value");
+        if (incoming === undefined) return;
+
+        this._xpBefore ??= new Map();
+        this._xpBefore.set(actor.id, {
+            value: Number(foundry.utils.getProperty(actor, "system.details.xp.value")),
+            threshold: Number(foundry.utils.getProperty(actor, "system.details.xp.max"))
+        });
+    }
+
+    /**
+     * Fire the level-up cue the first time XP reaches the next-level threshold.
+     * Because the threshold (xp.max) only climbs once a character actually levels,
+     * staying above it on later XP gains will not re-trigger.
+     */
+    _onActorXpUpdate(actor, changed) {
+        if (!game.user.isGM) return;
+
+        const newValue = foundry.utils.getProperty(changed, "system.details.xp.value");
+        if (newValue === undefined) return;
+
+        const before = this._xpBefore?.get(actor.id);
+        this._xpBefore?.delete(actor.id);
+        if (!before) return;
+
+        const threshold = before.threshold;
+        if (!Number.isFinite(threshold) || threshold <= 0) return;
+        if (!Number.isFinite(before.value)) return;
+
+        if (before.value < threshold && Number(newValue) >= threshold) {
+            Logger.log(`Level-up threshold crossed for ${actor.name}: ${before.value} to ${newValue} (>= ${threshold})`);
+            this.play(SOUND_EVENTS.LEVEL_UP);
+        }
+    }
+
     // --- UI / Hooks ---
 
     registerHooks() {
@@ -487,6 +540,14 @@ export class SoundHandler {
         // still the outgoing combatant. The incoming turn index is in updateData.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));
         Hooks.on("combatRound", (combat, updateData) => this._onSpotlight(combat, updateData));
+
+        // Encounter close: deleting the combat tracker ends the fight.
+        Hooks.on("deleteCombat", (combat) => this._onCombatEnd(combat));
+
+        // Level-up milestone: capture the pre-update XP, then on commit check
+        // whether the value crossed the next-level threshold for the first time.
+        Hooks.on("preUpdateActor", (actor, changed) => this._cacheXpBeforeUpdate(actor, changed));
+        Hooks.on("updateActor", (actor, changed) => this._onActorXpUpdate(actor, changed));
 
         Hooks.on("chatMessage", (chatLog, message, chatData) => {
             if (message.trim() === "/iondebug") {
