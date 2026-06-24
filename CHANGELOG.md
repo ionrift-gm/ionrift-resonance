@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.1] - 2026-06-24
+
+### Fixed
+- Fixed Core SFX overlay not loading on Sqyre-hosted games. Update Library and Resonance, then reinstall the sound pack once if bindings are still empty.
+
 ## [2.11.0] - 2026-06-21
 
 ### Added
