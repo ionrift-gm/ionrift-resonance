@@ -1,0 +1,661 @@
+<div class="ionrift-picker-layout">
+    <style>
+        /* --- Sound Picker UI --- */
+        /* Force Foundry's window-content to cooperate with our flex layout */
+        #ionrift-sound-picker .window-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .ionrift-picker-layout {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            font-family: var(--font-primary);
+        }
+
+        /* Tab Bar */
+        .ionrift-picker-layout .picker-tabs {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 2px;
+            padding: 4px 4px 0;
+            background: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ionrift-picker-layout .picker-tab {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            color: #888;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ionrift-picker-layout .picker-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+        }
+
+        .ionrift-picker-layout .picker-tab.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #fff;
+        }
+
+        .ionrift-picker-layout .tab-content {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .ionrift-picker-layout .tab-content.active {
+            display: flex;
+        }
+
+        /* Shared */
+        .ionrift-picker-layout .search-bar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .ionrift-picker-layout .search-input {
+            flex: 1;
+            min-width: 0;
+            padding: 0 12px;
+            height: 34px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .ionrift-picker-layout .search-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--ionrift-accent, #8b5cf6);
+            outline: none;
+        }
+
+        .ionrift-picker-layout .status-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 2px;
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .ionrift-picker-layout .status-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            padding-left: 4px;
+        }
+
+        .ionrift-picker-layout .cache-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1;
+        }
+
+        .ionrift-picker-layout .cache-tools {
+            display: flex;
+            align-items: stretch;
+            gap: 4px;
+            height: 34px;
+        }
+
+        .ionrift-picker-layout .action-update-lib {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #aaa;
+            border-radius: 3px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            padding: 0 10px;
+        }
+
+        .ionrift-picker-layout .action-update-lib:hover {
+            color: #fff;
+            border-color: rgba(139, 92, 246, 0.6);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .ionrift-picker-layout .action-purge-lib {
+            flex: 0 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ionrift-picker-layout .action-purge-lib:hover {
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .ionrift-picker-layout .results-area {
+            flex: 1;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ionrift-picker-layout .results-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .ionrift-picker-layout .result-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ionrift-picker-layout .result-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .ionrift-picker-layout .result-row,
+        .ionrift-picker-layout .binding-row {
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .ionrift-picker-layout .result-info {
+            flex: 1;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .ionrift-picker-layout .result-name {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .ionrift-picker-layout .result-meta {
+            display: block;
+            font-size: 0.8em;
+            color: #aaa;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ionrift-picker-layout .footer-area {
+            flex: 0 0 auto;
+            border-top: 2px solid rgba(139, 92, 246, 0.4);
+            padding: 10px 8px 6px 8px;
+            background: rgba(139, 92, 246, 0.06);
+        }
+
+        /* Selected Sounds List */
+        .ionrift-picker-layout .current-bindings-list {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ionrift-picker-layout .binding-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ionrift-picker-layout .entity-info .entity-name {
+            font-weight: bold;
+            font-size: 0.9em;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ionrift-picker-layout .entity-info .entity-meta {
+            font-size: 0.75em;
+            color: #777;
+        }
+
+        .ionrift-picker-layout .sound-config-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-right: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .ionrift-picker-layout .config-input-col {
+            display: flex;
+            flex-direction: column;
+            width: 40px;
+        }
+
+        .ionrift-picker-layout .config-input-col label {
+            font-size: 0.65em;
+            color: #aaa;
+            text-align: center;
+        }
+
+        .ionrift-picker-layout .config-input-col input {
+            height: 16px;
+            font-size: 0.8em;
+            padding: 0 2px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #444;
+            color: #ddd;
+        }
+
+        .ionrift-picker-layout .entity-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .ionrift-picker-layout .footer-actions {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 6px;
+        }
+
+        /* Override Foundry's `form button { width: 100% }` */
+        .ionrift-picker-layout .footer-actions button {
+            width: auto !important;
+        }
+
+        .ionrift-picker-layout .action-browse-local {
+            flex: 0 0 auto;
+            height: 36px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #aaa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85em;
+        }
+
+        .ionrift-picker-layout .action-browse-local:hover {
+            color: #fff;
+            border-color: rgba(139, 92, 246, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .ionrift-picker-layout .action-save {
+            flex: 1;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 92, 246, 0.3);
+            border: 1px solid rgba(139, 92, 246, 0.6);
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .ionrift-picker-layout .action-save:hover {
+            background: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .ionrift-picker-layout .preview-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .ionrift-picker-layout .preview-icon:hover {
+            background: var(--ionrift-accent, #8b5cf6);
+            color: white;
+        }
+
+        /* Local Tab */
+        .ionrift-picker-layout .local-sounds-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .ionrift-picker-layout .local-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .ionrift-picker-layout .local-empty i {
+            font-size: 2em;
+            opacity: 0.2;
+            margin-bottom: 15px;
+        }
+
+        /* Dim pack sounds already in Selected list */
+        .ionrift-picker-layout .result-row.already-selected {
+            opacity: 0.3;
+        }
+
+        .ionrift-picker-layout .result-row.already-selected .added-tag {
+            display: inline;
+        }
+
+        .ionrift-picker-layout .added-tag {
+            display: none;
+            font-size: 0.7em;
+            color: #6ee7b7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+        }
+
+        /* Compact catalog rows for pack sounds */
+        .ionrift-picker-layout .local-sounds-list .result-row {
+            padding: 4px 8px;
+            font-size: 0.88em;
+            cursor: pointer;
+        }
+
+        .ionrift-picker-layout .local-sounds-list .result-row .result-meta {
+            font-size: 0.72em;
+            opacity: 0.4;
+        }
+
+        .ionrift-picker-layout .local-sounds-list .add-icon {
+            color: rgba(139, 92, 246, 0.6);
+            font-size: 0.8em;
+            width: 20px;
+            text-align: center;
+            transition: color 0.2s;
+        }
+
+        .ionrift-picker-layout .local-sounds-list .result-row:hover .add-icon {
+            color: #c4b5fd;
+        }
+    </style>
+
+    <!-- TAB BAR -->
+    <div class="picker-tabs">
+        <div class="picker-tab {{#if localActive}}active{{/if}}" data-picker-tab="local">
+            <i class="fas fa-box-open"></i> Pack Sounds
+        </div>
+        <div class="picker-tab {{#unless localActive}}active{{/unless}}" data-picker-tab="syrinscape">
+            <i class="fas fa-cloud"></i> Syrinscape
+        </div>
+    </div>
+
+    <!-- TAB: LOCAL -->
+    <div class="tab-content {{#if localActive}}active{{/if}}" data-picker-tab-content="local">
+        <div style="padding: 4px 10px; font-size: 0.78em; color: #666;">
+            <i class="fas fa-info-circle" style="opacity: 0.5;"></i>
+            Pack sounds for this key. Click to add.
+        </div>
+        <div class="results-area ionrift-list">
+            <ul class="local-sounds-list results-list">
+                {{#if packSounds.length}}
+                {{#each packSounds}}
+                <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
+                    data-name="{{this.name}}" data-type="local" data-meta="Pack"
+                    title="{{#if this.alreadySelected}}Already added{{else}}Click to add{{/if}}">
+                    <i class="fas fa-plus add-icon"></i>
+                    <div class="result-info">
+                        <span class="result-name">{{this.name}}<span class="added-tag">added</span></span>
+                        <span class="result-meta">{{this.id}}</span>
+                    </div>
+                    <span class="preview-icon action-preview-local" data-src="{{this.id}}" title="Preview"><i
+                            class="fas fa-play"></i></span>
+                </li>
+                {{/each}}
+                {{else}}
+                <div class="local-empty">
+                    <i class="fas fa-box-open"></i>
+                    <div>No pack sounds for this key.</div>
+                    <div style="font-size: 0.85em; margin-top: 8px; color: #555;">Use <strong>Browse Files</strong>
+                        below to add your own local audio files.</div>
+                </div>
+                {{/if}}
+            </ul>
+        </div>
+        <button class="action-browse-local" title="Browse local audio files"
+            style="margin: 6px 0 0; width: auto !important;">
+            <i class="fas fa-folder-open"></i> Browse Files
+        </button>
+    </div>
+
+    <!-- TAB: SYRINSCAPE -->
+    <div class="tab-content {{#unless localActive}}active{{/unless}}" data-picker-tab-content="syrinscape">
+        <div class="picker-header" style="margin-top: 8px;">
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" name="search" class="search-input" value="{{searchTerm}}"
+                    placeholder="Search Syrinscape sounds..." />
+                <button class="action-search"
+                    style="flex: 0 0 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.6); color: white; border: none; border-radius: 4px; cursor: pointer;"><i
+                        class="fas fa-search"></i></button>
+            </div>
+
+            <!-- Status Strip -->
+            <div class="status-strip">
+                <div class="status-left">
+                    <div class="cache-info">
+                        <span style="font-weight: 600; text-transform: uppercase;">Global One-Shots:</span>
+                        {{#if cacheCount}}
+                        <span style="color: #6ee7b7;">{{cacheCount}} cached</span>
+                        {{else}}
+                        <span style="color: #fca5a5;">Not Synced</span>
+                        {{/if}}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;"
+                        title="If checked, limits search to One-Shot sound effects only (hides Moods/Music).">
+                        <input type="checkbox" name="filterOneshots" id="filterOneshots" {{checked filterOneshots}}>
+                        <label for="filterOneshots">One-Shots Only</label>
+                    </div>
+                </div>
+
+                <div class="cache-tools">
+                    <button type="button" class="action-update-lib"
+                        title="Syncs your local cache with the latest Global One-Shots from Syrinscape.">
+                        <i class="fas fa-sync-alt"></i> <span>Sync Cache</span>
+                    </button>
+                    <button type="button" class="action-purge-lib" title="Clear local cache (Force Re-Sync)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div class="results-area ionrift-list">
+            <ul class="results-list">
+                {{#if isLoading}}
+                <div class="loading" style="padding: 20px; text-align: center; color: #aaa;"><i
+                        class="fas fa-spinner fa-spin"></i> Searching...</div>
+                {{else}}
+                {{#each results}}
+                <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
+                    data-name="{{this.name}}" data-type="{{this.type}}" data-meta="{{this.meta}}"
+                    title="{{#if this.alreadySelected}}Already added{{else}}Click to add{{/if}}"
+                    style="padding: 4px 8px; font-size: 0.88em;">
+                    <i class="fas fa-plus add-icon"
+                        style="color: rgba(139,92,246,0.6); width: 20px; text-align: center; font-size: 0.8em;"></i>
+                    <div class="result-info">
+                        <span class="result-name">{{this.name}}<span class="added-tag">added</span></span>
+                        {{#if this.meta}}<span class="result-meta"
+                            style="font-size: 0.72em; opacity: 0.4;">{{this.meta}}</span>{{/if}}
+                    </div>
+                    <span class="preview-icon" title="Preview"><i class="fas fa-play"></i></span>
+                </li>
+                {{else}}
+                {{#if searchTerm}}
+                <div class="no-results" style="padding: 20px; text-align: center; color: #777;">
+                    <div>No results found.</div>
+                    {{#if filterOneshots}}<div style="font-size: 0.9em; margin-top: 5px;">Try unchecking
+                        <strong>"One-Shots
+                            Only"</strong>.
+                    </div>{{/if}}
+                </div>
+                {{else}}
+                <div class="empty-state" style="padding: 40px 20px; text-align: center; color: #888;">
+                    <i class="fas fa-search" style="font-size: 2em; opacity: 0.2; margin-bottom: 15px;"></i>
+                    <div>Type above to search Syrinscape sounds.</div>
+                </div>
+                {{/if}}
+                {{/each}}
+                {{/if}}
+            </ul>
+        </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div style="display: flex; align-items: center; gap: 10px; padding: 8px 15px; margin-top: 4px;">
+        <div
+            style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(139, 92, 246, 0.3), transparent);">
+        </div>
+        <i class="fas fa-arrow-down" style="color: rgba(139, 92, 246, 0.5); font-size: 0.7em;"></i>
+        <div
+            style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(139, 92, 246, 0.3), transparent);">
+        </div>
+    </div>
+
+    <!-- FOOTER (always visible) -->
+    <div class="footer-area">
+        <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding-left: 4px;">
+            <div>
+                <h3
+                    style="margin: 0; font-size: 0.85em; text-transform: uppercase; color: #c4b5fd; letter-spacing: 0.5px;">
+                    <i class="fas fa-list-check" style="margin-right: 4px; opacity: 0.7;"></i>Assigned
+                    {{#if hasBindings}}<span
+                        style="font-size: 0.85em; color: #888; font-weight: normal; text-transform: none;">
+                        ({{currentBindings.length}})</span>{{/if}}
+                </h3>
+                <div style="font-size: 0.7em; color: #666; margin-top: 1px;">These sounds play in-game for this event.
+                </div>
+            </div>
+            <div class="delay-help"
+                title="Configures a random start delay (Min/Max). useful for syncing with animation latency."
+                style="font-size: 0.8em; color: #666; cursor: help; margin-right: 85px;">
+                <i class="fas fa-question-circle"></i> <span>Delay (Sec)</span>
+            </div>
+        </div>
+
+        <div class="current-bindings-list ionrift-list">
+            {{#if hasBindings}}
+            {{#each currentBindings}}
+            <div class="ionrift-list-item entity-row binding-row" data-id="{{this.id}}" data-name="{{this.name}}"
+                data-type="{{this.type}}" data-meta="{{this.meta}}">
+                <div class="entity-info" style="flex: 1; min-width: 0; margin-right: 10px;">
+                    <div class="entity-name" title="{{this.name}}">{{this.name}}</div>
+                    <div class="entity-meta">{{this.id}}</div>
+                </div>
+
+                <div class="sound-config-group" title="Min/Max Delay (Seconds)">
+                    <div class="config-input-col">
+                        <label>Min</label>
+                        <input type="number" name="delayMin" value="{{this.delayMin}}" step="0.1" min="0" max="10"
+                            placeholder="0">
+                    </div>
+                    <span class="separator">-</span>
+                    <div class="config-input-col">
+                        <label>Max</label>
+                        <input type="number" name="delayMax" value="{{this.delayMax}}" step="0.1" min="0" max="10"
+                            placeholder="0">
+                    </div>
+                </div>
+
+                <div class="entity-actions">
+                    <button type="button" class="action-test-current" data-id="{{this.id}}" title="Play Preview"><i
+                            class="fas fa-play"></i></button>
+                    <button type="button" class="action-remove-binding" data-index="{{@index}}" title="Remove"><i
+                            class="fas fa-times"></i></button>
+                </div>
+            </div>
+            {{/each}}
+            {{else}}
+            {{#if defaultSoundId}}
+            <div class="binding-row default-binding" style="opacity: 0.7;">
+                <div class="entity-info" style="flex: 1;">
+                    <span style="font-weight: bold; font-style: italic;">{{defaultSoundName}}</span>
+                    <span style="display: block; font-size: 0.7em; color: #aaa;">Default Sound</span>
+                </div>
+                <div class="entity-actions">
+                    <button type="button" class="action-test-default" title="Play Default"><i
+                            class="fas fa-play"></i></button>
+                </div>
+            </div>
+            {{else}}
+            <div style="padding: 15px; text-align: center; color: #666; font-style: italic;">No sounds selected.</div>
+            {{/if}}
+            {{/if}}
+        </div>
+
+        <div class="footer-actions" style="display: flex; gap: 6px;">
+            <button class="action-save" style="flex: 1;">
+                <i class="fas fa-check" style="margin-right: 5px;"></i> Save Changes
+            </button>
+        </div>
+    </div>
+</div>

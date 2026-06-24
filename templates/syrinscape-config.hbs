@@ -1,0 +1,33 @@
+<form class="syrinscape-config-form {{cssClass}}" autocomplete="off">
+    <div class="syrinscape-config-body">
+        <header class="syrinscape-config-header">
+            <p class="syrinscape-config-lead">
+                <i class="fas fa-volume-up syrinscape-config-lead-icon"></i>
+                Audio mode
+            </p>
+            <p class="notes syrinscape-config-intro">
+                The Core SFX Pack plays through Foundry audio. Syrinscape is an add-on for per-slot overrides in Calibration.
+            </p>
+        </header>
+
+        {{{tokenPanel}}}
+
+        {{#if mismatch}}
+        <div class="syrinscape-mismatch-banner token-mismatch-warning">
+            <i class="fas fa-exclamation-triangle"></i> <strong>Token mismatch</strong>
+            <p class="syrinscape-mismatch-detail">
+                Resonance and Syrinscape Control have different tokens. Playback uses the Resonance token until synced.
+            </p>
+            <button type="button" data-action="sync" class="syrinscape-sync-btn">
+                <i class="fas fa-sync-alt"></i> Sync to Control
+            </button>
+        </div>
+        {{/if}}
+    </div>
+
+    <footer class="sheet-footer syrinscape-config-footer flexrow">
+        <button type="submit" name="submit" class="syrinscape-footer-btn">
+            <i class="fas fa-save"></i> Save &amp; Close
+        </button>
+    </footer>
+</form>

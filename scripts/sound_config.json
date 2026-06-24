@@ -1,0 +1,111 @@
+{
+    "players": {
+        "Kelris": "female",
+        "Grom": "male",
+        "Tyfar": "male"
+    },
+    "mappings": {
+        "default": "sound_combat_whoosh",
+        "weapons": {
+            "Battleaxe": "sound_combat_bludgeonSwing",
+            "Broadsword": "sound_combat_long_blade_hit",
+            "Cutlass": "sound_combat_cimitar_hit",
+            "Dagger": "sound_combat_short_blade_slash",
+            "Greatsword": "sound_combat_long_blade_hit",
+            "Halberd": "pole_arm_slash",
+            "Hand Crossbow": "sound_combat_crossbowHit",
+            "Longbow": "sound_combat_bowFire",
+            "Longsword": "sound_combat_long_blade_hit",
+            "Mace": "sound_combat_bludgeon_hit",
+            "Quarterstaff": "sound_combat_bludgeon_hit",
+            "Rapier": "sound_combat_long_blade_hit",
+            "Shortbow": "sound_combat_bowFire",
+            "Shortsword": "sound_combat_short_blade_hit",
+            "Spear": "pole_arm_slash",
+            "Warhammer": "sound_combat_bludgeon_hit",
+            "Whip": "sound_combat_chain_whip"
+        },
+        "spells": {
+            "Arcane Gauntlets": "SPELL_FIRE",
+            "Arcane-Frame Wheelchair": "sound_combat_whoosh",
+            "Bolt Beacon": "SPELL_LIGHTNING",
+            "Book of Ava": "SPELL_HEAL",
+            "Book of Illiat": "SPELL_FIRE",
+            "Book of Tyfar": "SPELL_VOID",
+            "Deft Deceiver": "SPELL_PSYCHIC",
+            "Enrapture": "SPELL_PSYCHIC",
+            "Forceful Push": "SPELL_VOID",
+            "Mending Touch": "SPELL_HEAL",
+            "Rain of Blades": "ATTACK_DAGGER_SLASH",
+            "Unleash Chaos": "SPELL_VOID",
+            "Whirlwind": "SPELL_ICE",
+            "Glowing Rings": "SPELL_FIRE",
+            "Hand Runes": "SPELL_VOID",
+            "Scepter": "SPELL_VOID",
+            "Wand": "SPELL_FIRE"
+        },
+        "adversaries": {
+            "Skeleton Warrior": {
+                "Only Bones": "sound_combat_whoosh",
+                "Won't Stay Dead": "undead_vocalise"
+            },
+            "Brawny Zombie": {
+                "Rend Asunder": "ATTACK_CLAW",
+                "Rip and Tear": "ATTACK_CLAW",
+                "Slow": "MONSTER_ZOMBIE"
+            },
+            "Bear": {
+                "Bite": "sound_combat_bite",
+                "Overwhelming Force": "wild_beast_attack"
+            },
+            "Giant Scorpion": {
+                "Double Strike": "ATTACK_CLAW",
+                "Venomous Stinger": "ATTACK_BITE"
+            },
+            "Acid Burrower": {
+                "Spit Acid": "SPELL_ACID",
+                "Earth Eruption": "ATTACK_SLAM"
+            },
+            "Minor Fire Elemental": {
+                "Scorched Earth": "SPELL_FIRE",
+                "Explosion": "SPELL_FIRE",
+                "Consume Kindling": "SPELL_FIRE"
+            },
+            "Minor Chaos Elemental": {
+                "Sickening Flux": "SPELL_VOID",
+                "Remake Reality": "SPELL_LIGHTNING"
+            },
+            "Archer Guard": {
+                "Hobbling Shot": "sound_combat_bowFire"
+            },
+            "Jagged Knife Sniper": {
+                "Unseen Strike": "sound_combat_bowFire"
+            },
+            "Jagged Knife Kneebreaker": {
+                "I've Got 'Em": "sound_combat_bludgeon_hit",
+                "Hold Them Down": "sound_combat_grapple"
+            },
+            "Pirate Captain": {
+                "No Quarter": "sound_combat_cimitar_hit"
+            },
+            "Cave Ogre": {
+                "Hail of Boulders": "rocks_fall",
+                "Bone Breaker": "sound_combat_bludgeon_crit"
+            },
+            "Tangle Bramble": {
+                "Drain and Multiply": "plant_growth",
+                "Group Attack": "plant_attack"
+            },
+            "Harrier": {
+                "Maintain Distance": "sound_combat_whoosh"
+            }
+        },
+        "generic": {
+            "claw": "ATTACK_CLAW",
+            "bite": "ATTACK_BITE",
+            "slam": "ATTACK_SLAM",
+            "sword": "ATTACK_SWORD_HIT",
+            "bow": "ATTACK_BOW_FIRE"
+        }
+    }
+}

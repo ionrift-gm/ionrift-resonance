@@ -1,0 +1,16 @@
+{
+    "mappings": {
+        "adversaries": {},
+        "weapons": {
+            "Laser Rifle": "123456",
+            "Plasma Sword": "654321"
+        },
+        "spells": {},
+        "generic": {
+            "shoot": "1497020",
+            "slash": "1497020"
+        }
+    },
+    "default": "1497020",
+    "players": {}
+}

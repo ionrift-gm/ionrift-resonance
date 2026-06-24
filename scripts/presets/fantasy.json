@@ -1,0 +1,227 @@
+{
+    "mappings": {
+        "adversaries": {},
+        "weapons": {
+            "Longsword": {
+                "id": "123456",
+                "name": "Longsword (Mapped)",
+                "type": "oneshot"
+            },
+            "Dagger": {
+                "id": "654321",
+                "name": "Dagger (Mapped)",
+                "type": "oneshot"
+            },
+            "Bow": {
+                "id": "112233",
+                "name": "Bow (Mapped)",
+                "type": "oneshot"
+            }
+        },
+        "spells": {
+            "Fireball": {
+                "id": "998877",
+                "name": "Fireball (Mapped)",
+                "type": "oneshot"
+            }
+        },
+        "generic": {
+            "bite": {
+                "id": "1497020",
+                "name": "Bite (Generic)",
+                "type": "oneshot"
+            },
+            "claw": {
+                "id": "1497020",
+                "name": "Claw (Generic)",
+                "type": "oneshot"
+            },
+            "slam": {
+                "id": "1497020",
+                "name": "Slam (Generic)",
+                "type": "oneshot"
+            },
+            "sword": {
+                "id": "1497020",
+                "name": "Sword (Generic)",
+                "type": "oneshot"
+            },
+            "bow": {
+                "id": "1497020",
+                "name": "Bow (Generic)",
+                "type": "oneshot"
+            }
+        }
+    },
+    "default": {
+        "id": "1497020",
+        "name": "Generic Impact",
+        "type": "oneshot"
+    },
+    "players": {},
+    "CORE_MAGIC": {
+        "id": "20",
+        "name": "Fire Spell",
+        "type": "oneshot"
+    },
+    "CORE_MELEE": {
+        "id": "1035",
+        "name": "Sword Clash",
+        "type": "oneshot"
+    },
+    "CORE_RANGED": {
+        "id": "1039",
+        "name": "Bow Fire",
+        "type": "oneshot"
+    },
+    "CORE_BRAWL": {
+        "id": "3743648",
+        "name": "Unarmed Strike",
+        "type": "oneshot"
+    },
+    "CORE_HIT": {
+        "id": "3743656",
+        "name": "Flesh Impact",
+        "type": "oneshot"
+    },
+    "CORE_CRIT": {
+        "id": "3743655",
+        "name": "Critical Hit A",
+        "type": "oneshot"
+    },
+    "CORE_FUMBLE": {
+        "id": "375612",
+        "name": "Fumble / Fail",
+        "type": "oneshot"
+    },
+    "CORE_MISS": {
+        "id": "3743648",
+        "name": "Swing / Miss A",
+        "type": "oneshot"
+    },
+    "CORE_WHOOSH": {
+        "id": "3743653",
+        "name": "Weapon Swing",
+        "type": "oneshot"
+    },
+    "CORE_PAIN_MASCULINE": {
+        "id": "42589",
+        "name": "Pain (Masculine)",
+        "type": "oneshot"
+    },
+    "CORE_PAIN_FEMININE": {
+        "id": "762",
+        "name": "Pain (Feminine)",
+        "type": "oneshot"
+    },
+    "CORE_DEATH_MASCULINE": {
+        "id": "2638210",
+        "name": "Death Scream",
+        "type": "oneshot"
+    },
+    "CORE_DEATH_FEMININE": {
+        "id": "2638210",
+        "name": "Death Scream",
+        "type": "oneshot"
+    },
+    "PC_DEATH": {
+        "id": "2638210",
+        "name": "PC Death (Default)",
+        "type": "oneshot"
+    },
+    "CORE_MONSTER_PAIN": {
+        "id": "3743632",
+        "name": "Monster Growl/Pain",
+        "type": "oneshot"
+    },
+    "CORE_MONSTER_DEATH": {
+        "id": "3590",
+        "name": "Monster Death",
+        "type": "oneshot"
+    },
+    "CORE_HEAL": {
+        "id": "3652",
+        "name": "Healing Spell",
+        "type": "oneshot"
+    },
+    "CORE_AMBIANCE_INDOOR": {
+        "id": "748294",
+        "name": "Dungeon Ambience",
+        "type": "mood"
+    },
+    "CORE_AMBIANCE_OUTDOOR": {
+        "id": "65",
+        "name": "Stormy Outdoors",
+        "type": "mood"
+    },
+    "DAGGERHEART_HOPE": {
+        "id": "3652",
+        "name": "Positive Chime",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_FEAR": {
+        "id": "762",
+        "name": "Negative Chord",
+        "type": "oneshot"
+    },
+    "PC_PAIN_MALE": {
+        "id": "42589",
+        "name": "Pain (Masculine)",
+        "type": "oneshot"
+    },
+    "PC_PAIN_FEMALE": {
+        "id": "762",
+        "name": "Pain (Feminine)",
+        "type": "oneshot"
+    },
+    "PC_DEATH_MALE": {
+        "id": "2638210",
+        "name": "Death Scream",
+        "type": "oneshot"
+    },
+    "PC_DEATH_FEMALE": {
+        "id": "2638210",
+        "name": "Death Scream",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_HOPE_USE": {
+        "id": "3652",
+        "name": "Hope Token",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_FEAR_USE": {
+        "id": "762",
+        "name": "Fear Token",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_STRESS": {
+        "id": "375612",
+        "name": "Stress Crack",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_ARMOR_USE": {
+        "id": "1035",
+        "name": "Armor Deflection",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_ARMOR_REPAIR": {
+        "id": "3743653",
+        "name": "Armor Repair",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_FEAR_LOW": {
+        "id": "762",
+        "name": "Fear Spikes (Low)",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_FEAR_MED": {
+        "id": "762",
+        "name": "Fear Spikes (Med)",
+        "type": "oneshot"
+    },
+    "DAGGERHEART_FEAR_HIGH": {
+        "id": "762",
+        "name": "Fear Spikes (High)",
+        "type": "oneshot"
+    }
+}

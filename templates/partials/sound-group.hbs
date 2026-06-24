@@ -1,0 +1,129 @@
+<div class="sound-group-container"
+    style="margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+
+    <!-- Group Header (Collapsible) -->
+    <details {{#if isOpen}}open{{/if}} data-group-label="{{label}}">
+        <summary
+            style="padding: 8px; background: rgba(0,0,0,0.3); cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: bold;">
+                <i class="fas fa-chevron-right summary-arrow"></i>
+                <span>{{label}}</span>
+                {{#if description}}
+                <i class="fas fa-info-circle" title="{{description}}" style="color: #666; font-size: 0.8em;"></i>
+                {{/if}}
+                {{#if packName}}
+                <span class="ionrift-badge" style="font-size: 0.75em; font-weight: normal; padding: 2px 6px; background: rgba(124, 58, 237, 0.2); color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.4); border-radius: 4px;" title="Provided by {{packName}}">
+                    <i class="{{packIcon}}" style="margin-right: 4px;"></i>{{packName}}
+                </span>
+                {{/if}}
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+                {{#if volumeControl}}
+                <div class="taxonomy-volume-control" style="display: flex; align-items: center; gap: 6px;"
+                    onclick="event.stopPropagation();"
+                    title="Scale volume for all sounds in this category. Applies to local/pack audio. Syrinscape controls its own volume externally.{{#if volumeControl.inheritsFromMagic}} Currently inheriting from Magic (Spells).{{/if}}">
+                    <i class="fas fa-volume-down" style="color: #888; font-size: 0.75em;"></i>
+                    <input type="range" class="taxonomy-volume-slider"
+                        data-volume-key="{{volumeControl.key}}"
+                        min="0" max="100" step="5"
+                        value="{{volumeControl.percent}}" />
+                    <span class="taxonomy-volume-label"
+                        style="font-size: 0.75em; min-width: 32px; text-align: right; font-family: monospace; color: {{#if volumeControl.hasOverride}}#c4b5fd{{else}}#888{{/if}};">
+                        {{volumeControl.percent}}%
+                    </span>
+                    <i class="fas fa-info-circle" style="color: #555; font-size: 0.65em;"
+                        title="Scales playback volume for local and pack audio in this category. Syrinscape elements are not affected; use the Orchestration tab to control Syrinscape density."></i>
+                    <button type="button" class="taxonomy-volume-reset"
+                        data-volume-key="{{volumeControl.key}}"
+                        title="Reset to 100%"
+                        style="display:{{#if volumeControl.hasOverride}}inline-block{{else}}none{{/if}}; width:20px; height:20px; padding:0; font-size:0.65em; background:rgba(200,120,80,0.2); border:1px solid rgba(200,120,80,0.3); color:#c84; border-radius:3px; cursor:pointer; line-height:20px;">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+                {{/if}}
+
+                {{#if key}}
+                <div style="font-size: 0.9em; opacity: 0.8; display: flex; align-items: center; gap: 6px;">
+                    {{#if value}}
+                    <span class="ionrift-badge success">Overridden</span>
+                    {{else}}
+                    <span class="ionrift-badge" style="opacity: 0.5;">Inherited</span>
+                    {{/if}}
+                </div>
+                {{/if}}
+            </div>
+        </summary>
+
+        <!-- Group Content -->
+        <div class="group-content" style="padding: 5px 0 5px 10px; border-top: 1px solid rgba(255,255,255,0.05);">
+
+            <!-- 1. The "Parent" Sound Card (if this group has a sound of its own) -->
+            {{#if headerCard}}
+            <div class="parent-sound-card"
+                style="margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;">
+                {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" headerCard}}
+            </div>
+            {{/if}}
+
+            <!-- 2. Leaf Nodes (Individual Sounds in this group) -->
+            {{#each fields as |field|}}
+            {{> "modules/ionrift-resonance/templates/partials/sound-card-row.hbs" field}}
+            {{/each}}
+
+            <!-- 3. Child Groups (Recursive) -->
+            {{#each children as |child|}}
+            {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" child}}
+            {{/each}}
+        </div>
+    </details>
+</div>
+
+<style>
+    details>summary {
+        list-style: none;
+    }
+
+    details>summary::-webkit-details-marker {
+        display: none;
+    }
+
+    details[open]>summary .summary-arrow {
+        transform: rotate(90deg);
+    }
+
+    .summary-arrow {
+        transition: transform 0.2s;
+    }
+
+    .taxonomy-volume-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 80px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 2px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .taxonomy-volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #c4b5fd;
+        border: 1px solid rgba(124, 58, 237, 0.5);
+        cursor: pointer;
+    }
+
+    .taxonomy-volume-slider::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #c4b5fd;
+        border: 1px solid rgba(124, 58, 237, 0.5);
+        cursor: pointer;
+    }
+</style>

@@ -1,0 +1,109 @@
+<div class="ionrift-cascade-ui">
+    <!-- Header: The Arcane Blueprint -->
+    <header class="cascade-header">
+        <h1><i class="fas fa-project-diagram"></i> Reactive Sound Engine</h1>
+        <div class="cascade-meta">
+            <span class="status-indicator active"><i class="fas fa-circle"></i> Engine: Online</span>
+            <span class="mode-indicator">Mode: Visceral Feedback</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace: The Blueprint -->
+    <div class="cascade-workspace">
+
+        <!-- Column 1: Triggers (The Roll) -->
+        <div class="column triggers">
+            <h2><i class="fas fa-dice-d20"></i> Triggers</h2>
+            <div class="node-container">
+                <div class="node trigger active" data-type="attack">
+                    <div class="node-header">Attack Roll</div>
+                    <div class="node-body">
+                        <span class="value">D20 + 5</span>
+                    </div>
+                    <div class="connector-point right"></div>
+                </div>
+
+                <div class="node trigger" data-type="damage">
+                    <div class="node-header">Damage Roll</div>
+                    <div class="node-body">
+                        <span class="value">2d6 + 3</span>
+                    </div>
+                    <div class="connector-point right"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Lines (SVG Overlay) -->
+        <!-- We will mock these with CSS/SVG in the background for the screenshot -->
+
+        <!-- Column 2: Context (The Logic) -->
+        <div class="column context">
+            <h2><i class="fas fa-balance-scale"></i> Logic Gate</h2>
+            <div class="node-container">
+                <div class="node logic active critical" data-result="crit">
+                    <div class="connector-point left"></div>
+                    <div class="node-header">Critical Hit</div>
+                    <div class="node-body">
+                        <span class="condition">Natural 20</span>
+                    </div>
+                    <div class="connector-point right"></div>
+                </div>
+
+                <div class="node logic" data-result="hit">
+                    <div class="connector-point left"></div>
+                    <div class="node-header">Standard Hit</div>
+                    <div class="node-body">
+                        <span class="condition">Roll > AC</span>
+                    </div>
+                    <div class="connector-point right"></div>
+                </div>
+
+                <div class="node logic" data-result="miss">
+                    <div class="connector-point left"></div>
+                    <div class="node-header">Miss</div>
+                    <div class="node-body">
+                        <span class="condition">Roll < AC</span>
+                    </div>
+                    <div class="connector-point right"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: Output (The Sound) -->
+        <div class="column output">
+            <h2><i class="fas fa-volume-up"></i> Manifestation</h2>
+            <div class="node-container">
+                <div class="node sound active" data-sound="crit-chime">
+                    <div class="connector-point left"></div>
+                    <div class="node-header">Visceral Impact</div>
+                    <div class="node-body">
+                        <i class="fas fa-music"></i>
+                        <span class="sound-name">Blade_Crit_Chime_01</span>
+                    </div>
+                    <div class="waveform-viz">
+                        <!-- CSS Animation of bars -->
+                        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span
+                            class="bar"></span>
+                    </div>
+                </div>
+
+                <div class="node sound" data-sound="hit-flesh">
+                    <div class="connector-point left"></div>
+                    <div class="node-header">Physical Impact</div>
+                    <div class="node-body">
+                        <i class="fas fa-tired"></i>
+                        <span class="sound-name">Flesh_Tear_Wet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Inspector Panel (Bottom) -->
+    <div class="inspector-panel">
+        <h3><i class="fas fa-search"></i> Logic Inspector</h3>
+        <p>Detecting <strong>Critical Hit</strong> from <em>Midi-QOL Workflow</em>.</p>
+        <p>Injecting <strong>Visceral Chime</strong> (Priority 10) over <strong>Standard Slash</strong>.</p>
+    </div>
+</div>
