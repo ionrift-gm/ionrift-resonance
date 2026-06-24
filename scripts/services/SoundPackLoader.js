@@ -2,6 +2,7 @@ import { Logger } from "../Logger.js";
 
 const PACK_ROOT = "ionrift-data/resonance/packs";
 const OVERLAY_ROOT = "ionrift-data/overlays/ionrift-resonance";
+const MODULE_ID = "ionrift-resonance";
 const MANIFEST_NAME = "manifest.json";
 const BINDINGS_NAME = "bindings.json";
 const OVERLAY_MANIFEST_NAME = "overlay-manifest.json";
@@ -85,7 +86,7 @@ export class SoundPackLoader {
         const overlayActive = this._getOverlayActiveMap();
 
         const legacyDirs = await this._safeListDirectories(PACK_ROOT);
-        const overlaySublayers = await this._safeListDirectories(OVERLAY_ROOT);
+        const overlaySublayers = await this._listOverlaySublayers();
 
         // Load overlay packs first so they claim ids; legacy packs that collide
         // are skipped with a console note (overlay-wins rule).
@@ -177,6 +178,33 @@ export class SoundPackLoader {
         this._mergedBindings = cached;
         this._loaded = true;
         Logger.log(`SoundPackLoader | Refreshed bindings from cache (${Object.keys(cached).length} keys).`);
+    }
+
+    /**
+     * Discover installed overlay sublayers. Prefer the library overlay API
+     * (which uses the file index on Sqyre when overlay-manifest.json is not
+     * yet visible to browse). Fall back to a direct browse of the module root.
+     * @returns {Promise<string[]>}
+     */
+    static async _listOverlaySublayers() {
+        const found = new Set();
+        const overlay = game.ionrift?.library?.overlay;
+
+        if (overlay?.listInstalledSublayers) {
+            try {
+                for (const sublayer of await overlay.listInstalledSublayers(MODULE_ID)) {
+                    if (sublayer) found.add(sublayer);
+                }
+            } catch (err) {
+                Logger.warn("SoundPackLoader | overlay.listInstalledSublayers failed:", err?.message ?? err);
+            }
+        }
+
+        for (const sublayer of await this._safeListDirectories(OVERLAY_ROOT)) {
+            if (sublayer) found.add(sublayer);
+        }
+
+        return [...found].sort();
     }
 
     /**
@@ -353,16 +381,28 @@ export class SoundPackLoader {
      */
     static async _loadOverlayPack(sublayer, overlayActive) {
         const basePath = `${OVERLAY_ROOT}/${sublayer}`;
+        const overlay = game.ionrift?.library?.overlay;
 
-        const overlayMeta = await this._fetchJson(`${basePath}/${OVERLAY_MANIFEST_NAME}`);
+        let overlayMeta = await this._fetchJson(`${basePath}/${OVERLAY_MANIFEST_NAME}`);
+        if (!overlayMeta?.overlayId && overlay?.getLocalManifest) {
+            overlayMeta = await overlay.getLocalManifest(MODULE_ID, sublayer);
+        }
         if (!overlayMeta?.overlayId) {
-            Logger.log(`SoundPackLoader | Overlay sublayer "${sublayer}" has no overlay-manifest.json; skipping.`);
-            return;
+            const platform = game.ionrift?.library?.platform;
+            if (platform?.readDataJson) {
+                overlayMeta = await platform.readDataJson(`${basePath}/${OVERLAY_MANIFEST_NAME}`);
+            }
         }
 
         const probeManifest = await this._fetchJson(`${basePath}/${MANIFEST_NAME}`);
         if (!probeManifest) {
             Logger.log(`SoundPackLoader | Overlay sublayer "${sublayer}" has no pack manifest.json; skipping.`);
+            return;
+        }
+
+        const overlayId = overlayMeta?.overlayId ?? this._resolveOverlayId(sublayer, overlayActive);
+        if (!overlayId) {
+            Logger.log(`SoundPackLoader | Overlay sublayer "${sublayer}" has no overlay-manifest.json; skipping.`);
             return;
         }
 
@@ -373,9 +413,28 @@ export class SoundPackLoader {
             bindings,
             source: "overlay",
             path: basePath,
-            overlayId: overlayMeta.overlayId,
+            overlayId,
             sublayer
         });
+    }
+
+    /**
+     * Recover an overlay id when overlay-manifest.json is missing or unreadable.
+     * Uses world overlay state first, then the resonance naming convention.
+     * @param {string} sublayer
+     * @param {Record<string, { active?: boolean }>} overlayActive
+     * @returns {string|null}
+     * @private
+     */
+    static _resolveOverlayId(sublayer, overlayActive) {
+        const candidate = `resonance-${sublayer}-overlay`;
+        if (overlayActive[candidate] !== undefined) return candidate;
+        for (const overlayId of Object.keys(overlayActive)) {
+            if (overlayId.startsWith("resonance-") && overlayId.endsWith(`-${sublayer}-overlay`)) {
+                return overlayId;
+            }
+        }
+        return candidate;
     }
 
     /**
