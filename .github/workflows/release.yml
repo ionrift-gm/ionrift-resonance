@@ -158,8 +158,7 @@ jobs:
                 title: `🔊 Ionrift Resonance — v${version}`,
                 description: desc,
                 color: 0x4A9DD9,
-                url: `https://github.com/${repo}/releases/tag/${tag}`,
-                thumbnail: { url: `https://raw.githubusercontent.com/${repo}/main/assets/module-icon.png` }
+                url: `https://github.com/${repo}/releases/tag/${tag}`
               }]
             };
 
