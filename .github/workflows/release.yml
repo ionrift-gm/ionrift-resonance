@@ -45,7 +45,7 @@ jobs:
         if: github.event.inputs.dry_run_discord != 'true'
         # Zips current directory, excluding git/github/dev files
         run: |
-          zip -r module.zip . -x ".git/*" ".github/*" ".gitignore" "RELEASE_WORKFLOW.md" "task.md" "package.json" "package-lock.json" "node_modules/*" "scripts/utils/*" "scripts/debug_controls_structure.js" "debug_macro.js" "debug_pop.log" "audit_*.json" "audit_*.txt" "audit_*.js" "*.bak" "free_tier_candidates.md" "SETUP_GUIDE.md" "TEST_SCENARIOS.md" "docs/MIGRATION_STRATEGY.md" "docs/GUIDE.md"
+          zip -r module.zip . -x ".git/*" ".github/*" ".gitignore" "RELEASE_WORKFLOW.md" "task.md" "package.json" "package-lock.json" "node_modules/*" "scripts/utils/*" "scripts/debug_controls_structure.js" "debug_macro.js" "debug_pop.log" "audit_*.json" "audit_*.txt" "audit_*.js" "*.bak" "free_tier_candidates.md" "SETUP_GUIDE.md" "TEST_SCENARIOS.md" "docs/MIGRATION_STRATEGY.md" "docs/GUIDE.md" "tools/*" "tests/*" ".cursor/*"
 
       - name: Create Release
         if: github.event.inputs.dry_run_discord != 'true'
