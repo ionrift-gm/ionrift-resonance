@@ -57,7 +57,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 4. Click **Open Resonance Setup** (not the Library's **Begin Attunement**, which is for creature indexing)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-5. Download and import the free **Core SFX Pack** to activate the core sounds.
+5. Download the free **Core SFX Pack** from Patreon, then **Ionrift Library → Patreon Library → Import zip**.
 
 For detailed walkthrough, troubleshooting, and FAQ see the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)**.
 
@@ -80,7 +80,7 @@ Custom bindings always take priority over global presets.
 
 ## Core SFX Pack
 
-You can install the **Core SFX Pack**, which provides **~400 local sound files** covering the full combat loop. Use **Resonance Setup** or **Patreon Library** to install it.
+The **Core SFX Pack** provides **~400 local sound files** covering the full combat loop. Download the zip from Patreon (or the public pack link), then install with **Patreon Library → Import zip**. It does not use one-click cloud Install.
 
 | Category | Sounds | Examples |
 |----------|--------|----------|
