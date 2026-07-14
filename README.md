@@ -16,11 +16,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 
 > Documentation, setup guides, and troubleshooting: **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**
 
-### Demo
-
-[![Watch the demo](https://img.youtube.com/vi/vRZeyZqYwxw/maxresdefault.jpg)](https://youtu.be/vRZeyZqYwxw)
-
-*Full DnD5e combat sequence: melee, ranged, spells, and AoE. All sounds triggered automatically.*
+### Combat clips
 
 <table>
 <tr>
