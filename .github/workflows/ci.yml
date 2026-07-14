@@ -15,8 +15,8 @@ on:
     types: [lib-updated]
 
 # NOTE: Resonance scripts are compiled for distribution. ESLint, import-integrity,
-# and case-sensitivity checks are not applicable. Only inclusion scan, signal
-# check, and artifact hygiene run.
+# and case-sensitivity checks are not applicable. Only inclusion scan and
+# artifact hygiene run.
 
 jobs:
 
