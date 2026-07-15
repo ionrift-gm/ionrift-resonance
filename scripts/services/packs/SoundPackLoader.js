@@ -1,4 +1,5 @@
 import { Logger } from "../../utils/Logger.js";
+import { getWorldSetting } from "../../../../ionrift-library/scripts/services/platform/connectOwnedSettings.js";
 
 const PACK_ROOT = "ionrift-data/resonance/packs";
 const OVERLAY_ROOT = "ionrift-data/overlays/ionrift-resonance";
@@ -128,7 +129,7 @@ export class SoundPackLoader {
     }
     static _getOverlayActiveMap() {
         try {
-            return game.settings.get("ionrift-library", "overlayWorldState") ?? {};
+            return getWorldSetting("overlayWorldState") ?? {};
         } catch {
             return {};
         }
