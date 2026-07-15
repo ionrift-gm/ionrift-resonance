@@ -30,19 +30,8 @@ debug_*.log
 # Externalized content — distributed as ionrift-soundpack-core via Patreon
 sounds/pack/
 
-# Build tooling (not shipped)
-# Local Node tooling at module root (not Foundry runtime)
+# Module-root tools live in private ionrift-testharness (principles §14)
 /tools/
-!/tools/validate-changelog.mjs
-!/tools/validate-strings.mjs
-!/tools/check-local-paths.mjs
-!/tools/install-hooks.mjs
-!/tools/hooks/
-!/tools/hooks/pre-commit
-!/tools/force_apply_pack.js
-!/tools/level_audit.py
-!/tools/pack_audit.py
-!/tools/strip_metadata.py
 
 # Test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
 scripts/tests/
