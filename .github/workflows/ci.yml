@@ -1,22 +1,14 @@
-name: CI — Static Analysis
+name: CI - Static Analysis
 
 on:
   push:
     branches:
       - main
-    # Explicitly skip tag pushes — release.yml owns those
     tags-ignore:
       - '**'
-
-  # Allow manual trigger for diagnosis
   workflow_dispatch:
-
   repository_dispatch:
     types: [lib-updated]
-
-# NOTE: Resonance scripts are compiled for distribution. ESLint, import-integrity,
-# and case-sensitivity checks are not applicable. Only inclusion scan and
-# artifact hygiene run.
 
 jobs:
 
@@ -26,7 +18,6 @@ jobs:
       skip_eslint: true
       skip_import_integrity: true
       skip_case_sensitivity: true
-      # Resonance has no lang/ directory — only scripts/ for inclusion scan.
       inclusion_scan_dirs: 'scripts/'
 
   hygiene:
@@ -45,8 +36,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout private module tools
+        uses: actions/checkout@v4
+        with:
+          repository: ionrift-gm/ionrift-testharness
+          token: ${{ secrets.IONRIFT_CI_PAT }}
+          path: ionrift-testharness
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - name: Check for hardcoded local paths
-        run: node tools/check-local-paths.mjs
+        env:
+          MODULE_ROOT: ${{ github.workspace }}
+        run: node ionrift-testharness/tools/modules/resonance/check-local-paths.mjs

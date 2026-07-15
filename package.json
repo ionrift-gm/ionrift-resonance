@@ -2,7 +2,8 @@
   "name": "ionrift-resonance",
   "private": true,
   "scripts": {
-    "check": "node tools/check-local-paths.mjs",
-    "hooks": "node tools/install-hooks.mjs"
+    "check": "node ../ionrift-testharness/tools/modules/resonance/check-local-paths.mjs",
+    "hooks": "node ../ionrift-testharness/tools/modules/resonance/install-hooks.mjs",
+    "validate:strings": "node ../ionrift-testharness/tools/modules/resonance/validate-strings.mjs"
   }
 }
