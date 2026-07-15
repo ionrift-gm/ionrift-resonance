@@ -24,7 +24,7 @@ Actor → Classifier → MonsterVocalMap → SoundResolver → Audio Playback
 1. **Classifier** (`ionrift-library/creatureClassifier.js`) analyses a
    Foundry actor's type, traits, and description. Returns `{ type, subtype, sound }`.
 
-2. **MonsterVocalMap** (`data/MonsterVocalMap.js`) routes the classifier
+2. **MonsterVocalMap** (`data/maps/MonsterVocalMap.js`) routes the classifier
    output to a sound event key. Checks:
    - Dynamic bindings from pack manifests (highest priority)
    - Static `SUBTYPE_VOCAL_MAP` (built-in creature types)
