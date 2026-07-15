@@ -1,0 +1,415 @@
+import { SoundProvider } from "../SoundProvider.js";
+import { Logger } from "../../utils/Logger.js";
+import { SOUND_TYPES } from "../../data/soundTypes.js";
+
+export class SyrinscapeProvider extends SoundProvider {
+    constructor() {
+        super();
+        // Do not cache token here; read dynamically to support runtime updates.
+    }
+
+    /**
+     * Playing a sound via Syrinscape (Module or Direct API)
+     * @param {string|object} soundId - Valid ID string (e.g. "element:123") or Object
+     * @param {object} options - { volume, delay, type }
+     */
+    async playSound(soundId, options = {}) {
+        if (!soundId) return;
+
+        // 1. Unpack Object if passed directly
+        let rId = soundId;
+        if (typeof soundId === 'object') {
+            if (soundId.id) rId = soundId.id;
+        }
+
+        // 2. Handle Arrays/Strings with Commas (Randomization) - Redundant if Manager handles it, but safe to keep
+        if (typeof rId === 'string' && rId.includes(',')) {
+            const parts = rId.split(',').map(s => s.trim()).filter(s => s);
+            rId = parts[Math.floor(Math.random() * parts.length)];
+        }
+
+        // Prefer id prefix over options.type; default element (safer than mood for play)
+        let type = options.type || SOUND_TYPES.ELEMENT;
+        if (type === SOUND_TYPES.ONESHOT) type = SOUND_TYPES.ELEMENT;
+        let cleanId = String(rId);
+
+        if (cleanId.startsWith("mood:")) {
+            type = SOUND_TYPES.MOOD;
+            cleanId = cleanId.substring(5);
+        } else if (cleanId.startsWith("element:")) {
+            type = SOUND_TYPES.ELEMENT;
+            cleanId = cleanId.substring(8);
+        } else if (cleanId.startsWith("global:")) {
+            type = SOUND_TYPES.GLOBAL_ELEMENT;
+            cleanId = cleanId.substring(7);
+        }
+
+        // 4. Execution
+        await this._executePlay(type, cleanId, options.volume);
+    }
+
+    /**
+     * Internal execution to determine best method (Module vs API)
+     */
+    async _executePlay(type, id, volume) {
+        // CHECK TOKEN SYNC: Only relevant if Syrinscape Control module is active
+        const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
+
+        let controlToken = "";
+        const controlActive = game.modules.get("syrinscape-control")?.active;
+        if (controlActive) {
+            controlToken = game.settings.get("syrinscape-control", "authToken");
+        }
+
+        const t1 = (ionToken || "").trim();
+        const t2 = (controlToken || "").trim();
+        // Mismatch only if Control is active AND tokens differ
+        const isMismatched = controlActive && t1 && (t1 !== t2);
+
+        if (isMismatched) {
+            Logger.warn("Token Mismatch: Bypassing Control Module for Playback.");
+        }
+
+        // Bypass module for GLOBAL_ELEMENT: control module hits elements/ and 404s globals
+        if (!isMismatched && globalThis.syrinscapeControl?.utils && type !== SOUND_TYPES.GLOBAL_ELEMENT) {
+            try {
+                if (type === SOUND_TYPES.MOOD) {
+                    await globalThis.syrinscapeControl.utils.playMood(id);
+                } else {
+                    await globalThis.syrinscapeControl.utils.playElement(id);
+                }
+                return;
+            } catch (err) {
+                Logger.error("Syrinscape Module V2 Error (Fallback to Direct):", err);
+                // Fallback to Direct API immediately
+                this._playDirect(type, id);
+                return;
+            }
+        }
+
+        // B. Try Module Integration (V1 - Legacy)
+        if (!isMismatched && game.syrinscape && type !== SOUND_TYPES.GLOBAL_ELEMENT) {
+            const method = type === SOUND_TYPES.MOOD ? "playMood" : "playElement";
+            if (typeof game.syrinscape[method] === 'function') {
+                game.syrinscape[method](id);
+                return;
+            }
+        }
+
+        // C. Fallback to Direct API
+        await this._playDirect(type, id);
+    }
+
+    /**
+     * Direct API Playback (No Module)
+     */
+    async _playDirect(type, id) {
+        const token = game.settings.get('ionrift-resonance', 'syrinToken');
+        if (!token) {
+            // Only warn if they strictly need it (no module)
+            if (!globalThis.syrinscapeControl && !game.syrinscape) {
+                ui.notifications.warn("Ionrift: Syrinscape Token missing for Direct API.");
+            }
+            return;
+        }
+
+        let endpoint = "elements";
+        if (type === SOUND_TYPES.MOOD) endpoint = "moods";
+        else if (type === SOUND_TYPES.GLOBAL_ELEMENT) endpoint = "elements";
+
+        const url = `https://syrinscape.com/online/frontend-api/${endpoint}/${id}/play/?auth_token=${token}`;
+
+        try {
+            // Using 'no-cors' for fire-and-forget
+            await fetch(url, { method: 'GET', mode: 'no-cors' });
+        } catch (e) {
+            Logger.error("Direct API Play Failed", e);
+        }
+    }
+
+    async stopAll() {
+        let stopSent = false;
+
+        // CHECK TOKEN SYNC: Only relevant if Syrinscape Control module is active
+        const ionToken = game.settings.get('ionrift-resonance', 'syrinToken');
+
+        let controlToken = "";
+        const controlActive = game.modules.get("syrinscape-control")?.active;
+        if (controlActive) {
+            controlToken = game.settings.get("syrinscape-control", "authToken");
+        }
+
+        const t1 = (ionToken || "").trim();
+        const t2 = (controlToken || "").trim();
+        const isMismatched = controlActive && t1 && (t1 !== t2);
+
+        if (isMismatched) {
+            Logger.warn("Token Mismatch: Bypassing Control Module for StopAll.");
+        }
+
+        // 1. Try Module (V2 - syrinscape-control)
+        if (!isMismatched && globalThis.syrinscapeControl?.utils?.stopAll) {
+            try {
+                Logger.log("Stop All | Attempting via Syrinscape Control (V2)...");
+                await globalThis.syrinscapeControl.utils.stopAll();
+                stopSent = true;
+            } catch (e) {
+                Logger.warn("Stop All | Module V2 Failed:", e);
+            }
+        }
+
+        // 2. Try Module (V1 - Legacy) - Only if V2 didn't work
+        if (!stopSent && game.syrinscape?.stopAll) {
+            try {
+                Logger.log("Stop All | Attempting via Game System (Legacy)...");
+                await game.syrinscape.stopAll();
+                stopSent = true;
+            } catch (e) {
+                Logger.warn("Stop All | Module Legacy Failed:", e);
+            }
+        }
+
+        // 3. Fallback Direct API (If modules failed or were missing)
+        // Note: We force this if modules failed, or if we just want to be sure.
+        if (!stopSent) {
+            const token = game.settings.get("ionrift-resonance", "syrinToken");
+            if (token) {
+                try {
+                    Logger.log("Stop All | Attempting via Direct API...");
+                    // Using no-cors
+                    await fetch(`https://syrinscape.com/online/frontend-api/stop-all/?auth_token=${token}`, { method: 'GET', mode: 'no-cors' });
+                    Logger.log("Stop All | Direct API Request Sent.");
+                } catch (e) {
+                    Logger.warn("Stop All failed via Direct API", e);
+                    ui.notifications.warn("Ionrift: Failed to stop sounds via API.");
+                }
+            } else {
+                Logger.warn("Stop All | No Token for API Fallback.");
+            }
+        }
+    }
+
+    async search(query, options = {}) {
+        if (!query) return [];
+        const filterType = options.type || SOUND_TYPES.ALL;
+
+        const token = game.settings.get('ionrift-resonance', 'syrinToken');
+        if (!token) {
+            Logger.warn("Syrinscape Search: No Token Found in Settings.");
+            ui.notifications.warn("Syrinscape Token missing. Check Ionrift Sounds settings.");
+            return [];
+        }
+
+        const cleanToken = token.trim();
+        const url = `https://syrinscape.com/search/?q=${encodeURIComponent(query)}&format=json&page_size=100&auth_token=${cleanToken}`;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s Timeout
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                },
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`Syrinscape API Error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            let results = data.results || [];
+            // Logger.log(`[DEBUG] Syrinscape Search Raw Count: ${results.length}`);
+
+            // API Results Processing
+            const apiResults = results.filter(r => {
+                // FILTER: Helper to get type
+                const t = r.l_name || r.kind || r.model_name;
+
+                // FILTER: Only show playable items
+                if (r.available_to_play === false) return false;
+
+                // FILTER: Exclude raw "SoundSample"
+                if (t === "SoundSample") return false;
+
+                // FILTER: Exclude Containers
+                if (t === "Chapter") return false;
+                if (t === "SoundSet") return false;
+
+                // FILTER: One-Shot / Reactive Only (if requested)
+                if (filterType === SOUND_TYPES.ONESHOT) {
+                    if (t !== "OneshotElement") return false;
+                }
+
+                return true;
+            }).map(r => {
+                const sourceType = r.l_name || r.kind || r.model_name;
+                const sourceName = r.title_for_sample || r.name || r.title || "Unknown";
+
+                let id = String(r.pk || r.id);
+                let name = r.title_for_sample || r.name || r.title || "Unknown Sound";
+                let type = r.l_name || r.kind || r.model_name || "Element";
+                let icon = "fas fa-music";
+
+                let meta = "";
+                if (r.chapter_title) meta = r.chapter_title;
+                if (r.adventure_title) meta = meta ? `${r.adventure_title} - ${meta}` : r.adventure_title;
+                if (!meta && r.soundset_title) meta = r.soundset_title;
+
+                let normalizedType = SOUND_TYPES.GLOBAL_ELEMENT;
+
+                if (type === "Mood") {
+                    icon = "fas fa-cloud-sun";
+                    if (!id.startsWith("mood:")) id = "mood:" + id;
+                    normalizedType = SOUND_TYPES.MOOD;
+                } else if (type === "SFXElement" || type === "Element") {
+                    icon = "fas fa-bolt";
+                    if (!id.startsWith("element:")) id = "element:" + id;
+                    normalizedType = SOUND_TYPES.ELEMENT;
+                } else if (type === "OneshotElement") {
+                    icon = "fas fa-meteor";
+                    if (!id.startsWith("global:")) id = "global:" + id;
+                    normalizedType = SOUND_TYPES.GLOBAL_ONESHOT;
+                } else if (type === "MusicElement") {
+                    icon = "fas fa-music";
+                    if (!id.startsWith("element:")) id = "element:" + id;
+                    normalizedType = SOUND_TYPES.MUSIC_ELEMENT;
+                } else {
+                    icon = "fas fa-question-circle";
+                    if (!id.startsWith("global:")) id = "global:" + id;
+                    normalizedType = SOUND_TYPES.GLOBAL_ELEMENT;
+                }
+
+                return {
+                    id: id,
+                    name: `[${type}] ${name}`,
+                    type: normalizedType,
+                    meta: meta,
+                    icon: r.icon || icon
+                };
+            });
+
+            // LOCAL CACHE SEARCH
+            let localResults = [];
+            const cache = game.settings.get('ionrift-resonance', 'oneshotCache');
+            if (cache && Array.isArray(cache.results)) {
+                const lowerQuery = query.toLowerCase();
+                localResults = cache.results.filter(r => {
+                    const match = r.name.toLowerCase().includes(lowerQuery) || (r.meta && r.meta.toLowerCase().includes(lowerQuery));
+                    // Allow all cache items (they are global-oneshot) if match found
+                    return match;
+                });
+            }
+
+            // MERGE & DEDUPLICATE (Prioritize Local)
+            const combined = [...localResults, ...apiResults];
+            const unique = [];
+            const seen = new Set();
+
+            for (const item of combined) {
+                if (!seen.has(item.id)) {
+                    seen.add(item.id);
+                    unique.push(item);
+                }
+            }
+
+            return unique.slice(0, 50);
+
+        } catch (error) {
+            Logger.error("Syrinscape Search Error:", error);
+            if (error.name === 'AbortError') {
+                throw new Error("Search Timed Out (Syrinscape API slow to respond)");
+            }
+            throw error;
+        }
+    }
+
+    /**
+     * Fetches all global one-shots from Syrinscape and caches them.
+     * @param {Function} onProgress - Callback (count) => {}
+     */
+    async cacheLibrary({ onProgress } = {}) {
+        const tokenSetting = game.settings.get('ionrift-resonance', 'syrinToken');
+        if (!tokenSetting) {
+            Logger.warn("Cache Library: No Token Found in Settings.");
+            return [];
+        }
+
+        const token = tokenSetting.trim();
+        // Use the specific Global Elements endpoint found by probe (returns ~32 items)
+        const url = `https://syrinscape.com/online/frontend-api/global-elements/?auth_token=${token}`;
+
+        Logger.log("Starting Library Cache (via Global Elements API)...");
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`API Error ${response.status}`);
+
+            const data = await response.json();
+
+            let rawItems = [];
+
+            // Handle Array (likely) vs Paged Object (possible)
+            if (Array.isArray(data)) {
+                rawItems = data;
+            } else if (data.results && Array.isArray(data.results)) {
+                rawItems = data.results;
+            }
+
+            const oneshots = rawItems.map(r => {
+                return {
+                    id: `global:${r.pk || r.id}`,
+                    name: `[Global] ${r.name || r.title || "Unknown"}`,
+                    type: SOUND_TYPES.GLOBAL_ONESHOT,
+                    meta: r.soundset_name || "Global One-Shot",
+                    icon: "fas fa-meteor"
+                };
+            });
+
+            Logger.log(`Cached ${oneshots.length} Global Elements.`);
+
+            // Save to Settings
+            await game.settings.set('ionrift-resonance', 'oneshotCache', {
+                timestamp: Date.now(),
+                results: oneshots
+            });
+
+            return oneshots;
+
+        } catch (e) {
+            Logger.error("Cache Verification Failed:", e);
+            ui.notifications.error("Syrinscape Library Sync Failed.");
+            return [];
+        }
+    } // end cacheLibrary
+
+    // --- Static Capability Helpers ---
+    /**
+     * True if Resonance has a Syrinscape token configured.
+     * Canonical check - use this instead of reading the setting inline.
+     */
+    static isConfigured() {
+        return !!(game.settings.get("ionrift-resonance", "syrinToken")?.trim());
+    }
+
+    /**
+     * True if the Syrinscape Control companion module is installed and active.
+     */
+    static hasControlModule() {
+        return game.modules.get("syrinscape-control")?.active ?? false;
+    }
+
+    /**
+     * True if tokens are mismatched between Resonance and the Control module.
+     * Only meaningful when hasControlModule() is true.
+     */
+    static hasMismatch() {
+        if (!SyrinscapeProvider.hasControlModule()) return false;
+        const ionToken = (game.settings.get("ionrift-resonance", "syrinToken") || "").trim();
+        const ctrlToken = (game.settings.get("syrinscape-control", "authToken") || "").trim();
+        return !!(ionToken && ionToken !== ctrlToken);
+    }
+}
