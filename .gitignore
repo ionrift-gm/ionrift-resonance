@@ -31,17 +31,18 @@ debug_*.log
 sounds/pack/
 
 # Build tooling (not shipped)
-tools/
-!tools/validate-changelog.mjs
-!tools/validate-strings.mjs
-!tools/check-local-paths.mjs
-!tools/install-hooks.mjs
-!tools/hooks/
-!tools/hooks/pre-commit
-!tools/force_apply_pack.js
-!tools/level_audit.py
-!tools/pack_audit.py
-!tools/strip_metadata.py
+# Local Node tooling at module root (not Foundry runtime)
+/tools/
+!/tools/validate-changelog.mjs
+!/tools/validate-strings.mjs
+!/tools/check-local-paths.mjs
+!/tools/install-hooks.mjs
+!/tools/hooks/
+!/tools/hooks/pre-commit
+!/tools/force_apply_pack.js
+!/tools/level_audit.py
+!/tools/pack_audit.py
+!/tools/strip_metadata.py
 
 # Test suites (IP-sensitive — see DEV_PROTOCOLS.md §31)
 scripts/tests/
