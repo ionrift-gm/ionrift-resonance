@@ -1,0 +1,878 @@
+import { SystemAdapter } from "../../SystemAdapter.js";
+import { Logger } from "../../../utils/Logger.js";
+import { SOUND_EVENTS } from "../../../data/constants.js";
+import { msgContains } from "../../../utils/msgContains.js";
+import { getDaggerheartMonsterSound } from "../../../data/maps/daggerheart_mappings.js";
+
+export class DaggerheartAdapter extends SystemAdapter {
+    constructor(handler) {
+        super(handler);
+        this.renderPhases = new Map(); // Track render phases: { timestamp, phase: 1|2 }
+        this.lastAttackItem = null; // Cache the last attacking item for hit override lookup
+        this.lastAttackKey = null; // Cache the attack sound key for category derivation
+        this._resolvedPaths = new Set(); // Track first-hit path logs (fire once per session)
+    }
+
+    /**
+     * Daggerheart uses a DAMAGE-UP HP model: the HP value represents accumulated
+     * damage. An increase in HP value means damage was taken. Reaching maxHp = death.
+     * This is the OPPOSITE of DnD5e/PF2e where HP decreases on damage.
+     */
+    isDamage(oldHp, newHp) {
+        return newHp > oldHp;
+    }
+
+    isDeath(newHp, maxHp, _isPC) {
+        return maxHp > 0 && newHp >= maxHp;
+    }
+
+    resolveSystemSound(item, actor, resolver) {
+        if (!item?.system) return null;
+        const weaponTypes = ["weapon", "armor", "equipment", "loot", "consumable"];
+        if (item.type && weaponTypes.includes(item.type)) return null;
+
+        // A) Direct domain on item (domainCard type items have this)
+        const itemDomain = item.system.domain;
+        if (itemDomain) {
+            const domainKey = `DOMAIN_${itemDomain.toUpperCase()}`;
+            const resolved = resolver.resolveKey(domainKey);
+            if (resolved) {
+                Logger.log(`DH | Item domain: ${itemDomain} -> ${domainKey}`);
+                return domainKey;
+            }
+        }
+
+        // B) Fallback: actor's class domains
+        const actorDomains = actor?.system?.domains;
+        if (actorDomains?.length && !itemDomain) {
+            for (const domain of actorDomains) {
+                const domainKey = `DOMAIN_${domain.toUpperCase()}`;
+                const resolved = resolver.resolveKey(domainKey);
+                if (resolved) {
+                    Logger.log(`DH | Actor domain fallback: ${domain} -> ${domainKey}`);
+                    return domainKey;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Derive a category-aware hit or miss key from the attack sound key.
+     * Priority: RANGED (bow/crossbow/sling) > MAGIC (spell_*) > generic fallback.
+     * @param {string} attackKey - The attack sound key from Phase 1
+     * @param {"HIT"|"MISS"} type - Whether we want a hit or miss variant
+     * @returns {string} The category-aware SOUND_EVENTS key
+     */
+    _deriveCategoryKey(attackKey, type) {
+        if (!attackKey) return type === "HIT" ? SOUND_EVENTS.BLOODY_HIT : SOUND_EVENTS.MISS;
+        const key = attackKey.toUpperCase();
+        const isRanged = key.includes("BOW") || key.includes("CROSSBOW") || key.includes("SLING") || key.includes("RANGED");
+        const isMagic = key.includes("SPELL_") || key.includes("MAGIC");
+
+        if (type === "HIT") {
+            if (isRanged) return SOUND_EVENTS.CORE_HIT_RANGED;
+            if (isMagic) return SOUND_EVENTS.CORE_HIT_MAGIC;
+            return SOUND_EVENTS.BLOODY_HIT;
+        } else {
+            if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
+            if (isMagic) return SOUND_EVENTS.CORE_MISS_MAGIC;
+            return SOUND_EVENTS.MISS;
+        }
+    }
+    validateSchema() {
+        const issues = [];
+
+        // 1. Get a sample Actor to inspect (World Actor OR Synthetic Default)
+        // This ensures the check works even in a brand new empty world.
+        let actor = game.actors.find(a => a.type === "character" || a.type === "npc" || a.type === "adversary");
+
+
+        if (!actor) {
+            try {
+                // Create a temporary in-memory actor to test the System's current data model
+                Logger.log("No World Actors found. Creating Synthetic Actor for Schema Check.");
+                actor = new Actor({ name: "Schema Validator", type: "character" });
+            } catch (e) {
+                Logger.warn("Failed to create Synthetic Actor:", e);
+                return ["Critical: Could not create test Actor for validation."];
+            }
+        }
+
+        Logger.log(`Validating Schema against Actor: ${actor.name} (${actor.type})`);
+        const data = actor; // In V10+ we inspect the document itself
+
+        // 2. Define Critical Paths we rely on
+        // Format: { path: "string", description: "text", condition: (val) => boolean }
+        const checks = [
+
+        ];
+
+        // Specific Checks based on Actor Type
+        if (actor.type === "character") {
+            // HP: Check for standard OR resources path
+            if (foundry.utils.getProperty(data, "system.resources.hitPoints.value") === undefined &&
+                foundry.utils.getProperty(data, "system.hp.value") === undefined) {
+                checks.push({ path: "system.resources.hitPoints.value", desc: "Character HP (Current)" });
+            }
+
+            if (foundry.utils.getProperty(data, "system.resources.hitPoints.max") === undefined &&
+                foundry.utils.getProperty(data, "system.hp.max") === undefined) {
+                checks.push({ path: "system.resources.hitPoints.max", desc: "Character HP (Max)" });
+            }
+
+            // Hope & Fear (often specialized paths)
+            // checks.push({ path: "system.hope.value", desc: "Character Hope" }); // handled by alias logic below
+            // checks.push({ path: "system.fear.value", desc: "Character Fear" }); // handled by alias logic below
+
+            // checks.push({ path: "system.armor.value", desc: "Character Armor Slots" }); // handled by alias logic below
+            // checks.push({ path: "system.stress.value", desc: "Character Stress" }); // handled by alias logic below
+        } else {
+            // Adversary / NPC
+            // Note: Daggerheart NPCs might use different structure (hitPoints vs hp)
+            // We check multiple in code, so we should check if AT LEAST ONE exists.
+            if (foundry.utils.getProperty(data, "system.resources.hitPoints.value") === undefined &&
+                foundry.utils.getProperty(data, "system.hp.value") === undefined) {
+                issues.push("Adversary HP (Unknown Path: checked system.resources.hitPoints.value & system.hp.value)");
+            }
+        }
+
+        // 3. Run Checks
+        for (const check of checks) {
+            const val = foundry.utils.getProperty(data, check.path);
+
+            // Verify primary path existence (fallback paths handled in handlePreUpdate)
+
+            // Let's check the aliases.
+            if (check.desc.includes("Hope")) {
+                if (foundry.utils.getProperty(data, "system.hope.value") === undefined &&
+                    foundry.utils.getProperty(data, "system.resources.hope.value") === undefined) {
+                    issues.push("Hope Value (Unknown Path)");
+                }
+            } else if (check.desc.includes("Fear")) {
+                if (foundry.utils.getProperty(data, "system.fear.value") === undefined &&
+                    foundry.utils.getProperty(data, "system.resources.fear.value") === undefined) {
+                    issues.push("Fear Value (Unknown Path)");
+                }
+            } else if (check.desc.includes("Armor")) {
+                if (foundry.utils.getProperty(data, "system.armor.value") === undefined &&
+                    foundry.utils.getProperty(data, "system.resources.armor.value") === undefined &&
+                    foundry.utils.getProperty(data, "system.damage.armor") === undefined) {
+                    issues.push("Armor Value (Unknown Path)");
+                }
+            } else if (check.desc.includes("Stress")) {
+                if (foundry.utils.getProperty(data, "system.stress.value") === undefined &&
+                    foundry.utils.getProperty(data, "system.damage.stress") === undefined &&
+                    foundry.utils.getProperty(data, "system.resources.stress.value") === undefined) {
+                    issues.push("Stress Value (Unknown Path)");
+                }
+            } else if (check.path) {
+                // Std check
+                if (val === undefined) {
+                    issues.push(`${check.desc} missing at '${check.path}'`);
+                }
+            }
+        }
+
+        return issues;
+    }
+
+    static TESTED_DH_VERSION = "0.4.0";
+
+    registerHooks() {
+        Logger.log("Daggerheart Adapter Active");
+
+        const sysVersion = game.system.version ?? "unknown";
+        if (sysVersion !== "unknown" && !foundry.utils.isNewerVersion(sysVersion, DaggerheartAdapter.TESTED_DH_VERSION)
+            && sysVersion !== DaggerheartAdapter.TESTED_DH_VERSION) {
+            Logger.warn(`Daggerheart system version ${sysVersion} is older than tested version ${DaggerheartAdapter.TESTED_DH_VERSION}. Some data paths may not work correctly.`);
+        }
+        Logger.log(`Daggerheart system version: ${sysVersion} (tested against: ${DaggerheartAdapter.TESTED_DH_VERSION})`);
+
+        // Two-phase sound playback for Daggerheart:
+        // Phase 1 (first render): Attack sound only (sword swing, spell cast)
+        // Phase 2 (re-render, ~4s later): Result decorations (miss/hit/stingers)
+        // This syncs result sounds with when the visual result appears on screen.
+        //
+        // renderChatMessageHTML replaces renderChatMessage (deprecated v13, removed v15).
+        // html is now a plain HTMLElement (not jQuery).
+        Hooks.on("renderChatMessageHTML", (message, html) => {
+            Logger.log(`⏱️ [${Date.now()}] renderChatMessageHTML HOOK FIRED (msg: ${message.id})`);
+            if (!game.user.isGM) return;
+            if (!message.isRoll || !message.rolls?.length) return;
+
+            const phase = this.renderPhases.get(message.id);
+
+            if (!phase) {
+                // Phase 1: First render -> attack sound only
+                Logger.log(`⏱️ [${Date.now()}] PHASE 1 (Attack) for msg: ${message.id}`);
+                this.renderPhases.set(message.id, { timestamp: Date.now(), phase: 1 });
+                this.handleAttackSound(message);
+            } else if (phase.phase === 1 && (Date.now() - phase.timestamp) > 500) {
+                // Phase 2: Re-render after 500ms+ -> result decorations
+                Logger.log(`⏱️ [${Date.now()}] PHASE 2 (Result) for msg: ${message.id} (${Date.now() - phase.timestamp}ms since Phase 1)`);
+                this.renderPhases.set(message.id, { ...phase, phase: 2 });
+                this.handleResultSound(message, html);
+            } else {
+                Logger.log(`⏱️ [${Date.now()}] Skipping render for msg: ${message.id} (phase: ${phase.phase}, elapsed: ${Date.now() - phase.timestamp}ms)`);
+            }
+        });
+
+        // Listen for pre-updates to compare Old vs New HP
+        Hooks.on("preUpdateActor", (actor, changes, options, userId) => {
+            Logger.log(`⏱️ [${Date.now()}] preUpdateActor HOOK FIRED (actor: ${actor.name})`);
+            if (!game.user.isGM) return;
+            this.handlePreUpdate(actor, changes);
+        });
+
+        // Listen for Item updates (Armor Slots, Equip/Unequip)
+        Hooks.on("preUpdateItem", (item, changes, options, userId) => {
+            Logger.log(`⏱️ [${Date.now()}] preUpdateItem HOOK FIRED`);
+            if (!game.user.isGM) return;
+            this.handlePreUpdateItem(item, changes);
+        });
+
+        // Fear Tracker: Daggerheart stores fear as a world setting, not an actor property.
+        // The FearTracker UI calls game.settings.set() which fires updateSetting.
+        Hooks.on("updateSetting", (setting) => {
+            if (!game.user.isGM) return;
+            if (!setting.key?.startsWith("daggerheart.")) return;
+            if (setting.key.toLowerCase().includes("fear")) {
+                Logger.log(`⏱️ [${Date.now()}] updateSetting HOOK FIRED for: ${setting.key}`);
+                this.handleFearSettingChange(setting);
+            }
+        });
+    }
+
+    /**
+     * Handle fear changes from the DM Fear Tracker.
+     * Daggerheart stores fear as a world setting (game.settings.set), not on an actor.
+     * The updateSetting hook fires when the GM changes the fear value.
+     */
+    handleFearSettingChange(setting) {
+        let newFear;
+        try {
+            // Setting value may be a raw number or JSON-encoded
+            const raw = setting.value;
+            newFear = typeof raw === "number" ? raw : Number(JSON.parse(raw));
+        } catch {
+            Logger.log(`Fear setting parse failed: ${setting.value}`);
+            return;
+        }
+
+        if (typeof newFear !== "number" || isNaN(newFear)) return;
+
+        // Initialize baseline on first fire
+        if (this.lastFearCount === undefined) {
+            Logger.log(`Fear Tracker: Initializing baseline at ${newFear}`);
+            this.lastFearCount = newFear;
+            return;
+        }
+
+        if (newFear === this.lastFearCount) return;
+
+        Logger.log(`Fear Tracker Update: ${this.lastFearCount} -> ${newFear}`);
+
+        if (newFear > this.lastFearCount) {
+            // Fear Gained - threshold-based intensity
+            if (newFear >= 9) {
+                this.handler.play("DAGGERHEART_FEAR_HIGH");
+            } else if (newFear >= 5) {
+                this.handler.play("DAGGERHEART_FEAR_MED");
+            } else {
+                this.handler.play("DAGGERHEART_FEAR_LOW");
+            }
+        } else {
+            // Fear Used - delta-based intensity
+            const delta = this.lastFearCount - newFear;
+            if (delta >= 5) {
+                this.handler.play("DAGGERHEART_FEAR_USE_HIGH");
+            } else if (delta >= 2) {
+                this.handler.play("DAGGERHEART_FEAR_USE_MED");
+            } else {
+                this.handler.play("DAGGERHEART_FEAR_USE_LOW");
+            }
+        }
+
+        this.lastFearCount = newFear;
+    }
+
+    handlePreUpdate(actor, changes) {
+        // Use Foundry's robust getter
+        const getProperty = foundry.utils.getProperty;
+
+        // Debug: Log the incoming changes to understand structure
+        Logger.log("Daggerheart PreUpdate (JSON):", JSON.stringify(changes, null, 2));
+
+        // 1. HP / Damage Logic
+        // Check multiple paths (Structure varies by System Version)
+        const advHpDiff = getProperty(changes, "system.resources.hitPoints.value");
+        const pcHpDiff = getProperty(changes, "system.hp.value");
+
+        const newHp = advHpDiff !== undefined ? advHpDiff : pcHpDiff;
+        // First-hit diagnostic: log which HP path is active (fires once per session)
+        if (newHp !== undefined && !this._resolvedPaths.has("hp")) {
+            const activePath = advHpDiff !== undefined ? "system.resources.hitPoints.value" : "system.hp.value";
+            Logger.log(`DH | HP path resolved via: ${activePath}`);
+            this._resolvedPaths.add("hp");
+        }
+
+        if (newHp !== undefined) {
+            // Get Old HP (Current Value on Actor)
+            const oldHp = (advHpDiff !== undefined)
+                ? (getProperty(actor, "system.resources.hitPoints.value") || 0)
+                : (getProperty(actor, "system.hp.value") || 0);
+
+            // Get Max HP for Death Check
+            const maxHp = (advHpDiff !== undefined)
+                ? (getProperty(actor, "system.resources.hitPoints.max") || 0)
+                : (getProperty(actor, "system.hp.max") || 0);
+
+            // Daggerheart damage-UP model: HP value INCREASES when damage is taken
+            if (this.isDamage(oldHp, newHp)) {
+                Logger.log(`⏱️ [${Date.now()}] Damage Taken (Value Increased). Playing 'Blood Splat'`);
+                Logger.log(`⏱️ [${Date.now()}] DH | HP Change: ${oldHp} -> ${newHp} (Max: ${maxHp})`);
+
+                // Hit Sound (immediate) - priority: item override > category > generic
+                const hitOverride = this.lastAttackItem?.getFlag?.("ionrift-resonance", "sound_hit");
+                if (hitOverride) {
+                    Logger.log(`⏱️ [${Date.now()}] DH | Item Override: Hit -> ${hitOverride}`);
+                    this.handler.play(hitOverride);
+                } else {
+                    const hitKey = this._deriveCategoryKey(this.lastAttackKey, "HIT");
+                    Logger.log(`⏱️ [${Date.now()}] DH | Playing HIT: ${hitKey} (from attack: ${this.lastAttackKey})`);
+                    this.play(hitKey);
+                }
+
+                const VOCAL_STAGGER = this.handler?.orchestrator?.getNamedOffset("VOCAL_STAGGER") ?? 400;
+                const isDeath = this.isDeath(newHp, maxHp) && oldHp < maxHp;
+
+                if (isDeath) {
+                    // Killing blow - skip pain, go straight to death cry
+                    Logger.log("Actor Died (Damage >= Max)!");
+                    const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
+                    if (deathOverride) {
+                        Logger.log(`Actor Override: Death -> ${deathOverride} (delay: ${VOCAL_STAGGER}ms)`);
+                        this.handler.play(deathOverride, VOCAL_STAGGER);
+                    } else if (actor.hasPlayerOwner || actor.type === "character") {
+                        this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
+                    } else {
+                        this.play(SOUND_EVENTS.VOCAL_GENERIC_DEATH, VOCAL_STAGGER);
+                    }
+                } else {
+                    // Non-lethal - pain sound after impact
+                    const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
+                    if (painOverride) {
+                        Logger.log(`Actor Override: Pain -> ${painOverride} (delay: ${VOCAL_STAGGER}ms)`);
+                        this.handler.play(painOverride, VOCAL_STAGGER);
+                    } else if (actor.hasPlayerOwner || actor.type === "character") {
+                        const pcPain = this.handler.getPCSound(actor, "PAIN");
+                        Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
+                        this.play(pcPain, VOCAL_STAGGER);
+                    } else {
+                        const painSound = getDaggerheartMonsterSound(actor);
+                        Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || 'none'} (delay: ${VOCAL_STAGGER}ms)`);
+                        if (painSound && painSound !== SOUND_EVENTS.MONSTER_GENERIC) {
+                            this.play(painSound, VOCAL_STAGGER);
+                        } else {
+                            Logger.log(`DH | Using generic monster pain: ${SOUND_EVENTS.MONSTER_GENERIC}`);
+                            this.play(SOUND_EVENTS.MONSTER_GENERIC, VOCAL_STAGGER);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Hope Detection
+        // Candidate Paths: 'system.hope.value', 'system.resources.hope.value'
+        const newHope = getProperty(changes, "system.hope.value") ?? getProperty(changes, "system.resources.hope.value");
+
+        if (newHope !== undefined) {
+            // Debug: Check Raw Source vs Derived Data
+            const rawHope = getProperty(actor._source, "system.resources.hope.value");
+            const derivedHope = getProperty(actor, "system.resources.hope.value");
+            Logger.log(`Hope Debug: Raw = ${rawHope}, Derived = ${derivedHope}, New = ${newHope} `);
+
+            // Use Source if available to avoid pre-applied derived updates
+            const oldHope = rawHope ?? derivedHope ?? 0;
+
+            if (newHope > oldHope) {
+                Logger.log(`Hope Gained(${oldHope} -> ${newHope})`);
+                const hopeGainOverride = actor.getFlag("ionrift-resonance", "sound_hope_gain");
+                if (hopeGainOverride) {
+                    Logger.log(`Actor Override: Hope Gain -> ${hopeGainOverride}`);
+                    this.handler.play(hopeGainOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_HOPE");
+                }
+            } else if (newHope < oldHope) {
+                Logger.log(`Hope Used(${oldHope} -> ${newHope})`);
+                const hopeUseOverride = actor.getFlag("ionrift-resonance", "sound_hope_use");
+                if (hopeUseOverride) {
+                    Logger.log(`Actor Override: Hope Use -> ${hopeUseOverride}`);
+                    this.handler.play(hopeUseOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_HOPE_USE");
+                }
+            } else {
+                Logger.log(`Hope Logic Skipped: Old ${oldHope} == New ${newHope} `);
+            }
+        }
+
+        // Fear Detection: Handled by updateSetting hook (fear is a world setting, not an actor property).
+
+        // 4. Stress Detection
+        // Extensive Probing for different data structures
+        const stressPaths = [
+            "system.stress.value",
+            "system.damage.stress",
+            "system.resources.stress.value", // Common in some variants
+            "system.stress" // Direct number?
+        ];
+
+        let newStressVal = undefined;
+        let oldStressVal = undefined;
+        let foundPath = "";
+
+        for (const path of stressPaths) {
+            const val = getProperty(changes, path);
+            if (val !== undefined) {
+                newStressVal = val;
+                foundPath = path;
+                oldStressVal = getProperty(actor, path);
+                // First-hit diagnostic: log which stress path is active (fires once per session)
+                if (!this._resolvedPaths.has("stress")) {
+                    Logger.log(`DH | Stress path resolved via: ${foundPath}`);
+                    this._resolvedPaths.add("stress");
+                }
+                break;
+            }
+        }
+
+        if (newStressVal !== undefined) {
+            const newStress = Number(newStressVal);
+
+            // Re-fetch old stress accurately based on found path
+            const realOldStress = Number(getProperty(actor, foundPath) || 0);
+
+
+
+            if (newStress > realOldStress) {
+                Logger.log(`Stress Gained(${realOldStress} -> ${newStress})`);
+                const stressOverride = actor.getFlag("ionrift-resonance", "sound_stress");
+                if (stressOverride) {
+                    Logger.log(`Actor Override: Stress -> ${stressOverride}`);
+                    this.handler.play(stressOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_STRESS");
+                }
+            } else if (newStress < realOldStress) {
+                Logger.log(`Stress Cleared / Reduced(${realOldStress} -> ${newStress})`);
+                const stressClearOverride = actor.getFlag("ionrift-resonance", "sound_stress_clear");
+                if (stressClearOverride) {
+                    Logger.log(`Actor Override: Stress Clear -> ${stressClearOverride}`);
+                    this.handler.play(stressClearOverride);
+                } else {
+                    this.handler.play("DAGGERHEART_STRESS_CLEAR");
+                }
+            }
+        } else if (JSON.stringify(changes).includes("stress")) {
+            Logger.warn(`DH | Stress update detected in changes but no known path matched. Probed: ${stressPaths.join(", ")}. Actor keys: ${Object.keys(actor.system || {}).join(", ")}`);
+        }
+
+        // 5. Armor Detection
+        const armorPaths = ["system.armor.value", "system.resources.armor.value", "system.damage.armor"];
+        let newArmorVal = undefined;
+        let armorPath = "";
+
+        for (const path of armorPaths) {
+            const val = getProperty(changes, path);
+            if (val !== undefined) {
+                newArmorVal = val;
+                armorPath = path;
+                // First-hit diagnostic: log which armor path is active (fires once per session)
+                if (!this._resolvedPaths.has("armor")) {
+                    Logger.log(`DH | Armor path resolved via: ${armorPath}`);
+                    this._resolvedPaths.add("armor");
+                }
+                break;
+            }
+        }
+
+        if (newArmorVal !== undefined) {
+            const newArmor = Number(newArmorVal);
+            const oldArmor = Number(getProperty(actor, armorPath) || 0);
+
+            Logger.log(`Armor Debug[Path: ${armorPath}]: New = ${newArmor}, Old = ${oldArmor} `);
+
+            if (newArmor > oldArmor) {
+                Logger.log(`Armor Slot Used(${oldArmor} -> ${newArmor})`);
+                this.handler.play("DAGGERHEART_ARMOR_USE");
+            } else if (newArmor < oldArmor) {
+                Logger.log(`Armor Slot Restored(${oldArmor} -> ${newArmor})`);
+                this.handler.play("DAGGERHEART_ARMOR_REPAIR");
+            }
+        } else if (JSON.stringify(changes).includes("armor")) {
+            Logger.warn(`DH | Armor update detected in changes but no known path matched. Probed: ${armorPaths.join(", ")}. Actor keys: ${Object.keys(actor.system || {}).join(", ")}`);
+        }
+    }
+
+    handlePreUpdateItem(item, changes) {
+        // Use Foundry's robust getter
+        const getProperty = foundry.utils.getProperty;
+
+        // DEBUG: Probe ALL item updates to see what Armor looks like
+        Logger.log(`PreUpdateItem: Name = '${item.name}', Type = '${item.type}'`, changes);
+
+        // --- Equip / Unequip Detection (weapons, armor, any item) ---
+        const equippedChange = getProperty(changes, "system.equipped");
+        if (equippedChange !== undefined) {
+            const wasEquipped = item.system?.equipped ?? false;
+            if (equippedChange && !wasEquipped) {
+                // Equipping
+                const equipOverride = item.getFlag("ionrift-resonance", "sound_equip");
+                if (equipOverride) {
+                    Logger.log(`Item Override: Equip ${item.name} -> ${equipOverride}`);
+                    this.handler.play(equipOverride);
+                } else {
+                    Logger.log(`DH | Equip: ${item.name} (no override, generic)`);
+                    this.handler.play("ITEM_EQUIP");
+                }
+            } else if (!equippedChange && wasEquipped) {
+                // Unequipping
+                const unequipOverride = item.getFlag("ionrift-resonance", "sound_unequip");
+                if (unequipOverride) {
+                    Logger.log(`Item Override: Unequip ${item.name} -> ${unequipOverride}`);
+                    this.handler.play(unequipOverride);
+                } else {
+                    Logger.log(`DH | Unequip: ${item.name} (no override, generic)`);
+                    this.handler.play("ITEM_UNEQUIP");
+                }
+            }
+        }
+
+        // --- Armor Slot Detection (Item-based) ---
+        if (item.type === "armor") {
+            // Check for 'marks' (Damage) or 'value' (Remaining Slots)
+            const changesMarks = getProperty(changes, "system.marks.value");
+            const changesValue = getProperty(changes, "system.armor.value") ?? getProperty(changes, "system.value");
+
+            if (changesMarks !== undefined) {
+                // Marks Logic: Increasing = Damage, Decreasing = Repair
+                const oldMarks = Number(getProperty(item, "system.marks.value") ?? 0);
+                const newMarks = Number(changesMarks);
+
+                if (newMarks > oldMarks) {
+                    this.handler.play("DAGGERHEART_ARMOR_USE");
+                } else if (newMarks < oldMarks) {
+                    this.handler.play("DAGGERHEART_ARMOR_REPAIR");
+                }
+            } else if (changesValue !== undefined) {
+                // Slots Logic: Decreasing = Damage, Increasing = Repair
+                const oldSlots = Number(getProperty(item, "system.armor.value") ?? getProperty(item, "system.value") ?? 0);
+                const newSlots = Number(changesValue);
+
+                if (newSlots < oldSlots) {
+                    this.handler.play("DAGGERHEART_ARMOR_USE");
+                } else if (newSlots > oldSlots) {
+                    this.handler.play("DAGGERHEART_ARMOR_REPAIR");
+                }
+            }
+        }
+    }
+
+    async handleInfo(message) {
+        Logger.log("handleInfo called", { isRoll: message.isRoll, rolls: message.rolls?.length });
+
+        if (!message.isRoll && !message.rolls?.length) {
+            Logger.log("handleInfo | Ignored (Not a Roll)");
+            return;
+        }
+
+        const roll = message.rolls[0];
+        Logger.log(`⏱️ [${Date.now()}] Daggerheart Chat/Roll Detected:`, {
+            flavor: message.flavor,
+            content: message.content,
+            rollData: roll
+        });
+
+        // Extract Item Name from roll title.
+        // Daggerheart uses " - " as separator (e.g. "Scepter - Attack").
+        // Some systems/versions use ":" (e.g. "Scepter: Versatile Attack").
+        // Split on whichever appears first so we get the shortest (most specific) prefix.
+        let itemName = "Generic";
+        const rawTitle = roll.options?.title || roll.data?.name || "";
+        if (rawTitle) {
+            const colonIdx = rawTitle.indexOf(":");
+            const dashIdx = rawTitle.indexOf(" - ");
+            // Pick the separator that appears first (ignoring absent ones)
+            let sepIdx = -1;
+            let sepLen = 0;
+            if (colonIdx !== -1 && (dashIdx === -1 || colonIdx < dashIdx)) {
+                sepIdx = colonIdx; sepLen = 1;
+            } else if (dashIdx !== -1) {
+                sepIdx = dashIdx; sepLen = 3;
+            }
+            itemName = (sepIdx !== -1 ? rawTitle.slice(0, sepIdx) : rawTitle).trim();
+        }
+
+        // Actor Name
+        const speakerId = message.speaker?.actor;
+        let actorName = "";
+        let actor = null;
+        if (speakerId) {
+            actor = game.actors.get(speakerId);
+            if (actor) actorName = actor.name;
+        }
+
+        // Item Resolution: UUID (authoritative) -> exact name -> fuzzy title prefix
+        // Daggerheart v14 may attach the item UUID via roll options or message flags.
+        // Falling back to name-matching is fragile when roll title format changes.
+        let item = null;
+        let itemResolutionPath = "none";
+        if (actor) {
+            // 1. UUID via roll options (most reliable - survives renames)
+            const itemUuid = roll.options?.itemUuid
+                || roll.options?.item?.uuid
+                || message.flags?.daggerheart?.itemUuid
+                || message.flags?.core?.itemUuid;
+            if (itemUuid) {
+                try {
+                    const uuidResolved = await fromUuid(itemUuid);
+                    // Ensure the resolved item belongs to this actor
+                    if (uuidResolved && uuidResolved.parent?.id === actor.id) {
+                        item = uuidResolved;
+                        itemResolutionPath = "uuid";
+                    }
+                } catch (e) {
+                    Logger.log(`handleInfo | UUID lookup failed for ${itemUuid}: ${e.message}`);
+                }
+            }
+
+            // 2. Exact name match on the colon-split prefix
+            if (!item) {
+                item = actor.items.getName(itemName) || null;
+                if (item) itemResolutionPath = "exact-name";
+            }
+
+            // 3. Fuzzy: item name starts with the extracted prefix (handles "Scepter" vs "Scepter (Magic)" etc.)
+            if (!item && itemName !== "Generic") {
+                const lower = itemName.toLowerCase();
+                item = actor.items.find(i => i.name.toLowerCase().startsWith(lower)) || null;
+                if (item) itemResolutionPath = "fuzzy-prefix";
+            }
+
+            // 4. Full raw title match (catches format where no colon present)
+            if (!item && rawTitle && rawTitle !== itemName) {
+                item = actor.items.getName(rawTitle) || null;
+                if (item) itemResolutionPath = "raw-title";
+            }
+        }
+
+        Logger.log(`handleInfo | Item: "${itemName}" (resolved via: ${itemResolutionPath}, found: ${item?.name ?? "null"}) | Actor: ${actorName}`);
+
+        const attackSoundKey = this.handler.pickSound(item || itemName, actorName, actor);
+
+        // Daggerheart Logic: 2d12 Duality
+        const d12s = roll.terms.filter(t => t.faces === 12);
+
+        if (d12s.length >= 2) {
+            const hopeDie = d12s[0];
+            const fearDie = d12s[1];
+
+            const hopeValue = hopeDie.results.find(r => r.active)?.result || 0;
+            const fearValue = fearDie.results.find(r => r.active)?.result || 0;
+
+            // Determine success/fail
+            // Try to find DC in roll options, flags, or chat content
+            const total = roll.total;
+            let isSuccess = null; // null = unknown
+
+            // Check for DC in roll options or flags
+            Logger.log("DC Debug - roll.options:", JSON.stringify(roll.options || {}, null, 2));
+            Logger.log("DC Debug - roll.formula:", roll.formula);
+            Logger.log("DC Debug - message.flags.daggerheart:", JSON.stringify(message.flags?.daggerheart || {}, null, 2));
+
+            // DC can be in multiple locations - check all known paths
+            const dc = roll.options?.targetValue
+                || roll.options?.dc
+                || roll.options?.targets?.[0]?.difficulty  // Daggerheart stores here!
+                || message.flags?.daggerheart?.dc;
+
+            if (dc !== undefined) {
+                isSuccess = total >= dc;
+                Logger.log(`DC Found: ${dc}, Total: ${total}, Success: ${isSuccess}`);
+            } else {
+                // Fallback: Check roll flags or message flags for hit/miss
+                Logger.log("Checking flags for hit/miss:", JSON.stringify(message.flags?.daggerheart || {}, null, 2));
+
+                const hitCount = message.flags?.daggerheart?.hits || 0;
+                const missCount = message.flags?.daggerheart?.misses || 0;
+
+                if (missCount > 0) {
+                    isSuccess = false;
+                    Logger.log(`Miss detected from flags: ${missCount} misses`);
+                } else if (hitCount > 0) {
+                    isSuccess = true;
+                    Logger.log(`Hit detected from flags: ${hitCount} hits`);
+                } else {
+                    // Last resort: Check chat content (may not be fully formed in preCreate)
+                    const content = message.content || "";
+                    if (content.includes("MISS") || content.includes("FAILURE") || content.includes("FAIL")) {
+                        isSuccess = false;
+                        Logger.log(`Miss inferred from content keywords`);
+                    } else if (content.includes("SUCCESS") || content.includes("HITS") || content.includes("HIT")) {
+                        isSuccess = true;
+                        Logger.log(`Hit inferred from content keywords`);
+                    }
+                }
+
+                if (isSuccess !== null) {
+                    Logger.log(`Success/fail determined from flags/content: ${isSuccess}`);
+                } else {
+                    Logger.log(`No DC found, no flags, content incomplete - using legacy`);
+                }
+            }
+
+            // Timestamp baseline for timing analysis
+            const hookFiredAt = Date.now();
+            const timestamp = () => `[T+${Date.now() - hookFiredAt}ms]`;
+
+            // Phase-aware: store data for Phase 2, but only play attack now if called from handleInfo
+            // This method is now called from handleAttackSound/handleResultSound via the hook phases
+            Logger.log(`${timestamp()} handleInfo computed: isSuccess=${isSuccess}, hopeValue=${hopeValue}, fearValue=${fearValue}, attackSoundKey=${attackSoundKey}`);
+            return { isSuccess, hopeValue, fearValue, attackSoundKey, item, roll, isDuality: true };
+        } else {
+            // Non-duality roll
+            return { isDuality: false, attackSoundKey, item, messageContent: message.content || "" };
+        }
+    }
+
+    /**
+     * Phase 1: Play ONLY the attack sound (sword swing, spell cast)
+     * Fires on the first renderChatMessage when the card shell appears.
+     */
+    async handleAttackSound(message) {
+        const data = await this.handleInfo(message);
+        if (!data) return;
+
+        const ts = Date.now();
+        Logger.log(`⏱️ [${ts}] ══ PHASE 1: ATTACK SOUND ══`);
+        Logger.log(`⏱️ [${ts}]   Playing: ${data.attackSoundKey}`);
+        this.handler.playItemSound(data.attackSoundKey, data.item);
+        Logger.log(`⏱️ [${ts}] ══ END PHASE 1 ══`);
+
+        // Cache attacking item and key for damage handler
+        this.lastAttackItem = data.item || null;
+        this.lastAttackKey = data.attackSoundKey || null;
+
+        // Store data for Phase 2
+        this.renderPhases.set(message.id, {
+            ...this.renderPhases.get(message.id),
+            data: data
+        });
+    }
+
+    /**
+     * Phase 2: Play result decorations (hit/miss/stingers)
+     * Fires when the chat message re-renders with the visual result (~4s later).
+     */
+    async handleResultSound(message, html) {
+        const phase = this.renderPhases.get(message.id);
+        const data = phase?.data;
+
+        // Clean up completed phase entry to prevent unbounded Map growth
+        this.renderPhases.delete(message.id);
+
+        if (!data) {
+            Logger.log(`⏱️ [${Date.now()}] Phase 2: No stored data for ${message.id}, re-extracting`);
+            const freshData = await this.handleInfo(message);
+            if (!freshData) return;
+            this._playResultSounds(freshData, html);
+            return;
+        }
+
+        // Override messageContent with fresh content (Phase 1 content may have been empty)
+        data.messageContent = message.content || "";
+        this._playResultSounds(data, html);
+    }
+
+    /**
+     * Play the result decoration sounds based on roll outcome.
+     */
+    _playResultSounds(data, html) {
+        const ts = Date.now();
+        const { isSuccess, hopeValue, fearValue, isDuality } = data;
+
+        if (!isDuality) {
+            // Non-duality roll (NPC attacks, d20 rolls)
+            // Hit impact is handled by preUpdateActor damage hook
+            // Miss needs to be caught here via content keywords
+            // Use rendered HTML text (message.content is often empty for D20 rolls)
+            let content = data.messageContent || "";
+            if ((!content || content.trim() === "") && html) {
+                try {
+                    // html is HTMLElement (renderChatMessageHTML - v13+)
+                    content = (html instanceof HTMLElement ? html : html[0])?.textContent || "";
+                } catch (e) {
+                    Logger.log(`⏱️ [${ts}]   Error extracting HTML text: ${e.message}`);
+                }
+            }
+            Logger.log(`⏱️ [${ts}]   NON-DUALITY content (first 200): ${content.substring(0, 200)}`);
+            if (msgContains(content, ["MISS", "FAILURE", "FAIL"])) {
+                Logger.log(`⏱️ [${ts}]   NON-DUALITY: Miss detected from content`);
+                const missOverride = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
+                if (missOverride) {
+                    Logger.log(`⏱️ [${ts}]   Item Override: Miss -> ${missOverride}`);
+                    this.handler.play(missOverride);
+                } else {
+                    const missKey = this._deriveCategoryKey(data.attackSoundKey, "MISS");
+                    Logger.log(`⏱️ [${ts}]   Playing MISS: ${missKey} (from attack: ${data.attackSoundKey})`);
+                    this.play(missKey);
+                }
+            } else {
+                Logger.log(`⏱️ [${ts}]   NON-DUALITY: No miss keywords, hit handled by damage hook`);
+            }
+            return;
+        }
+
+        Logger.log(`⏱️ [${ts}] ══ PHASE 2: RESULT SOUNDS ══`);
+
+        if (hopeValue === fearValue) {
+            // Critical Hit (Doubles) - CORE_HIT already played by preUpdateActor damage hook
+            Logger.log(`⏱️ [${ts}]   CRITICAL HIT (Doubles) Hope=${hopeValue}, Fear=${fearValue}`);
+            this.play(SOUND_EVENTS.DAGGERHEART_CRIT); // Stinger only
+
+        } else if (isSuccess !== null) {
+
+            if (isSuccess) {
+                // Hit - CORE_HIT already played by preUpdateActor damage hook.
+                // Hope/Fear sounds fire naturally from resource update hooks.
+                Logger.log(`⏱️ [${ts}]   SUCCESS - Roll stinger only (hope/fear from resource hooks)`);
+                this.play(SOUND_EVENTS.DAGGERHEART_SUCCESS);
+
+            } else {
+                // Fail - no damage hook fires for a miss, so play miss whoosh here.
+                // Hope/Fear sounds fire naturally from resource update hooks.
+                Logger.log(`⏱️ [${ts}]   FAIL - Miss whoosh + fail stinger (hope/fear from resource hooks)`);
+                const missOverride = data.item?.getFlag?.("ionrift-resonance", "sound_miss");
+                const missKey = missOverride || this._deriveCategoryKey(data.attackSoundKey, "MISS");
+                this.handler.play(missKey);
+                this.play(SOUND_EVENTS.DAGGERHEART_FAIL);
+            }
+
+        } else {
+            // Legacy fallback - assume miss (safe default)
+            Logger.log(`⏱️ [${ts}]   LEGACY - Miss + Hope/Fear stinger`);
+            this.play(SOUND_EVENTS.MISS);
+            if (hopeValue > fearValue) {
+                this.play(SOUND_EVENTS.DAGGERHEART_ROLL_HOPE);
+            } else {
+                this.play(SOUND_EVENTS.DAGGERHEART_ROLL_FEAR);
+            }
+        }
+
+        Logger.log(`⏱️ [${Date.now()}] ══ END PHASE 2 ══`);
+    }
+}

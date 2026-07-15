@@ -1,0 +1,344 @@
+import { Logger } from "../../utils/Logger.js";
+import { SOUND_EVENTS } from "../../data/constants.js";
+import { pickBoundMonsterAttackKey, pickBoundMonsterSpellAttackKey } from "../../data/maps/MonsterVocalMap.js";
+
+export class SoundResolver {
+    constructor(configService) {
+        this.configService = configService;
+    }
+    pickSound(itemOrName, actorName, actor = null, flagType = "sound_attack") {
+        const mappings = this.configService.getMappings();
+        let itemName = "";
+        let item = null;
+
+        // 0. Resolve Item/Name
+        if (typeof itemOrName === "object" && itemOrName?.name) {
+            item = itemOrName;
+            itemName = item.name;
+        } else {
+            itemName = itemOrName || "";
+        }
+
+        // 1. Check Item Flags (Highest Priority)
+        if (item) {
+            const flagVal = item.getFlag("ionrift-resonance", flagType);
+            if (flagVal) {
+                // Support Randomization (comma-separated strings)
+                if (typeof flagVal === 'string' && flagVal.includes(',')) {
+                    const options = flagVal.split(',').map(s => s.trim());
+                    return options[Math.floor(Math.random() * options.length)];
+                }
+                return flagVal;
+            }
+        }
+
+        // 2. Check Adversary Specifics
+        if (actorName && mappings.adversaries && mappings.adversaries[actorName]) {
+            const advMaps = mappings.adversaries[actorName];
+            if (advMaps[itemName]) return advMaps[itemName];
+        }
+
+        // 3. Check Global Weapon/Spell Mappings
+        if (mappings.weapons && mappings.weapons[itemName]) return mappings.weapons[itemName];
+        if (mappings.spells && mappings.spells[itemName]) return mappings.spells[itemName];
+
+        // 3.5. System-specific resolution (e.g. DH domains)
+        const adapter = game.ionrift?.handler?.system;
+        if (adapter?.resolveSystemSound) {
+            const systemResult = adapter.resolveSystemSound(item, actor, this);
+            if (systemResult) return systemResult;
+        }
+
+        // 4. NPC creature attack sounds (before weapon damage-type guessing)
+        if (actor && actor.type !== "character" && game.ionrift?.library?.classifyCreature) {
+            const classification = game.ionrift.library.classifyCreature(actor);
+
+            // 4a. Spell attacks — check matcher list from pack (item must be a spell)
+            if (item?.type === "spell" && classification) {
+                const spellContext = this._buildSpellContext(item);
+                const spellResult = pickBoundMonsterSpellAttackKey(classification, this, spellContext);
+                if (spellResult) {
+                    this._lastSpellAttackOverride = spellResult.overrideSpellEffect;
+                    Logger.log(`SoundResolver | NPC spell attack for ${actor.name}: ${spellResult.key} (override: ${spellResult.overrideSpellEffect}, context: school=${spellContext.school} delivery=${spellContext.delivery})`);
+                    return spellResult.key;
+                }
+            }
+
+            // 4b. Basic attack — existing composite key synthesis
+            const monsterAttackKey = pickBoundMonsterAttackKey(
+                classification,
+                this,
+                SOUND_EVENTS,
+                itemName
+            );
+            if (monsterAttackKey) {
+                this._lastSpellAttackOverride = false;
+                Logger.log(`SoundResolver | NPC attack for ${actor.name}: ${monsterAttackKey} (item: ${itemName})`);
+                return monsterAttackKey;
+            }
+        }
+        this._lastSpellAttackOverride = false;
+
+        // 5. Fallback Matching (Unified Logic)
+        return this.detectSoundKey(itemName, item ? item.type : null, item) ||
+            (mappings.default || SOUND_EVENTS.WHOOSH);
+    }
+    detectSoundKey(name, type = null, item = null) {
+        const lower = name.toLowerCase();
+
+        // 5e System Metadata Checks (if Item object provided)
+        if (item && item.system) {
+            // Spells (School check)
+            if (type === "spell" && item.system.school) {
+                const school = item.system.school;
+                switch (school) {
+                    case "evo":
+                    case "evoc": return SOUND_EVENTS.SPELL_FIRE;
+                    case "nec": return SOUND_EVENTS.SPELL_VOID;
+                    case "div": return SOUND_EVENTS.SPELL_PSYCHIC;
+                    case "abj": return SOUND_EVENTS.SPELL_HEAL;
+                    // default fall through to string match
+                }
+            }
+
+            // Weapons (Damage Type check -- dnd5e / generic)
+            if (type === "weapon" && item.system.damage?.parts?.length > 0) {
+                const dtype = item.system.damage.parts[0][1];
+                if (dtype === "slashing") return SOUND_EVENTS.ATTACK_SWORD_SLASH;
+                if (dtype === "bludgeoning") return SOUND_EVENTS.ATTACK_BLUDGEON_SWING;
+                if (dtype === "piercing") return SOUND_EVENTS.ATTACK_DAGGER_SLASH;
+            }
+
+            // sfrpg Weapon Type Classification (item.system.weaponType)
+            // Starfinder uses a weaponType key instead of damage type for melee/ranged routing.
+            const wType = item.system.weaponType;
+            if (wType) {
+                // Melee: basicM (basic melee), advancedM (advanced melee), solarian (energy melee)
+                if (["basicM", "advancedM", "solarian"].includes(wType)) return SOUND_EVENTS.ASK_GENERIC_MELEE;
+                // Ranged: smallA (pistols), longA (rifles), heavy, sniper, grenade, special
+                if (["smallA", "longA", "heavy", "sniper", "grenade", "special"].includes(wType)) return SOUND_EVENTS.ASK_GENERIC_RANGED;
+            }
+        }
+
+        // String Matching (Universal Configurable Mappings or Hardcoded Fallbacks)
+        const mappings = this.configService.getMappings();
+
+        // Spells
+        if (lower.includes("fire") || lower.includes("flame") || lower.includes("burn") || lower.includes("scorching")) return SOUND_EVENTS.SPELL_FIRE;
+        if (lower.includes("ice") || lower.includes("frost") || lower.includes("cold") || lower.includes("chill")) return SOUND_EVENTS.SPELL_ICE;
+        if (lower.includes("zap") || lower.includes("lightning") || lower.includes("shock") || lower.includes("thunder")) return SOUND_EVENTS.SPELL_LIGHTNING;
+        if (lower.includes("chaos") || lower.includes("void") || lower.includes("blast") || lower.includes("necro")) return SOUND_EVENTS.SPELL_VOID;
+        if (lower.includes("heal") || lower.includes("cure") || lower.includes("life") || lower.includes("preserve")) return SOUND_EVENTS.SPELL_HEAL;
+        if (lower.includes("mind") || lower.includes("psychic") || lower.includes("mock") || lower.includes("vicious")) return SOUND_EVENTS.SPELL_PSYCHIC;
+        if (lower.includes("acid") || lower.includes("poison") || lower.includes("toxic")) return SOUND_EVENTS.SPELL_ACID;
+
+        // Generic Actions
+        if (lower.includes("claw") || lower.includes("scratch")) return (mappings.generic?.claw || SOUND_EVENTS.ATTACK_CLAW);
+        if (lower.includes("bite")) return (mappings.generic?.bite || SOUND_EVENTS.ATTACK_BITE);
+        if (lower.includes("slam")) return (mappings.generic?.slam || SOUND_EVENTS.ATTACK_SLAM);
+
+        // Weapons (more specific keywords BEFORE general ones - e.g. crossbow contains 'bow')
+        if (lower.includes("crossbow") || (lower.includes("bolt") && !lower.includes("lightning"))) return SOUND_EVENTS.ATTACK_CROSSBOW;
+        if (lower.includes("bow") || lower.includes("arrow")) return (mappings.generic?.bow || SOUND_EVENTS.ATTACK_BOW);
+        if (lower.includes("axe") || lower.includes("hammer") || lower.includes("maul")) return SOUND_EVENTS.ATTACK_BLUDGEON;
+        if (lower.includes("dagger") || lower.includes("knife")) return SOUND_EVENTS.ATTACK_DAGGER;
+        if (lower.includes("sword") || lower.includes("blade") || lower.includes("scimitar")) return (mappings.generic?.sword || SOUND_EVENTS.ATTACK_SWORD);
+
+        return null; // No match found
+    }
+    resolveKey(key, depth = 0) {
+        if (depth > 5) return null; // Prevent infinite loops
+
+        const bindings = this.configService.getEffectiveBindings();
+        let resolved = bindings[key];
+
+        // Mute sentinel: explicit silence - blocks the entire fallback chain
+        if (resolved === "__MUTED__") {
+            Logger.log(`SoundResolver | ${key} -> MUTED (silenced by user)`);
+            return null;
+        }
+
+        // Unpack arrays from preset/defaults structure: [{id, name, type}]
+        // Join all IDs for multi-sound randomisation at playback
+        if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
+            resolved = resolved.map(r => r.id).join(',');
+        }
+
+        if (resolved) {
+            if (depth > 0) Logger.log(`SoundResolver | ${key} -> resolved at depth ${depth} -> ${resolved}`);
+            return resolved;
+        }
+
+        // Chase the fallback chain recursively
+        const fallback = this.getFallbackKey(key);
+        if (fallback) {
+            Logger.log(`SoundResolver | ${key} -> fallback -> ${fallback}`);
+            return this.resolveKey(fallback, depth + 1);
+        }
+
+        return null;
+    }
+    // No combat fallback chain (calibration / attack slots).
+    resolveKeyDirect(key) {
+        if (!key || typeof key !== "string") return null;
+
+        const bindings = this.configService.getEffectiveBindings();
+        let resolved = bindings[key];
+
+        if (resolved === "__MUTED__") return null;
+
+        if (Array.isArray(resolved) && resolved.length > 0 && resolved[0].id) {
+            return resolved.map(r => r.id).join(",");
+        }
+
+        return resolved || null;
+    }
+
+    getFallbackKey(specificKey) {
+        // Guard against undefined/null keys
+        if (!specificKey || typeof specificKey !== 'string') {
+            return null;
+        }
+
+        // Core Groups - named intermediates now exposed as ASK_GENERIC_MELEE/RANGED constants.
+        // Chain still terminates at CORE_WHOOSH until default preset binds MELEE/RANGED directly.
+        // @v4: when preset migrates, remove the CORE_WHOOSH step here.
+        if (["ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE", "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM", "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_MELEE;
+
+        if (["ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING", "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"].includes(specificKey)) return SOUND_EVENTS.ASK_GENERIC_RANGED;
+
+        // MELEE/RANGED still fall to CORE_WHOOSH - @v4: remove when preset data is migrated
+        if (specificKey === "CORE_MELEE" || specificKey === "CORE_RANGED") return SOUND_EVENTS.WHOOSH;
+
+
+
+        if (specificKey.startsWith("SPELL_") || specificKey.startsWith("SCHOOL_") || specificKey.startsWith("DOMAIN_")) return SOUND_EVENTS.ASK_GENERIC_MAGIC;
+        if (specificKey === "CORE_SCHOOL" || specificKey === "CORE_DOMAIN") return SOUND_EVENTS.ASK_GENERIC_MAGIC;
+
+        // Hits & Results (Category-Aware -> Generic)
+        if (specificKey === "CORE_HIT_RANGED" || specificKey === "CORE_HIT_MAGIC") return "CORE_HIT";
+        if (specificKey === "CORE_MISS_RANGED" || specificKey === "CORE_MISS_MAGIC") return "CORE_MISS";
+        if (specificKey.endsWith("_HIT") || specificKey === "BLOODY_HIT") return "CORE_HIT";
+        if (["MISS", "ATTACK_MISS"].includes(specificKey)) return "CORE_MISS";
+        if (specificKey === "WHOOSH") return "CORE_WHOOSH";
+        if (specificKey === "CRIT_DECORATION") return "CORE_CRIT";
+        if (specificKey === "FUMBLE_DECORATION") return "CORE_FUMBLE";
+
+        // Vocals - Humanoid Monster (new keys fall back to PC sounds until a dedicated pack binds them)
+        if (specificKey === "CORE_HUMANOID_PAIN_MASCULINE")  return "CORE_PAIN_MASCULINE";
+        if (specificKey === "CORE_HUMANOID_PAIN_FEMININE")   return "CORE_PAIN_FEMININE";
+        if (specificKey === "CORE_HUMANOID_DEATH_MASCULINE") return "CORE_DEATH_MASCULINE";
+        if (specificKey === "CORE_HUMANOID_DEATH_FEMININE")  return "CORE_DEATH_FEMININE";
+
+        // Vocals - PC
+        if (specificKey === "PC_PAIN_MALE") return "CORE_PAIN_MASCULINE";
+        if (specificKey === "PC_PAIN_FEMALE") return "CORE_PAIN_FEMININE";
+        if (specificKey === "PC_DEATH_MALE") return "CORE_DEATH_MASCULINE";
+        if (specificKey === "PC_DEATH_FEMALE") return "CORE_DEATH_FEMININE";
+
+        // Vocals - Monster (weapon suffix -> monster attack -> weapon type -> catch-all)
+        // MONSTER_BEAR_CLAW -> MONSTER_BEAR_ATTACK -> ATTACK_CLAW -> CORE_MELEE
+        if (specificKey.startsWith("MONSTER_")) {
+            // Step 1: Weapon-specific composite -> Monster Default Attack
+            if (specificKey.endsWith("_CLAW") || specificKey.endsWith("_BITE") || specificKey.endsWith("_SLAM")) {
+                // Extract monster base: MONSTER_BEAR_CLAW -> MONSTER_BEAR
+                const suffix = specificKey.endsWith("_CLAW") ? "_CLAW" : specificKey.endsWith("_BITE") ? "_BITE" : "_SLAM";
+                const monsterBase = specificKey.slice(0, -suffix.length);
+                return `${monsterBase}_ATTACK`;
+            }
+
+            // Step 2: Monster Default Attack -> Generic weapon type
+            if (specificKey.endsWith("_ATTACK")) {
+                return "CORE_MELEE"; // Broadest weapon catch-all
+            }
+
+            // Pain vocals
+            if (specificKey.includes("DEATH")) return SOUND_EVENTS.VOCAL_GENERIC_DEATH;
+            return SOUND_EVENTS.VOCAL_GENERIC_PAIN;
+        }
+
+        return null;
+    }
+    static getTaxonomyRoot(key) {
+        if (!key || typeof key !== 'string') return null;
+
+        // Direct root matches
+        if (key === "CORE_MELEE" || key === "CORE_BRAWL") return "CORE_MELEE";
+        if (key === "CORE_RANGED") return "CORE_RANGED";
+        if (key === "CORE_MAGIC") return "CORE_MAGIC";
+        if (key === "CORE_SCHOOL") return "CORE_SCHOOL";
+        if (key === "CORE_DOMAIN") return "CORE_DOMAIN";
+
+        const MELEE_KEYS = new Set([
+            "ATTACK_SWORD", "ATTACK_DAGGER", "ATTACK_AXE", "ATTACK_MACE",
+            "ATTACK_BLUDGEON", "ATTACK_CLAW", "ATTACK_BITE", "ATTACK_SLAM",
+            "ATTACK_SWORD_SLASH", "ATTACK_BLUDGEON_SWING", "ATTACK_DAGGER_SLASH"
+        ]);
+        if (MELEE_KEYS.has(key)) return "CORE_MELEE";
+
+        const RANGED_KEYS = new Set([
+            "ATTACK_BOW", "ATTACK_CROSSBOW", "ATTACK_SLING",
+            "ATTACK_JAVELIN", "ATTACK_THROWN", "ATTACK_BOW_FIRE"
+        ]);
+        if (RANGED_KEYS.has(key)) return "CORE_RANGED";
+
+        if (key.startsWith("SPELL_")) return "CORE_MAGIC";
+        if (key.startsWith("SCHOOL_")) return "CORE_SCHOOL";
+        if (key.startsWith("DOMAIN_")) return "CORE_DOMAIN";
+
+        return null;
+    }
+
+    getPCSound(actor, type = "PAIN") {
+        let identity = actor.getFlag("ionrift-resonance", "identity");
+
+        if (!identity) {
+            // Check Config Override
+            const players = this.configService.getPlayers();
+            if (players[actor.name]) {
+                const cfg = players[actor.name];
+                // Override provides keys; standard flow uses identity flag.
+            }
+        }
+
+        // Default to Masculine if not set (or Log warning)
+        if (!identity) return type === "DEATH" ? SOUND_EVENTS.PC_DEATH_MASCULINE : SOUND_EVENTS.PC_PAIN_MASCULINE;
+
+        const isFem = identity.toLowerCase() === "feminine";
+        if (type === "DEATH") {
+            return isFem ? SOUND_EVENTS.PC_DEATH_FEMININE : SOUND_EVENTS.PC_DEATH_MASCULINE;
+        } else {
+            return isFem ? SOUND_EVENTS.PC_PAIN_FEMININE : SOUND_EVENTS.PC_PAIN_MASCULINE;
+        }
+    }
+    getMonsterSound(actor, type = "PAIN") {
+        const identity = actor.getFlag("ionrift-resonance", "identity");
+        if (!identity) {
+            // No voice identity — use the generic monster chain (unchanged behaviour)
+            return type === "DEATH" ? SOUND_EVENTS.VOCAL_GENERIC_DEATH : SOUND_EVENTS.VOCAL_GENERIC_PAIN;
+        }
+        // Identity set — route through humanoid monster keys.
+        // Falls back to PC pain/death until a dedicated monster voice pack binds them.
+        const isFem = identity.toLowerCase() === "feminine";
+        if (type === "DEATH") {
+            return isFem ? SOUND_EVENTS.CORE_HUMANOID_DEATH_FEMININE : SOUND_EVENTS.CORE_HUMANOID_DEATH_MASCULINE;
+        } else {
+            return isFem ? SOUND_EVENTS.CORE_HUMANOID_PAIN_FEMININE : SOUND_EVENTS.CORE_HUMANOID_PAIN_MASCULINE;
+        }
+    }
+    _buildSpellContext(item) {
+        const actionType = item._currentActivity?.actionType
+            ?? item.system?.actionType
+            ?? "";
+
+        let delivery = "ranged"; // safe default
+        if (actionType === "msak") delivery = "touch";
+        else if (actionType === "save") delivery = "save";
+        // rsak → "ranged" (default already set)
+
+        return {
+            school: item.system?.school ?? "",
+            delivery
+        };
+    }
+}
