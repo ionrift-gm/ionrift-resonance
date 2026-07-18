@@ -44,7 +44,7 @@ Hooks.once("init", async function () {
         console.warn("Ionrift Resonance | Diagnostics unavailable:", e.message);
     }
 
-    const { SettingsLayout } = await import("../../ionrift-library/scripts/SettingsLayout.js");
+    const { SettingsLayout } = await import("../../ionrift-library/scripts/utils/SettingsLayout.js");
     SettingsLayout.registerHeader("ionrift-resonance", SyrinscapeConfigApp, {
         name: "Audio Mode",
         label: "Configure Audio Mode",
@@ -209,11 +209,11 @@ async function migrateStalePackBindings() {
         if (coreInstalled) {
             await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
             await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
-            Logger.log("Stale pack bindings cleared. Core SFX Pack provides sounds.");
-            ui.notifications.info("Ionrift Resonance: Sounds migrated to the installed Core SFX Pack.");
+            Logger.log("Stale pack bindings cleared. Local sound pack provides sounds.");
+            ui.notifications.info("Ionrift Resonance: Sounds migrated to the installed local sound pack.");
         } else {
             ui.notifications.warn(
-                "Ionrift Resonance: Built-in sound files have been removed. Install the free Core SFX Pack from Module Settings → Sound Packs to restore your sounds.",
+                "Ionrift Resonance: Built-in sound files have been removed. Place a local sound pack on disk, then reload.",
                 { permanent: true }
             );
         }

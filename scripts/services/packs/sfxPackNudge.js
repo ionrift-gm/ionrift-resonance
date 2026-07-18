@@ -1,5 +1,4 @@
 import { SoundPackLoader } from "./SoundPackLoader.js";
-import { CORE_SFX_PATREON_URL } from "../../data/constants.js";
 import { openResonancePackLibrary } from "./openResonancePackLibrary.js";
 
 const MODULE_ID = "ionrift-resonance";
@@ -22,12 +21,13 @@ export function registerSfxPackNudge() {
 
     packNudge.register({
         moduleId: MODULE_ID,
-        packUrl: CORE_SFX_PATREON_URL,
         isContentInstalled: () => hasActiveSfxContent(),
         openInstaller: () => openResonancePackLibrary(),
-        title: "No sound pack installed.",
-        subtitle: "Download the Core SFX Pack, then install the zip from Patreon Library (Resonance).",
+        title: "No local sound pack installed.",
+        subtitle: "Resonance plays packs already present on this machine. Pack downloads are outside the listed module.",
         icon: "fas fa-music",
+        primaryLabel: "Manage Packs",
+        primaryIcon: "fas fa-sliders",
         settings: {
             suppressed: "sfxNudgeSuppressed",
             snoozedUntil: "sfxNudgeSnoozedUntil"

@@ -30,7 +30,7 @@ export async function checkResonanceStatus() {
                 return {
                     status: STATUS.WARNING,
                     label: "Pack bindings missing",
-                    message: "Core SFX overlay is on but Calibration has no pack bindings. Install the Core SFX zip from Patreon Library so slots populate."
+                    message: "A sound pack overlay is active but Calibration has no pack bindings. Reload the world after the pack files are present on disk."
                 };
             }
         } catch (e) {
@@ -105,7 +105,7 @@ export async function checkResonanceStatus() {
         return {
             status: STATUS.WARNING,
             label: "Setup needed",
-            message: "Install the Core SFX Pack from Patreon Library, or set Audio Mode to add a Syrinscape token."
+            message: "No local sound pack bindings found. Set Audio Mode to add a Syrinscape token, or install a sound pack outside this listed module."
         };
     }
 

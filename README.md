@@ -7,7 +7,7 @@
 
 **Automated audio triggers for Foundry VTT.**
 
-Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (native support) and **DnD5e** (via Midi-QOL). Supports the free Core SFX Pack (WAV/MP3). Optionally integrates with **Syrinscape** for cloud audio.
+Triggers sound effects based on chat messages, mechanics, and combat workflows. Supports **[Daggerheart](https://foundryvtt.com/packages/daggerheart)** (native support) and **DnD5e** (via Midi-QOL). Plays locally installed sound packs (WAV/MP3). Optionally integrates with **Syrinscape** for cloud audio.
 
 ### Support Ionrift
 
@@ -53,7 +53,7 @@ Triggers sound effects based on chat messages, mechanics, and combat workflows. 
 4. Click **Open Resonance Setup** (not the Library's **Begin Attunement**, which is for creature indexing)
    - **Local sounds?** Leave the Syrinscape token blank and click Verify to proceed in Local-Only mode
    - **Syrinscape?** Paste your auth token to connect cloud audio
-5. Download the free **Core SFX Pack** from Patreon, then **Ionrift Library → Patreon Library → Import zip**.
+5. If you use local packs, place them on disk using the install steps from the pack source, then reload the world.
 
 For detailed walkthrough, troubleshooting, and FAQ see the **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)**.
 
@@ -74,9 +74,9 @@ Every actor and item sheet includes a **Sounds** button (header or overflow menu
 
 Custom bindings always take priority over global presets.
 
-## Core SFX Pack
+## Local sound packs
 
-The **Core SFX Pack** provides **~400 local sound files** covering the full combat loop. Download the zip from Patreon (or the public pack link), then install with **Patreon Library → Import zip**. It does not use one-click cloud Install.
+Local packs provide combat-loop audio (hits, weapons, monsters, spells, stingers, and more). Resonance reads packs already present under `ionrift-data/`. The listed module does not download or extract pack archives.
 
 | Category | Sounds | Examples |
 |----------|--------|----------|
