@@ -1,1 +1,0 @@
-export const CORE_SFX_PATREON_URL = "https://www.patreon.com/posts/155880618";

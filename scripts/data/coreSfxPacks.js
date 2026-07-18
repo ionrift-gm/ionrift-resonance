@@ -1,4 +1,4 @@
-/** Canonical Core SFX overlay and legacy zip pack id (both Block / Import-zip). */
+/** Canonical Core SFX overlay and legacy zip pack id (both Block / unzip-only). */
 export const CORE_SFX_PACK_IDS = Object.freeze([
     "resonance-core-overlay",
     "ionrift-soundpack-core"

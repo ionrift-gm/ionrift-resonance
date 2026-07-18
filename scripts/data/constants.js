@@ -1,4 +1,3 @@
-export { CORE_SFX_PATREON_URL } from "./patreon.js";
 export { SOUND_TYPES } from "./soundTypes.js";
 export {
     SOUND_EVENTS,

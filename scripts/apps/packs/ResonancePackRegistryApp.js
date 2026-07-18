@@ -1,4 +1,4 @@
-const { AbstractPackRegistryApp } = await import("../../../../ionrift-library/scripts/apps/AbstractPackRegistryApp.js");
+const { AbstractPackRegistryApp } = await import("../../../../ionrift-library/scripts/apps/packs/AbstractPackRegistryApp.js");
 import { getSoundPackLoader } from "../../composition/accessors.js";
 
 export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
@@ -69,9 +69,8 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
             html += `
             <div class="art-empty-state">
                 <i class="fas fa-music"></i>
-                <p>No sound packs installed.</p>
-                <span>Get the <a href="https://www.patreon.com/posts/155880618" target="_blank" style="color: #58a6ff;">Core SFX Pack</a> -- 552 sounds for combat, spells, monsters, and stingers.</span>
-                <span style="margin-top: 6px; opacity: 0.7;">Download the ZIP, then click <strong>Import Sound Pack</strong> below to install it.</span>
+                <p>No sound packs installed locally.</p>
+                <span>This panel manages packs already present on disk. Pack downloads are outside the listed module.</span>
             </div>`;
         } else {
             html += `<div class="pack-section-header"><i class="fas fa-volume-up"></i> Installed Packs</div>`;
@@ -84,20 +83,18 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
         html += `</div>`;
 
         html += this._renderFooterLinks([
-            { href: "https://www.patreon.com/posts/155880618", icon: "fas fa-download", label: "Core SFX Pack" },
             { href: "https://github.com/ionrift-gm/ionrift-library/wiki", icon: "fas fa-book", label: "Documentation" }
         ]);
 
-        html += this._renderActionButtons([
-            { cls: "pack-import-btn", icon: "fas fa-file-import", label: "Import Sound Pack" },
-            { cls: "pack-save-btn", icon: "fas fa-save", label: "Save Changes" }
-        ]);
+        if (context.packs.length > 0) {
+            html += this._renderActionButtons([
+                { cls: "pack-save-btn", icon: "fas fa-save", label: "Save Changes" }
+            ]);
+        }
 
         panel.innerHTML = html;
 
         this._wireToggles(panel);
-
-        panel.querySelector(".pack-import-btn")?.addEventListener("click", () => this._importSoundPack());
         panel.querySelector(".pack-save-btn")?.addEventListener("click", () => this._onSave(panel));
     }
 
@@ -110,130 +107,6 @@ export class ResonancePackRegistryApp extends AbstractPackRegistryApp {
             : "";
         const bindingBadge = `<span class="pack-terrain-badge"><i class="fas fa-link"></i> ${pack.totalItems} bindings</span>`;
         return `<div class="pack-terrain-list">${authorBadge}${bindingBadge}</div>`;
-    }
-
-    // --  IMPORT FLOW
-    /**
-     * Opens a file picker for a .zip sound pack, pre-reads the manifest
-     * to determine the packId, then delegates to ZipImporterService to
-     * extract into ionrift-data/resonance/packs/{packId}/.
-     *
-     * After import: auto-enables the pack, re-inits SoundPackLoader,
-     * and re-renders the UI.
-     */
-    async _importSoundPack() {
-        // Gate: need the library's zip importer
-        const lib = game.ionrift?.library;
-        if (!lib?.importZipFromFile) {
-            ui.notifications.error("Ionrift Library v1.7.0+ is required for sound pack imports.");
-            return;
-        }
-
-        // Pick a file
-        const file = await this._pickZipFile();
-        if (!file) return;
-
-        // Pre-read to extract packId from manifest
-        const packId = await this._readPackIdFromZip(file);
-        if (!packId) {
-            ui.notifications.error("Sound pack ZIP must contain a manifest.json with an \"id\" field.");
-            return;
-        }
-
-        // Ensure the packs root directory exists before importing.
-        // ZipImporterService creates ionrift-data/resonance and the pack subdirectory,
-        // but the intermediate "packs" directory must exist first.
-        // Wrap in withSuppressedToasts so Foundry's "Target directory does not exist"
-        // noise during recursive directory creation doesn't surface as red banners.
-        const platform = game.ionrift?.library?.platform;
-        if (platform) {
-            await platform.withSuppressedToasts(() => platform.ensureDirectory("ionrift-data/resonance/packs"));
-        }
-
-        // Delegate to ZipImporterService -- routes to ionrift-data/resonance/packs/{packId}/
-        const result = await lib.importZipFromFile(file, {
-            moduleId: "resonance",
-            assetType: `packs/${packId}`,
-            allowedExtensions: [".json", ".mp3", ".wav", ".ogg", ".webm", ".flac"],
-            maxSizeMB: 200
-        });
-
-        if (!result || result.imported === 0) return;
-
-        // Auto-enable the newly imported pack
-        try {
-            const settings = game.settings.get("ionrift-resonance", "installedSoundPacks") ?? {};
-            settings[packId] = true;
-            await game.settings.set("ionrift-resonance", "installedSoundPacks", settings);
-        } catch (e) {
-            console.warn("ResonancePackRegistry | Failed to auto-enable pack:", e);
-        }
-
-        // Re-init SoundPackLoader to pick up the new pack
-        await getSoundPackLoader().init();
-
-        ui.notifications.info(`Sound pack "${packId}" imported. ${result.imported} files installed.`);
-        this.render({ force: true });
-    }
-
-    /**
-     * Opens a browser file picker restricted to .zip files.
-     * @returns {Promise<File|null>}
-     */
-    _pickZipFile() {
-        return new Promise((resolve) => {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = ".zip";
-            input.addEventListener("change", (e) => resolve(e.target.files?.[0] ?? null));
-            input.addEventListener("cancel", () => resolve(null));
-            input.click();
-        });
-    }
-
-    /**
-     * Reads the manifest.json from a zip file to extract the pack ID.
-     * Uses the library's vendored JSZip.
-     * @param {File} file
-     * @returns {Promise<string|null>}
-     */
-    async _readPackIdFromZip(file) {
-        try {
-            // Load JSZip via the kernel
-            const platform = game.ionrift?.library?.platform;
-            let JSZip;
-            if (platform) {
-                JSZip = await platform.loadJSZip();
-            } else if (window.JSZip) {
-                JSZip = window.JSZip;
-            } else {
-                console.warn("ResonancePackRegistry | JSZip not available.");
-                return null;
-            }
-
-            const buffer = await file.arrayBuffer();
-            const zip = await JSZip.loadAsync(buffer);
-
-            // Look for manifest.json at the root
-            const manifestEntry = zip.file("manifest.json");
-            if (!manifestEntry) {
-                console.warn("ResonancePackRegistry | No manifest.json found in zip root.");
-                return null;
-            }
-
-            const text = await manifestEntry.async("text");
-            const manifest = JSON.parse(text);
-
-            if (!manifest.id || typeof manifest.id !== "string") {
-                console.warn("ResonancePackRegistry | manifest.json missing 'id' field.");
-                return null;
-            }
-
-            return manifest.id;
-        } catch (e) {
-            console.error("ResonancePackRegistry | Failed to read pack manifest from zip:", e);
-            return null;
-        }
     }
 
     // --  SAVE
