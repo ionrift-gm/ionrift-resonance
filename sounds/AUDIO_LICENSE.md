@@ -1,6 +1,6 @@
 # Audio Asset License
 
-Audio for Ionrift Resonance ships in the free **Core SFX Pack** (and any later sound overlays), not inside the Foundry module package. Import the pack zip via **Ionrift Library → Patreon Library → Import zip**.
+Audio for Ionrift Resonance ships in separate sound packs and overlays, not inside the Foundry module package. This license covers those audio assets when they are installed locally.
 
 **You may:**
 - Use these sounds in your Foundry VTT games
