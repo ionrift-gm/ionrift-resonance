@@ -2,7 +2,7 @@ import { SoundPackLoader } from "./SoundPackLoader.js";
 
 /**
  * Shared SFX readiness check for Resonance status surfaces.
- * Pack acquisition nudges live in Annex only.
+ * Acquisition instructions live on the pack post.
  */
 export function hasActiveSfxContent() {
     if (!SoundPackLoader.loaded) return false;

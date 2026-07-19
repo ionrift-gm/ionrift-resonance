@@ -5,7 +5,6 @@ import { SoundOrchestrator } from "../services/playback/SoundOrchestrator.js";
 import { ResonanceConfig } from "../services/config/ResonanceConfig.js";
 import { SoundResolver } from "../services/playback/SoundResolver.js";
 import { SyrinscapeProvider } from "../providers/concrete/SyrinscapeProvider.js";
-import { ResonancePackRegistryApp } from "../apps/packs/ResonancePackRegistryApp.js";
 import { soundManager } from "../services/playback/SoundManager.js";
 
 export function createResonanceContext() {
@@ -22,7 +21,6 @@ export function createResonanceContext() {
         SoundPackLoader,
         SoundOrchestrator,
         SyrinscapeProvider,
-        ResonancePackRegistryApp,
         handler: null
     };
 
@@ -32,7 +30,6 @@ export function createResonanceContext() {
 
 export async function startResonanceRuntime(ctx) {
     game.ionrift.resonance.SoundPackLoader = SoundPackLoader;
-    game.ionrift.resonance.ResonancePackRegistryApp = ResonancePackRegistryApp;
 
     await Promise.allSettled([
         SoundPackLoader.init(),
@@ -61,8 +58,7 @@ export function exposeResonanceApi(ctx) {
         manager: ctx.manager,
         SoundPackLoader: ctx.SoundPackLoader,
         SoundOrchestrator: ctx.SoundOrchestrator,
-        SyrinscapeProvider: ctx.SyrinscapeProvider,
-        ResonancePackRegistryApp: ctx.ResonancePackRegistryApp
+        SyrinscapeProvider: ctx.SyrinscapeProvider
     };
 
     if (ctx.handler) {
