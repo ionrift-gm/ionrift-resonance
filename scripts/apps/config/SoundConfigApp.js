@@ -8,8 +8,6 @@ import {
     getSoundOrchestrator
 } from "../../composition/accessors.js";
 
-const RESONANCE_MODULE_ID = "ionrift-resonance";
-
 const FEATURE_SHARED_MONSTER_VOICES = false;
 
 export class SoundConfigApp extends FormApplication {
@@ -1006,10 +1004,6 @@ export class SoundConfigApp extends FormApplication {
     activateListeners(html) {
         super.activateListeners(html);
 
-        // SFX Pack Nudge: contextual banner when no packs are installed.
-        // Mirrors the Respite art-pack nudge -- shows only in the workflow context.
-        this._injectCalibrationNudge(html);
-
         // Use delegation for robust handling of dynamic partial replacements
         html.on("click", ".play-preview", this._onPlayPreview.bind(this));
 
@@ -1094,26 +1088,6 @@ export class SoundConfigApp extends FormApplication {
             this._hooksRegistered = false;
         }
         return super.close(options);
-    }
-
-    /**
-     * Contextual SFX nudge banner -- injected at the top of the Calibration
-     * content area when no sound packs are installed. Delegates rendering to
-     * the shared library PackNudgeService; dismiss state is shared with the
-     * Settings panel surface so one dismiss applies everywhere.
-     */
-    async _injectCalibrationNudge(html) {
-        const packNudge = game.ionrift?.library?.packNudge;
-        if (!packNudge) return;
-
-        const $content = html.find(".content");
-        if (!$content.length) return;
-
-        await packNudge.inject(RESONANCE_MODULE_ID, $content, {
-            position: "prepend",
-            scope: $content,
-            layout: "stacked"
-        });
     }
 
     /**
