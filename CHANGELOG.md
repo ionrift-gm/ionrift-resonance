@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.4] - 2026-07-19
+
+### Changed
+- Sound pack prompts moved out of Resonance. Core SFX still loads from local overlay files when present.
+
 ## [2.11.3] - 2026-07-14
 
 ### Changed
