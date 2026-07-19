@@ -98,13 +98,6 @@ Hooks.once("init", async function () {
         }
     });
 
-    try {
-        const { registerSfxPackNudge } = await import("./services/packs/sfxPackNudge.js");
-        registerSfxPackNudge();
-    } catch (e) {
-        Logger.warn("Pack nudge registration failed:", e);
-    }
-
     Hooks.once("ready", async () => {
         await startResonanceRuntime(ctx);
 
