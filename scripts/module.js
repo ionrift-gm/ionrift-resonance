@@ -5,7 +5,6 @@ import { registerSettings } from "./settings.js";
 import { SOUND_EVENTS } from "./data/constants.js";
 import { hasCoreSfxPack } from "./data/coreSfxPacks.js";
 import { SoundPackLoader } from "./services/packs/SoundPackLoader.js";
-import { ResonancePackRegistryApp } from "./apps/packs/ResonancePackRegistryApp.js";
 import {
     createResonanceContext,
     startResonanceRuntime
@@ -52,15 +51,6 @@ Hooks.once("init", async function () {
         icon: "fas fa-volume-up"
     });
 
-    if (!game.ionrift?.library?.isOverlayDistributionActive?.()) {
-        SettingsLayout.registerPackButton("ionrift-resonance", ResonancePackRegistryApp, {
-            name: "Sound Packs",
-            label: "Manage Sound Packs",
-            hint: "Enable or disable installed sound packs. Packs add sound bindings at lower priority than presets.",
-            icon: "fas fa-music"
-        });
-    }
-
     game.settings.registerMenu("ionrift-resonance", "soundConfigMenu", {
         name: "Resonance Calibration",
         label: "Open Calibration",
@@ -89,15 +79,6 @@ Hooks.once("init", async function () {
         }
     });
 
-    Hooks.on("ionrift.collectDestructiveWarnings", ({ moduleId, action, warnings, context }) => {
-        if (moduleId !== "ionrift-resonance") return;
-        try {
-            appendResonanceDestructiveWarnings(warnings, action, context);
-        } catch (e) {
-            Logger.warn("collectDestructiveWarnings | resonance check failed:", e?.message ?? e);
-        }
-    });
-
     Hooks.once("ready", async () => {
         await startResonanceRuntime(ctx);
 
@@ -113,81 +94,6 @@ Hooks.once("init", async function () {
         registerResonanceStatusIndicator();
     });
 });
-
-function appendResonanceDestructiveWarnings(warnings, action, context = {}) {
-    const incomingPackId = typeof context?.packId === "string" ? context.packId : null;
-    const candidatePackIds = new Set();
-    if (incomingPackId) candidatePackIds.add(incomingPackId);
-
-    const existingPacks = SoundPackLoader.loaded ? SoundPackLoader.getLoadedPacks() : [];
-    for (const pack of existingPacks) {
-        if (candidatePackIds.has(pack.id) || pack.id === incomingPackId || action === "reinstall") {
-            warnings.push({
-                severity: "replaced",
-                title: `Pack "${pack.name || pack.id}" (v${pack.version})`,
-                detail: pack.source === "overlay"
-                    ? "Currently installed via Patreon Library. Files will be overwritten."
-                    : "Already installed from a .zip. Shadowed by the new copy until removed."
-            });
-            break;
-        }
-    }
-
-    if (action === "reinstall" || existingPacks.length > 0) {
-        const customRaw = (() => {
-            try {
-                return game.settings.get("ionrift-resonance", "customSoundBindings") || "";
-            } catch {
-                return "";
-            }
-        })();
-        const trimmed = customRaw.trim();
-        const hasCustom = trimmed && trimmed !== "{}";
-        if (hasCustom) {
-            warnings.push({
-                severity: "preserved",
-                title: "Custom sound bindings",
-                detail: "Resonance Calibration overrides stay in place across installs."
-            });
-        }
-
-        const flagsCount = countResonanceFlags();
-        if (flagsCount > 0) {
-            warnings.push({
-                severity: "preserved",
-                title: `Per-actor and per-item sound overrides (${flagsCount})`,
-                detail: "Token and item flags assigned in Calibration are untouched."
-            });
-        }
-    }
-}
-
-function countResonanceFlags() {
-    let count = 0;
-    const IGNORED = new Set(["identity", "soundPreset", "sound_config"]);
-    const meaningful = (key, val) => {
-        if (!val) return false;
-        if (IGNORED.has(key)) return false;
-        if (key.endsWith("_name") || key.endsWith("_meta")) return false;
-        return true;
-    };
-
-    for (const actor of game.actors ?? []) {
-        const flags = actor.flags?.["ionrift-resonance"];
-        if (!flags) continue;
-        for (const [key, val] of Object.entries(flags)) {
-            if (meaningful(key, val)) { count++; break; }
-        }
-    }
-    for (const item of game.items ?? []) {
-        const flags = item.flags?.["ionrift-resonance"];
-        if (!flags) continue;
-        for (const [key, val] of Object.entries(flags)) {
-            if (meaningful(key, val)) { count++; break; }
-        }
-    }
-    return count;
-}
 
 async function migrateStalePackBindings() {
     if (!game.user.isGM || game.settings.get("ionrift-resonance", "stalePackMigrated")) return;
