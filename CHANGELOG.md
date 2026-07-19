@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.5] - 2026-07-19
+
+### Changed
+- Sound packs now load from manually unzipped overlay folders. Resonance no longer includes an in-app pack manager.
+
 ## [2.11.4] - 2026-07-19
 
 ### Changed
