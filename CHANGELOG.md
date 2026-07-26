@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.6] - 2026-07-26
+
+### Fixed
+- NPC pain and death vocals now honor the identity set in Actor Sound Config.
+
 ## [2.11.5] - 2026-07-19
 
 ### Changed
