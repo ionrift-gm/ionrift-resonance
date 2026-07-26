@@ -312,7 +312,8 @@ export class SoundResolver {
         }
     }
     getMonsterSound(actor, type = "PAIN") {
-        const identity = actor.getFlag("ionrift-resonance", "identity");
+        const identity = actor?.getFlag?.("ionrift-resonance", "identity")
+            ?? actor?.flags?.["ionrift-resonance"]?.identity;
         if (!identity) {
             // No voice identity — use the generic monster chain (unchanged behaviour)
             return type === "DEATH" ? SOUND_EVENTS.VOCAL_GENERIC_DEATH : SOUND_EVENTS.VOCAL_GENERIC_PAIN;
@@ -325,6 +326,29 @@ export class SoundResolver {
         } else {
             return isFem ? SOUND_EVENTS.CORE_HUMANOID_PAIN_FEMININE : SOUND_EVENTS.CORE_HUMANOID_PAIN_MASCULINE;
         }
+    }
+
+    /**
+     * NPC combat vocal for pain/death.
+     * Actor Sound Config "humanoid" identity must win over classifier monster vocals
+     * (preview already used getMonsterSound; live adapters historically did not).
+     *
+     * @param {Actor} actor
+     * @param {"PAIN"|"DEATH"} [type="PAIN"]
+     * @param {{ detectMonsterPain?: (actor: Actor) => string|null }} [options]
+     * @returns {string|null}
+     */
+    resolveNpcVocal(actor, type = "PAIN", options = {}) {
+        if (!actor) return null;
+        const identity = actor?.getFlag?.("ionrift-resonance", "identity")
+            ?? actor?.flags?.["ionrift-resonance"]?.identity;
+        if (identity || type === "DEATH") {
+            return this.getMonsterSound(actor, type);
+        }
+        if (typeof options.detectMonsterPain === "function") {
+            return options.detectMonsterPain(actor);
+        }
+        return this.getMonsterSound(actor, "PAIN");
     }
     _buildSpellContext(item) {
         const actionType = item._currentActivity?.actionType

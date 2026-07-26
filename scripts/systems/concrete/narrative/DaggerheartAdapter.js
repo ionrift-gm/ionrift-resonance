@@ -358,7 +358,9 @@ export class DaggerheartAdapter extends SystemAdapter {
                     } else if (actor.hasPlayerOwner || actor.type === "character") {
                         this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
                     } else {
-                        this.play(SOUND_EVENTS.VOCAL_GENERIC_DEATH, VOCAL_STAGGER);
+                        const deathSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "DEATH")
+                            ?? SOUND_EVENTS.VOCAL_GENERIC_DEATH;
+                        this.play(deathSound, VOCAL_STAGGER);
                     }
                 } else {
                     // Non-lethal - pain sound after impact
@@ -371,8 +373,10 @@ export class DaggerheartAdapter extends SystemAdapter {
                         Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
                         this.play(pcPain, VOCAL_STAGGER);
                     } else {
-                        const painSound = getDaggerheartMonsterSound(actor);
-                        Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || 'none'} (delay: ${VOCAL_STAGGER}ms)`);
+                        const painSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "PAIN", {
+                            detectMonsterPain: (a) => getDaggerheartMonsterSound(a)
+                        }) ?? getDaggerheartMonsterSound(actor);
+                        Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || "none"} (delay: ${VOCAL_STAGGER}ms)`);
                         if (painSound && painSound !== SOUND_EVENTS.MONSTER_GENERIC) {
                             this.play(painSound, VOCAL_STAGGER);
                         } else {
