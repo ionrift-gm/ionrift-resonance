@@ -296,7 +296,9 @@ export class PF2eAdapter extends SystemAdapter {
             } else if (isPC) {
                 this.play(this.handler.getPCSound(actor, "DEATH"), delay);
             } else {
-                this.play(SOUND_EVENTS.CORE_MONSTER_DEATH, delay);
+                const deathSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "DEATH")
+                    ?? SOUND_EVENTS.CORE_MONSTER_DEATH;
+                this.play(deathSound, delay);
             }
         } else {
             Logger.log(`PF2e | ${actor.name} took damage, playing pain`);
@@ -308,7 +310,9 @@ export class PF2eAdapter extends SystemAdapter {
                 Logger.log(`PF2e | PC Pain sound: ${pcPain} (delay: ${delay}ms)`);
                 this.play(pcPain, delay);
             } else {
-                const painSound = this._detectMonsterPain(actor);
+                const painSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "PAIN", {
+                    detectMonsterPain: (a) => this._detectMonsterPain(a)
+                }) ?? this._detectMonsterPain(actor);
                 Logger.log(`PF2e | Monster pain sound: ${painSound}`);
                 if (painSound) this.play(painSound, delay);
             }

@@ -54,7 +54,7 @@ Hooks.once("init", async function () {
     game.settings.registerMenu("ionrift-resonance", "soundConfigMenu", {
         name: "Resonance Calibration",
         label: "Open Calibration",
-        hint: "Configure custom sounds and per-actor overrides.",
+        hint: "",
         icon: "fas fa-sliders-h",
         type: SoundConfigApp,
         restricted: true
