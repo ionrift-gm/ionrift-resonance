@@ -480,7 +480,9 @@ export class DnD5eAdapter extends SystemAdapter {
             } else if (isPC) {
                 emit(this.handler.getPCSound(actor, "DEATH"), `pc-death-${actor.name}`);
             } else {
-                emit(SOUND_EVENTS.CORE_MONSTER_DEATH, `monster-death-${actor.name}`);
+                const deathSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "DEATH")
+                    ?? SOUND_EVENTS.CORE_MONSTER_DEATH;
+                emit(deathSound, `monster-death-${actor.name}`);
             }
         } else {
             Logger.log(`DnD5e | ${actor.name} took damage, playing pain`);
@@ -493,7 +495,9 @@ export class DnD5eAdapter extends SystemAdapter {
                 Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${delay}ms)`);
                 emit(pcPain, `pc-pain-${actor.name}`);
             } else {
-                const painSound = this.detectMonsterPain(actor);
+                const painSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "PAIN", {
+                    detectMonsterPain: (a) => this.detectMonsterPain(a)
+                }) ?? this.detectMonsterPain(actor);
                 Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
                 if (trace) this._traceNative("vocal.monsterPainKey", { actor: actor.name, painSound });
                 if (painSound) emit(painSound, `monster-pain-${actor.name}`);
