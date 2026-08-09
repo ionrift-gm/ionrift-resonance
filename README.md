@@ -93,13 +93,13 @@ All sounds are available as a downloadable pack and are no longer bundled direct
 ## Features
 *   **Duality Dice Support**: Hooks into Daggerheart roll mechanics.
     *   **Fear**: Dark/tense sounds when Fear interacts with the roll.
-    *   **Hope**: Heroic sounds when Hope wins.
+    *   **Hope**: Hope-win sounds.
     *   **Criticals**: Sound cues for rolling doubles.
 *   **Contextual Triggers**:
     *   **Damage**: Blood splat sounds when actors take damage.
     *   **Death**: Death sounds when HP drops to 0.
     *   **Misses**: Whoosh or failure sounds on missed attacks.
-*   **Smart Matching**: Picks sounds based on weapon names (Sword, Dagger, Bow) or spell keywords (Fire, Ice, Void).
+*   **Name matching**: Picks sounds based on weapon names (Sword, Dagger, Bow) or spell keywords (Fire, Ice, Void).
 *   **Per-Item Overrides**: Bind specific sounds to individual items (attack, hit, miss, equip, unequip). Takes priority over all presets.
 *   **Per-Actor Overrides**: Set pain, death, spotlight, and system-specific sounds per character or creature.
 *   **Mute Toggle** *(v2.3.0)*: Silence individual event keys in the Calibration UI without removing the preset. Blocks the full fallback chain.
@@ -158,8 +158,8 @@ See **[Features Reference](docs/FEATURES.md)** for full detail on all tabs and c
 *   **[Syrinscape](https://syrinscape.com/)** - Cloud-hosted sound library.
 *   **[fvtt-syrin-control](https://github.com/frondeus/fvtt-syrin-control)** - Embeds the Syrinscape player in Foundry.
 
-### Recommended Modules
-These are not required but significantly improve the experience:
+### Optional modules
+These are not required. They add timing gaps between sounds:
 
 *   **[Dice So Nice](https://foundryvtt.com/packages/dice-so-nice)** - 3D dice add a natural pause between the attack roll and result, giving sounds room to breathe.
 *   **[Automated Animations](https://foundryvtt.com/packages/autoanimations)** - Spell and attack animations create timing gaps so sounds don't overlap.
@@ -170,7 +170,7 @@ These are not required but significantly improve the experience:
 - **Daggerheart** (native) - Hope/Fear mechanics, Duality Dice rolls, Fear Tracker thresholds, and resource changes all have sound hooks. No additional modules needed.
 - **DnD5e** (via Midi-QOL) - full attack/damage/healing workflow support. Two-beat sequences: weapon swing, then hit or miss result.
 - **Pathfinder 2e & Starfinder 1e** (native) - Full attack, damage, spell, and healing hooks.
-- **Expanded Native Integrations:** Full automatic sound hooks for weapons, spells, and damage events across **Pathfinder 1e, D&D 3.5e, Old-School Essentials, Call of Cthulhu 7e, Savage Worlds (SWADE), Warhammer Fantasy Roleplay 4e, Cyberpunk RED,** and **Blades in the Dark**. No manual configuration or additional modules required.
+- **Expanded Native Integrations:** Sound hooks for weapons, spells, and damage events across **Pathfinder 1e, D&D 3.5e, Old-School Essentials, Call of Cthulhu 7e, Savage Worlds (SWADE), Warhammer Fantasy Roleplay 4e, Cyberpunk RED,** and **Blades in the Dark**. No extra modules required.
 
 ### 1. Daggerheart
 **Native Support**. No external modules required (other than core dependencies).
@@ -204,11 +204,11 @@ Without Midi-QOL, Resonance falls back to native DnD5e hooks which provide limit
     *   **Spells**: Maps to Spell Schools (Evocation, Necromancy, etc.) and effect types (Fire, Ice, Void).
     *   **Specifics**: Tier 4 overrides work for any item name (e.g. override "Fireball" specifically).
 
-#### Recommended: Midi-QOL Setup
+#### Midi-QOL setup
 
-For the best experience, Resonance works with Midi-QOL's **automated workflow**. This gives Resonance access to attack results, damage rolls, and target HP changes.
+Midi-QOL's **automated workflow** gives Resonance access to attack results, damage rolls, and target HP changes.
 
-**Recommended Midi-QOL Workflow Settings:**
+**Midi-QOL workflow settings:**
 1.  Open **Module Settings > Midi-QOL > Workflow Settings**.
 2.  Set **Auto Roll Attack** and **Auto Roll Damage** to your preference. Resonance works with any setting.
 3.  Enable **Auto Apply Damage** (or "Apply Damage to Target") so that HP changes fire the damage hook and trigger pain/death vocals.
