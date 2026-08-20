@@ -285,14 +285,29 @@ export class DnD5eAdapter extends SystemAdapter {
         if (workflow.isFumble) {
             // Nat 1: roll fumble stinger + miss sound
             this.play(SOUND_EVENTS.ROLL_FUMBLE);
-            const missKey = this._getMissKey(item);
             const fumbleDelay = orch?.getNamedOffset("FUMBLE_MISS_DELAY") ?? 200;
-            this.play(missKey, fumbleDelay);
+            const missOverride = this._getItemMissOverride(item);
+            if (missOverride === null) {
+                Logger.log(`DnD5e | Fumble miss muted for ${item.name}`);
+            } else if (missOverride) {
+                Logger.log(`DnD5e | Fumble miss item override: ${missOverride}`);
+                this.handler.playItemSound(missOverride, item, fumbleDelay);
+            } else {
+                this.play(this._getMissKey(item), fumbleDelay);
+            }
         } else if (workflow.hitTargets.size === 0) {
-            // Weapon-type-aware miss sound
-            const missKey = this._getMissKey(item);
-            Logger.log(`DnD5e | Miss type: ${missKey}`);
-            this.play(missKey);
+            // Weapon-type-aware miss sound — item override wins
+            const missOverride = this._getItemMissOverride(item);
+            if (missOverride === null) {
+                Logger.log(`DnD5e | Miss muted for ${item.name}`);
+            } else if (missOverride) {
+                Logger.log(`DnD5e | Miss item override: ${missOverride}`);
+                this.handler.playItemSound(missOverride, item);
+            } else {
+                const missKey = this._getMissKey(item);
+                Logger.log(`DnD5e | Miss type: ${missKey}`);
+                this.play(missKey);
+            }
         } else if (workflow.isCritical) {
             // Nat 20: roll crit stinger + weapon impact decoration
             this.play(SOUND_EVENTS.ROLL_CRIT);
@@ -315,6 +330,26 @@ export class DnD5eAdapter extends SystemAdapter {
         }
 
         return SOUND_EVENTS.MISS;
+    }
+
+    /**
+     * Check item flags for a per-item miss sound override.
+     * @returns {string|null|undefined} Override path, null if muted, undefined if no override.
+     */
+    _getItemMissOverride(item) {
+        const val = item?.getFlag?.("ionrift-resonance", "sound_miss");
+        if (val === "__MUTED__") return null;
+        return val || undefined;
+    }
+
+    /**
+     * Check item flags for a per-item hit/impact sound override.
+     * @returns {string|null|undefined} Override path, null if muted, undefined if no override.
+     */
+    _getItemHitOverride(item) {
+        const val = item?.getFlag?.("ionrift-resonance", "sound_hit");
+        if (val === "__MUTED__") return null;
+        return val || undefined;
     }
 
     handleDamage(workflow) {
@@ -379,6 +414,20 @@ export class DnD5eAdapter extends SystemAdapter {
         const isAoE = scopeSize > AOE_THRESHOLD;
         const emit = (key, delay, reason) => trace ? this._playTraced(key, delay, reason) : this.play(key, delay);
 
+        // Item-level hit/impact override (resolved once, used in all branches)
+        const hitOverride = this._getItemHitOverride(item);
+        const hitMuted = hitOverride === null;
+        const emitHit = (delay, reason) => {
+            if (hitMuted) {
+                Logger.log(`${logPrefix} | Hit impact muted for ${item?.name} (${reason})`);
+            } else if (hitOverride) {
+                Logger.log(`${logPrefix} | Hit impact item override: ${hitOverride} (${reason})`);
+                this.handler.playItemSound(hitOverride, item, delay);
+            } else {
+                emit(SOUND_EVENTS.BLOODY_HIT, delay, reason);
+            }
+        };
+
         if (trace) {
             this._traceNative("damage.process", {
                 scopeSize,
@@ -394,7 +443,7 @@ export class DnD5eAdapter extends SystemAdapter {
 
         if (isAoE) {
             Logger.log(`${logPrefix} | AoE detected. Playing single hit + up to ${MAX_AOE_VOCALS} vocals.`);
-            emit(SOUND_EVENTS.BLOODY_HIT, 0, "aoe-impact");
+            emitHit(0, "aoe-impact");
 
             const vocalCandidates = [];
             for (const token of allTargets) {
@@ -414,7 +463,7 @@ export class DnD5eAdapter extends SystemAdapter {
         if (allTargets.length === 0) {
             if (trace) this._traceNative("damage.noTargets", "playing generic CORE_HIT only; no pain/death vocals");
             Logger.log(`${logPrefix} | No targets resolved, playing generic hit impact`);
-            emit(SOUND_EVENTS.BLOODY_HIT, 0, "generic-impact-no-targets");
+            emitHit(0, "generic-impact-no-targets");
             return;
         }
 
@@ -440,7 +489,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 });
             }
 
-            emit(SOUND_EVENTS.BLOODY_HIT, 0, `impact-${actor.name}`);
+            emitHit(0, `impact-${actor.name}`);
             this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER + SPELL_BONUS, trace);
         }
     }

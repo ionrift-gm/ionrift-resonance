@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.7] - 2026-08-20
+
+### Fixed
+- Custom Impact and Miss sounds set on individual items now play correctly.
+
 ## [2.11.6] - 2026-07-26
 
 ### Fixed
