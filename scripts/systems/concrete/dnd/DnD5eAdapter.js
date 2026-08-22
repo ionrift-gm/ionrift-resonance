@@ -291,7 +291,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 Logger.log(`DnD5e | Fumble miss muted for ${item.name}`);
             } else if (missOverride) {
                 Logger.log(`DnD5e | Fumble miss item override: ${missOverride}`);
-                this.handler.playItemSound(missOverride, item, fumbleDelay);
+                this.play(missOverride, fumbleDelay);
             } else {
                 this.play(this._getMissKey(item), fumbleDelay);
             }
@@ -302,7 +302,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 Logger.log(`DnD5e | Miss muted for ${item.name}`);
             } else if (missOverride) {
                 Logger.log(`DnD5e | Miss item override: ${missOverride}`);
-                this.handler.playItemSound(missOverride, item);
+                this.play(missOverride);
             } else {
                 const missKey = this._getMissKey(item);
                 Logger.log(`DnD5e | Miss type: ${missKey}`);
@@ -397,6 +397,14 @@ export class DnD5eAdapter extends SystemAdapter {
         const scopeSize = workflow.targets?.size ?? targetSet.size;
         const allTargets = [...targetSet].slice(0, MAX_TARGETS);
 
+        // Guard: if nobody was actually hit and nobody needs to save, skip damage sounds entirely.
+        // This prevents hit impacts from playing on a fumble/miss when auto-roll damage is on.
+        if (allTargets.length === 0 && (!workflow.hitTargets || workflow.hitTargets.size === 0)
+            && (!workflow.saves || workflow.saves.size === 0)) {
+            Logger.log(`DnD5e | No hit targets and no saves - skipping damage sounds (miss/fumble)`);
+            return;
+        }
+
         this._processDamageTargets(allTargets, totalDamage, item, scopeSize, "DnD5e");
     }
 
@@ -422,7 +430,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 Logger.log(`${logPrefix} | Hit impact muted for ${item?.name} (${reason})`);
             } else if (hitOverride) {
                 Logger.log(`${logPrefix} | Hit impact item override: ${hitOverride} (${reason})`);
-                this.handler.playItemSound(hitOverride, item, delay);
+                emit(hitOverride, delay, reason);
             } else {
                 emit(SOUND_EVENTS.BLOODY_HIT, delay, reason);
             }

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.11.8] - 2026-08-22
+
+### Fixed
+- Item-level Miss and Impact sounds now play reliably.
+- Attack misses and fumbles no longer trigger spurious hit impact sounds when damage auto-rolls.
+
 ## [2.11.7] - 2026-08-20
 
 ### Fixed
