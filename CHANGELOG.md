@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.11.9] - 2026-09-06
+
+### Fixed
+- Attack and damage sounds fix for Pathfinder 1e.
+
 ## [2.11.8] - 2026-08-22
 
 ### Fixed

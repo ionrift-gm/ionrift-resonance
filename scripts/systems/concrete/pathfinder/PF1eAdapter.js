@@ -41,14 +41,19 @@ export class PF1eAdapter extends SystemAdapter {
     registerHooks() {
         Logger.log("PF1 Adapter Active");
 
-        Hooks.on("pf1AttackRoll", (item, actor, roll, _attackOptions) => {
+        // pf1AttackRoll(action: ItemAction, roll: D20RollPF, context: object)
+        Hooks.on("pf1AttackRoll", (action, roll, _context) => {
             if (!game.user.isGM) return;
+            const actor = action?.actor ?? null;
+            const item = action?.item ?? action;
             this._handleAttackRoll(item, actor, roll);
         });
 
-        Hooks.on("pf1ApplyDamage", (damage, target, _source, item, _type) => {
+        // pf1ApplyDamage(actor: ActorPF, options: ApplyDamageOptions)
+        Hooks.on("pf1ApplyDamage", (actor, options) => {
             if (!game.user.isGM) return;
-            this._handleApplyDamage(damage, target, item);
+            const amount = options?.value ?? options?.damage ?? 0;
+            this._handleApplyDamage(amount, actor, null);
         });
 
         Hooks.on("createChatMessage", (message) => {
