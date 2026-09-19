@@ -151,21 +151,32 @@ Hooks.on("renderPlaylistDirectory", (app, html) => {
     if (!game.user.isGM) return;
 
     const $html = $(html);
-    if ($html.find(".ionrift-sound-manager-btn").length > 0) return;
+    $html.find(".ionrift-sound-manager-btn").closest(".ionrift-directory-toolbar").remove();
+    $html.find(".ionrift-sound-manager-btn").remove();
 
-    const btn = $(`<button class="ionrift-sound-manager-btn"><i class="fas fa-sliders-h"></i> Resonance Calibration</button>`);
+    const toolbar = $('<div class="ionrift-directory-toolbar"></div>');
+    const btn = $(`<button type="button" class="ionrift-directory-btn ionrift-sound-manager-btn"><i class="fas fa-sliders-h"></i> Resonance Calibration</button>`);
     btn.click(() => {
         new SoundConfigApp().render(true);
     });
-
-    $html.find(".header-actions").append(btn);
+    toolbar.append(btn);
 
     if (game.modules.get("ionrift-devtools")?.active) {
-        if ($html.find(".ionrift-viz-btn").length > 0) return;
-        const vizBtn = $(`<button class="ionrift-viz-btn" title="Toggle Audio Visualizer"><i class="fas fa-wave-square"></i></button>`);
-        vizBtn.click(() => {
-            game.ionrift?.devtools?.visualizer?.toggle();
-        });
-        $html.find(".header-actions").append(vizBtn);
+        if ($html.find(".ionrift-viz-btn").length === 0) {
+            const vizBtn = $(`<button type="button" class="ionrift-directory-btn ionrift-viz-btn" style="flex: 0 0 36px;" title="Toggle Audio Visualizer"><i class="fas fa-wave-square"></i></button>`);
+            vizBtn.click(() => {
+                game.ionrift?.devtools?.visualizer?.toggle();
+            });
+            toolbar.append(vizBtn);
+        }
+    }
+
+    // Scoped strictly to .directory-header to avoid matching .directory-footer.action-buttons
+    const header = $html.find(".directory-header");
+    const actions = header.find(".header-actions, .action-buttons").first();
+    if (actions.length > 0) {
+        actions.after(toolbar);
+    } else if (header.length > 0) {
+        header.prepend(toolbar);
     }
 });
