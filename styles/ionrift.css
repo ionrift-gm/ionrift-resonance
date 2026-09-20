@@ -490,4 +490,170 @@
     outline-offset: 2px !important;
     box-shadow: none !important;
 }
+
+/* ── Calibration Window Footer ─────────────────────────────────────── */
+.ionrift-sound-config .sheet-footer,
+.resonance-app .sheet-footer,
+#ionrift-sound-config .sheet-footer {
+    min-height: 46px !important;
+    padding: 8px 14px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+.ionrift-sound-config .sheet-footer .sheet-footer-left,
+.resonance-app .sheet-footer .sheet-footer-left,
+#ionrift-sound-config .sheet-footer .sheet-footer-left {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+}
+
+.ionrift-sound-config .sheet-footer .sheet-footer-divider,
+.resonance-app .sheet-footer .sheet-footer-divider,
+#ionrift-sound-config .sheet-footer .sheet-footer-divider {
+    width: 1px !important;
+    height: 16px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    margin: 0 2px !important;
+    flex: 0 0 auto !important;
+}
+
+.ionrift-sound-config .sheet-footer button,
+.resonance-app .sheet-footer button,
+#ionrift-sound-config .sheet-footer button {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 30px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    font-size: 0.85em !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+}
+
+.ionrift-sound-config .sheet-footer button i,
+.resonance-app .sheet-footer button i,
+#ionrift-sound-config .sheet-footer button i {
+    display: inline-block !important;
+    margin: 0 !important;
+    font-size: 0.95em !important;
+}
+
+.ionrift-sound-config .sheet-footer button.stop-all-sounds,
+.resonance-app .sheet-footer button.stop-all-sounds,
+#ionrift-sound-config .sheet-footer button.stop-all-sounds {
+    background: rgba(185, 28, 28, 0.2) !important;
+    border: 1px solid rgba(185, 28, 28, 0.5) !important;
+    color: #fca5a5 !important;
+    padding: 0 12px !important;
+}
+
+.ionrift-sound-config .sheet-footer button.stop-all-sounds:hover,
+.resonance-app .sheet-footer button.stop-all-sounds:hover,
+#ionrift-sound-config .sheet-footer button.stop-all-sounds:hover {
+    background: rgba(185, 28, 28, 0.35) !important;
+    border-color: rgba(239, 68, 68, 0.7) !important;
+    color: #ffffff !important;
+}
+
+.ionrift-sound-config .sheet-footer button.load-preset,
+.ionrift-sound-config .sheet-footer button.import-config,
+.ionrift-sound-config .sheet-footer button.export-config,
+.resonance-app .sheet-footer button.load-preset,
+.resonance-app .sheet-footer button.import-config,
+.resonance-app .sheet-footer button.export-config,
+#ionrift-sound-config .sheet-footer button.load-preset,
+#ionrift-sound-config .sheet-footer button.import-config,
+#ionrift-sound-config .sheet-footer button.export-config {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+    padding: 0 10px !important;
+    transition: all 0.15s ease !important;
+}
+
+.ionrift-sound-config .sheet-footer button.load-preset:hover,
+.ionrift-sound-config .sheet-footer button.import-config:hover,
+.ionrift-sound-config .sheet-footer button.export-config:hover,
+.resonance-app .sheet-footer button.load-preset:hover,
+.resonance-app .sheet-footer button.import-config:hover,
+.resonance-app .sheet-footer button.export-config:hover,
+#ionrift-sound-config .sheet-footer button.load-preset:hover,
+#ionrift-sound-config .sheet-footer button.import-config:hover,
+#ionrift-sound-config .sheet-footer button.export-config:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    color: #ffffff !important;
+}
+
+.ionrift-sound-config .sheet-footer button.ionrift-save-btn,
+.resonance-app .sheet-footer button.ionrift-save-btn,
+#ionrift-sound-config .sheet-footer button.ionrift-save-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
+    border: 1px solid rgba(139, 92, 246, 0.6) !important;
+    color: #ffffff !important;
+    padding: 0 18px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ionrift-sound-config .sheet-footer button.ionrift-save-btn:hover,
+.resonance-app .sheet-footer button.ionrift-save-btn:hover,
+#ionrift-sound-config .sheet-footer button.ionrift-save-btn:hover {
+    background: linear-gradient(135deg, #9d71f7 0%, #7c3aed 100%) !important;
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4) !important;
+}
+
+/* ── Module Integrations & Disabled Tab Styling ───────────────────────────── */
+.ionrift-sidebar .item.disabled-tab {
+    opacity: 0.22 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(1) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.ionrift-sidebar .item.disabled-tab:hover {
+    background: transparent !important;
+    opacity: 0.32 !important;
+}
+
+.integration-status-tag {
+    margin-left: auto;
+    font-size: 0.62em;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.ionrift-sidebar .sidebar-group .header.dimmed-header,
+.ionrift-sidebar .sidebar-group.integrations .header.dimmed-header {
+    opacity: 0.28 !important;
+    border-color: rgba(255, 255, 255, 0.04) !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    filter: grayscale(1) !important;
+}
+
+
 

@@ -11,3 +11,4 @@ export {
     MILESTONE_EVENTS,
     SPELL_VOCAL_EVENTS
 } from "./soundEvents/index.js";
+export { FEATURE_FLAGS, isFeatureFlagEnabled } from "./featureFlags.js";
