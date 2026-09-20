@@ -32,13 +32,17 @@ export class FoundryAudioProvider extends SoundProvider {
         const startVolume = (fadeInMs > 0) ? 0 : volume;
         Logger.log(`[Local] Playing: ${soundId} (vol: ${volume}, loop: ${loop}${key ? `, key: ${key}` : ""})`);
 
+        const broadcast = typeof options === "object" && options !== null
+            ? (options.broadcast ?? (options.scope !== "local"))
+            : true;
+
         try {
             const helper = foundry.audio?.AudioHelper ?? AudioHelper;
             const sound = await helper.play({
                 src: soundId,
                 volume: startVolume,
                 loop
-            }, true);
+            }, broadcast);
 
             if (loop && key && sound) {
                 this._activeLoops.set(key, { sound, volume, fadeTimer: null });

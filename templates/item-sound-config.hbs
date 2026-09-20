@@ -60,7 +60,8 @@
             {{/each}}
         </section>
 
-        {{!-- Spell Vocal Layer section: shown for spell items or items with the flag set --}}
+        {{!-- Spell Vocal Layer section: shown for spell items or items with the flag set when feature flag is enabled --}}
+        {{#if showSpellVocal}}
         {{#if isSpell}}
         <section style="margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
             <div style="font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 8px;">
@@ -125,6 +126,7 @@
                 </div>
             </div>
         </section>
+        {{/if}}
         {{/if}}
     </div>
 

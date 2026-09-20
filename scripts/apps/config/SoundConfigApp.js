@@ -7,6 +7,7 @@ import {
     getSyrinscapeProvider,
     getSoundOrchestrator
 } from "../../composition/accessors.js";
+import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
 
@@ -842,10 +843,74 @@ export class SoundConfigApp extends FormApplication {
             ? sharedMonsterTaxonomy.map(node => processHierarchy(node))
             : [];
 
+        // --- MODULE INTEGRATIONS: QUIZ NIGHT ---
+        const isQuizNightActive = game.modules.get("ionrift-quiz-night")?.active ?? false;
+        const isQuizNightInstalled = game.modules.has("ionrift-quiz-night");
+
+        const quizNightTaxonomy = [
+            {
+                label: "Quiz Match & Round Flow",
+                description: "Macro game show cues for round start, countdown expiration, and locking answers.",
+                children: [
+                    {
+                        id: "QUIZ_ROUND_START",
+                        label: "Round Jingle",
+                        cardLabel: "Round Start",
+                        description: "Played when a new quiz round begins."
+                    },
+                    {
+                        id: "QUIZ_PENS_DOWN",
+                        label: "Pens Down",
+                        cardLabel: "Pens Down / Round Locked",
+                        description: "Played when answers are locked for marking."
+                    },
+                    {
+                        id: "QUIZ_TIMER_EXPIRED",
+                        label: "Timer Expired",
+                        cardLabel: "Timer Expired / Buzzer",
+                        description: "Played when the round countdown timer runs out."
+                    }
+                ]
+            },
+            {
+                label: "Marking & Final Standings",
+                description: "Personal answer feedback and grand finale celebration.",
+                children: [
+                    {
+                        id: "QUIZ_ANSWER_CORRECT",
+                        label: "Correct Answer",
+                        cardLabel: "Correct Answer (Ding)",
+                        description: "Played in player's headphones when their answer is marked correct."
+                    },
+                    {
+                        id: "QUIZ_ANSWER_INCORRECT",
+                        label: "Incorrect Answer",
+                        cardLabel: "Incorrect Answer (Thud)",
+                        description: "Played in player's headphones when their answer is marked incorrect."
+                    },
+                    {
+                        id: "QUIZ_END",
+                        label: "Quiz Finale",
+                        cardLabel: "Victory Fanfare",
+                        description: "Played when the final podium and prize ceremony is revealed."
+                    }
+                ]
+            }
+        ];
+        const quizNightRoots = quizNightTaxonomy.map(node => processHierarchy(node));
+
         return {
             hasSyrinscape: getSyrinscapeProvider().isConfigured(),
             features: {
-                sharedMonsterVoices: FEATURE_SHARED_MONSTER_VOICES
+                sharedMonsterVoices: FEATURE_SHARED_MONSTER_VOICES,
+                spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER")
+            },
+            integrations: {
+                hasActive: isQuizNightActive,
+                quizNight: {
+                    installed: isQuizNightInstalled,
+                    active: isQuizNightActive
+                }
             },
             tiers: {
                 tier1: {
@@ -867,6 +932,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Shared Monster Voices",
                     active: false,
                     paramounts: sharedMonsterRoots
+                },
+                quizNight: {
+                    label: "Quiz Night",
+                    active: false,
+                    paramounts: quizNightRoots
                 },
                 auditor: {
                     label: "Auditor",
@@ -986,7 +1056,10 @@ export class SoundConfigApp extends FormApplication {
             if (raw2) { const c2 = JSON.parse(raw2); offsets = c2.offsets ?? {}; }
         } catch (e) { }
 
-        const namedOffsets = Object.entries(getSoundOrchestrator().DEFAULT_OFFSETS).map(([id, defaultMs]) => {
+        const spellVocalEnabled = isFeatureFlagEnabled("SPELL_VOCAL_LAYER");
+        const namedOffsets = Object.entries(getSoundOrchestrator().DEFAULT_OFFSETS)
+            .filter(([id]) => spellVocalEnabled || id !== "SPELL_VOCAL_LEAD_IN")
+            .map(([id, defaultMs]) => {
             const override = offsets[id];
             return {
                 id,

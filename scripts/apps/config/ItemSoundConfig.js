@@ -1,3 +1,5 @@
+import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
+
 export class ItemSoundConfig extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
@@ -28,11 +30,12 @@ export class ItemSoundConfig extends FormApplication {
             { key: "sound_unequip", label: "Unequip", icon: "fas fa-box-open", hint: "Played when item is unequipped" }
         ];
 
-        // Spell Vocal Layer â€” shown for spell items (or items with the flag already set)
+        // Spell Vocal Layer — shown for spell items (or items with the flag already set) when feature flag enabled
         const isSpell = this.item.type === "spell"
             || !!this.item.getFlag("ionrift-resonance", "spellVocal")
             || !!this.item.getFlag("ionrift-resonance", "spellVocalOverride");
 
+        const showSpellVocal = isFeatureFlagEnabled("SPELL_VOCAL_LAYER");
         const spellVocal = !!this.item.getFlag("ionrift-resonance", "spellVocal");
         const spellVocalOverride = this.item.getFlag("ionrift-resonance", "spellVocalOverride") || null;
         const spellVocalOverrideName = this.item.getFlag("ionrift-resonance", "spellVocalOverride_name") || null;
@@ -41,6 +44,7 @@ export class ItemSoundConfig extends FormApplication {
             itemName: this.item.name,
             itemImg: this.item.img,
             isSpell,
+            showSpellVocal,
             spellVocal,
             spellVocalOverride,
             spellVocalOverrideName,

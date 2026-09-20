@@ -6,6 +6,8 @@ import { ResonanceConfig } from "../config/ResonanceConfig.js";
 import { SoundResolver } from "./SoundResolver.js";
 import { SoundOrchestrator } from "./SoundOrchestrator.js";
 import { SoundPackLoader } from "../packs/SoundPackLoader.js";
+import { ResonanceSocket } from "./ResonanceSocket.js";
+import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js";
 
 
 export class SoundHandler {
@@ -52,6 +54,8 @@ export class SoundHandler {
     }
 
     async init() {
+        ResonanceSocket.init(this);
+
         this.system = createSystemAdapter(this);
 
         this.registerHooks();
@@ -232,8 +236,13 @@ export class SoundHandler {
         }
     }
 
-    play(key, delay = 0) {
-        Logger.log(`SoundHandler.play | Key: ${key}, Delay: ${delay}ms`);
+    play(key, optionsOrDelay = 0) {
+        const options = typeof optionsOrDelay === "number"
+            ? { delay: optionsOrDelay }
+            : (typeof optionsOrDelay === "object" && optionsOrDelay !== null ? { ...optionsOrDelay } : {});
+        const delay = options.delay ?? 0;
+
+        Logger.log(`SoundHandler.play | Key: ${key}, Delay: ${delay}ms, Scope: ${options.scope ?? "broadcast"}`);
 
         const soundKey = this.resolver.resolveKey(key);
 
@@ -258,7 +267,7 @@ export class SoundHandler {
 
         // 3. Taxonomy volume multiplier
         const taxonomyVolume = this._getTaxonomyVolume(key);
-        const playOptions = { delay: delay + offset };
+        const playOptions = { ...options, delay: delay + offset };
         if (taxonomyVolume !== 1.0) playOptions.volumeMultiplier = taxonomyVolume;
 
         // 4. Delegate to SoundManager
@@ -270,6 +279,39 @@ export class SoundHandler {
             Hooks.call("ionrift.soundPlayed", key, finalData);
         } else {
             Logger.error("SoundHandler.play | Manager not available!");
+        }
+    }
+
+    /**
+     * Play sound purely on this client's machine (personal headphones / local feedback).
+     * Does NOT broadcast over socket to other connected clients.
+     * @param {string} key - Sound key or path
+     * @param {object} [options={}] - Optional playback settings
+     */
+    playLocal(key, options = {}) {
+        return this.play(key, { ...options, scope: "local", broadcast: false });
+    }
+
+    /**
+     * Play sound targeted to specific user IDs.
+     * Routes over the module socket so only the target player(s) hear it.
+     * @param {string[]|string} recipients - Target user ID or array of user IDs
+     * @param {string} key - Sound key or path
+     * @param {object} [options={}] - Optional playback settings
+     */
+    playTargeted(recipients, key, options = {}) {
+        const recipientList = Array.isArray(recipients) ? recipients : [recipients];
+        const myId = game.user?.id;
+
+        // Play locally if caller is one of the recipients
+        if (recipientList.includes(myId)) {
+            this.playLocal(key, options);
+        }
+
+        // Send over socket to other recipients
+        const others = recipientList.filter(id => id !== myId);
+        if (others.length > 0) {
+            ResonanceSocket.emitTargeted(others, key, options);
         }
     }
     // School/domain inherit CORE_MAGIC volume when unset.
@@ -428,6 +470,9 @@ export class SoundHandler {
         if (this.system) {
             this.system.registerHooks();
         }
+
+        this.quizNightIntegration = new QuizNightIntegration(this);
+        this.quizNightIntegration.registerHooks();
 
         // v13: combatTurn/Round fire before DB update; use updateData.turn.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));
