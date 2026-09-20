@@ -1,4 +1,5 @@
 import { Logger } from "../../utils/Logger.js";
+import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
 
 export class VocalLayerService {
 
@@ -15,6 +16,7 @@ export class VocalLayerService {
     };
 
     static shouldTrigger(item) {
+        if (!isFeatureFlagEnabled("SPELL_VOCAL_LAYER")) return false;
         if (!game.settings.get("ionrift-resonance", "spellVocalLayer")) return false;
         if (!item) return false;
         if (item.getFlag?.("ionrift-resonance", "spellVocal") === true) return true;

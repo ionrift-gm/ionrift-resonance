@@ -21,6 +21,21 @@
                 </div>
             </div>
 
+            <!-- Module Integrations -->
+            <div class="sidebar-group integrations" style="flex: 0 0 auto; margin-top: 10px;">
+                <div class="header {{#unless integrations.hasActive}}dimmed-header{{/unless}}">Module Integrations</div>
+                <div class="group-items" style="display: flex; flex-direction: column; gap: 2px;">
+                    <a class="item {{#unless integrations.quizNight.active}}disabled-tab{{/unless}}" 
+                       data-tab="quiz-night" 
+                       {{#unless integrations.quizNight.active}}title="Ionrift Quiz Night is not installed or active in this world"{{/unless}}>
+                        <i class="fas fa-question-circle"></i> Quiz Night
+                        {{#unless integrations.quizNight.active}}
+                        <span class="integration-status-tag">Inactive</span>
+                        {{/unless}}
+                    </a>
+                </div>
+            </div>
+
             <div style="flex: 1;"></div> <!-- Spacer -->
 
             <!-- Bottom Group: Tools -->
@@ -88,6 +103,32 @@
             </div>
             {{/if}}
 
+            <!-- QUIZ NIGHT INTEGRATION -->
+            <div class="tab" data-tab="quiz-night">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-question-circle"></i> Quiz Night Integration</div>
+
+                    {{#if integrations.quizNight.active}}
+                    <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                        <i class="fas fa-info-circle"></i>
+                        Audio cues triggered automatically during Quiz Night sessions. Round starts, timers, and lock sounds broadcast to the whole table, while answer feedback plays in player headphones.
+                    </p>
+
+                    {{#each tiers.quizNight.paramounts as |group|}}
+                    {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                    {{/each}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Quiz Night Not Active</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            The <strong>Ionrift Quiz Night</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these game show sound triggers.
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
             <!-- AUDITOR -->
             <div class="tab" data-tab="auditor">
                 <p class="auditor-description"
@@ -137,6 +178,7 @@
                     </p>
 
                     <!-- Feature Toggles -->
+                    {{#if features.spellVocalLayer}}
                     <div style="margin-bottom: 24px;">
                         <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">
                             Feature Toggles</div>
@@ -167,6 +209,7 @@
                             </div>
                         </div>
                     </div>
+                    {{/if}}
 
                     <!-- Budget Table -->
 
@@ -269,30 +312,29 @@
 
     <!-- Footer -->
     <footer class="sheet-footer"
-        style="flex: 0 0 auto; background: rgba(20, 20, 30, 0.95); padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-        <div class="flexrow" style="gap: 8px; align-items: center;">
+        style="flex: 0 0 auto; background: rgba(20, 20, 30, 0.95); padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; min-height: 46px; width: 100%; box-sizing: border-box;">
+        <div class="sheet-footer-left" style="display: flex; flex-direction: row; align-items: center; gap: 8px; width: auto; flex: 0 0 auto;">
             {{#if hasSyrinscape}}
             <button type="button" class="stop-all-sounds" title="Signal Syrinscape to Stop All playing sounds."
-                style="background: rgba(185, 28, 28, 0.2); border: 1px solid rgba(185, 28, 28, 0.5); color: #fca5a5; width: auto; font-size: 0.9em; white-space: nowrap; padding: 0 12px;">
+                style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 12px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(185, 28, 28, 0.2); border: 1px solid rgba(185, 28, 28, 0.5); color: #fca5a5; border-radius: 4px; cursor: pointer; flex: 0 0 auto;">
                 <i class="fas fa-stop-circle"></i> Stop All
             </button>
+            <div class="sheet-footer-divider" style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.12); margin: 0 2px; flex: 0 0 auto;"></div>
             {{/if}}
-            <!-- Removed floaty separator -->
-            <div style="width: 10px;"></div>
             <button type="button" class="load-preset" title="Configure Audio Mode"
-                style="background: transparent; border: none; color: #888; width: auto; font-size: 0.9em; transition: color 0.2s;">
+                style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 10px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); border-radius: 4px; cursor: pointer; flex: 0 0 auto; transition: all 0.15s ease;">
                 <i class="fas fa-volume-up"></i> Audio Mode
             </button>
             <button type="button" class="import-config" title="Import"
-                style="background: transparent; border: none; color: #888; width: auto; font-size: 0.9em; transition: color 0.2s;">
+                style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 10px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); border-radius: 4px; cursor: pointer; flex: 0 0 auto; transition: all 0.15s ease;">
                 <i class="fas fa-file-import"></i> Import
             </button>
             <button type="button" class="export-config" title="Export"
-                style="background: transparent; border: none; color: #888; width: auto; font-size: 0.9em; transition: color 0.2s;">
+                style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 10px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); border-radius: 4px; cursor: pointer; flex: 0 0 auto; transition: all 0.15s ease;">
                 <i class="fas fa-file-export"></i> Export
             </button>
         </div>
-        <button type="submit" class="ionrift-save-btn" style="width: auto; white-space: nowrap;">
+        <button type="submit" class="ionrift-save-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 18px; font-size: 0.85em; white-space: nowrap; width: auto; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: 1px solid rgba(139, 92, 246, 0.6); color: #ffffff; border-radius: 4px; font-weight: 600; cursor: pointer; flex: 0 0 auto;">
             <i class="fas fa-check"></i> Close
         </button>
     </footer>

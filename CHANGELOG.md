@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.11.10] - 2026-09-20
+
+### Added
+- Sound triggers for Ionrift Quiz Night.
+
+### Changed
+- Playlist directory button moved to header with purple glass styling.
+- Compacted Sound Config footer buttons to prevent overflow.
+
+### Fixed
+- Suppressed the default red border on directory buttons.
+
 ## [2.11.9] - 2026-09-06
 
 ### Fixed
