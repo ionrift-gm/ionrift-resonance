@@ -219,13 +219,13 @@ Midi-QOL's **automated workflow** gives Resonance access to attack results, dama
 
 ## Documentation
 
-All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)** - that's the single source of truth for the whole Ionrift ecosystem. The files in this repo (`README`, `docs/FEATURES.md`) are technical reference, not guides.
+All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**; that is the single source of truth for the whole Ionrift ecosystem. The files in this repo (`README`, `docs/FEATURES.md`) are technical reference, not guides.
 
-- **[Setup: Core Library](https://github.com/ionrift-gm/ionrift-library/wiki/1-Setup-Core-Library)** - Installation and creature indexing
-- **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)** - Sound configuration and presets
-- **[Resonance Calibration](https://github.com/ionrift-gm/ionrift-library/wiki/3-Resonance-Calibration)** - Fine-tuning sound bindings
-- **[Advanced Diagnostics](https://github.com/ionrift-gm/ionrift-library/wiki/4-Advanced-Diagnostics)** - Manifest inspection and troubleshooting
-- **[Targeting Sounds Per Creature](https://github.com/ionrift-gm/ionrift-library/wiki/5-Targeting-Sounds-Per-Creature)** - Per-item and per-actor sound scoping
+- **[Setup: Core Library](https://github.com/ionrift-gm/ionrift-library/wiki/1-Setup-Core-Library)**: Installation and creature indexing
+- **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)**: Sound configuration and presets
+- **[Resonance Calibration](https://github.com/ionrift-gm/ionrift-library/wiki/3-Resonance-Calibration)**: Fine-tuning sound bindings
+- **[Advanced Diagnostics](https://github.com/ionrift-gm/ionrift-library/wiki/4-Advanced-Diagnostics)**: Manifest inspection and troubleshooting
+- **[Targeting Sounds Per Creature](https://github.com/ionrift-gm/ionrift-library/wiki/5-Targeting-Sounds-Per-Creature)**: Per-item and per-actor sound scoping
 
 ## Bug Reports
 
@@ -237,6 +237,12 @@ If something isn't working:
 
 ---
 
-**Part of the [Ionrift Module Suite](https://github.com/ionrift-gm)**
+## Ionrift Module Suite
 
-[Wiki / Guides](https://github.com/ionrift-gm/ionrift-library/wiki) · [Discord](https://discord.gg/vFGXf7Fncj) · [Patreon](https://patreon.com/ionrift)
+- **[Respite](https://github.com/ionrift-gm/ionrift-respite)**: Structured rest phases and downtime activities
+- **[Monstrous Feast](https://github.com/ionrift-gm/ionrift-monstrous-feast)**: Butcher slain creatures and cook camp meals with buffs
+- **[Quartermaster](https://github.com/ionrift-gm/ionrift-quartermaster)**: Loot cache generation and inventory management
+- **[Waterline](https://github.com/ionrift-gm/ionrift-waterline)**: Traced water caustics and procedural border walls
+- **[Ionrift Library](https://github.com/ionrift-gm/ionrift-library)**: Shared ecosystem kernel and creature index
+
+[Wiki / Guides](https://github.com/ionrift-gm/ionrift-library/wiki) · [Website](https://ionrift.cloud) · [Discord](https://discord.gg/vFGXf7Fncj) · [Patreon](https://patreon.com/ionrift)
