@@ -17,6 +17,7 @@ export class Logger {
     }
 
     static info(...args) {
+        if (!this.debugEnabled) return;
         if (game.ionrift?.library?.Logger?.info) {
             game.ionrift.library.Logger.info(this.MODULE_NAME, ...args);
         } else {

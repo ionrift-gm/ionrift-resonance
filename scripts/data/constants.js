@@ -9,6 +9,8 @@ export {
     SYSTEM_EVENTS,
     ALIAS_EVENTS,
     MILESTONE_EVENTS,
-    SPELL_VOCAL_EVENTS
+    SPELL_VOCAL_EVENTS,
+    QUIZ_NIGHT_EVENTS,
+    RESPITE_EVENTS
 } from "./soundEvents/index.js";
 export { FEATURE_FLAGS, isFeatureFlagEnabled } from "./featureFlags.js";
