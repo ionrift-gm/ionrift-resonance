@@ -54,7 +54,8 @@ export class SoundOrchestrator {
         AMBIENT: [
             "AMBIENT_CAMPFIRE",
             "AMBIENT_CAMPFIRE_COOKING",
-            "AMBIENT_NIGHT_FOREST"
+            "AMBIENT_NIGHT_FOREST",
+            "RESPITE_CAMPFIRE"
         ],
         SPELL_VOCAL: [
             "SPELL_VOCAL_CAST",

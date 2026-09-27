@@ -31,6 +31,18 @@
                         <i class="fas fa-question-circle"></i> Quiz Night
                         {{#unless integrations.quizNight.active}}
                         <span class="integration-status-tag">Inactive</span>
+                        {{else unless integrations.quizNight.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.quizNight.version}} installed, v{{integrations.quizNight.minVersion}} required">Outdated</span>
+                        {{/unless}}
+                    </a>
+                    <a class="item {{#unless integrations.respite.active}}disabled-tab{{/unless}}" 
+                       data-tab="respite" 
+                       {{#unless integrations.respite.active}}title="Ionrift Respite is not installed or active in this world"{{/unless}}>
+                        <i class="fas fa-campground"></i> Respite
+                        {{#unless integrations.respite.active}}
+                        <span class="integration-status-tag">Inactive</span>
+                        {{else unless integrations.respite.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.respite.version}} installed, v{{integrations.respite.minVersion}} required">Outdated</span>
                         {{/unless}}
                     </a>
                 </div>
@@ -109,20 +121,66 @@
                     <div class="ionrift-list-header"><i class="fas fa-question-circle"></i> Quiz Night Integration</div>
 
                     {{#if integrations.quizNight.active}}
-                    <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
-                        <i class="fas fa-info-circle"></i>
-                        Audio cues triggered automatically during Quiz Night sessions. Round starts, timers, and lock sounds broadcast to the whole table, while answer feedback plays in player headphones.
-                    </p>
+                        {{#if integrations.quizNight.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            Audio cues for Quiz Night sessions. Round starts, timers, and locks play to the table, while answer feedback plays in player headphones.
+                        </p>
 
-                    {{#each tiers.quizNight.paramounts as |group|}}
-                    {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
-                    {{/each}}
+                        {{#each tiers.quizNight.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Quiz Night Update Required</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                <strong>Ionrift Quiz Night</strong> v{{integrations.quizNight.version}} is installed, but v{{integrations.quizNight.minVersion}} or newer is required for automatic sound triggers. Please update Quiz Night to activate these audio cues.
+                            </p>
+                        </div>
+                        {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
                         <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Quiz Night Not Active</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
                             The <strong>Ionrift Quiz Night</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these game show sound triggers.
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- RESPITE INTEGRATION -->
+            <div class="tab" data-tab="respite">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-campground"></i> Respite Integration</div>
+
+                    {{#if integrations.respite.active}}
+                        {{#if integrations.respite.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            Audio cues for Ionrift Respite rests. Campfire crackle plays at the fire or in the background, nightfall stingers signal sleep, and morning calls mark resolution.
+                        </p>
+
+                        {{#each tiers.respite.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Respite Update Required</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                <strong>Ionrift Respite</strong> v{{integrations.respite.version}} is installed, but v{{integrations.respite.minVersion}} or newer is required for automatic sound triggers. Please update Respite to activate these audio cues.
+                            </p>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Respite Not Active</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            The <strong>Ionrift Respite</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these rest sound triggers.
                         </p>
                     </div>
                     {{/if}}
@@ -171,7 +229,7 @@
 
                     <p style="font-size:0.85em; opacity:0.7; margin: 0 0 16px 0; padding: 0 4px;">
                         <i class="fas fa-info-circle"></i>
-                        Budget windows prevent sound spam — sounds in the same category share one window.
+                        Budget windows prevent sound spam: sounds in the same category share one window.
                         Leave blank to use the built-in default. Set to <code
                             style="background:rgba(255,255,255,0.12); color:#e0d8ff; padding:1px 5px; border-radius:3px; font-size:0.95em; border:1px solid rgba(255,255,255,0.2);">0</code>
                         to disable throttling.

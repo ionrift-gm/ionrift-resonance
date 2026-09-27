@@ -2,6 +2,8 @@ import { SOUND_EVENTS } from "../data/constants.js";
 import { Logger } from "../utils/Logger.js";
 
 export class QuizNightIntegration {
+    static MIN_VERSION = "0.1.0-ea.2";
+
     /**
      * @param {import("../services/playback/SoundHandler.js").SoundHandler} handler
      */
@@ -17,9 +19,25 @@ export class QuizNightIntegration {
         return game.modules.get("ionrift-quiz-night")?.active ?? false;
     }
 
+    static get version() {
+        return game.modules.get("ionrift-quiz-night")?.version ?? null;
+    }
+
+    static get isCompatible() {
+        if (!this.isActive) return false;
+        const current = this.version;
+        if (!current) return true;
+        return !foundry.utils.isNewerVersion(this.MIN_VERSION, current);
+    }
+
     registerHooks() {
         if (!QuizNightIntegration.isActive) {
             Logger.log("QuizNightIntegration | ionrift-quiz-night is not active, skipping hooks.");
+            return;
+        }
+
+        if (!QuizNightIntegration.isCompatible) {
+            Logger.warn(`QuizNightIntegration | ionrift-quiz-night is outdated (v${QuizNightIntegration.version} installed, v${QuizNightIntegration.MIN_VERSION}+ required). Sound hooks disabled.`);
             return;
         }
 
