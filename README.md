@@ -104,7 +104,7 @@ All sounds are available as a downloadable pack and are no longer bundled direct
 *   **Per-Actor Overrides**: Set pain, death, spotlight, and system-specific sounds per character or creature.
 *   **Mute Toggle** *(v2.3.0)*: Silence individual event keys in the Calibration UI without removing the preset. Blocks the full fallback chain.
 
-For a full breakdown of how these interact, see the **[Features Reference](docs/FEATURES.md)**.
+For a full breakdown of how these interact, see the **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**.
 
 ## Resonance Calibration
 
@@ -143,7 +143,7 @@ Sound budgets and timing offsets. Budgets prevent the same sound category from s
 ### Sound Auditor
 Scans the world for items with Ionrift sound flags set. Shows which slots are bound per item and lets you open or clear them. Access it from the tools area inside the Calibration UI.
 
-See **[Features Reference](docs/FEATURES.md)** for full detail on all tabs and controls.
+See the **[Ionrift Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)** for full detail on all tabs and controls.
 
 ## Data Management
 *   **Export JSON**: Back up your config to a JSON file via the **Export JSON** button in the calibration footer.
@@ -219,7 +219,7 @@ Midi-QOL's **automated workflow** gives Resonance access to attack results, dama
 
 ## Documentation
 
-All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**; that is the single source of truth for the whole Ionrift ecosystem. The files in this repo (`README`, `docs/FEATURES.md`) are technical reference, not guides.
+All setup guides, walkthroughs, and troubleshooting live in the **[Ionrift Library Wiki](https://github.com/ionrift-gm/ionrift-library/wiki)**; that is the single source of truth for the whole Ionrift ecosystem.
 
 - **[Setup: Core Library](https://github.com/ionrift-gm/ionrift-library/wiki/1-Setup-Core-Library)**: Installation and creature indexing
 - **[Setup: Resonance](https://github.com/ionrift-gm/ionrift-library/wiki/2-Setup-Resonance)**: Sound configuration and presets

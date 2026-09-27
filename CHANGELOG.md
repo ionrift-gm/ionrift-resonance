@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.12.0] - 2026-09-28
+
+### Added
+- Complete sound trigger suite for camping and rests in Ionrift Respite.
+- Campfire lighting plays a dedicated ignition sting before transitioning into the ambient crackle loop.
+- Campfire crackle loop places a sound emitter.
+- Dedicated sound triggers for when the camp settles to sleep and for morning dawn finalization.
+- Camping & Rest audio configuration tab in Sound Configuration to assign custom audio tracks to each rest event.
+
+### Changed
+- Refined sound configuration labels and descriptions into plain phrasing.
+
 ## [2.11.10] - 2026-09-20
 
 ### Added

@@ -200,6 +200,9 @@ export class SoundResolver {
             return null;
         }
 
+        // Module cues are their own events. An empty slot stays silent.
+        if (specificKey.startsWith("RESPITE_") || specificKey.startsWith("QUIZ_")) return null;
+
         // Core Groups - named intermediates now exposed as ASK_GENERIC_MELEE/RANGED constants.
         // Chain still terminates at CORE_WHOOSH until default preset binds MELEE/RANGED directly.
         // @v4: when preset migrates, remove the CORE_WHOOSH step here.

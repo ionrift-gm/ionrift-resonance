@@ -42,8 +42,10 @@ tests/
 TEST_SCENARIOS.md
 SETUP_GUIDE.md
 free_tier_candidates.md
-docs/MIGRATION_STRATEGY.md
-docs/GUIDE.md
+docs/*.md
+*_STRATEGY.md
+*_PLAN.md
+*_SPEC.md
 
 # Agent handoff specs (ephemeral — see DEV_PROTOCOLS.md §30)
 .cursor/

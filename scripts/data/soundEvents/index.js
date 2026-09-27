@@ -8,6 +8,7 @@ import { ALIAS_EVENTS } from "./aliases.js";
 import { MILESTONE_EVENTS } from "./milestones.js";
 import { SPELL_VOCAL_EVENTS } from "./spellVocals.js";
 import { QUIZ_NIGHT_EVENTS } from "./quizNight.js";
+import { RESPITE_EVENTS } from "./respite.js";
 
 export const SOUND_EVENTS = {
     ...COMBAT_EVENTS,
@@ -19,7 +20,8 @@ export const SOUND_EVENTS = {
     ...ALIAS_EVENTS,
     ...MILESTONE_EVENTS,
     ...SPELL_VOCAL_EVENTS,
-    ...QUIZ_NIGHT_EVENTS
+    ...QUIZ_NIGHT_EVENTS,
+    ...RESPITE_EVENTS
 };
 
 export {
@@ -32,5 +34,6 @@ export {
     ALIAS_EVENTS,
     MILESTONE_EVENTS,
     SPELL_VOCAL_EVENTS,
-    QUIZ_NIGHT_EVENTS
+    QUIZ_NIGHT_EVENTS,
+    RESPITE_EVENTS
 };

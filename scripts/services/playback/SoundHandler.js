@@ -8,6 +8,7 @@ import { SoundOrchestrator } from "./SoundOrchestrator.js";
 import { SoundPackLoader } from "../packs/SoundPackLoader.js";
 import { ResonanceSocket } from "./ResonanceSocket.js";
 import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js";
+import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
 
 
 export class SoundHandler {
@@ -254,7 +255,7 @@ export class SoundHandler {
                 Logger.log(`SoundHandler.play | No binding found, treating as raw ID: ${key}`);
                 finalData = key; // Assume raw ID
             } else {
-                Logger.warn(`SoundHandler.play | No Binding for Semantic Key: ${key}`);
+                Logger.log(`SoundHandler.play | No Binding for Semantic Key: ${key}`);
                 return;
             }
         } else {
@@ -473,6 +474,9 @@ export class SoundHandler {
 
         this.quizNightIntegration = new QuizNightIntegration(this);
         this.quizNightIntegration.registerHooks();
+
+        this.respiteIntegration = new RespiteIntegration(this);
+        this.respiteIntegration.registerHooks();
 
         // v13: combatTurn/Round fire before DB update; use updateData.turn.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));
