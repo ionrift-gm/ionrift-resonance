@@ -1,4 +1,4 @@
-name: Release Creation
+﻿name: Release Creation
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
         if: github.event.inputs.dry_run_discord != 'true'
         run: |
           # Sound files are now distributed externally (Core SFX Pack).
-          # sounds/pack/ no longer exists in this repo — validate module.json version instead.
+          # sounds/pack/ no longer exists in this repo - validate module.json version instead.
           MODULE_VERSION=$(python3 -c "import json; d=json.load(open('module.json')); print(d['version'])")
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           if [ "$MODULE_VERSION" != "$TAG_VERSION" ]; then
@@ -164,7 +164,7 @@ jobs:
             const tag = process.env.GITHUB_REF_NAME;
             const payload = {
               embeds: [{
-                title: `🔊 Ionrift Resonance — v${version}`,
+                title: `🔊 Ionrift Resonance - v${version}`,
                 description: desc,
                 color: 0x4A9DD9,
                 url: `https://github.com/${repo}/releases/tag/${tag}`
@@ -173,7 +173,7 @@ jobs:
 
             const webhook = process.env.DISCORD_WEBHOOK;
             if (!webhook) {
-              core.warning('DISCORD_WEBHOOK_URL secret is not set — skipping Discord notification');
+              core.warning('DISCORD_WEBHOOK_URL secret is not set - skipping Discord notification');
               return;
             }
 
