@@ -56,3 +56,6 @@ CURSOR_PLAN_*
 # Internal brand/workspace content - must never be committed to public module repos
 ionrift-brand/
 
+
+# Automated adversarial audit output (DEV_PROTOCOLS)
+.audit/

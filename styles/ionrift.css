@@ -1,26 +1,8 @@
 /* Ionrift Sounds - Module Specific Styles */
 /* Core Window & UI styles are loaded from ionrift-lib */
 
-/* ── Purple Scrollbar Override (Syrinscape config) ─────────────────
-   See IONRIFT_UI_HANDBOOK.md §2 — module-specific app class.      */
-.ionrift-resonance-syrinscape-app,
-.ionrift-resonance-syrinscape-app * {
-    scrollbar-color: #6d28d9 rgba(0, 0, 0, 0.4) !important;
-    scrollbar-width: thin !important;
-}
+/* ── Purple scrollbars inherited from ionrift-library (.ionrift-window *) ── */
 
-.ionrift-resonance-syrinscape-app ::-webkit-scrollbar,
-.ionrift-resonance-syrinscape-app *::-webkit-scrollbar {
-    width: 6px !important;
-    height: 6px !important;
-    background: rgba(0, 0, 0, 0.4) !important;
-}
-
-.ionrift-resonance-syrinscape-app ::-webkit-scrollbar-thumb,
-.ionrift-resonance-syrinscape-app *::-webkit-scrollbar-thumb {
-    background: #6d28d9 !important;
-    border-radius: 4px !important;
-}
 
 /* ── Syrinscape Connection dialog ─────────────────────────────────
    Scrollable body + pinned footer (welcome-window pattern).
