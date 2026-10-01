@@ -90,20 +90,25 @@ export class SoundResolver {
         if (item && item.system) {
             // Spells (School check)
             if (type === "spell" && item.system.school) {
-                const school = item.system.school;
-                switch (school) {
+                const normSchool = game.ionrift?.library?.normalizeSpellSchool?.(item.system.school);
+                switch (normSchool ?? item.system.school) {
+                    case "evocation":
                     case "evo":
                     case "evoc": return SOUND_EVENTS.SPELL_FIRE;
+                    case "necromancy":
                     case "nec": return SOUND_EVENTS.SPELL_VOID;
+                    case "divination":
                     case "div": return SOUND_EVENTS.SPELL_PSYCHIC;
+                    case "abjuration":
                     case "abj": return SOUND_EVENTS.SPELL_HEAL;
                     // default fall through to string match
                 }
             }
 
-            // Weapons (Damage Type check -- dnd5e / generic)
-            if (type === "weapon" && item.system.damage?.parts?.length > 0) {
-                const dtype = item.system.damage.parts[0][1];
+            // Weapons (Damage Type check -- adapter or dnd5e / generic fallback)
+            const dtype = game.ionrift?.library?.system?.getPrimaryDamageType?.(item)
+                ?? (item.system.damage?.parts?.length > 0 ? item.system.damage.parts[0][1] : null);
+            if (type === "weapon" && dtype) {
                 if (dtype === "slashing") return SOUND_EVENTS.ATTACK_SWORD_SLASH;
                 if (dtype === "bludgeoning") return SOUND_EVENTS.ATTACK_BLUDGEON_SWING;
                 if (dtype === "piercing") return SOUND_EVENTS.ATTACK_DAGGER_SLASH;
@@ -354,6 +359,9 @@ export class SoundResolver {
         return this.getMonsterSound(actor, "PAIN");
     }
     _buildSpellContext(item) {
+        const adapter = game.ionrift?.library?.system;
+        const school = adapter?.getSpellSchool?.(item) ?? item.system?.school ?? "";
+
         const actionType = item._currentActivity?.actionType
             ?? item.system?.actionType
             ?? "";
@@ -361,10 +369,10 @@ export class SoundResolver {
         let delivery = "ranged"; // safe default
         if (actionType === "msak") delivery = "touch";
         else if (actionType === "save") delivery = "save";
-        // rsak → "ranged" (default already set)
+        else if (adapter?.getAttackCategory?.(item) === "melee") delivery = "touch";
 
         return {
-            school: item.system?.school ?? "",
+            school,
             delivery
         };
     }

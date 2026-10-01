@@ -255,21 +255,21 @@ export class DnD5eAdapter extends SystemAdapter {
     }
 
     _getSchoolKey(school) {
-        // All eight schools mapped. Keys that have a sound pack binding will play;
-        // unbound keys fall through to ASK_GENERIC_MAGIC in the caller.
+        const norm = game.ionrift?.library?.normalizeSpellSchool?.(school);
+        if (norm) return `SCHOOL_${norm.toUpperCase()}`;
+
+        // Fallback if library not available
         const schoolMap = {
-            // Damage / attack schools
             evo:  "SCHOOL_EVOCATION",
             evoc: "SCHOOL_EVOCATION",
             nec:  "SCHOOL_NECROMANCY",
-            // Utility / defensive schools
             abj:  "SCHOOL_ABJURATION",
             div:  "SCHOOL_DIVINATION",
-            // Formerly unmapped - now route to generic magic as final fallback
             con:  "SCHOOL_CONJURATION",
             enc:  "SCHOOL_ENCHANTMENT",
             ill:  "SCHOOL_ILLUSION",
             tra:  "SCHOOL_TRANSMUTATION",
+            trs:  "SCHOOL_TRANSMUTATION"
         };
         return schoolMap[school] ?? null;
     }

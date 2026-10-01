@@ -127,6 +127,19 @@ export function pickBoundMonsterPainKey(classification, resolver, soundEvents) {
 
     const candidates = [];
 
+    // Integrate kernel taxonomy cascade if provided
+    if (Array.isArray(classification?.cascade)) {
+        for (const item of classification.cascade) {
+            if (item && item.includes("_")) {
+                const [t, ...sub] = item.split("_");
+                const k = getSubtypeVocalKey(t, sub.join("_"));
+                if (k) candidates.push(k);
+            } else if (item && item !== "generic" && item !== "unknown") {
+                candidates.push(`MONSTER_${String(item).toUpperCase()}`);
+            }
+        }
+    }
+
     if (classification?.type && classification?.subtype) {
         const subtypeKey = getSubtypeVocalKey(classification.type, classification.subtype);
         if (subtypeKey) candidates.push(subtypeKey);
