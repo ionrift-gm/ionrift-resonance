@@ -1,6 +1,6 @@
 export class SoundAuditor extends FormApplication {
     static get defaultOptions() {
-        return mergeObject(super.defaultOptions, {
+        return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-auditor",
             title: "Ionrift Sound Auditor",
             template: "modules/ionrift-resonance/templates/sound-auditor.hbs",
