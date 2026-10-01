@@ -150,33 +150,71 @@ Hooks.on("renderSettingsConfig", (app, html) => {
 Hooks.on("renderPlaylistDirectory", (app, html) => {
     if (!game.user.isGM) return;
 
-    const $html = $(html);
-    $html.find(".ionrift-sound-manager-btn").closest(".ionrift-directory-toolbar").remove();
-    $html.find(".ionrift-sound-manager-btn").remove();
+    const root = html instanceof HTMLElement ? html : (html?.[0] ?? html);
+    if (!root) return;
 
-    const toolbar = $('<div class="ionrift-directory-toolbar"></div>');
-    const btn = $(`<button type="button" class="ionrift-directory-btn ionrift-sound-manager-btn"><i class="fas fa-sliders-h"></i> Resonance Calibration</button>`);
-    btn.click(() => {
-        new SoundConfigApp().render(true);
-    });
-    toolbar.append(btn);
+    if (game.ionrift?.hud?.injectDirectoryButton) {
+        game.ionrift.hud.injectDirectoryButton("playlists", root, {
+            id: "resonance-calibration",
+            className: "ionrift-sound-manager-btn",
+            label: "Resonance",
+            title: "Resonance Calibration",
+            icon: "fas fa-sliders-h",
+            onClick: () => new SoundConfigApp().render(true),
+            restricted: true,
+            order: 10
+        });
 
-    if (game.modules.get("ionrift-devtools")?.active) {
-        if ($html.find(".ionrift-viz-btn").length === 0) {
-            const vizBtn = $(`<button type="button" class="ionrift-directory-btn ionrift-viz-btn" style="flex: 0 0 36px;" title="Toggle Audio Visualizer"><i class="fas fa-wave-square"></i></button>`);
-            vizBtn.click(() => {
-                game.ionrift?.devtools?.visualizer?.toggle();
+        if (game.modules.get("ionrift-devtools")?.active) {
+            game.ionrift.hud.injectDirectoryButton("playlists", root, {
+                id: "resonance-viz",
+                className: "ionrift-viz-btn",
+                icon: "fas fa-wave-square",
+                title: "Toggle Audio Visualizer",
+                compact: true,
+                onClick: () => game.ionrift?.devtools?.visualizer?.toggle(),
+                restricted: true,
+                order: 90
             });
-            toolbar.append(vizBtn);
         }
+        return;
     }
 
-    // Scoped strictly to .directory-header to avoid matching .directory-footer.action-buttons
-    const header = $html.find(".directory-header");
-    const actions = header.find(".header-actions, .action-buttons").first();
-    if (actions.length > 0) {
-        actions.after(toolbar);
-    } else if (header.length > 0) {
-        header.prepend(toolbar);
+    const header = root.querySelector(".directory-header") || root;
+    const actions = header.querySelector(".header-actions, .action-buttons");
+    let toolbar = header.querySelector(".ionrift-directory-toolbar");
+    if (!toolbar) {
+        toolbar = document.createElement("div");
+        toolbar.className = "ionrift-directory-toolbar";
+        if (actions && actions.parentNode) actions.after(toolbar);
+        else header.prepend(toolbar);
+    }
+
+    if (!toolbar.querySelector(".ionrift-sound-manager-btn")) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ionrift-directory-btn ionrift-sound-manager-btn";
+        btn.dataset.order = "10";
+        btn.title = "Resonance Calibration";
+        btn.innerHTML = '<i class="fas fa-sliders-h" aria-hidden="true"></i> <span class="ionrift-btn-label">Resonance</span>';
+        btn.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            new SoundConfigApp().render(true);
+        });
+        toolbar.appendChild(btn);
+    }
+
+    if (game.modules.get("ionrift-devtools")?.active && !toolbar.querySelector(".ionrift-viz-btn")) {
+        const vizBtn = document.createElement("button");
+        vizBtn.type = "button";
+        vizBtn.className = "ionrift-directory-btn ionrift-viz-btn is-compact";
+        vizBtn.dataset.order = "90";
+        vizBtn.title = "Toggle Audio Visualizer";
+        vizBtn.innerHTML = '<i class="fas fa-wave-square" aria-hidden="true"></i>';
+        vizBtn.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            game.ionrift?.devtools?.visualizer?.toggle();
+        });
+        toolbar.appendChild(vizBtn);
     }
 });
