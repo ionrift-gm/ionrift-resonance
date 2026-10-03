@@ -13,6 +13,7 @@
         "minimum": "12",
         "verified": "14"
     },
+    "socket": true,
     "esmodules": [
         "scripts/module.js"
     ],
