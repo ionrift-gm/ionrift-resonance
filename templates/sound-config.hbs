@@ -45,6 +45,16 @@
                         <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.respite.version}} installed, v{{integrations.respite.minVersion}} required">Outdated</span>
                         {{/unless}}
                     </a>
+                    <a class="item {{#unless integrations.cursewright.active}}disabled-tab{{/unless}}" 
+                       data-tab="cursewright" 
+                       {{#unless integrations.cursewright.active}}title="Ionrift Cursewright is not installed or active in this world"{{/unless}}>
+                        <i class="fas fa-ring"></i> Cursewright
+                        {{#unless integrations.cursewright.active}}
+                        <span class="integration-status-tag">Inactive</span>
+                        {{else unless integrations.cursewright.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.cursewright.version}} installed, v{{integrations.cursewright.minVersion}} required">Outdated</span>
+                        {{/unless}}
+                    </a>
                     <a class="item {{#unless integrations.voice.active}}disabled-tab{{/unless}}" 
                        data-tab="voice" 
                        {{#unless integrations.voice.active}}title="Ionrift Voice is not installed or active in this world"{{/unless}}>
@@ -191,6 +201,42 @@
                         <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Respite Not Active</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
                             The <strong>Ionrift Respite</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these rest sound triggers.
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- CURSEWRIGHT INTEGRATION -->
+            <div class="tab" data-tab="cursewright">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-ring"></i> Cursewright Integration</div>
+
+                    {{#if integrations.cursewright.active}}
+                        {{#if integrations.cursewright.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            Audio cues for Ionrift Cursewright curses. Each cue says who hears it: the bearer, the GM, or everyone. Empty slots stay silent.
+                        </p>
+
+                        {{#each tiers.cursewright.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Cursewright Update Required</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                <strong>Ionrift Cursewright</strong> v{{integrations.cursewright.version}} is installed, but v{{integrations.cursewright.minVersion}} or newer is required for automatic sound triggers. Please update Cursewright to activate these audio cues.
+                            </p>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Cursewright Not Active</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            The <strong>Ionrift Cursewright</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these curse sound triggers.
                         </p>
                     </div>
                     {{/if}}

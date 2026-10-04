@@ -9,6 +9,7 @@ import { SoundPackLoader } from "../packs/SoundPackLoader.js";
 import { ResonanceSocket } from "./ResonanceSocket.js";
 import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js";
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
+import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 
 
@@ -478,6 +479,9 @@ export class SoundHandler {
 
         this.respiteIntegration = new RespiteIntegration(this);
         this.respiteIntegration.registerHooks();
+
+        this.cursewrightIntegration = new CursewrightIntegration(this);
+        this.cursewrightIntegration.registerHooks();
 
         this.voiceIntegration = new VoiceIntegration(this);
         this.voiceIntegration.registerHooks();

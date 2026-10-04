@@ -12,6 +12,7 @@ export {
     SPELL_VOCAL_EVENTS,
     QUIZ_NIGHT_EVENTS,
     RESPITE_EVENTS,
+    CURSEWRIGHT_EVENTS,
     VOICE_EVENTS
 } from "./soundEvents/index.js";
 export { FEATURE_FLAGS, isFeatureFlagEnabled } from "./featureFlags.js";

@@ -10,6 +10,7 @@ import {
 import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
 import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js";
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
+import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
@@ -940,6 +941,121 @@ export class SoundConfigApp extends FormApplication {
         ];
         const respiteRoots = respiteTaxonomy.map(node => processHierarchy(node));
 
+        // --- MODULE INTEGRATIONS: CURSEWRIGHT ---
+        const isCursewrightActive = CursewrightIntegration.isActive;
+
+        const cursewrightTaxonomy = [
+            {
+                label: "Curse Progress",
+                description: "Cues as a curse takes hold. Most are heard only by the bearer or the GM.",
+                children: [
+                    {
+                        id: "CURSEWRIGHT_REMOVAL_ATTEMPTED",
+                        label: "Item Resists Removal",
+                        cardLabel: "Resists Removal",
+                        description: "Bearer only. Plays when the bearer tries to take off a locked item. The GM hears it if no player owns the bearer."
+                    },
+                    {
+                        id: "CURSEWRIGHT_WHISPER_SENT",
+                        label: "Curse Whisper",
+                        cardLabel: "Whisper",
+                        description: "Bearer only. Plays when the curse whispers to its bearer. The GM hears it if no player owns the bearer."
+                    },
+                    {
+                        id: "CURSEWRIGHT_CURSE_LOCKED",
+                        label: "Curse Locks On",
+                        cardLabel: "Locked",
+                        description: "GM only. Plays when the item first binds to its bearer."
+                    },
+                    {
+                        id: "CURSEWRIGHT_PHASE_ADVANCED",
+                        label: "Curse Deepens",
+                        cardLabel: "Phase Advanced",
+                        description: "GM only. Plays each time a curse moves to its next phase."
+                    },
+                    {
+                        id: "CURSEWRIGHT_CURSE_ACTIVATED",
+                        label: "Curse Revealed",
+                        cardLabel: "Activated",
+                        description: "Everyone. Plays when a curse shows its true nature."
+                    }
+                ]
+            },
+            {
+                label: "Devouring Container",
+                description: "Cues for bags and chests that eat what is put inside.",
+                children: [
+                    {
+                        id: "CURSEWRIGHT_DEVOUR_REVEAL_FIRST",
+                        label: "First Reveal",
+                        cardLabel: "Maw Opens",
+                        description: "Everyone. Plays when the container first shows what it is."
+                    },
+                    {
+                        id: "CURSEWRIGHT_DEVOUR_REVEAL_FULL",
+                        label: "Full Reveal",
+                        cardLabel: "Maw Fully Revealed",
+                        description: "Everyone. Plays when the container reveals its full form."
+                    },
+                    {
+                        id: "CURSEWRIGHT_ARM_GRIP",
+                        label: "Arm Gripped",
+                        cardLabel: "Grip",
+                        description: "Everyone. Plays when something inside grabs a reaching arm."
+                    },
+                    {
+                        id: "CURSEWRIGHT_ARM_PULLED",
+                        label: "Arm Pulled In",
+                        cardLabel: "Pulled",
+                        description: "Everyone. Plays when the grip drags the arm inside."
+                    },
+                    {
+                        id: "CURSEWRIGHT_DEVOURED",
+                        label: "Item Devoured",
+                        cardLabel: "Devoured",
+                        description: "GM only. Plays when the container eats an item during a rest."
+                    }
+                ]
+            },
+            {
+                label: "Tribute & Release",
+                description: "Cues for payment demands, violent endings and Remove Curse.",
+                children: [
+                    {
+                        id: "CURSEWRIGHT_TRIBUTE_DEMANDED",
+                        label: "Tribute Demanded",
+                        cardLabel: "Tribute Demanded",
+                        description: "Everyone. Plays when a curse demands payment."
+                    },
+                    {
+                        id: "CURSEWRIGHT_TRIBUTE_MISSED",
+                        label: "Tribute Missed",
+                        cardLabel: "Tribute Missed",
+                        description: "Everyone. Plays when a demanded payment goes unpaid."
+                    },
+                    {
+                        id: "CURSEWRIGHT_DETONATION",
+                        label: "Detonation",
+                        cardLabel: "Detonation",
+                        description: "Everyone. Plays when a curse ends violently."
+                    },
+                    {
+                        id: "CURSEWRIGHT_CURSE_BROKEN",
+                        label: "Curse Broken",
+                        cardLabel: "Broken",
+                        description: "Everyone. Plays when Remove Curse breaks at least one curse."
+                    },
+                    {
+                        id: "CURSEWRIGHT_CURSE_RESISTED",
+                        label: "Curse Resists",
+                        cardLabel: "Resisted",
+                        description: "Everyone. Plays when every curse resists Remove Curse."
+                    }
+                ]
+            }
+        ];
+        const cursewrightRoots = cursewrightTaxonomy.map(node => processHierarchy(node));
+
         // --- MODULE INTEGRATIONS: VOICE ---
         const isVoiceActive = game.modules.get("ionrift-voice")?.active ?? false;
         const isVoiceInstalled = game.modules.has("ionrift-voice");
@@ -979,7 +1095,7 @@ export class SoundConfigApp extends FormApplication {
                 spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER")
             },
             integrations: {
-                hasActive: isQuizNightActive || isRespiteActive || isVoiceActive,
+                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive,
                 quizNight: {
                     installed: QuizNightIntegration.isInstalled,
                     active: QuizNightIntegration.isActive,
@@ -993,6 +1109,13 @@ export class SoundConfigApp extends FormApplication {
                     compatible: RespiteIntegration.isCompatible,
                     version: RespiteIntegration.version,
                     minVersion: RespiteIntegration.MIN_VERSION
+                },
+                cursewright: {
+                    installed: CursewrightIntegration.isInstalled,
+                    active: CursewrightIntegration.isActive,
+                    compatible: CursewrightIntegration.isCompatible,
+                    version: CursewrightIntegration.version,
+                    minVersion: CursewrightIntegration.MIN_VERSION
                 },
                 voice: {
                     installed: VoiceIntegration.isInstalled,
@@ -1032,6 +1155,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Respite",
                     active: false,
                     paramounts: respiteRoots
+                },
+                cursewright: {
+                    label: "Cursewright",
+                    active: false,
+                    paramounts: cursewrightRoots
                 },
                 voice: {
                     label: "Voice",

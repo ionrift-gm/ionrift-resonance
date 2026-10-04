@@ -24,6 +24,7 @@ Resonance triggers contextual sound effects for melee strikes, ranged shots, spe
 - **Cross-Module Audio Triggers.**
   - **Ionrift Respite:** Ambient campfire crackle, kindling ignition, stoking, whittling, and rest resolution cues.
   - **Ionrift Quiz Night:** Round start horns, countdown timer ticks, pencils down, answers, and ceremony fanfares.
+  - **Ionrift Cursewright:** Curse cues for removal attempts, whispers, phase changes, devouring containers, tributes, and Remove Curse. Each plays to the bearer, the GM, or the whole table.
 - **Calibration UI & Sound Auditor.** Map game events across Core Essentials, Combat Actions, Spells, and Monsters. The Sound Auditor tool scans world items for lingering sound flags.
 - **Multi-Sound Randomization.** Ctrl+Click in the Sound Picker to assign multiple sounds to a single key for varied playback.
 - **Fallback Mute Controls.** Silence generic swing sounds (`CORE_WHOOSH`) without clearing item or actor presets.
@@ -54,7 +55,7 @@ Open **Resonance Calibration** from Module Settings:
 - **Tier 1 (Essentials):** Critical hits, fumbles, strike misses, and PC pain and death vocals.
 - **Tier 2 (Combat Actions):** Weapon sound assignments (Slashing, Piercing, Bludgeoning, Bows) and Magic Schools (Fire, Ice, Lightning, Necrotic, Radiant).
 - **Tier 3 (Monsters):** Creature family vocals and default attacks via Library creature taxonomy.
-- **Integrations:** Dedicated sound triggers for Ionrift Respite and Ionrift Quiz Night.
+- **Integrations:** Dedicated sound triggers for Ionrift Respite, Ionrift Quiz Night, and Ionrift Cursewright.
 - **Tools:** Sound Auditor item scanner and Orchestration timing controls.
 
 <img src="assets/screenshots/resonance-calibration-monsters.png" alt="Resonance Calibration Monsters tab showing creature taxonomy families" width="560" />
