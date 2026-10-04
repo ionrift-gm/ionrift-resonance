@@ -91,10 +91,7 @@ export class CursewrightIntegration {
         });
 
         on("armPull", (data = {}) => {
-            const key = data.stage === "pulled"
-                ? SOUND_EVENTS.CURSEWRIGHT_ARM_PULLED
-                : SOUND_EVENTS.CURSEWRIGHT_ARM_GRIP;
-            this._playToTable(key);
+            this._playToTable(CursewrightIntegration.armPullSoundKey(data.stage));
         });
 
         on("detonation", () => this._playToTable(SOUND_EVENTS.CURSEWRIGHT_DETONATION));
@@ -107,6 +104,18 @@ export class CursewrightIntegration {
                 : SOUND_EVENTS.CURSEWRIGHT_CURSE_BROKEN;
             this._playToTable(key);
         });
+    }
+
+    /**
+     * Arm pull stage to sound key. grip before each save, caught when the
+     * first save fails, pulled when the bearer is dragged inside.
+     * @param {string} stage
+     * @returns {string}
+     */
+    static armPullSoundKey(stage) {
+        if (stage === "pulled") return SOUND_EVENTS.CURSEWRIGHT_ARM_PULLED;
+        if (stage === "caught") return SOUND_EVENTS.CURSEWRIGHT_ARM_CAUGHT;
+        return SOUND_EVENTS.CURSEWRIGHT_ARM_GRIP;
     }
 
     /**

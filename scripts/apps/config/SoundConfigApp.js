@@ -1004,6 +1004,12 @@ export class SoundConfigApp extends FormApplication {
                         description: "Everyone. Plays when something inside grabs a reaching arm."
                     },
                     {
+                        id: "CURSEWRIGHT_ARM_CAUGHT",
+                        label: "Arm Caught",
+                        cardLabel: "Caught",
+                        description: "Everyone. Plays when the first save fails and the wrist is held fast."
+                    },
+                    {
                         id: "CURSEWRIGHT_ARM_PULLED",
                         label: "Arm Pulled In",
                         cardLabel: "Pulled",
