@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.13.0] - 2026-10-04
+
+### Added
+- Sound triggers for Ionrift Cursewright.
+- Cursewright tab in Sound Configuration.
+- Sound triggers for Ionrift Voice whispers.
+
+### Fixed
+- Targeted audio cues now deliver reliably across clients.
+- Playlist directory toolbar buttons now match unified glass styling.
+
 ## [2.12.0] - 2026-09-28
 
 ### Added

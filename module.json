@@ -3,11 +3,11 @@
     "title": "Ionrift Resonance",
     "description": "Automated audio triggers for Foundry VTT combat. Plays sound effects for melee attacks, ranged weapons, spells, and creature abilities from locally installed sound packs. Supports DnD5e, Daggerheart, PF2e, Starfinder, PF1e, DnD3.5e, OSE, Call of Cthulhu 7e, SWADE, WFRP4e, Cyberpunk RED, and Blades in the Dark. Optionally integrates with Midi-QOL for enhanced DnD5e automation and Syrinscape for cloud audio.",
     "readme": "https://raw.githubusercontent.com/ionrift-gm/ionrift-resonance/main/README.md",
-    "version": "2.12.0",
+    "version": "2.13.0",
     "url": "https://github.com/ionrift-gm/ionrift-resonance",
     "bugs": "https://discord.gg/vFGXf7Fncj",
     "manifest": "https://github.com/ionrift-gm/ionrift-resonance/releases/latest/download/module.json",
-    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.12.0/module.zip",
+    "download": "https://github.com/ionrift-gm/ionrift-resonance/releases/download/v2.13.0/module.zip",
     "license": "LICENSE",
     "compatibility": {
         "minimum": "12",
@@ -25,8 +25,8 @@
             {
                 "id": "ionrift-library",
                 "type": "module",
-                "manifest": "https://github.com/ionrift-gm/ionrift-library/releases/download/v3.0.0/module.json",
-                "compatibility": { "minimum": "3.0.0" }
+                "manifest": "https://github.com/ionrift-gm/ionrift-library/releases/latest/download/module.json",
+                "compatibility": { "minimum": "3.1.0" }
             }
         ],
         "recommends": [
