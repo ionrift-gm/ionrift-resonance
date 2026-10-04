@@ -9,6 +9,7 @@ import { SoundPackLoader } from "../packs/SoundPackLoader.js";
 import { ResonanceSocket } from "./ResonanceSocket.js";
 import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js";
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
+import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 
 
 export class SoundHandler {
@@ -477,6 +478,9 @@ export class SoundHandler {
 
         this.respiteIntegration = new RespiteIntegration(this);
         this.respiteIntegration.registerHooks();
+
+        this.voiceIntegration = new VoiceIntegration(this);
+        this.voiceIntegration.registerHooks();
 
         // v13: combatTurn/Round fire before DB update; use updateData.turn.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));

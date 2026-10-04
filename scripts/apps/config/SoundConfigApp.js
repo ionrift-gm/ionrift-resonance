@@ -10,6 +10,7 @@ import {
 import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
 import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js";
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
+import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
 
@@ -939,6 +940,38 @@ export class SoundConfigApp extends FormApplication {
         ];
         const respiteRoots = respiteTaxonomy.map(node => processHierarchy(node));
 
+        // --- MODULE INTEGRATIONS: VOICE ---
+        const isVoiceActive = game.modules.get("ionrift-voice")?.active ?? false;
+        const isVoiceInstalled = game.modules.has("ionrift-voice");
+
+        const voiceTaxonomy = [
+            {
+                label: "Whisper Ambients",
+                description: "Subtle continuous ambient soundscapes played to the Game Master and target player during private telepathic whispers.",
+                children: [
+                    {
+                        id: "VOICE_WHISPER_LIGHT",
+                        label: "Light Whisper Ambient",
+                        cardLabel: "Light Whisper",
+                        description: "Ethereal, sacred hum or shimmering harmonic presence for celestial and benevolent whispers."
+                    },
+                    {
+                        id: "VOICE_WHISPER_NEUTRAL",
+                        label: "Neutral Whisper Ambient",
+                        cardLabel: "Neutral Whisper",
+                        description: "Intimate telepathic room tone, subtle psychic breath, or soft binaural air for neutral in-skull whispers."
+                    },
+                    {
+                        id: "VOICE_WHISPER_DARK",
+                        label: "Dark Whisper Ambient",
+                        cardLabel: "Dark Whisper",
+                        description: "Subterranean rumble, dread murmur, or shadow whisper drone for abyssal, eldritch, or menacing whispers."
+                    }
+                ]
+            }
+        ];
+        const voiceRoots = voiceTaxonomy.map(node => processHierarchy(node));
+
         return {
             hasSyrinscape: getSyrinscapeProvider().isConfigured(),
             features: {
@@ -946,7 +979,7 @@ export class SoundConfigApp extends FormApplication {
                 spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER")
             },
             integrations: {
-                hasActive: isQuizNightActive || isRespiteActive,
+                hasActive: isQuizNightActive || isRespiteActive || isVoiceActive,
                 quizNight: {
                     installed: QuizNightIntegration.isInstalled,
                     active: QuizNightIntegration.isActive,
@@ -960,6 +993,13 @@ export class SoundConfigApp extends FormApplication {
                     compatible: RespiteIntegration.isCompatible,
                     version: RespiteIntegration.version,
                     minVersion: RespiteIntegration.MIN_VERSION
+                },
+                voice: {
+                    installed: VoiceIntegration.isInstalled,
+                    active: VoiceIntegration.isActive,
+                    compatible: VoiceIntegration.isCompatible,
+                    version: VoiceIntegration.version,
+                    minVersion: VoiceIntegration.MIN_VERSION
                 }
             },
             tiers: {
@@ -992,6 +1032,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Respite",
                     active: false,
                     paramounts: respiteRoots
+                },
+                voice: {
+                    label: "Voice & Whispers",
+                    active: false,
+                    paramounts: voiceRoots
                 },
                 auditor: {
                     label: "Auditor",
