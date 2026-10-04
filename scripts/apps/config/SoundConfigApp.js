@@ -947,25 +947,25 @@ export class SoundConfigApp extends FormApplication {
         const voiceTaxonomy = [
             {
                 label: "Whisper Ambients",
-                description: "Subtle continuous ambient soundscapes played to the Game Master and target player during private telepathic whispers.",
+                description: "Background audio played to the GM and recipient during private whispers.",
                 children: [
                     {
                         id: "VOICE_WHISPER_LIGHT",
                         label: "Light Whisper Ambient",
                         cardLabel: "Light Whisper",
-                        description: "Ethereal, sacred hum or shimmering harmonic presence for celestial and benevolent whispers."
+                        description: "Harmonic tone for celestial or benevolent whispers."
                     },
                     {
                         id: "VOICE_WHISPER_NEUTRAL",
                         label: "Neutral Whisper Ambient",
                         cardLabel: "Neutral Whisper",
-                        description: "Intimate telepathic room tone, subtle psychic breath, or soft binaural air for neutral in-skull whispers."
+                        description: "Subtle room tone for direct mind whispers."
                     },
                     {
                         id: "VOICE_WHISPER_DARK",
                         label: "Dark Whisper Ambient",
                         cardLabel: "Dark Whisper",
-                        description: "Subterranean rumble, dread murmur, or shadow whisper drone for abyssal, eldritch, or menacing whispers."
+                        description: "Low drone for sinister or menacing whispers."
                     }
                 ]
             }
