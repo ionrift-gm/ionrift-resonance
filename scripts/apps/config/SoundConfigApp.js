@@ -1034,7 +1034,7 @@ export class SoundConfigApp extends FormApplication {
                     paramounts: respiteRoots
                 },
                 voice: {
-                    label: "Voice & Whispers",
+                    label: "Voice",
                     active: false,
                     paramounts: voiceRoots
                 },

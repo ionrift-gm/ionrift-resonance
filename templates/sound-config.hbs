@@ -48,7 +48,7 @@
                     <a class="item {{#unless integrations.voice.active}}disabled-tab{{/unless}}" 
                        data-tab="voice" 
                        {{#unless integrations.voice.active}}title="Ionrift Voice is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-comment-dots"></i> Voice & Whispers
+                        <i class="fas fa-comment-dots"></i> Voice
                         {{#unless integrations.voice.active}}
                         <span class="integration-status-tag">Inactive</span>
                         {{else unless integrations.voice.compatible}}
@@ -200,7 +200,7 @@
             <!-- VOICE INTEGRATION -->
             <div class="tab" data-tab="voice">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-comment-dots"></i> Voice & Whisper Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-comment-dots"></i> Voice Integration</div>
 
                     {{#if integrations.voice.active}}
                         {{#if integrations.voice.compatible}}
