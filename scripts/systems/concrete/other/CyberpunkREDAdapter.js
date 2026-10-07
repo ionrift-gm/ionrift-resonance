@@ -154,14 +154,14 @@ export class CyberpunkREDAdapter extends SystemAdapter {
 
         if (isDead) {
             const override = actor.getFlag("ionrift-resonance", "sound_death");
-            if (override) this.handler.play(override);
-            else if (isPC) this.play(this.handler.getPCSound(actor, "DEATH"));
-            else this.play(SOUND_EVENTS.CORE_MONSTER_DEATH);
+            if (override) this.playAt(override, actor, 0, isPC ? this.handler.getPCSound(actor, "DEATH") : SOUND_EVENTS.CORE_MONSTER_DEATH);
+            else if (isPC) this.playAt(this.handler.getPCSound(actor, "DEATH"), actor);
+            else this.playAt(SOUND_EVENTS.CORE_MONSTER_DEATH, actor);
         } else {
             const override = actor.getFlag("ionrift-resonance", "sound_pain");
-            if (override) this.handler.play(override);
-            else if (isPC) this.play(this.handler.getPCSound(actor, "PAIN"));
-            else this.play(SOUND_EVENTS.CORE_MONSTER_PAIN);
+            if (override) this.playAt(override, actor, 0, isPC ? this.handler.getPCSound(actor, "PAIN") : SOUND_EVENTS.CORE_MONSTER_PAIN);
+            else if (isPC) this.playAt(this.handler.getPCSound(actor, "PAIN"), actor);
+            else this.playAt(SOUND_EVENTS.CORE_MONSTER_PAIN, actor);
         }
     }
 

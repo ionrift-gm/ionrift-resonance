@@ -3,6 +3,7 @@ import { SOUND_EVENTS } from "../../../data/constants.js";
 import { Logger } from "../../../utils/Logger.js";
 import { getSubtypeVocalKey, pickBoundMonsterPainKey } from "../../../data/maps/MonsterVocalMap.js";
 import { VocalLayerService } from "../../../services/playback/VocalLayerService.js";
+import { originFromActor, originFromToken } from "../../../services/playback/SoundOrigin.js";
 
 
 
@@ -69,7 +70,7 @@ export class DnD5eAdapter extends SystemAdapter {
         this._traceNative("play.request", {
             reason,
             key,
-            delayMs: delay,
+            delayMs: typeof delay === "number" ? delay : (delay?.delay ?? 0),
             resolved: resolved ?? null,
             orchestratorCategory: category
         });
@@ -77,6 +78,12 @@ export class DnD5eAdapter extends SystemAdapter {
             Logger.warn(`${DnD5eAdapter.NATIVE_TRACE_PREFIX} play blocked? semantic key has no binding: ${key} (${reason})`);
         }
         this.play(key, delay);
+    }
+
+    _spellPlaces(actor) {
+        const caster = originFromActor(actor);
+        const target = originFromToken(game.user?.targets?.first?.());
+        return { caster, burst: target || caster };
     }
 
     validateSchema() {
@@ -223,30 +230,31 @@ export class DnD5eAdapter extends SystemAdapter {
                 ? VocalLayerService.playAndGetDelay(this.handler, item)
                 : 0;
 
+            const { caster, burst } = this._spellPlaces(actor);
             if (overrideSpellEffect) {
                 // Exclusive: monster spell vocal replaces the spell effect entirely.
-                // e.g. lich Vampiric Touch — the creature IS the effect at touch range.
-                Logger.log(`5e Weapon Sound: monster spell override — ${soundKey} only (no effect sound)`);
-                this.handler.playItemSound(soundKey, item, vocalDelay);
+                // e.g. lich Vampiric Touch. The creature is the effect at touch range.
+                Logger.log(`5e Weapon Sound: monster spell override, ${soundKey} only (no effect sound)`);
+                this.handler.playItemSound(soundKey, item, vocalDelay, 5000, caster);
 
             } else if (soundKey && soundKey !== effectKey
                        && resolver?.resolveKey(soundKey)) {
                 // Additive: a monster spell vocal resolved AND override=false.
                 // Play the monster vocal, then the spell effect sound with a stagger.
-                // e.g. lich Fireball — incantation vocalization + fireball explosion.
+                // e.g. lich Fireball: incantation vocalization, then the fireball.
                 const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
                 Logger.log(`5e Weapon Sound: monster spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
-                this.handler.playItemSound(soundKey, item, vocalDelay);
-                this.handler.playItemSound(effectKey, item, effectDelay);
+                this.handler.playItemSound(soundKey, item, vocalDelay, 5000, caster);
+                this.handler.playItemSound(effectKey, item, effectDelay, 5000, burst);
 
             } else {
-                // Standard: no monster spell binding — normal spell school flow.
+                // Standard: no monster spell binding. Normal spell school flow.
                 if (schoolKey) {
-                    Logger.log(`5e Weapon Sound: spell school ${item.system.school} -> ${schoolKey} (vocalDelay: ${vocalDelay}ms)`);
+                    Logger.log(`5e Weapon Sound: spell school ${item.system.school}, ${schoolKey} (vocalDelay: ${vocalDelay}ms)`);
                 } else {
-                    Logger.log(`5e Weapon Sound: no school key for ${item.name} -> falling back to ASK_GENERIC_MAGIC (vocalDelay: ${vocalDelay}ms)`);
+                    Logger.log(`5e Weapon Sound: no school key for ${item.name}, falling back to ASK_GENERIC_MAGIC (vocalDelay: ${vocalDelay}ms)`);
                 }
-                this.handler.playItemSoundWithFallback(soundKey, effectKey, item, vocalDelay);
+                this.handler.playItemSoundWithFallback(soundKey, effectKey, item, vocalDelay, burst);
             }
             return;
         }
@@ -282,6 +290,7 @@ export class DnD5eAdapter extends SystemAdapter {
 
         Logger.log(`5e Attack Result: ${item.name} - hitTargets: ${workflow.hitTargets.size}, crit: ${workflow.isCritical}, fumble: ${workflow.isFumble}`);
 
+        const missSubject = workflow.targets?.first?.() || null;
         if (workflow.isFumble) {
             // Nat 1: roll fumble stinger + miss sound
             this.play(SOUND_EVENTS.ROLL_FUMBLE);
@@ -291,9 +300,9 @@ export class DnD5eAdapter extends SystemAdapter {
                 Logger.log(`DnD5e | Fumble miss muted for ${item.name}`);
             } else if (missOverride) {
                 Logger.log(`DnD5e | Fumble miss item override: ${missOverride}`);
-                this.play(missOverride, fumbleDelay);
+                this.playAt(missOverride, missSubject, fumbleDelay);
             } else {
-                this.play(this._getMissKey(item), fumbleDelay);
+                this.playAt(this._getMissKey(item), missSubject, fumbleDelay);
             }
         } else if (workflow.hitTargets.size === 0) {
             // Weapon-type-aware miss sound — item override wins
@@ -302,11 +311,11 @@ export class DnD5eAdapter extends SystemAdapter {
                 Logger.log(`DnD5e | Miss muted for ${item.name}`);
             } else if (missOverride) {
                 Logger.log(`DnD5e | Miss item override: ${missOverride}`);
-                this.play(missOverride);
+                this.playAt(missOverride, missSubject);
             } else {
                 const missKey = this._getMissKey(item);
                 Logger.log(`DnD5e | Miss type: ${missKey}`);
-                this.play(missKey);
+                this.playAt(missKey, missSubject);
             }
         } else if (workflow.isCritical) {
             // Nat 20: roll crit stinger + weapon impact decoration
@@ -420,19 +429,27 @@ export class DnD5eAdapter extends SystemAdapter {
         const AOE_VOCAL_MAX = orch?.getNamedOffset("AOE_VOCAL_MAX") ?? 400;
         const SPELL_BONUS = (item?.type === "spell") ? (orch?.getNamedOffset("SPELL_AUDIO_BONUS") ?? 150) : 0;
         const isAoE = scopeSize > AOE_THRESHOLD;
-        const emit = (key, delay, reason) => trace ? this._playTraced(key, delay, reason) : this.play(key, delay);
+        const emit = (key, delay, reason, subject, spatialKey) => {
+            const options = {
+                delay,
+                origin: originFromToken(subject) || originFromActor(subject)
+            };
+            if (spatialKey) options.spatialKey = spatialKey;
+            if (trace) this._playTraced(key, options, reason);
+            else this.play(key, options);
+        };
 
         // Item-level hit/impact override (resolved once, used in all branches)
         const hitOverride = this._getItemHitOverride(item);
         const hitMuted = hitOverride === null;
-        const emitHit = (delay, reason) => {
+        const emitHit = (delay, reason, subject) => {
             if (hitMuted) {
                 Logger.log(`${logPrefix} | Hit impact muted for ${item?.name} (${reason})`);
             } else if (hitOverride) {
                 Logger.log(`${logPrefix} | Hit impact item override: ${hitOverride} (${reason})`);
-                emit(hitOverride, delay, reason);
+                emit(hitOverride, delay, reason, subject, SOUND_EVENTS.BLOODY_HIT);
             } else {
-                emit(SOUND_EVENTS.BLOODY_HIT, delay, reason);
+                emit(SOUND_EVENTS.BLOODY_HIT, delay, reason, subject);
             }
         };
 
@@ -451,7 +468,7 @@ export class DnD5eAdapter extends SystemAdapter {
 
         if (isAoE) {
             Logger.log(`${logPrefix} | AoE detected. Playing single hit + up to ${MAX_AOE_VOCALS} vocals.`);
-            emitHit(0, "aoe-impact");
+            emitHit(0, "aoe-impact", allTargets[0]);
 
             const vocalCandidates = [];
             for (const token of allTargets) {
@@ -497,7 +514,7 @@ export class DnD5eAdapter extends SystemAdapter {
                 });
             }
 
-            emitHit(0, `impact-${actor.name}`);
+            emitHit(0, `impact-${actor.name}`, token);
             this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER + SPELL_BONUS, trace);
         }
     }
@@ -525,39 +542,51 @@ export class DnD5eAdapter extends SystemAdapter {
      * Play the appropriate pain or death vocal for a single target.
      */
     _playVocalForTarget(actor, isPC, isDead, delay, trace = false) {
-        const emit = (key, reason) => trace ? this._playTraced(key, delay, reason) : this.play(key, delay);
-        const emitRaw = (key, reason) => trace ? this._playTraced(key, delay, reason) : this.handler.play(key, delay);
+        const vocalKey = (kind) => (isPC
+            ? this.handler.getPCSound(actor, kind)
+            : (kind === "DEATH" ? SOUND_EVENTS.CORE_MONSTER_DEATH : SOUND_EVENTS.CORE_MONSTER_PAIN));
+        const placedFor = (kind) => ({ delay, origin: originFromActor(actor), spatialKey: vocalKey(kind) });
+        const emit = (key, reason, kind) => {
+            const placed = placedFor(kind);
+            if (trace) this._playTraced(key, placed, reason);
+            else this.play(key, placed);
+        };
+        const emitRaw = (key, reason, kind) => {
+            const placed = placedFor(kind);
+            if (trace) this._playTraced(key, placed, reason);
+            else this.handler.play(key, placed);
+        };
 
         if (isDead) {
             Logger.log(`DnD5e | ${actor.name} killed! Playing death sound`);
             const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
             if (trace) this._traceNative("vocal.death", { actor: actor.name, override: deathOverride ?? null, isPC });
             if (deathOverride) {
-                emitRaw(deathOverride, `death-override-${actor.name}`);
+                emitRaw(deathOverride, `death-override-${actor.name}`, "DEATH");
             } else if (isPC) {
-                emit(this.handler.getPCSound(actor, "DEATH"), `pc-death-${actor.name}`);
+                emit(this.handler.getPCSound(actor, "DEATH"), `pc-death-${actor.name}`, "DEATH");
             } else {
                 const deathSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "DEATH")
                     ?? SOUND_EVENTS.CORE_MONSTER_DEATH;
-                emit(deathSound, `monster-death-${actor.name}`);
+                emit(deathSound, `monster-death-${actor.name}`, "DEATH");
             }
         } else {
             Logger.log(`DnD5e | ${actor.name} took damage, playing pain`);
             const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
             if (trace) this._traceNative("vocal.pain", { actor: actor.name, override: painOverride ?? null, isPC });
             if (painOverride) {
-                emitRaw(painOverride, `pain-override-${actor.name}`);
+                emitRaw(painOverride, `pain-override-${actor.name}`, "PAIN");
             } else if (isPC) {
                 const pcPain = this.handler.getPCSound(actor, "PAIN");
                 Logger.log(`DnD5e | PC Pain sound: ${pcPain} (delay: ${delay}ms)`);
-                emit(pcPain, `pc-pain-${actor.name}`);
+                emit(pcPain, `pc-pain-${actor.name}`, "PAIN");
             } else {
                 const painSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "PAIN", {
                     detectMonsterPain: (a) => this.detectMonsterPain(a)
                 }) ?? this.detectMonsterPain(actor);
                 Logger.log(`DnD5e | Monster pain sound: ${painSound}`);
                 if (trace) this._traceNative("vocal.monsterPainKey", { actor: actor.name, painSound });
-                if (painSound) emit(painSound, `monster-pain-${actor.name}`);
+                if (painSound) emit(painSound, `monster-pain-${actor.name}`, "PAIN");
                 else if (trace) this._traceNative("vocal.monsterPainKey", "detectMonsterPain returned empty key");
             }
         }

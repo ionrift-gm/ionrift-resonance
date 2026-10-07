@@ -11,6 +11,10 @@ import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
 import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
+import { isLocalFileSource, pickSoundEntry, sourceId } from "./PlaybackSource.js";
+import { gatherSpatialDecision } from "./SpatialSettings.js";
+import { buildSpatialMessage, playSpatialClip } from "./SpatialPlayback.js";
+import { normalizeOrigin, originFromActor } from "./SoundOrigin.js";
 
 
 export class SoundHandler {
@@ -187,7 +191,7 @@ export class SoundHandler {
         return result;
     }
 
-    playItemSound(key, item = null, delay = 0, cooldownMs = 5000) {
+    playItemSound(key, item = null, delay = 0, cooldownMs = 5000, origin = null) {
         if (!key) {
             Logger.log("playItemSound | No key provided, skipping");
             return;
@@ -218,24 +222,25 @@ export class SoundHandler {
         }
 
         Logger.log(`playItemSound | Playing ${key} with delay ${delay + addedDelay}ms`);
-        this.play(key, delay + addedDelay);
+        const placed = origin || originFromActor(item?.actor);
+        this.play(key, { delay: delay + addedDelay, origin: placed || undefined });
     }
     // Raw file paths from item flags play directly; else try fallbackKey.
-    playItemSoundWithFallback(primaryKey, fallbackKey, item = null, delay = 0) {
+    playItemSoundWithFallback(primaryKey, fallbackKey, item = null, delay = 0, origin = null) {
         const isRawPath = primaryKey && (primaryKey.includes("/") || primaryKey.includes("."));
         if (isRawPath) {
             Logger.log(`playItemSoundWithFallback | ${primaryKey} is a raw file path; playing directly`);
-            this.playItemSound(primaryKey, item, delay);
+            this.playItemSound(primaryKey, item, delay, 5000, origin);
             return;
         }
 
         const primaryResult = this.resolver.resolveKey(primaryKey);
         if (primaryResult) {
             Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} resolved; using it`);
-            this.playItemSound(primaryKey, item, delay);
+            this.playItemSound(primaryKey, item, delay, 5000, origin);
         } else {
             Logger.log(`playItemSoundWithFallback | Primary ${primaryKey} unbound; trying ${fallbackKey}`);
-            this.playItemSound(fallbackKey, item, delay);
+            this.playItemSound(fallbackKey, item, delay, 5000, origin);
         }
     }
 
@@ -273,10 +278,41 @@ export class SoundHandler {
         const playOptions = { ...options, delay: delay + offset };
         if (taxonomyVolume !== 1.0) playOptions.volumeMultiplier = taxonomyVolume;
 
+        const wait = delay + offset;
+        const entry = pickSoundEntry(finalData);
+        const src = sourceId(entry);
+        const privatePath = options.scope === "local" || options.broadcast === false;
+        const placed = normalizeOrigin(options.origin);
+        const classKey = options.spatialKey || key;
+        const decision = gatherSpatialDecision({
+            key: classKey,
+            origin: placed,
+            privatePath,
+            src
+        });
+        if (decision.positional && placed && isLocalFileSource(src)) {
+            const volume = (playOptions.volume ?? 1) * (taxonomyVolume ?? 1);
+            const fire = () => {
+                const message = buildSpatialMessage({
+                    key: classKey,
+                    src,
+                    volume,
+                    origin: placed,
+                    senderId: game.user?.id ?? null
+                });
+                ResonanceSocket.emitSpatial(message);
+                void playSpatialClip(message);
+                Hooks.call("ionrift.soundPlayed", key, src);
+            };
+            if (wait > 0) setTimeout(fire, wait);
+            else fire();
+            return;
+        }
+
         // 4. Delegate to SoundManager
         const manager = this.manager ?? game.ionrift.resonance?.manager ?? game.ionrift.sounds?.manager;
         if (manager) {
-            manager.play(finalData, playOptions);
+            manager.play(entry ?? finalData, playOptions);
 
             // Notify visualizer + any other consumers
             Hooks.call("ionrift.soundPlayed", key, finalData);
@@ -293,6 +329,16 @@ export class SoundHandler {
      */
     playLocal(key, options = {}) {
         return this.play(key, { ...options, scope: "local", broadcast: false });
+    }
+
+    /**
+     * Receiver side of audio:spatial. Plays here only; does not emit again.
+     * @param {{ key?: string, src: string, volume?: number, origin?: object }} message
+     */
+    playSpatialIncoming(message) {
+        if (!message?.src) return;
+        void playSpatialClip(message);
+        Hooks.call("ionrift.soundPlayed", message.key, message.src);
     }
 
     /**

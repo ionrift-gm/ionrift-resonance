@@ -166,4 +166,41 @@ export const registerSettings = function () {
         default: false
     });
 
+    game.settings.register("ionrift-resonance", "positionalSfx", {
+        name: "Positional sound effects",
+        hint: "Sounds with a place on the map are heard from that place, through walls and doors. Needs Ionrift Voice. Syrinscape sounds always play normally.",
+        scope: "world",
+        config: false,
+        type: Boolean,
+        default: false
+    });
+
+    game.settings.register("ionrift-resonance", "positionalCategories", {
+        name: "Positional categories",
+        hint: "Which groups of sounds use a place on the map when positional sound effects are on.",
+        scope: "world",
+        config: false,
+        type: Object,
+        default: {
+            weapons: true,
+            spells: true,
+            creatures: true,
+            vocals: true,
+            campfire: true
+        }
+    });
+
+    game.settings.register("ionrift-resonance", "hearPositionalSfx", {
+        name: "Hear positional sound effects",
+        hint: "Follow table uses the GM settings. Always play normally ignores place and distance.",
+        scope: "client",
+        config: true,
+        type: String,
+        choices: {
+            follow: "Follow table",
+            normal: "Always play normally"
+        },
+        default: "follow"
+    });
+
 };

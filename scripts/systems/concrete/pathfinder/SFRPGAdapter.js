@@ -90,7 +90,7 @@ export class SFRPGAdapter extends SystemAdapter {
         // Check for explicit item-level override first
         const override = item.getFlag("ionrift-resonance", "sound_attack");
         if (override) {
-            this.handler.play(override);
+            this.playAt(override, actor);
             return;
         }
 

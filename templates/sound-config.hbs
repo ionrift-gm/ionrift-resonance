@@ -361,6 +361,50 @@
                     </div>
                     {{/if}}
 
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">
+                            Positional sound effects</div>
+                        <div class="ionrift-list-item"
+                            style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-bottom: 8px;">
+                            <div class="entity-info" style="flex:1;">
+                                <span class="entity-name" style="display:block;">Positional sound effects</span>
+                                <span style="font-size:0.75em; opacity:0.7;">{{positional.hint}}</span>
+                                {{#unless positional.voiceActive}}
+                                <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">Ionrift Voice is not active.</span>
+                                {{/unless}}
+                            </div>
+                            <div class="entity-actions" style="flex:0 0 auto; display:flex; align-items:center;">
+                                <input type="checkbox" class="positional-master" {{#if positional.master}}checked{{/if}} {{#unless positional.voiceActive}}disabled{{/unless}}
+                                    title="Positional sound effects">
+                            </div>
+                        </div>
+                        {{#each positional.categories}}
+                        <div class="ionrift-list-item"
+                            style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 6px 10px; margin-bottom: 4px;">
+                            <div class="entity-info" style="flex:1;">
+                                <span class="entity-name">{{label}}</span>
+                            </div>
+                            <div class="entity-actions" style="flex:0 0 auto;">
+                                <input type="checkbox" class="positional-category" data-category="{{id}}" {{#if enabled}}checked{{/if}}>
+                            </div>
+                        </div>
+                        {{/each}}
+                        <div class="ionrift-list-item"
+                            style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-top: 8px;">
+                            <div class="entity-info" style="flex:1;">
+                                <span class="entity-name" style="display:block;">Hear positional sound effects</span>
+                                <span style="font-size:0.75em; opacity:0.7;">Follow table uses the GM settings. Always play normally ignores place and distance.</span>
+                            </div>
+                            <div class="entity-actions" style="flex:0 0 auto;">
+                                <select class="hear-positional"
+                                    style="background:rgba(0,0,0,0.35); color:#e8e4f0; border:1px solid rgba(255,255,255,0.18); border-radius:4px; padding:2px 4px;">
+                                    <option value="follow" {{#if positional.hearFollow}}selected{{/if}}>Follow table</option>
+                                    <option value="normal" {{#if positional.hearNormal}}selected{{/if}}>Always play normally</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Budget Table -->
 
                     <div style="margin-bottom: 24px;">

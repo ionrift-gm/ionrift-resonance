@@ -12,6 +12,7 @@ import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
 import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
+import { DEFAULT_POSITIONAL_CATEGORIES, positionalPanelData, voiceModuleActive } from "../../services/playback/SpatialSettings.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
 
@@ -1186,7 +1187,8 @@ export class SoundConfigApp extends FormApplication {
                 config: configOverrides,
                 // Feature toggle states surfaced to the Orchestration tab template
                 spellVocalLayer: game.settings.get("ionrift-resonance", "spellVocalLayer") ?? false
-            }
+            },
+            positional: positionalPanelData()
         };
     }
 
@@ -1362,6 +1364,10 @@ export class SoundConfigApp extends FormApplication {
 
         // Feature toggle buttons (generic boolean setting toggle)
         html.on("click", ".orchestrator-toggle-setting", this._onToggleSetting.bind(this));
+        html.on("change", ".spatial-place", this._onSpatialPlace.bind(this));
+        html.on("change", ".positional-master", this._onPositionalMaster.bind(this));
+        html.on("change", ".positional-category", this._onPositionalCategory.bind(this));
+        html.on("change", ".hear-positional", this._onHearPositional.bind(this));
 
         // Prevent Enter from submitting the FormApplication (which closes the window).
         // Instead: commit the value via change event and blur.
@@ -1900,6 +1906,36 @@ export class SoundConfigApp extends FormApplication {
             console.error("Ionrift Sound Config | Failed to load SoundPickerApp:", e);
             ui.notifications.error("Ionrift Sound Config required for Search.");
         }
+    }
+
+    async _onSpatialPlace(event) {
+        const key = event.currentTarget.dataset.key;
+        const value = event.currentTarget.value;
+        const current = game.settings.get("ionrift-resonance", "configOverrides") || {};
+        if (!current.spatial || typeof current.spatial !== "object") current.spatial = {};
+        if (value === "default") delete current.spatial[key];
+        else current.spatial[key] = value;
+        await game.settings.set("ionrift-resonance", "configOverrides", current);
+    }
+
+    async _onPositionalMaster(event) {
+        if (!voiceModuleActive()) {
+            event.currentTarget.checked = false;
+            return;
+        }
+        await game.settings.set("ionrift-resonance", "positionalSfx", event.currentTarget.checked === true);
+    }
+
+    async _onPositionalCategory(event) {
+        const id = event.currentTarget.dataset.category;
+        const stored = game.settings.get("ionrift-resonance", "positionalCategories") || {};
+        const next = { ...DEFAULT_POSITIONAL_CATEGORIES, ...stored, [id]: event.currentTarget.checked === true };
+        await game.settings.set("ionrift-resonance", "positionalCategories", next);
+    }
+
+    async _onHearPositional(event) {
+        const value = event.currentTarget.value === "normal" ? "normal" : "follow";
+        await game.settings.set("ionrift-resonance", "hearPositionalSfx", value);
     }
 
     async _onAddRow(event) {

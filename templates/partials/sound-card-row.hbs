@@ -35,6 +35,15 @@
         </div>
     </div>
 
+    <label class="spatial-place-wrap" title="Default uses the sound's class. Positional needs a place on the map. Everywhere plays for the whole table.">
+        <select class="spatial-place" data-key="{{key}}"
+            style="background:rgba(0,0,0,0.35); color:#e8e4f0; border:1px solid rgba(255,255,255,0.18); border-radius:4px; font-size:0.75em; padding:2px 4px;">
+            <option value="default" {{#if spatialDefault}}selected{{/if}}>Default</option>
+            <option value="positional" {{#if spatialPositional}}selected{{/if}}>Positional</option>
+            <option value="everywhere" {{#if spatialEverywhere}}selected{{/if}}>Everywhere</option>
+        </select>
+    </label>
+
     <!-- Right: Actions -->
     <div class="entity-actions" style="display: flex; gap: 5px;">
         <button type="button" class="play-preview" data-sound="{{key}}" title="Preview Sound">

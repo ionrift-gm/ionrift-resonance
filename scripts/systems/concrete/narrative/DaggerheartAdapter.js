@@ -338,11 +338,11 @@ export class DaggerheartAdapter extends SystemAdapter {
                 const hitOverride = this.lastAttackItem?.getFlag?.("ionrift-resonance", "sound_hit");
                 if (hitOverride) {
                     Logger.log(`⏱️ [${Date.now()}] DH | Item Override: Hit -> ${hitOverride}`);
-                    this.handler.play(hitOverride);
+                    this.playAt(hitOverride, actor, 0, this._deriveCategoryKey(this.lastAttackKey, "HIT"));
                 } else {
                     const hitKey = this._deriveCategoryKey(this.lastAttackKey, "HIT");
                     Logger.log(`⏱️ [${Date.now()}] DH | Playing HIT: ${hitKey} (from attack: ${this.lastAttackKey})`);
-                    this.play(hitKey);
+                    this.playAt(hitKey, actor);
                 }
 
                 const VOCAL_STAGGER = this.handler?.orchestrator?.getNamedOffset("VOCAL_STAGGER") ?? 400;
@@ -354,31 +354,31 @@ export class DaggerheartAdapter extends SystemAdapter {
                     const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
                     if (deathOverride) {
                         Logger.log(`Actor Override: Death -> ${deathOverride} (delay: ${VOCAL_STAGGER}ms)`);
-                        this.handler.play(deathOverride, VOCAL_STAGGER);
+                        this.playAt(deathOverride, actor, VOCAL_STAGGER, (actor.hasPlayerOwner || actor.type === "character") ? this.handler.getPCSound(actor, "DEATH") : SOUND_EVENTS.VOCAL_GENERIC_DEATH);
                     } else if (actor.hasPlayerOwner || actor.type === "character") {
-                        this.play(this.handler.getPCSound(actor, "DEATH"), VOCAL_STAGGER);
+                        this.playAt(this.handler.getPCSound(actor, "DEATH"), actor, VOCAL_STAGGER);
                     } else {
                         const deathSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "DEATH")
                             ?? SOUND_EVENTS.VOCAL_GENERIC_DEATH;
-                        this.play(deathSound, VOCAL_STAGGER);
+                        this.playAt(deathSound, actor, VOCAL_STAGGER);
                     }
                 } else {
                     // Non-lethal - pain sound after impact
                     const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
                     if (painOverride) {
                         Logger.log(`Actor Override: Pain -> ${painOverride} (delay: ${VOCAL_STAGGER}ms)`);
-                        this.handler.play(painOverride, VOCAL_STAGGER);
+                        this.playAt(painOverride, actor, VOCAL_STAGGER, (actor.hasPlayerOwner || actor.type === "character") ? this.handler.getPCSound(actor, "PAIN") : SOUND_EVENTS.VOCAL_GENERIC_PAIN);
                     } else if (actor.hasPlayerOwner || actor.type === "character") {
                         const pcPain = this.handler.getPCSound(actor, "PAIN");
                         Logger.log(`DH | PC ${actor.name} pain sound: ${pcPain} (delay: ${VOCAL_STAGGER}ms)`);
-                        this.play(pcPain, VOCAL_STAGGER);
+                        this.playAt(pcPain, actor, VOCAL_STAGGER);
                     } else {
                         const painSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "PAIN", {
                             detectMonsterPain: (a) => getDaggerheartMonsterSound(a)
                         }) ?? getDaggerheartMonsterSound(actor);
                         Logger.log(`DH | Monster ${actor.name} pain sound: ${painSound || "none"} (delay: ${VOCAL_STAGGER}ms)`);
                         if (painSound && painSound !== SOUND_EVENTS.MONSTER_GENERIC) {
-                            this.play(painSound, VOCAL_STAGGER);
+                            this.playAt(painSound, actor, VOCAL_STAGGER);
                         } else {
                             Logger.log(`DH | Using generic monster pain: ${SOUND_EVENTS.MONSTER_GENERIC}`);
                             this.play(SOUND_EVENTS.MONSTER_GENERIC, VOCAL_STAGGER);

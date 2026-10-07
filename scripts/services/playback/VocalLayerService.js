@@ -1,5 +1,6 @@
 import { Logger } from "../../utils/Logger.js";
 import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
+import { originFromActor } from "./SoundOrigin.js";
 
 export class VocalLayerService {
 
@@ -59,12 +60,8 @@ export class VocalLayerService {
         const vocKey = VocalLayerService.resolveVocalKey(item, handler);
         if (!vocKey) return 0;
 
-        if (vocKey.isRaw) {
-            const manager = game.ionrift?.resonance?.manager ?? game.ionrift?.sounds?.manager;
-            if (manager) manager.play(vocKey.resolved);
-        } else {
-            handler.play(vocKey.key);
-        }
+        const origin = originFromActor(item?.actor);
+        handler.play(vocKey.isRaw ? vocKey.resolved : vocKey.key, { origin });
 
         const leadIn = handler?.orchestrator?.getNamedOffset("SPELL_VOCAL_LEAD_IN") ?? 400;
         Logger.log(`VocalLayerService | Vocal fired (${vocKey.key}). Effect delayed by ${leadIn}ms.`);

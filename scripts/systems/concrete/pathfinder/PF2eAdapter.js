@@ -3,6 +3,7 @@ import { SOUND_EVENTS } from "../../../data/constants.js";
 import { Logger } from "../../../utils/Logger.js";
 import { getSubtypeVocalKey, pickBoundMonsterPainKey } from "../../../data/maps/MonsterVocalMap.js";
 import { VocalLayerService } from "../../../services/playback/VocalLayerService.js";
+import { originFromActor, originFromToken } from "../../../services/playback/SoundOrigin.js";
 
 export class PF2eAdapter extends SystemAdapter {
 
@@ -98,24 +99,26 @@ export class PF2eAdapter extends SystemAdapter {
                 const traitKey = this._getSpellTraitKey(item);
                 const effectKey = traitKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
 
+                const caster = originFromActor(actor);
+                const burst = originFromToken(game.user?.targets?.first?.()) || caster;
                 if (overrideSpellEffect) {
-                    Logger.log(`PF2e | NPC spell override — ${soundKey} only (no effect sound)`);
-                    this.handler.playItemSound(soundKey, item, vocalDelay);
+                    Logger.log(`PF2e | NPC spell override, ${soundKey} only (no effect sound)`);
+                    this.handler.playItemSound(soundKey, item, vocalDelay, 5000, caster);
 
                 } else if (soundKey && soundKey !== effectKey
                            && resolver?.resolveKey(soundKey)) {
                     const orch = this.handler?.orchestrator;
                     const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
                     Logger.log(`PF2e | NPC spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
-                    this.handler.playItemSound(soundKey, item, vocalDelay);
-                    this.handler.playItemSound(effectKey, item, effectDelay);
+                    this.handler.playItemSound(soundKey, item, vocalDelay, 5000, caster);
+                    this.handler.playItemSound(effectKey, item, effectDelay, 5000, burst);
 
                 } else {
                     if (traitKey) {
                         Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
-                        this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay);
+                        this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay, burst);
                     } else {
-                        this.handler.playItemSound(soundKey, item, vocalDelay);
+                        this.handler.playItemSound(soundKey, item, vocalDelay, 5000, burst);
                     }
                 }
             } else {
@@ -215,7 +218,7 @@ export class PF2eAdapter extends SystemAdapter {
         Logger.log(`PF2e | Damage: ${totalDamage} to ${allTargets.length} targets, AoE=${isAoE}`);
 
         if (isAoE) {
-            this.play(SOUND_EVENTS.BLOODY_HIT);
+            this.playAt(SOUND_EVENTS.BLOODY_HIT, allTargets[0]);
 
             const vocalCandidates = [];
             for (const token of allTargets) {
@@ -241,7 +244,7 @@ export class PF2eAdapter extends SystemAdapter {
                 const { isDead, isPC, currentHp, maxHp, estimatedHp } = this._assessTarget(actor, totalDamage);
                 Logger.log(`PF2e | ${actor.name} HP: ${currentHp}/${maxHp} -> est. ${estimatedHp} after ${totalDamage} dmg (PC: ${isPC})`);
 
-                this.play(SOUND_EVENTS.BLOODY_HIT);
+                this.playAt(SOUND_EVENTS.BLOODY_HIT, token);
                 this._playVocalForTarget(actor, isPC, isDead, VOCAL_STAGGER + SPELL_BONUS);
             }
         } else {
@@ -292,29 +295,29 @@ export class PF2eAdapter extends SystemAdapter {
             Logger.log(`PF2e | ${actor.name} killed! Playing death sound`);
             const deathOverride = actor.getFlag("ionrift-resonance", "sound_death");
             if (deathOverride) {
-                this.handler.play(deathOverride, delay);
+                this.playAt(deathOverride, actor, delay, isPC ? this.handler.getPCSound(actor, "DEATH") : SOUND_EVENTS.CORE_MONSTER_DEATH);
             } else if (isPC) {
-                this.play(this.handler.getPCSound(actor, "DEATH"), delay);
+                this.playAt(this.handler.getPCSound(actor, "DEATH"), actor, delay);
             } else {
                 const deathSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "DEATH")
                     ?? SOUND_EVENTS.CORE_MONSTER_DEATH;
-                this.play(deathSound, delay);
+                this.playAt(deathSound, actor, delay);
             }
         } else {
             Logger.log(`PF2e | ${actor.name} took damage, playing pain`);
             const painOverride = actor.getFlag("ionrift-resonance", "sound_pain");
             if (painOverride) {
-                this.handler.play(painOverride, delay);
+                this.playAt(painOverride, actor, delay, isPC ? this.handler.getPCSound(actor, "PAIN") : SOUND_EVENTS.CORE_MONSTER_PAIN);
             } else if (isPC) {
                 const pcPain = this.handler.getPCSound(actor, "PAIN");
                 Logger.log(`PF2e | PC Pain sound: ${pcPain} (delay: ${delay}ms)`);
-                this.play(pcPain, delay);
+                this.playAt(pcPain, actor, delay);
             } else {
                 const painSound = this.handler?.resolver?.resolveNpcVocal?.(actor, "PAIN", {
                     detectMonsterPain: (a) => this._detectMonsterPain(a)
                 }) ?? this._detectMonsterPain(actor);
                 Logger.log(`PF2e | Monster pain sound: ${painSound}`);
-                if (painSound) this.play(painSound, delay);
+                if (painSound) this.playAt(painSound, actor, delay);
             }
         }
     }

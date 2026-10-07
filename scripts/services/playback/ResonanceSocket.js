@@ -45,6 +45,15 @@ export class ResonanceSocket {
         });
     }
 
+    /**
+     * Positional one-shot. The sender already plays locally; receivers must not re-emit.
+     * @param {{ type: string, key: string, src: string, volume: number, origin: object, senderId?: string|null }} message
+     */
+    static emitSpatial(message) {
+        if (!game.socket || !message) return;
+        game.socket.emit(SOCKET_CHANNEL, message);
+    }
+
     static #onMessage(data, handler) {
         if (!data || typeof data !== "object") return;
 
@@ -54,6 +63,13 @@ export class ResonanceSocket {
                 Logger.log(`ResonanceSocket | Received targeted audio for ${myId}: ${data.key}`);
                 handler.playLocal(data.key, data.options);
             }
+            return;
+        }
+
+        if (data.type === "audio:spatial") {
+            if (data.senderId && data.senderId === game.user?.id) return;
+            Logger.log(`ResonanceSocket | Received spatial audio: ${data.key}`);
+            void handler.playSpatialIncoming(data);
         }
     }
 }

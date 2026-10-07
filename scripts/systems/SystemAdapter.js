@@ -1,3 +1,5 @@
+import { originFromActor, originFromToken } from "../services/playback/SoundOrigin.js";
+
 export class SystemAdapter {
     constructor(handler) {
         this.handler = handler;
@@ -27,10 +29,32 @@ export class SystemAdapter {
         return null;
     }
 
-    play(key, delay = 0, volume) {
-        if (this.handler) {
-            this.handler.play(key, delay);
+    play(key, delayOrOptions = 0, volume) {
+        if (!this.handler) return;
+        if (typeof delayOrOptions === "number" && volume === undefined) {
+            this.handler.play(key, delayOrOptions);
+            return;
         }
+        let options;
+        if (typeof delayOrOptions === "number") options = { delay: delayOrOptions };
+        else if (delayOrOptions && typeof delayOrOptions === "object") options = { ...delayOrOptions };
+        else options = {};
+        if (volume !== undefined && options.volume === undefined) options.volume = volume;
+        this.handler.play(key, options);
+    }
+
+    /**
+     * Play at a token or actor. No subject means the sound stays global.
+     * @param {string} key
+     * @param {object|null} subject
+     * @param {number} [delay]
+     */
+    playAt(key, subject, delay = 0, spatialKey = null) {
+        const origin = originFromToken(subject) || originFromActor(subject);
+        const ms = typeof delay === "number" ? delay : 0;
+        const options = { delay: ms, origin };
+        if (spatialKey) options.spatialKey = spatialKey;
+        this.play(key, options);
     }
 
     get config() {

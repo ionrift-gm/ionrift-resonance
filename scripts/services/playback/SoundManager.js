@@ -2,6 +2,7 @@ import { SyrinscapeProvider } from "../../providers/concrete/SyrinscapeProvider.
 import { FoundryAudioProvider } from "../../providers/concrete/FoundryAudioProvider.js";
 import { Logger } from "../../utils/Logger.js";
 import { SOUND_TYPES } from "../../data/soundTypes.js";
+import { pickSoundEntry } from "./PlaybackSource.js";
 
 export class SoundManager {
     constructor() {
@@ -35,15 +36,8 @@ export class SoundManager {
 
         Logger.log("SoundManager | Play Request:", { soundData, options });
 
-        // Resolve arrays to random selection before logging.
-        let target = soundData;
-        // Expand comma-separated strings into arrays (from resolveKey multi-sound)
-        if (typeof target === 'string' && target.includes(',')) {
-            target = target.split(',').map(s => s.trim());
-        }
-        if (Array.isArray(target)) {
-            target = target[Math.floor(Math.random() * target.length)];
-        }
+        const target = pickSoundEntry(soundData);
+        if (!target) return;
 
         // 2. Resolve Object Structure { id, delay, volume } from data
         // If soundData is complex object { id: "...", config: { ... } }

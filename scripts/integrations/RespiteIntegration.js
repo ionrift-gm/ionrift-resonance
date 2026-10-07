@@ -1,5 +1,6 @@
 import { SOUND_EVENTS } from "../data/constants.js";
 import { Logger } from "../utils/Logger.js";
+import { originFromToken } from "../services/playback/SoundOrigin.js";
 
 export class RespiteIntegration {
     static MIN_VERSION = "3.6.2";
@@ -130,7 +131,7 @@ export class RespiteIntegration {
             return;
         }
 
-        const played = this._playFireLitSting();
+        const played = this._playFireLitSting(data?.token);
         if (!played) {
             if (this._loopDelayTimer) return;
             await this._startCampfireLoop(data);
@@ -149,7 +150,7 @@ export class RespiteIntegration {
      * Unbound slots stay silent. This cue does not borrow a spell sound.
      * @returns {boolean} true when a sting was started
      */
-    _playFireLitSting() {
+    _playFireLitSting(token = null) {
         if (!game.user.isGM) return false;
         const now = Date.now();
         if (now - this._lastFireLitAt < 2000) return false;
@@ -161,8 +162,10 @@ export class RespiteIntegration {
         }
 
         this._lastFireLitAt = now;
+        const sceneToken = token ?? (canvas?.scene ? this._findCampfireTokenOnScene() : null);
+        const origin = originFromToken(sceneToken);
         Logger.log("RespiteIntegration | ignite, RESPITE_FIRE_LIT");
-        this.handler.play(SOUND_EVENTS.RESPITE_FIRE_LIT);
+        this.handler.play(SOUND_EVENTS.RESPITE_FIRE_LIT, origin ? { origin } : 0);
         return true;
     }
 
