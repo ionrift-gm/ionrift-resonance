@@ -125,7 +125,7 @@
                     <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                         <i class="fas fa-info-circle"></i>
                         These sounds play for monsters with a <strong>Voice Identity</strong> set in their Sound Configuration.
-                        They currently inherit from PC pain/death sounds. Bind them here when a dedicated Humanoid Monster voice pack is available.
+                        They currently inherit from PC pain/death sounds.
                     </p>
 
                     {{#each tiers.sharedMonster.paramounts as |group|}}
@@ -393,7 +393,7 @@
                             style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-top: 8px; {{#unless positional.voiceActive}}opacity:0.6;{{/unless}}">
                             <div class="entity-info" style="flex:1;">
                                 <span class="entity-name" style="display:block;">Hear positional sound effects</span>
-                                <span style="font-size:0.75em; opacity:0.7;">Follow table hears sounds from your token when enabled by the GM. Always play normally ignores token distance and walls. Needs Ionrift Voice. Does not affect Syrinscape.</span>
+                                <span style="font-size:0.75em; opacity:0.7;">'Follow table' hears sounds from your token when enabled by the GM. Always play normally ignores token distance and walls. Needs Ionrift Voice. Does not affect Syrinscape.</span>
                                 {{#unless positional.voiceActive}}
                                 <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">Requires Ionrift Voice to be active.</span>
                                 {{/unless}}

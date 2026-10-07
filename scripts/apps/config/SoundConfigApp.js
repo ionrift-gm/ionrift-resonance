@@ -310,7 +310,7 @@ export class SoundConfigApp extends FormApplication {
                     { label: "Bludgeoning (Mace/Hammer)", id: "ATTACK_BLUDGEON", description: "Swing sound for maces, hammers, and clubs. Plays on attack; impact is Strike Landed." },
                     { label: "Slashing (Sword/Axe)", id: "ATTACK_SWORD", description: "Slash sound for swords and axes. Dagger/spear shares this by default (blade is blade)." },
                     { label: "Piercing (Dagger/Spear)", id: "ATTACK_DAGGER", description: "Thrust sound for daggers and spears. Defaults to the blade slash sound." },
-                    { label: "Natural (Claw/Bite)", id: "ATTACK_CLAW", description: "Claw rake or bite attack from creatures without manufactured weapons." },
+                    { label: "Natural (Claw/Bite)", id: "ATTACK_CLAW", description: "Claw rake or bite attack from feral creatures" },
                     { label: "Unarmed (Punch)", id: "CORE_BRAWL", description: "Punch, shove, or grapple. Plays on attack; impact is Strike Landed." }
                 ]
             },
@@ -462,7 +462,7 @@ export class SoundConfigApp extends FormApplication {
             {
                 label: "Fiends (Demons & Devils)",
                 id: "MONSTER_FIEND", cardLabel: "Vocal / Pain Sound",
-                description: "Extraplanar evil entities.",
+                description: "Extraplanar entities.",
                 children: [
                     { label: "Default Attack", id: "MONSTER_FIEND_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
                     {
@@ -809,19 +809,19 @@ export class SoundConfigApp extends FormApplication {
         const sharedMonsterTaxonomy = [
             {
                 label: "Humanoid Masculine",
-                description: "Fallback voices used by monsters with a Masculine voice identity set. Bind these to give humanoid monsters a distinct sound from PC characters.",
+                description: "Fallback voices used by monsters with a Masculine voice identity set.",
                 children: [
                     {
                         id: "CORE_HUMANOID_PAIN_MASCULINE",
                         label: "Pain (Masculine)",
                         cardLabel: "Humanoid Pain (Masculine)",
-                        description: "Played when a masculine-voiced humanoid monster takes damage. Falls back to PC Masculine Pain until a dedicated monster voice pack is installed."
+                        description: "Played when a masculine-voiced humanoid monster takes damage."
                     },
                     {
                         id: "CORE_HUMANOID_DEATH_MASCULINE",
                         label: "Death (Masculine)",
                         cardLabel: "Humanoid Death (Masculine)",
-                        description: "Played when a masculine-voiced humanoid monster dies. Falls back to PC Masculine Death until a dedicated monster voice pack is installed."
+                        description: "Played when a masculine-voiced humanoid monster dies."
                     }
                 ]
             },
@@ -833,13 +833,13 @@ export class SoundConfigApp extends FormApplication {
                         id: "CORE_HUMANOID_PAIN_FEMININE",
                         label: "Pain (Feminine)",
                         cardLabel: "Humanoid Pain (Feminine)",
-                        description: "Played when a feminine-voiced humanoid monster takes damage. Falls back to PC Feminine Pain until a dedicated monster voice pack is installed."
+                        description: "Played when a feminine-voiced humanoid monster takes damage."
                     },
                     {
                         id: "CORE_HUMANOID_DEATH_FEMININE",
                         label: "Death (Feminine)",
                         cardLabel: "Humanoid Death (Feminine)",
-                        description: "Played when a feminine-voiced humanoid monster dies. Falls back to PC Feminine Death until a dedicated monster voice pack is installed."
+                        description: "Played when a feminine-voiced humanoid monster dies."
                     }
                 ]
             }
@@ -954,13 +954,13 @@ export class SoundConfigApp extends FormApplication {
                         id: "CURSEWRIGHT_REMOVAL_ATTEMPTED",
                         label: "Item Resists Removal",
                         cardLabel: "Resists Removal",
-                        description: "Bearer only. Plays when the bearer tries to take off a locked item. The GM hears it if no player owns the bearer."
+                        description: "Bearer only. Plays when the bearer tries to take off a locked item. The GM hears it if no player owns the bearer (actor)."
                     },
                     {
                         id: "CURSEWRIGHT_WHISPER_SENT",
                         label: "Curse Whisper",
                         cardLabel: "Whisper",
-                        description: "Bearer only. Plays when the curse whispers to its bearer. The GM hears it if no player owns the bearer."
+                        description: "Bearer only. Plays when the curse whispers to its bearer. The GM hears it if no player owns the bearer (actor)."
                     },
                     {
                         id: "CURSEWRIGHT_CURSE_LOCKED",
