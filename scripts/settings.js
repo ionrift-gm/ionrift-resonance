@@ -192,15 +192,16 @@ export const registerSettings = function () {
 
     game.settings.register("ionrift-resonance", "hearPositionalSfx", {
         name: "Hear positional sound effects",
-        hint: "Follow table uses the GM settings. Always play normally ignores place and distance.",
-        scope: "client",
+        hint: "Follow table hears sounds from your token when enabled by the GM. Always play normally ignores token distance and walls. Needs Ionrift Voice. Does not affect Syrinscape.",
+        scope: "world",
+        restricted: true,
         config: true,
         type: String,
         choices: {
-            follow: "Follow table",
-            normal: "Always play normally"
+            normal: "Always play normally",
+            follow: "Follow table"
         },
-        default: "follow"
+        default: "normal"
     });
 
 };

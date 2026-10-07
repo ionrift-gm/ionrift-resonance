@@ -78,13 +78,15 @@ export function gatherSpatialDecision({ key, origin = null, privatePath = false,
 export function positionalPanelData() {
     const stored = safeSetting("positionalCategories", {}) || {};
     const categories = { ...DEFAULT_POSITIONAL_CATEGORIES, ...stored };
+    const voiceActive = voiceModuleActive();
+    const mode = safeSetting("hearPositionalSfx", "normal");
     return {
         master: safeSetting("positionalSfx", false) === true,
-        voiceActive: voiceModuleActive(),
+        voiceActive,
         hint: POSITIONAL_HINT,
-        hearMode: safeSetting("hearPositionalSfx", "follow") === "normal" ? "normal" : "follow",
-        hearFollow: safeSetting("hearPositionalSfx", "follow") !== "normal",
-        hearNormal: safeSetting("hearPositionalSfx", "follow") === "normal",
+        hearMode: !voiceActive ? "normal" : (mode === "follow" ? "follow" : "normal"),
+        hearFollow: voiceActive && mode === "follow",
+        hearNormal: !voiceActive || mode !== "follow",
         categories: SPATIAL_CATEGORY_DEFS.map((def) => ({
             ...def,
             enabled: categories[def.id] !== false

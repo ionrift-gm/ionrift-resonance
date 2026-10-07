@@ -390,16 +390,19 @@
                         </div>
                         {{/each}}
                         <div class="ionrift-list-item"
-                            style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-top: 8px;">
+                            style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-top: 8px; {{#unless positional.voiceActive}}opacity:0.6;{{/unless}}">
                             <div class="entity-info" style="flex:1;">
                                 <span class="entity-name" style="display:block;">Hear positional sound effects</span>
-                                <span style="font-size:0.75em; opacity:0.7;">Follow table uses the GM settings. Always play normally ignores place and distance.</span>
+                                <span style="font-size:0.75em; opacity:0.7;">Follow table hears sounds from your token when enabled by the GM. Always play normally ignores token distance and walls. Needs Ionrift Voice. Does not affect Syrinscape.</span>
+                                {{#unless positional.voiceActive}}
+                                <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">Requires Ionrift Voice to be active.</span>
+                                {{/unless}}
                             </div>
                             <div class="entity-actions" style="flex:0 0 auto;">
-                                <select class="hear-positional"
+                                <select class="hear-positional" {{#unless positional.voiceActive}}disabled{{/unless}}
                                     style="background:rgba(0,0,0,0.35); color:#e8e4f0; border:1px solid rgba(255,255,255,0.18); border-radius:4px; padding:2px 4px;">
-                                    <option value="follow" {{#if positional.hearFollow}}selected{{/if}}>Follow table</option>
                                     <option value="normal" {{#if positional.hearNormal}}selected{{/if}}>Always play normally</option>
+                                    <option value="follow" {{#if positional.hearFollow}}selected{{/if}}>Follow table</option>
                                 </select>
                             </div>
                         </div>

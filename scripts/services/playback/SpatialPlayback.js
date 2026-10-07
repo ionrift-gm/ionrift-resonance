@@ -149,10 +149,11 @@ function finiteGain(value) {
 }
 
 function readHearMode() {
+    if (globalThis.game?.modules?.get?.("ionrift-voice")?.active !== true) return "normal";
     try {
-        return globalThis.game?.settings?.get?.("ionrift-resonance", "hearPositionalSfx") || "follow";
+        return globalThis.game?.settings?.get?.("ionrift-resonance", "hearPositionalSfx") || "normal";
     } catch {
-        return "follow";
+        return "normal";
     }
 }
 

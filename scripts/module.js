@@ -62,6 +62,26 @@ Hooks.once("init", async function () {
 
     SettingsLayout.registerFooter("ionrift-resonance");
 
+    Hooks.on("renderSettingsConfig", (app, html) => {
+        const isElement = typeof HTMLElement !== "undefined" && html instanceof HTMLElement;
+        const root = isElement ? html : (html?.[0] ?? html);
+        if (!root?.querySelector) return;
+
+        const select = root.querySelector('select[name="ionrift-resonance.hearPositionalSfx"]');
+        if (!select) return;
+
+        const isVoiceActive = Boolean(game.modules.get("ionrift-voice")?.active);
+        if (!isVoiceActive) {
+            select.disabled = true;
+            select.setAttribute("disabled", "disabled");
+            select.title = "Requires Ionrift Voice module to be installed and active.";
+            const formGroup = select.closest(".form-group");
+            if (formGroup) {
+                formGroup.style.opacity = "0.55";
+            }
+        }
+    });
+
     Hooks.on("ionrift.overlayContentChanged", async (detail) => {
         if (detail?.moduleId !== "ionrift-resonance") return;
         await SoundPackLoader.init();
