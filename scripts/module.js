@@ -3,7 +3,6 @@ import { SoundConfigApp } from "./apps/config/SoundConfigApp.js";
 import { SyrinscapeConfigApp } from "./apps/config/SyrinscapeConfigApp.js";
 import { registerSettings } from "./settings.js";
 import { SOUND_EVENTS } from "./data/constants.js";
-import { hasCoreSfxPack } from "./data/coreSfxPacks.js";
 import { SoundPackLoader } from "./services/packs/SoundPackLoader.js";
 import {
     createResonanceContext,
@@ -123,9 +122,9 @@ async function migrateStalePackBindings() {
 
     if (hasStale) {
         const loadedPacks = SoundPackLoader.getLoadedPacks();
-        const coreInstalled = hasCoreSfxPack(loadedPacks);
+        const packInstalled = loadedPacks.some((p) => p.enabled);
 
-        if (coreInstalled) {
+        if (packInstalled) {
             await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
             await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
             Logger.log("Stale pack bindings cleared. Local sound pack provides sounds.");

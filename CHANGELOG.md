@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.14.0] - 2026-10-07
+
+### Added
+- Optional feature for sounds to play from token position when used with Ionrift Voice.
+
+### Changed
+- Sound pack loading and status checks now evaluate installed packs generically without hardcoded pack names.
+
 ## [2.13.0] - 2026-10-04
 
 ### Added
@@ -64,7 +72,7 @@
 ## [2.11.4] - 2026-07-19
 
 ### Changed
-- Sound pack prompts moved out of Resonance. Core SFX still loads from local overlay files when present.
+- Sound pack prompts moved out of Resonance. Sound packs continue to load from local overlay files when present.
 
 ## [2.11.3] - 2026-07-14
 
@@ -80,7 +88,7 @@
 ## [2.11.1] - 2026-06-24
 
 ### Fixed
-- Fixed Core SFX overlay not loading on Sqyre-hosted games. Update Library and Resonance, then reinstall the sound pack once if bindings are still empty.
+- Fixed sound pack overlay loading on Sqyre-hosted games.
 
 ## [2.11.0] - 2026-06-21
 
@@ -100,7 +108,7 @@
 - **Sound pack expansion support.** Resonance sound packs can now carry richer creature vocal data - covering attacks, spell vocals, and how monster sounds interact with spell effect audio. Groundwork for upcoming content packs.
 
 ### Changed
-- **Audio Mode replaces the Attunement Wizard.** Pack install and library readiness are now handled through the Patreon Library. The Resonance settings panel opens a focused Audio Mode dialog for choosing between Foundry-native and Syrinscape token playback, with clear active-state cards and a tidy scroll layout. The old multi-step wizard is retired.
+- **Audio Mode replaces the Attunement Workbench.** The Resonance settings panel opens a focused Audio Mode dialog for choosing between Foundry-native and Syrinscape token playback.
 
 ## [2.9.1] - 2026-06-07
 
@@ -184,8 +192,8 @@
 ## [2.7.0] - 2026-05-03
 
 ### Changed
-- **Sound files are no longer bundled with the module.** The 550+ SFX that previously shipped inside the module download are now distributed as the free Core SFX Pack. Install it from Module Settings or download from Patreon. This cuts the module download size from ~80 MB to under 1 MB.
-- **Attunement Protocol redesigned.** The old "Apply Sound Preset" step has been replaced by a Sound Packs status step. It shows which packs are installed and lets you import a pack directly from the wizard.
+- **Sound files are no longer bundled with the module.** Audio is distributed in external sound packs, cutting the module download size from ~80 MB to under 1 MB.
+- **Attunement Protocol redesigned.** The sound preset flow has been replaced by a Sound Packs status step that shows which packs are installed.
 - Sound binding resolution no longer branches on a preset setting. Custom bindings, pack bindings, and Syrinscape defaults (when configured) are resolved in a single predictable cascade.
 
 ### Fixed
@@ -347,7 +355,7 @@
 *   **Feature**: Creature Classifier integration via Ionrift Library — automatic monster-specific attack sounds (bear, wolf, dragon, etc.).
 *   **Feature**: Per-PC pain/death vocals with Masculine/Feminine identity selection.
 *   **Feature**: Syrinscape one-shot element support with local library caching and search.
-*   **Feature**: Attunement Protocol — guided first-run setup wizard for token configuration and preset selection.
+*   **Feature**: Attunement Protocol — guided first-run setup workbench for token configuration and preset selection.
 *   **Feature**: Sound Auditor UI — inspect and manage sound flags across all actors and items.
 *   **Feature**: Resonance Calibration — full sound binding editor with per-tier configuration, import/export, and preset management.
 *   **Improvement**: DnD5e App V2 header button injection for actor and item sheets.
@@ -363,9 +371,9 @@
     *   Sound Picker and Actor/Item Sound Config apps are now native to Resonance.
 *   **Fix**: Resolved "0 Results" bug in Syrinscape Library Sync caused by stale token caching.
 *   **Fix**: Resolved 400 Errors when playing sounds with invalid keys (e.g. `CORE_MELEE` without binding).
-*   **Fix**: Fixed Attunement Wizard failing to apply defaults ("Sound Preset") on first run due to safety lock conflict.
+*   **Fix**: Fixed Attunement Workbench failing to apply defaults ("Sound Preset") on first run due to safety lock conflict.
 *   **Fix**: Added automatic fallback to Direct API if `syrinscape-control` module fails (fixes playback on first install).
-*   **Improvement**: Attunement Wizard now prompts for a World Reload if `syrinscape-control` settings were updated, ensuring full synchronization.
+*   **Improvement**: Attunement Workbench now prompts for a World Reload if `syrinscape-control` settings were updated, ensuring full synchronization.
 
 ## [1.8.0] - Daggerheart Sound Overhaul
 *   **Feature**: Complete overhaul of Daggerheart sound triggers.

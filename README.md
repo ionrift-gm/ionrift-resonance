@@ -23,7 +23,7 @@ Resonance triggers contextual sound effects for melee strikes, ranged shots, spe
 - **11 Tabletop Systems.** Built-in support for Daggerheart, Pathfinder 2e, Starfinder, DnD 3.5e, Pathfinder 1e, Old-School Essentials, Call of Cthulhu 7e, SWADE, Warhammer Fantasy Roleplay 4e, Cyberpunk RED, and Blades in the Dark. DnD 5e integrates with Midi-QOL for automated combat workflows.
 - **Cross-Module Audio Triggers.**
   - **Ionrift Respite:** Ambient campfire crackle, kindling ignition, stoking, whittling, and rest resolution cues.
-  - **Ionrift Quiz Night:** Round start horns, countdown timer ticks, pencils down, answers, and ceremony fanfares.
+  - **Ionrift Quiz Night:** Audio cues for round starts, timers, answers, and ceremonies.
   - **Ionrift Cursewright:** Curse cues for removal attempts, whispers, phase changes, devouring containers, tributes, and Remove Curse. Each plays to the bearer, the GM, or the whole table.
 - **Calibration UI & Sound Auditor.** Map game events across Core Essentials, Combat Actions, Spells, and Monsters. The Sound Auditor tool scans world items for lingering sound flags.
 - **Multi-Sound Randomization.** Ctrl+Click in the Sound Picker to assign multiple sounds to a single key for varied playback.
@@ -40,7 +40,7 @@ Resonance triggers contextual sound effects for melee strikes, ranged shots, spe
 1. Install **Ionrift Library** and **Ionrift Resonance** from the package manager.
 2. Open **Game Settings > Module Settings > Ionrift Resonance > Audio Mode**.
 3. Choose your audio provider:
-   - **Ionrift Local SFX:** Uses local audio files from `ionrift-data/overlays/ionrift-resonance/core/`.
+   - **Local Sound Packs:** Uses audio files from installed sound packs.
    - **Syrinscape Web API:** Connects via your Syrinscape auth token for cloud audio.
    - **Custom / Manual:** Blank canvas for custom audio mappings.
 

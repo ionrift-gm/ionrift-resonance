@@ -1,7 +1,6 @@
 import { Logger } from "../../utils/Logger.js";
 import { SoundPackLoader } from "../packs/SoundPackLoader.js";
 import { hasActiveSfxContent } from "../packs/sfxPackNudge.js";
-import { CANONICAL_CORE_SFX_PACK_ID } from "../../data/coreSfxPacks.js";
 
 export async function checkResonanceStatus() {
     const STATUS = game.ionrift.integration.STATUS;
@@ -19,23 +18,15 @@ export async function checkResonanceStatus() {
         };
     }
 
-    if (game.ionrift?.library?.isOverlayDistributionActive?.()) {
-        try {
-            const overlayState = await game.ionrift.library.getOverlayState(
-                CANONICAL_CORE_SFX_PACK_ID,
-                "ionrift-resonance",
-                "free"
-            );
-            if (overlayState?.installed && overlayState?.active) {
-                return {
-                    status: STATUS.WARNING,
-                    label: "Pack bindings missing",
-                    message: "A sound pack overlay is active but Calibration has no pack bindings. Reload the world after the pack files are present on disk."
-                };
-            }
-        } catch (e) {
-            Logger.warn("Resonance status | Overlay check failed:", e);
-        }
+    const hasEmptyEnabledPack = SoundPackLoader.getLoadedPacks().some(
+        (pack) => pack.enabled && pack.bindingCount === 0
+    );
+    if (hasEmptyEnabledPack) {
+        return {
+            status: STATUS.WARNING,
+            label: "Pack bindings missing",
+            message: "A sound pack is active but Calibration has no pack bindings. Reload the world after the pack files are present on disk."
+        };
     }
 
     const controlModule = game.modules.get("syrinscape-control");
