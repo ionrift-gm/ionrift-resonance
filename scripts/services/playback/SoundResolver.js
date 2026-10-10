@@ -107,8 +107,10 @@ export class SoundResolver {
 
             // Weapons (Damage Type check -- adapter or dnd5e / generic fallback)
             const dtype = game.ionrift?.library?.system?.getPrimaryDamageType?.(item)
-                ?? (item.system.damage?.parts?.length > 0 ? item.system.damage.parts[0][1] : null);
-            if (type === "weapon" && dtype) {
+                ?? (item.system.damage?.parts?.length > 0 ? item.system.damage.parts[0][1] : null)
+                ?? item.system.damage?.damageType
+                ?? Object.values(item.system.damageRolls ?? {})[0]?.damageType;
+            if ((type === "weapon" || type === "melee") && dtype) {
                 if (dtype === "slashing") return SOUND_EVENTS.ATTACK_SWORD_SLASH;
                 if (dtype === "bludgeoning") return SOUND_EVENTS.ATTACK_BLUDGEON_SWING;
                 if (dtype === "piercing") return SOUND_EVENTS.ATTACK_DAGGER_SLASH;
@@ -145,9 +147,10 @@ export class SoundResolver {
         // Weapons (more specific keywords BEFORE general ones - e.g. crossbow contains 'bow')
         if (lower.includes("crossbow") || (lower.includes("bolt") && !lower.includes("lightning"))) return SOUND_EVENTS.ATTACK_CROSSBOW;
         if (lower.includes("bow") || lower.includes("arrow")) return (mappings.generic?.bow || SOUND_EVENTS.ATTACK_BOW);
-        if (lower.includes("axe") || lower.includes("hammer") || lower.includes("maul")) return SOUND_EVENTS.ATTACK_BLUDGEON;
+        if (lower.includes("axe") || lower.includes("hammer") || lower.includes("maul") || lower.includes("club") || lower.includes("mace") || lower.includes("flail") || lower.includes("staff")) return SOUND_EVENTS.ATTACK_BLUDGEON;
         if (lower.includes("dagger") || lower.includes("knife")) return SOUND_EVENTS.ATTACK_DAGGER;
-        if (lower.includes("sword") || lower.includes("blade") || lower.includes("scimitar")) return (mappings.generic?.sword || SOUND_EVENTS.ATTACK_SWORD);
+        if (lower.includes("sword") || lower.includes("blade") || lower.includes("scimitar") || lower.includes("rapier")) return (mappings.generic?.sword || SOUND_EVENTS.ATTACK_SWORD);
+        if (lower.includes("spear") || lower.includes("halberd") || lower.includes("polearm") || lower.includes("pike") || lower.includes("glaive") || lower.includes("trident") || lower.includes("javelin")) return SOUND_EVENTS.ATTACK_SWORD;
 
         return null; // No match found
     }

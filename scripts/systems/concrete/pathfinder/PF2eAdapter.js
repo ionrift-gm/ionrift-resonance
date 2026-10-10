@@ -47,7 +47,7 @@ export class PF2eAdapter extends SystemAdapter {
             const context = pf2e.context;
             if (!context?.type) return;
 
-            if (context.type === "strike-attack-roll" || context.type === "spell-attack-roll") {
+            if (context.type === "attack-roll" || context.type === "strike-attack-roll" || context.type === "spell-attack-roll") {
                 this._handleAttackRoll(message, context);
             } else if (context.type === "damage-roll") {
                 this._handleDamageRoll(message, context);
@@ -103,32 +103,34 @@ export class PF2eAdapter extends SystemAdapter {
                 const burst = originFromToken(game.user?.targets?.first?.()) || caster;
                 if (overrideSpellEffect) {
                     Logger.log(`PF2e | NPC spell override, ${soundKey} only (no effect sound)`);
-                    this.handler.playItemSound(soundKey, item, vocalDelay, 5000, caster);
+                    this.handler.playItemSound(soundKey, item, vocalDelay, 1000, caster);
 
                 } else if (soundKey && soundKey !== effectKey
                            && resolver?.resolveKey(soundKey)) {
                     const orch = this.handler?.orchestrator;
                     const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
                     Logger.log(`PF2e | NPC spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
-                    this.handler.playItemSound(soundKey, item, vocalDelay, 5000, caster);
-                    this.handler.playItemSound(effectKey, item, effectDelay, 5000, burst);
+                    this.handler.playItemSound(soundKey, item, vocalDelay, 1000, caster);
+                    this.handler.playItemSound(effectKey, item, effectDelay, 1000, burst);
 
                 } else {
                     if (traitKey) {
                         Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
                         this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay, burst);
                     } else {
-                        this.handler.playItemSound(soundKey, item, vocalDelay, 5000, burst);
+                        this.handler.playItemSound(soundKey, item, vocalDelay, 1000, burst);
                     }
                 }
             } else {
-                this.handler.playItemSound(soundKey, item);
+                this.handler.playItemSound(soundKey, item, 0, 500);
             }
+        } else {
+            this.play(SOUND_EVENTS.ASK_GENERIC_MELEE);
         }
 
         // Phase 2 (ANSWER): outcome stinger
         const outcome = this._normaliseOutcome(context.outcome);
-        this._handleOutcome(outcome, item);
+        this._handleOutcome(outcome, item, message);
     }
 
     /**
@@ -143,19 +145,20 @@ export class PF2eAdapter extends SystemAdapter {
         return raw ?? null;
     }
 
-    _handleOutcome(outcome, item) {
+    _handleOutcome(outcome, item, message = null) {
         const orch = this.handler?.orchestrator;
+        const targetToken = message ? this._getTargets(message)[0] : null;
 
         if (outcome === "criticalFailure") {
             this.play(SOUND_EVENTS.ROLL_FUMBLE);
             const missKey = this._getMissKey(item);
             const fumbleDelay = orch?.getNamedOffset("FUMBLE_MISS_DELAY") ?? 200;
-            this.play(missKey, fumbleDelay);
+            this.playAt(missKey, targetToken, fumbleDelay);
 
         } else if (outcome === "failure") {
             const missKey = this._getMissKey(item);
             Logger.log(`PF2e | Miss type: ${missKey}`);
-            this.play(missKey);
+            this.playAt(missKey, targetToken);
 
         } else if (outcome === "criticalSuccess") {
             this.play(SOUND_EVENTS.ROLL_CRIT);
@@ -170,10 +173,10 @@ export class PF2eAdapter extends SystemAdapter {
 
         if (item.type === "spell") return SOUND_EVENTS.CORE_MISS_MAGIC;
 
-        if (item.type === "weapon") {
+        if (item.type === "weapon" || item.type === "melee") {
             const group = item.system?.group;
             const traits = item.system?.traits?.value ?? [];
-            const isRanged = group === "bow" || group === "dart" || group === "sling"
+            const isRanged = item.isRanged || group === "bow" || group === "dart" || group === "sling"
                 || traits.some(t => t === "thrown" || t.startsWith("thrown-") || t === "propulsive");
             if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
         }
@@ -359,6 +362,8 @@ export class PF2eAdapter extends SystemAdapter {
     // Utilities ────────────────────────────────────────────────────────
 
     _getItemFromMessage(message) {
+        if (message.item) return message.item;
+
         try {
             const origin = message.flags?.pf2e?.origin;
             if (origin?.uuid) {
@@ -369,19 +374,23 @@ export class PF2eAdapter extends SystemAdapter {
             Logger.log(`PF2e | fromUuidSync failed: ${e.message}`);
         }
 
-        // Fallback: try message.item (available in some PF2e versions)
-        if (message.item) return message.item;
-
         return null;
     }
 
     _getTargets(message) {
-        // PF2e stores target UUIDs in flags
-        const targetFlags = message.flags?.pf2e?.target;
+        // PF2e stores target in flags.pf2e.context.target or legacy flags.pf2e.target
+        const targetFlags = message.flags?.pf2e?.context?.target ?? message.flags?.pf2e?.target;
         if (targetFlags?.token) {
             try {
-                const token = fromUuidSync(targetFlags.token);
-                if (token) return [token];
+                const token = typeof targetFlags.token === "string" ? fromUuidSync(targetFlags.token) : targetFlags.token;
+                if (token) return [token.object ?? token];
+            } catch {}
+        }
+        if (targetFlags?.actor) {
+            try {
+                const actorDoc = typeof targetFlags.actor === "string" ? fromUuidSync(targetFlags.actor) : targetFlags.actor;
+                const activeToken = actorDoc?.getActiveTokens?.()[0];
+                if (activeToken) return [activeToken.document ?? activeToken];
             } catch {}
         }
 

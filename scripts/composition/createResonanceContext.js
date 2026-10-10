@@ -6,6 +6,7 @@ import { ResonanceConfig } from "../services/config/ResonanceConfig.js";
 import { SoundResolver } from "../services/playback/SoundResolver.js";
 import { SyrinscapeProvider } from "../providers/concrete/SyrinscapeProvider.js";
 import { soundManager } from "../services/playback/SoundManager.js";
+import { SoundPickerApp } from "../apps/browse/SoundPickerApp.js";
 
 export function createResonanceContext() {
     const config = new ResonanceConfig();
@@ -21,6 +22,7 @@ export function createResonanceContext() {
         SoundPackLoader,
         SoundOrchestrator,
         SyrinscapeProvider,
+        SoundPickerApp,
         handler: null
     };
 
@@ -58,7 +60,8 @@ export function exposeResonanceApi(ctx) {
         manager: ctx.manager,
         SoundPackLoader: ctx.SoundPackLoader,
         SoundOrchestrator: ctx.SoundOrchestrator,
-        SyrinscapeProvider: ctx.SyrinscapeProvider
+        SyrinscapeProvider: ctx.SyrinscapeProvider,
+        SoundPickerApp: ctx.SoundPickerApp
     };
 
     if (ctx.handler) {
