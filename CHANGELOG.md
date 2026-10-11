@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.14.1] - 2026-10-11
+
+### Fixed
+- Pathfinder 2e strikes now reliably trigger weapon attack sounds and miss stingers.
+- Miss sound cues now play at the targeted token's position.
+
 ## [2.14.0] - 2026-10-07
 
 ### Added
