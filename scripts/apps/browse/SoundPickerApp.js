@@ -5,7 +5,9 @@ import {
     getSyrinscapeProvider
 } from "../../composition/accessors.js";
 
-export class SoundPickerApp extends Application {
+const BaseApplication = globalThis.Application ?? class {};
+
+export class SoundPickerApp extends BaseApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-picker",
