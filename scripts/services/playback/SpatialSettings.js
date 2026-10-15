@@ -23,29 +23,6 @@ export const DEFAULT_POSITIONAL_CATEGORIES = {
     campfire: true
 };
 
-export function readConfigOverrides() {
-    const raw = safeSetting("configOverrides", {});
-    if (!raw) return {};
-    if (typeof raw === "string") {
-        try {
-            return JSON.parse(raw) || {};
-        } catch {
-            return {};
-        }
-    }
-    return raw;
-}
-
-/**
- * @param {string} key
- * @returns {"default"|"positional"|"everywhere"}
- */
-export function readSpatialPlace(key) {
-    const place = readConfigOverrides().spatial?.[key];
-    if (place === "positional" || place === "everywhere") return place;
-    return "default";
-}
-
 export function voiceModuleActive() {
     return globalThis.game?.modules?.get?.("ionrift-voice")?.active === true;
 }
@@ -65,7 +42,6 @@ export function gatherSpatialDecision({ key, origin = null, privatePath = false,
         private: !!privatePath,
         clientMode: "follow",
         master: safeSetting("positionalSfx", false) === true,
-        override: readSpatialPlace(key),
         spatialClass: getSpatialClass(key),
         category: getSpatialCategory(key),
         categories: { ...DEFAULT_POSITIONAL_CATEGORIES, ...stored },

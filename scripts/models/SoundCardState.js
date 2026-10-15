@@ -1,5 +1,3 @@
-import { readSpatialPlace } from "../services/playback/SpatialSettings.js";
-
 export class SoundCardState {
     /**
      * @param {string} key - The configuration key (e.g. "CORE_HIT")
@@ -133,7 +131,6 @@ export class SoundCardState {
      * Returns the object structure required by the Handlebars template.
      */
     getRenderData() {
-        const spatialPlace = readSpatialPlace(this.key);
         return {
             key: this.key,
             label: this.label,
@@ -144,11 +141,7 @@ export class SoundCardState {
             isDefault: this.isDefault,
             isInherited: this.isInherited,
             isMuted: this.isMuted,
-            inheritanceSource: this.inheritanceSource,
-            spatialPlace,
-            spatialDefault: spatialPlace === "default",
-            spatialPositional: spatialPlace === "positional",
-            spatialEverywhere: spatialPlace === "everywhere"
+            inheritanceSource: this.inheritanceSource
         };
     }
 }

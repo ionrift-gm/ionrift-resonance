@@ -1364,7 +1364,6 @@ export class SoundConfigApp extends FormApplication {
 
         // Feature toggle buttons (generic boolean setting toggle)
         html.on("click", ".orchestrator-toggle-setting", this._onToggleSetting.bind(this));
-        html.on("change", ".spatial-place", this._onSpatialPlace.bind(this));
         html.on("change", ".positional-master", this._onPositionalMaster.bind(this));
         html.on("change", ".positional-category", this._onPositionalCategory.bind(this));
         html.on("change", ".hear-positional", this._onHearPositional.bind(this));
@@ -1906,16 +1905,6 @@ export class SoundConfigApp extends FormApplication {
             console.error("Ionrift Sound Config | Failed to load SoundPickerApp:", e);
             ui.notifications.error("Ionrift Sound Config required for Search.");
         }
-    }
-
-    async _onSpatialPlace(event) {
-        const key = event.currentTarget.dataset.key;
-        const value = event.currentTarget.value;
-        const current = game.settings.get("ionrift-resonance", "configOverrides") || {};
-        if (!current.spatial || typeof current.spatial !== "object") current.spatial = {};
-        if (value === "default") delete current.spatial[key];
-        else current.spatial[key] = value;
-        await game.settings.set("ionrift-resonance", "configOverrides", current);
     }
 
     async _onPositionalMaster(event) {
