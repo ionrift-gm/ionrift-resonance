@@ -19,7 +19,7 @@ export class LuminanceIntegration {
     /** Default audible radius in scene grid units (matches 20 ft torch bright light). */
     static TORCH_AUDIO_RADIUS = 20;
     /** Default AmbientSound volume for the handheld torch loop emitter. */
-    static TORCH_LOOP_VOLUME = 0.45;
+    static TORCH_LOOP_VOLUME = 0.85;
 
     /**
      * @param {import("../services/playback/SoundHandler.js").SoundHandler} handler
@@ -72,7 +72,7 @@ export class LuminanceIntegration {
             await this._onTorchStateChanged(data);
         });
 
-        // 2. Item flag / equip changes on actors (e.g. player toggling torch on character sheet or HUD)
+        // 2. Item flag / equip / rule changes on actors (e.g. player toggling torch on character sheet or HUD)
         Hooks.on("updateItem", async (item, change) => {
             if (!game.user?.isGM || !canvas?.scene) return;
             const actor = item?.parent;
@@ -82,14 +82,15 @@ export class LuminanceIntegration {
             const lumFlags = change?.flags?.["ionrift-luminance"];
             const sysEquipped = change?.system?.equipped;
             const sysQuantity = change?.system?.quantity;
-            if (!lumFlags && sysEquipped === undefined && sysQuantity === undefined) return;
+            const sysRules = change?.system?.rules;
+            if (!lumFlags && sysEquipped === undefined && sysQuantity === undefined && sysRules === undefined) return;
 
             const tokens = actor.getActiveTokens?.(true, true) ?? [];
             for (const tokenDoc of tokens) {
                 const nowHoldingTorch = this._tokenHasLitTorch(tokenDoc);
                 const hasEmitters = this._getTokenTorchEmitters(tokenDoc.id).length > 0;
                 if (nowHoldingTorch && !hasEmitters && !this._loopDelayTimers.has(tokenDoc.id)) {
-                    const justIgnited = lumFlags?.isLit === true || lumFlags?.commandLightActive === true || sysEquipped === true;
+                    const justIgnited = lumFlags?.isLit === true || lumFlags?.commandLightActive === true || Boolean(sysEquipped) || Boolean(sysRules);
                     await this._onTorchStateChanged({
                         actor,
                         token: tokenDoc,
@@ -98,7 +99,7 @@ export class LuminanceIntegration {
                         ignite: justIgnited
                     });
                 } else if (!nowHoldingTorch && (hasEmitters || this._loopDelayTimers.has(tokenDoc.id))) {
-                    const justExtinguished = lumFlags?.isLit === false || lumFlags?.commandLightActive === false || sysEquipped === false;
+                    const justExtinguished = lumFlags?.isLit === false || lumFlags?.commandLightActive === false || sysEquipped !== undefined || Boolean(sysRules);
                     await this._onTorchStateChanged({
                         actor,
                         token: tokenDoc,
@@ -138,7 +139,9 @@ export class LuminanceIntegration {
             if (change.light && (change.light.dim === 0 || change.light.bright === 0)) {
                 const dim = tokenDoc.light?.dim ?? 0;
                 const bright = tokenDoc.light?.bright ?? 0;
-                if (dim <= 0 && bright <= 0) {
+                const tokenObj = tokenDoc.object;
+                const isKindling = Boolean(tokenObj?._luminanceAnimating || tokenObj?._luminanceKindleIntent);
+                if (dim <= 0 && bright <= 0 && !isKindling && !this._tokenHasLitTorch(tokenDoc)) {
                     const existing = this._getTokenTorchEmitters(tokenDoc.id);
                     if (existing.length > 0 || this._loopDelayTimers.has(tokenDoc.id)) {
                         this._cancelLoopDelay(tokenDoc.id);
@@ -156,7 +159,14 @@ export class LuminanceIntegration {
         });
 
         // 5. Reconcile scene emitters on canvasReady so lit torches always have their spatial loop
+        if (canvas?.ready) {
+            this._patchSoundsLayerListenerFallback();
+            if (game.user?.isGM && canvas?.scene) {
+                void this._reconcileSceneTorches();
+            }
+        }
         Hooks.on("canvasReady", async () => {
+            this._patchSoundsLayerListenerFallback();
             if (!game.user?.isGM || !canvas?.scene) return;
             await this._reconcileSceneTorches();
         });
@@ -254,11 +264,19 @@ export class LuminanceIntegration {
             if (currentEmitter) {
                 const needsPathFix = !currentEmitter.path || currentEmitter.path.includes(",") || !validPaths.includes(currentEmitter.path);
                 const needsMove = currentEmitter.x !== centerX || currentEmitter.y !== centerY;
-                if (needsPathFix || needsMove) {
-                    const updateDoc = { _id: currentEmitter.id, x: centerX, y: centerY };
+                const needsVolFix = currentEmitter.volume !== LuminanceIntegration.TORCH_LOOP_VOLUME;
+                if (needsPathFix || needsMove || needsVolFix) {
+                    const updateDoc = {
+                        _id: currentEmitter.id,
+                        x: centerX,
+                        y: centerY,
+                        volume: LuminanceIntegration.TORCH_LOOP_VOLUME
+                    };
                     if (needsPathFix) updateDoc.path = chosenPath;
                     await scene.updateEmbeddedDocuments("AmbientSound", [updateDoc]);
                 }
+                canvas.perception?.update?.({ refreshSounds: true });
+                canvas.sounds?.refresh?.();
                 return;
             }
 
@@ -278,6 +296,8 @@ export class LuminanceIntegration {
                     }
                 }
             }]);
+            canvas.perception?.update?.({ refreshSounds: true });
+            canvas.sounds?.refresh?.();
             Logger.log(`LuminanceIntegration | Spawned handheld torch loop (${chosenPath}) on ${tokenDoc.name} at (${centerX}, ${centerY})`);
         } finally {
             this._syncLocks.delete(tokenDoc.id);
@@ -310,6 +330,8 @@ export class LuminanceIntegration {
 
         if (updates.length > 0) {
             await scene.updateEmbeddedDocuments("AmbientSound", updates);
+            canvas.perception?.update?.({ refreshSounds: true });
+            canvas.sounds?.refresh?.();
         }
     }
 
@@ -324,6 +346,8 @@ export class LuminanceIntegration {
         const existing = this._getTokenTorchEmitters(tokenId);
         if (existing.length > 0) {
             await scene.deleteEmbeddedDocuments("AmbientSound", existing.map(s => s.id));
+            canvas.perception?.update?.({ refreshSounds: true });
+            canvas.sounds?.refresh?.();
             Logger.log(`LuminanceIntegration | Removed torch loop emitter for token ${tokenId}`);
         }
     }
@@ -355,8 +379,56 @@ export class LuminanceIntegration {
 
         if (orphanedIds.length > 0) {
             await scene.deleteEmbeddedDocuments("AmbientSound", orphanedIds);
+            canvas.perception?.update?.({ refreshSounds: true });
+            canvas.sounds?.refresh?.();
             Logger.log(`LuminanceIntegration | Cleaned up ${orphanedIds.length} orphaned torch emitter(s).`);
         }
+    }
+
+    /**
+     * Ensure the GM hears active handheld torch emitters even when no token is actively selected on the canvas.
+     * When a token is selected (or for player clients), Foundry's native listener positions are used untouched.
+     */
+    _patchSoundsLayerListenerFallback() {
+        const layer = canvas?.sounds;
+        if (!layer || typeof layer.getListenerPositions !== "function") return;
+        const proto = Object.getPrototypeOf(layer);
+        if (!proto || proto._ionriftTorchListenersPatched) return;
+
+        const origGetListenerPositions = proto.getListenerPositions;
+        proto.getListenerPositions = function (...args) {
+            const positions = origGetListenerPositions.apply(this, args);
+            if (Array.isArray(positions) && positions.length > 0) return positions;
+            if (!game.user?.isGM || !canvas?.scene) return positions;
+
+            const torchTokenIds = new Set();
+            for (const s of (canvas.scene.sounds ?? [])) {
+                const flags = s.flags?.["ionrift-resonance"];
+                if (flags?.isTorchEmitter && flags?.torchTokenId) {
+                    torchTokenIds.add(flags.torchTokenId);
+                }
+            }
+            if (torchTokenIds.size === 0) return positions;
+
+            const fallbackPositions = [];
+            for (const tokenId of torchTokenIds) {
+                const tokenDoc = canvas.scene.tokens?.get(tokenId);
+                if (!tokenDoc || tokenDoc.hidden) continue;
+                if (typeof tokenDoc.getListenerPosition === "function") {
+                    const pos = tokenDoc.getListenerPosition();
+                    if (pos) fallbackPositions.push(pos);
+                } else {
+                    const gs = canvas.dimensions?.size ?? 100;
+                    fallbackPositions.push({
+                        x: Math.round(tokenDoc.x + ((tokenDoc.width ?? 1) * gs) / 2),
+                        y: Math.round(tokenDoc.y + ((tokenDoc.height ?? 1) * gs) / 2),
+                        elevation: tokenDoc.elevation ?? 0
+                    });
+                }
+            }
+            return fallbackPositions;
+        };
+        proto._ionriftTorchListenersPatched = true;
     }
 
     /**
@@ -396,11 +468,14 @@ export class LuminanceIntegration {
         const actor = tokenDoc.actor;
         if (!actor?.items) return false;
 
+        const lumApi = game.ionrift?.luminance;
         for (const item of actor.items) {
             if (!this._isTorchItem(item)) continue;
+            if (typeof lumApi?.isItemLit === "function") {
+                if (lumApi.isItemLit(item, actor, tokenDoc.object ?? tokenDoc)) return true;
+            }
             const isLit = item.getFlag?.("ionrift-luminance", "isLit") === true
-                || item.getFlag?.("ionrift-luminance", "commandLightActive") === true
-                || (item.system?.equipped === true && (tokenDoc.light?.animation?.type === "torch") && ((tokenDoc.light?.dim ?? 0) > 0 || (tokenDoc.light?.bright ?? 0) > 0));
+                || item.getFlag?.("ionrift-luminance", "commandLightActive") === true;
             if (isLit) return true;
         }
         return false;
