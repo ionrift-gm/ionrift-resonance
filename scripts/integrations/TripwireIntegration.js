@@ -17,7 +17,7 @@ import { Logger } from "../utils/Logger.js";
  */
 export class TripwireIntegration {
     static MODULE_ID = "ionrift-tripwire";
-    static MIN_VERSION = "1.0.0";
+    static MIN_VERSION = "0.1.0";
     static HOOK_PREFIX = "ionrift-tripwire";
 
     /**
