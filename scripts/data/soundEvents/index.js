@@ -11,6 +11,7 @@ import { QUIZ_NIGHT_EVENTS } from "./quizNight.js";
 import { RESPITE_EVENTS } from "./respite.js";
 import { CURSEWRIGHT_EVENTS } from "./cursewright.js";
 import { VOICE_EVENTS } from "./voice.js";
+import { TRIPWIRE_EVENTS } from "./tripwire.js";
 
 export const SOUND_EVENTS = {
     ...COMBAT_EVENTS,
@@ -25,7 +26,8 @@ export const SOUND_EVENTS = {
     ...QUIZ_NIGHT_EVENTS,
     ...RESPITE_EVENTS,
     ...CURSEWRIGHT_EVENTS,
-    ...VOICE_EVENTS
+    ...VOICE_EVENTS,
+    ...TRIPWIRE_EVENTS
 };
 
 export {
@@ -41,5 +43,6 @@ export {
     QUIZ_NIGHT_EVENTS,
     RESPITE_EVENTS,
     CURSEWRIGHT_EVENTS,
-    VOICE_EVENTS
+    VOICE_EVENTS,
+    TRIPWIRE_EVENTS
 };

@@ -11,6 +11,7 @@ import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
 import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
+import { TripwireIntegration } from "../../integrations/TripwireIntegration.js";
 import { isLocalFileSource, pickSoundEntry, sourceId } from "./PlaybackSource.js";
 import { gatherSpatialDecision } from "./SpatialSettings.js";
 import { buildSpatialMessage, playSpatialClip } from "./SpatialPlayback.js";
@@ -531,6 +532,9 @@ export class SoundHandler {
 
         this.voiceIntegration = new VoiceIntegration(this);
         this.voiceIntegration.registerHooks();
+
+        this.tripwireIntegration = new TripwireIntegration(this);
+        this.tripwireIntegration.registerHooks();
 
         // v13: combatTurn/Round fire before DB update; use updateData.turn.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));

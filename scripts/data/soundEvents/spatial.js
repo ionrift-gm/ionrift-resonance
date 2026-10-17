@@ -11,6 +11,7 @@ import { SPELL_VOCAL_EVENTS } from "./spellVocals.js";
 import { SYSTEM_EVENTS } from "./systems.js";
 import { VOICE_EVENTS } from "./voice.js";
 import { WEAPON_EVENTS } from "./weapons.js";
+import { TRIPWIRE_EVENTS } from "./tripwire.js";
 
 const RESPITE_ORIGIN = new Set(["RESPITE_FIRE_LIT", "RESPITE_CAMPFIRE"]);
 const RESPITE_GLOBAL = new Set(["RESPITE_SLEEP_STARTED", "RESPITE_RESOLUTION"]);
@@ -21,7 +22,8 @@ const ORIGIN_GROUPS = [
     SPELL_EVENTS,
     SPELL_VOCAL_EVENTS,
     MONSTER_EVENTS,
-    SFX_EVENTS
+    SFX_EVENTS,
+    TRIPWIRE_EVENTS
 ];
 
 const GLOBAL_GROUPS = [

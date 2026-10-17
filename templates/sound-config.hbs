@@ -65,6 +65,16 @@
                         <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.voice.version}} installed, v{{integrations.voice.minVersion}} required">Outdated</span>
                         {{/unless}}
                     </a>
+                    <a class="item {{#unless integrations.tripwire.active}}disabled-tab{{/unless}}" 
+                       data-tab="tripwire" 
+                       {{#unless integrations.tripwire.active}}title="Ionrift Tripwire is not installed or active in this world"{{/unless}}>
+                        <i class="fas fa-dungeon"></i> Tripwire
+                        {{#unless integrations.tripwire.active}}
+                        <span class="integration-status-tag">Inactive</span>
+                        {{else unless integrations.tripwire.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.tripwire.version}} installed, v{{integrations.tripwire.minVersion}} required">Outdated</span>
+                        {{/unless}}
+                    </a>
                 </div>
             </div>
 
@@ -273,6 +283,42 @@
                         <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Ionrift Voice Not Active</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
                             The <strong>Ionrift Voice</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate telepathic whisper ambients.
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- TRIPWIRE INTEGRATION -->
+            <div class="tab" data-tab="tripwire">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-dungeon"></i> Tripwire Integration</div>
+
+                    {{#if integrations.tripwire.active}}
+                        {{#if integrations.tripwire.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            Audio cues for doors, locks, mechanisms, and traps managed by Ionrift Tripwire. All cues support positional 3D audio when coordinates are available.
+                        </p>
+
+                        {{#each tiers.tripwire.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Tripwire Update Required</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                <strong>Ionrift Tripwire</strong> v{{integrations.tripwire.version}} is installed, but v{{integrations.tripwire.minVersion}} or newer is required for automatic door, lock, and trap triggers. Please update Ionrift Tripwire to activate these sound hooks.
+                            </p>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Ionrift Tripwire Not Active</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            The <strong>Ionrift Tripwire</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate dungeon doors, locks, and trap audio.
                         </p>
                     </div>
                     {{/if}}

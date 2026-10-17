@@ -12,6 +12,7 @@ import { QuizNightIntegration } from "../../integrations/QuizNightIntegration.js
 import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
 import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
+import { TripwireIntegration } from "../../integrations/TripwireIntegration.js";
 import { DEFAULT_POSITIONAL_CATEGORIES, positionalPanelData, voiceModuleActive } from "../../services/playback/SpatialSettings.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
@@ -1095,6 +1096,139 @@ export class SoundConfigApp extends FormApplication {
         ];
         const voiceRoots = voiceTaxonomy.map(node => processHierarchy(node));
 
+        // --- MODULE INTEGRATIONS: TRIPWIRE ---
+        const isTripwireActive = TripwireIntegration.isActive;
+
+        const tripwireTaxonomy = [
+            {
+                label: "Doors & Passages",
+                description: "Audio cues for opening and closing wood, iron, and stone dungeon doors.",
+                children: [
+                    {
+                        id: "DOOR_WOOD_OPEN",
+                        label: "Wood Door Opens",
+                        cardLabel: "Wood Open",
+                        description: "Plays when a wooden door swings open."
+                    },
+                    {
+                        id: "DOOR_WOOD_CLOSE",
+                        label: "Wood Door Closes",
+                        cardLabel: "Wood Close",
+                        description: "Plays when a wooden door swings shut."
+                    },
+                    {
+                        id: "DOOR_IRON_OPEN",
+                        label: "Iron Door Opens",
+                        cardLabel: "Iron Open",
+                        description: "Plays when an iron gate, cell door, or metal vault opens."
+                    },
+                    {
+                        id: "DOOR_IRON_CLOSE",
+                        label: "Iron Door Closes",
+                        cardLabel: "Iron Close",
+                        description: "Plays when an iron gate or reinforced metal door shuts."
+                    },
+                    {
+                        id: "DOOR_STONE_OPEN",
+                        label: "Stone Door Opens",
+                        cardLabel: "Stone Open",
+                        description: "Plays when a stone slab or secret masonry door grinds open."
+                    },
+                    {
+                        id: "DOOR_STONE_CLOSE",
+                        label: "Stone Door Closes",
+                        cardLabel: "Stone Close",
+                        description: "Plays when a heavy stone door grinds shut and seals."
+                    }
+                ]
+            },
+            {
+                label: "Locks & Mechanisms",
+                description: "Audio cues for turning keys, tumblers clicking, locking, and picking locks.",
+                children: [
+                    {
+                        id: "LOCK_LOCKED",
+                        label: "Lock Turned (Locked)",
+                        cardLabel: "Locked",
+                        description: "Plays when a door, chest, or mechanism is locked."
+                    },
+                    {
+                        id: "LOCK_UNLOCKED",
+                        label: "Key Turned (Unlocked)",
+                        cardLabel: "Unlocked",
+                        description: "Plays when a lock is unlocked with a key, spell, or toggle."
+                    },
+                    {
+                        id: "LOCK_PICK_SUCCESS",
+                        label: "Lockpick Check Succeeded",
+                        cardLabel: "Lockpick Success",
+                        description: "Plays when a character picks a lock (tumbler release with a hopeful chime)."
+                    }
+                ]
+            },
+            {
+                label: "Traps & Hazards",
+                description: "Audio cues when traps are disarmed or when specific hazard mechanisms spring.",
+                children: [
+                    {
+                        id: "TRAP_DISARM_SUCCESS",
+                        label: "Trap Disarm Succeeded",
+                        cardLabel: "Disarm Success",
+                        description: "Plays when a character disarms a trap or hazard (mechanism release with a hopeful chime)."
+                    },
+                    {
+                        id: "TRIPWIRE_TRAP_SPRING",
+                        label: "Generic Trap Springs",
+                        cardLabel: "Trap Spring",
+                        description: "Default cue when a tripwire snaps, pressure plate clicks, or general hazard triggers."
+                    },
+                    {
+                        id: "TRAP_DARTS",
+                        label: "Poison Darts",
+                        cardLabel: "Darts",
+                        description: "Plays when a dart or needle volley trap fires."
+                    },
+                    {
+                        id: "TRAP_PIT",
+                        label: "Pit Trap",
+                        cardLabel: "Pit Trap",
+                        description: "Plays when a false floor or trapdoor gives way over a pit."
+                    },
+                    {
+                        id: "TRAP_ROCKFALL",
+                        label: "Rockfall / Collapse",
+                        cardLabel: "Rockfall",
+                        description: "Plays when a ceiling collapses or boulders crash down."
+                    },
+                    {
+                        id: "TRAP_SPEARS",
+                        label: "Spears / Blades",
+                        cardLabel: "Spears",
+                        description: "Plays when wall spears, spikes, or scything blades thrust out."
+                    },
+                    {
+                        id: "TRAP_SNAPPING",
+                        label: "Snapping Jaws / Snare",
+                        cardLabel: "Snapping",
+                        description: "Plays when a steel jaw trap, wire snare, or spring clamp snaps shut."
+                    },
+                    {
+                        id: "TRAP_TELEPORT",
+                        label: "Teleportation Trap",
+                        cardLabel: "Teleport",
+                        description: "Plays when a spatial rift or teleportation ward displaces a creature."
+                    },
+                    {
+                        id: "TRAP_MAGICAL",
+                        label: "Arcane / Glyph Trap",
+                        cardLabel: "Magical Trap",
+                        description: "Plays when a magical rune, glyph of warding, or arcane hazard detonates."
+                    }
+                ]
+            }
+        ];
+        const tripwireRoots = tripwireTaxonomy.map(node => processHierarchy(node));
+
         return {
             hasSyrinscape: getSyrinscapeProvider().isConfigured(),
             features: {
@@ -1102,7 +1236,7 @@ export class SoundConfigApp extends FormApplication {
                 spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER")
             },
             integrations: {
-                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive,
+                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive,
                 quizNight: {
                     installed: QuizNightIntegration.isInstalled,
                     active: QuizNightIntegration.isActive,
@@ -1130,6 +1264,13 @@ export class SoundConfigApp extends FormApplication {
                     compatible: VoiceIntegration.isCompatible,
                     version: VoiceIntegration.version,
                     minVersion: VoiceIntegration.MIN_VERSION
+                },
+                tripwire: {
+                    installed: TripwireIntegration.isInstalled,
+                    active: TripwireIntegration.isActive,
+                    compatible: TripwireIntegration.isCompatible,
+                    version: TripwireIntegration.version,
+                    minVersion: TripwireIntegration.MIN_VERSION
                 }
             },
             tiers: {
@@ -1172,6 +1313,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Voice",
                     active: false,
                     paramounts: voiceRoots
+                },
+                tripwire: {
+                    label: "Tripwire",
+                    active: false,
+                    paramounts: tripwireRoots
                 },
                 auditor: {
                     label: "Auditor",
