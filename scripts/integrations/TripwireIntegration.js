@@ -70,6 +70,7 @@ export class TripwireIntegration {
      */
     static trapSoundKey(trapType) {
         const t = (trapType ?? "").toLowerCase();
+        if (t === "none" || t === "silent" || t === "mute") return null;
         if (t === "darts" || t === "dart") return SOUND_EVENTS.TRAP_DARTS;
         if (t === "pit") return SOUND_EVENTS.TRAP_PIT;
         if (t === "rockfall" || t === "collapse" || t === "rubble") return SOUND_EVENTS.TRAP_ROCKFALL;
@@ -153,6 +154,7 @@ export class TripwireIntegration {
         // Trap Triggered
         on("trapTriggered", (data = {}) => {
             const key = TripwireIntegration.trapSoundKey(data.trapType);
+            if (!key) return;
             Logger.log(`TripwireIntegration | trapTriggered (${data.trapType ?? "default"}) -> ${key}`, data);
             const origin = data.origin
                 || (data.hazardDoc ? { x: data.hazardDoc.x, y: data.hazardDoc.y } : null)
