@@ -2338,6 +2338,13 @@ export class SoundConfigApp extends FormApplication {
             }
         }
 
+        if (typeof idToPlay === "string" && idToPlay.includes(",")) {
+            const parts = idToPlay.split(",").map(s => s.trim()).filter(Boolean);
+            if (parts.length > 0) {
+                idToPlay = parts[Math.floor(Math.random() * parts.length)];
+            }
+        }
+
         Logger.log(`Previewing: ${idToPlay}`, playOptions);
 
         if (game.ionrift.resonance?.manager) {
