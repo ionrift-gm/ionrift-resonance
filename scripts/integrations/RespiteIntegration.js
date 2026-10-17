@@ -224,11 +224,18 @@ export class RespiteIntegration {
         const scene = canvas?.scene;
         if (!scene || !tokenDoc) return;
 
-        const resolved = this.handler.resolver.resolveKey(SOUND_EVENTS.RESPITE_CAMPFIRE);
-        if (!resolved) {
+        const rawResolved = this.handler.resolver.resolveKey(SOUND_EVENTS.RESPITE_CAMPFIRE);
+        if (!rawResolved) {
             Logger.log("RespiteIntegration._syncCampfireEmitter | RESPITE_CAMPFIRE unbound, skipping canvas emitter.");
             return;
         }
+
+        const candidates = typeof rawResolved === "string"
+            ? rawResolved.split(",").map(s => s.trim()).filter(Boolean)
+            : [];
+        const resolved = candidates.length > 0
+            ? candidates[Math.floor(Math.random() * candidates.length)]
+            : rawResolved;
 
         // Only create canvas AmbientSound if resolved sound is a playable file path
         const isFilePath = typeof resolved === "string" && (resolved.includes("/") || /\.(wav|mp3|ogg|flac|webm)$/i.test(resolved));
@@ -248,8 +255,9 @@ export class RespiteIntegration {
 
         if (existingEmitters.length > 0) {
             for (const emitter of existingEmitters) {
+                const needsPathFix = !emitter.path || emitter.path.includes(",") || !candidates.includes(emitter.path);
                 await emitter.update({
-                    path: resolved,
+                    path: needsPathFix ? resolved : emitter.path,
                     x: centerX,
                     y: centerY
                 });

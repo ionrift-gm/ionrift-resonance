@@ -241,24 +241,29 @@ export class LuminanceIntegration {
                 await scene.deleteEmbeddedDocuments("AmbientSound", extras);
             }
 
+            const rawResolved = this.handler.resolver.resolveKey(SOUND_EVENTS.LUMINANCE_TORCH_LOOP);
+            if (typeof rawResolved !== "string" || !rawResolved) return;
+
+            const candidates = rawResolved.split(",").map(s => s.trim()).filter(Boolean);
+            const validPaths = candidates.filter(p => p.includes("/") || /\.(wav|mp3|ogg|flac|webm)$/i.test(p));
+            if (validPaths.length === 0) return;
+
+            const chosenPath = validPaths[Math.floor(Math.random() * validPaths.length)];
+
             const currentEmitter = existing[0] ?? null;
             if (currentEmitter) {
-                if (currentEmitter.x !== centerX || currentEmitter.y !== centerY) {
-                    await scene.updateEmbeddedDocuments("AmbientSound", [{
-                        _id: currentEmitter.id,
-                        x: centerX,
-                        y: centerY
-                    }]);
+                const needsPathFix = !currentEmitter.path || currentEmitter.path.includes(",") || !validPaths.includes(currentEmitter.path);
+                const needsMove = currentEmitter.x !== centerX || currentEmitter.y !== centerY;
+                if (needsPathFix || needsMove) {
+                    const updateDoc = { _id: currentEmitter.id, x: centerX, y: centerY };
+                    if (needsPathFix) updateDoc.path = chosenPath;
+                    await scene.updateEmbeddedDocuments("AmbientSound", [updateDoc]);
                 }
                 return;
             }
 
-            const resolved = this.handler.resolver.resolveKey(SOUND_EVENTS.LUMINANCE_TORCH_LOOP);
-            const isFilePath = typeof resolved === "string" && (resolved.includes("/") || /\.(wav|mp3|ogg|flac|webm)$/i.test(resolved));
-            if (!isFilePath) return;
-
             await scene.createEmbeddedDocuments("AmbientSound", [{
-                path: resolved,
+                path: chosenPath,
                 x: centerX,
                 y: centerY,
                 radius: LuminanceIntegration.TORCH_AUDIO_RADIUS,
@@ -273,7 +278,7 @@ export class LuminanceIntegration {
                     }
                 }
             }]);
-            Logger.log(`LuminanceIntegration | Spawned handheld torch loop (${resolved}) on ${tokenDoc.name} at (${centerX}, ${centerY})`);
+            Logger.log(`LuminanceIntegration | Spawned handheld torch loop (${chosenPath}) on ${tokenDoc.name} at (${centerX}, ${centerY})`);
         } finally {
             this._syncLocks.delete(tokenDoc.id);
         }
