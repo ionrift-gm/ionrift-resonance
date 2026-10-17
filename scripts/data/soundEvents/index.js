@@ -12,6 +12,7 @@ import { RESPITE_EVENTS } from "./respite.js";
 import { CURSEWRIGHT_EVENTS } from "./cursewright.js";
 import { VOICE_EVENTS } from "./voice.js";
 import { TRIPWIRE_EVENTS } from "./tripwire.js";
+import { LUMINANCE_EVENTS } from "./luminance.js";
 
 export const SOUND_EVENTS = {
     ...COMBAT_EVENTS,
@@ -27,7 +28,8 @@ export const SOUND_EVENTS = {
     ...RESPITE_EVENTS,
     ...CURSEWRIGHT_EVENTS,
     ...VOICE_EVENTS,
-    ...TRIPWIRE_EVENTS
+    ...TRIPWIRE_EVENTS,
+    ...LUMINANCE_EVENTS
 };
 
 export {
@@ -44,5 +46,6 @@ export {
     RESPITE_EVENTS,
     CURSEWRIGHT_EVENTS,
     VOICE_EVENTS,
-    TRIPWIRE_EVENTS
+    TRIPWIRE_EVENTS,
+    LUMINANCE_EVENTS
 };

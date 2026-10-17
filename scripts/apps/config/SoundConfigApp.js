@@ -13,6 +13,7 @@ import { RespiteIntegration } from "../../integrations/RespiteIntegration.js";
 import { CursewrightIntegration } from "../../integrations/CursewrightIntegration.js";
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 import { TripwireIntegration } from "../../integrations/TripwireIntegration.js";
+import { LuminanceIntegration } from "../../integrations/LuminanceIntegration.js";
 import { DEFAULT_POSITIONAL_CATEGORIES, positionalPanelData, voiceModuleActive } from "../../services/playback/SpatialSettings.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
@@ -1229,6 +1230,55 @@ export class SoundConfigApp extends FormApplication {
         ];
         const tripwireRoots = tripwireTaxonomy.map(node => processHierarchy(node));
 
+        // --- MODULE INTEGRATIONS: LUMINANCE ---
+        const isLuminanceActive = LuminanceIntegration.isActive;
+
+        const luminanceTaxonomy = [
+            {
+                label: "Handheld Torch Loop (3-Layer Spatial)",
+                description: "Three coprime overlapping loops placed on tokens holding a lit torch so the flame never sounds repetitive.",
+                children: [
+                    {
+                        id: "LUMINANCE_TORCH_BED",
+                        label: "Torch Layer 1: Warm Flame Bed",
+                        cardLabel: "Torch Bed",
+                        description: "Continuous low-mid flame warmth (~13.7s loop) following the torchbearer."
+                    },
+                    {
+                        id: "LUMINANCE_TORCH_FLUTTER",
+                        label: "Torch Layer 2: Cloth & Air Flutter",
+                        cardLabel: "Torch Flutter",
+                        description: "Soft pitch-soaked cloth and air movement in hand (~9.3s loop)."
+                    },
+                    {
+                        id: "LUMINANCE_TORCH_CRACKLE",
+                        label: "Torch Layer 3: Resin Micro-Pops",
+                        cardLabel: "Torch Crackle",
+                        description: "Sparse, delicate pine-resin and wood fiber pops (~16.1s loop)."
+                    }
+                ]
+            },
+            {
+                label: "Torch Ignition & Snuff",
+                description: "One-shot spatial cues when a handheld torch is kindled or extinguished.",
+                children: [
+                    {
+                        id: "LUMINANCE_TORCH_LIT",
+                        label: "Torch Ignited",
+                        cardLabel: "Torch Lit",
+                        description: "Plays at the token when a handheld torch catches fire."
+                    },
+                    {
+                        id: "LUMINANCE_TORCH_EXTINGUISH",
+                        label: "Torch Extinguished",
+                        cardLabel: "Torch Snuffed",
+                        description: "Plays at the token when a handheld torch is doused or snuffed."
+                    }
+                ]
+            }
+        ];
+        const luminanceRoots = luminanceTaxonomy.map(node => processHierarchy(node));
+
         return {
             hasSyrinscape: getSyrinscapeProvider().isConfigured(),
             features: {
@@ -1236,7 +1286,7 @@ export class SoundConfigApp extends FormApplication {
                 spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER")
             },
             integrations: {
-                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive,
+                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive || isLuminanceActive,
                 quizNight: {
                     installed: QuizNightIntegration.isInstalled,
                     active: QuizNightIntegration.isActive,
@@ -1271,6 +1321,13 @@ export class SoundConfigApp extends FormApplication {
                     compatible: TripwireIntegration.isCompatible,
                     version: TripwireIntegration.version,
                     minVersion: TripwireIntegration.MIN_VERSION
+                },
+                luminance: {
+                    installed: LuminanceIntegration.isInstalled,
+                    active: LuminanceIntegration.isActive,
+                    compatible: LuminanceIntegration.isCompatible,
+                    version: LuminanceIntegration.version,
+                    minVersion: LuminanceIntegration.MIN_VERSION
                 }
             },
             tiers: {
@@ -1318,6 +1375,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Tripwire",
                     active: false,
                     paramounts: tripwireRoots
+                },
+                luminance: {
+                    label: "Luminance",
+                    active: false,
+                    paramounts: luminanceRoots
                 },
                 auditor: {
                     label: "Auditor",
