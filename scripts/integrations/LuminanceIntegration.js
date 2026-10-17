@@ -4,47 +4,22 @@ import { originFromToken } from "../services/playback/SoundOrigin.js";
 
 /**
  * LuminanceIntegration
- * Spatial 3-layer overlapping handheld torch audio loop for Ionrift Luminance.
+ * Spatial handheld torch audio loop and ignition/extinguish cues for Ionrift Luminance.
  *
- * Why 3 coprime AmbientSound layers:
- *   A single short fire loop becomes noticeably repetitive within seconds.
- *   By stacking 3 independent seamless loops of coprime durations:
- *     - Bed (~13.7s): warm low-mid flame breath
- *     - Flutter (~9.3s): soft pitch-soaked cloth & air movement in hand
- *     - Crackle (~16.1s): sparse, delicate resin/wood fiber micro-pops
- *   their combined phase period is ~2,051 seconds (34+ minutes) before the three
- *   layers ever align at the same point again.
- *
- * All 3 emitters are attached to the torch-bearing token's position as Foundry
- * AmbientSound documents (`radius: 20`, `easing: true`, `walls: true`), so
- * distance falloff and wall occlusion match the 20 ft torch light radius and
- * follow the player token smoothly as they move.
+ * Spawns a single Foundry AmbientSound emitter (`LUMINANCE_TORCH_LOOP`, choosing from
+ * the pack's standalone loop variations) at the torch-bearing token's center coordinates
+ * (`radius: 20`, `easing: true`, `walls: true`), moving smoothly with the token on
+ * `updateToken` (`x`/`y` only so the loop never restarts) and cleaning up when snuffed.
  */
 export class LuminanceIntegration {
     static MODULE_ID = "ionrift-luminance";
     static MIN_VERSION = "0.1.0";
-    /** Let the flint & pitch catch sting land before the 3 loop layers fade in. */
-    static TORCH_LIT_LEAD_MS = 650;
+    /** Let the ignition cue land before the steady torch loop begins. */
+    static TORCH_LIT_LEAD_MS = 550;
     /** Default audible radius in scene grid units (matches 20 ft torch bright light). */
     static TORCH_AUDIO_RADIUS = 20;
-
-    static TORCH_LAYERS = [
-        {
-            id: "bed",
-            eventKey: SOUND_EVENTS.LUMINANCE_TORCH_BED,
-            volume: 0.34
-        },
-        {
-            id: "flutter",
-            eventKey: SOUND_EVENTS.LUMINANCE_TORCH_FLUTTER,
-            volume: 0.24
-        },
-        {
-            id: "crackle",
-            eventKey: SOUND_EVENTS.LUMINANCE_TORCH_CRACKLE,
-            volume: 0.18
-        }
-    ];
+    /** Default AmbientSound volume for the handheld torch loop emitter. */
+    static TORCH_LOOP_VOLUME = 0.45;
 
     /**
      * @param {import("../services/playback/SoundHandler.js").SoundHandler} handler
@@ -53,8 +28,8 @@ export class LuminanceIntegration {
         this.handler = handler;
         /** @type {Map<string, ReturnType<typeof setTimeout>>} tokenId -> timer */
         this._loopDelayTimers = new Map();
-        /** @type {Map<string, number>} tokenId -> timestamp */
-        this._lastLitAt = new Map();
+        /** @type {Map<string, number>} debounceKey -> timestamp */
+        this._lastCueAt = new Map();
         /** @type {Set<string>} tokenIds currently being synced */
         this._syncLocks = new Set();
     }
@@ -97,7 +72,7 @@ export class LuminanceIntegration {
             await this._onTorchStateChanged(data);
         });
 
-        // 2. Item flag / equip changes on actors (e.g. toggling torch on character sheet or HUD)
+        // 2. Item flag / equip changes on actors (e.g. player toggling torch on character sheet or HUD)
         Hooks.on("updateItem", async (item, change) => {
             if (!game.user?.isGM || !canvas?.scene) return;
             const actor = item?.parent;
@@ -114,7 +89,7 @@ export class LuminanceIntegration {
                 const nowHoldingTorch = this._tokenHasLitTorch(tokenDoc);
                 const hasEmitters = this._getTokenTorchEmitters(tokenDoc.id).length > 0;
                 if (nowHoldingTorch && !hasEmitters && !this._loopDelayTimers.has(tokenDoc.id)) {
-                    const justIgnited = lumFlags?.isLit === true || lumFlags?.commandLightActive === true;
+                    const justIgnited = lumFlags?.isLit === true || lumFlags?.commandLightActive === true || sysEquipped === true;
                     await this._onTorchStateChanged({
                         actor,
                         token: tokenDoc,
@@ -123,7 +98,7 @@ export class LuminanceIntegration {
                         ignite: justIgnited
                     });
                 } else if (!nowHoldingTorch && (hasEmitters || this._loopDelayTimers.has(tokenDoc.id))) {
-                    const justExtinguished = lumFlags?.isLit === false || lumFlags?.commandLightActive === false;
+                    const justExtinguished = lumFlags?.isLit === false || lumFlags?.commandLightActive === false || sysEquipped === false;
                     await this._onTorchStateChanged({
                         actor,
                         token: tokenDoc,
@@ -154,7 +129,7 @@ export class LuminanceIntegration {
         Hooks.on("updateToken", async (tokenDoc, change) => {
             if (!game.user?.isGM || !canvas?.scene) return;
 
-            // A. Position changed -> move any attached 3-layer torch emitters smoothly
+            // A. Position changed -> move any attached torch emitter smoothly
             if (change.x !== undefined || change.y !== undefined) {
                 await this._moveTorchEmittersForToken(tokenDoc);
             }
@@ -180,7 +155,7 @@ export class LuminanceIntegration {
             await this._removeTorchEmittersForToken(tokenDoc.id);
         });
 
-        // 5. Reconcile scene emitters on canvasReady so lit torches always have their 3-layer audio
+        // 5. Reconcile scene emitters on canvasReady so lit torches always have their spatial loop
         Hooks.on("canvasReady", async () => {
             if (!game.user?.isGM || !canvas?.scene) return;
             await this._reconcileSceneTorches();
@@ -214,9 +189,10 @@ export class LuminanceIntegration {
                 await this._syncTorchEmittersForToken(tokenDoc);
             }
         } else {
+            const hadPending = this._loopDelayTimers.has(tokenDoc.id);
             this._cancelLoopDelay(tokenDoc.id);
             const hadEmitters = this._getTokenTorchEmitters(tokenDoc.id).length > 0;
-            if (data.extinguish && hadEmitters) {
+            if (data.extinguish && (hadEmitters || hadPending)) {
                 this._playTorchSting(SOUND_EVENTS.LUMINANCE_TORCH_EXTINGUISH, tokenDoc);
             }
             await this._removeTorchEmittersForToken(tokenDoc.id);
@@ -224,7 +200,7 @@ export class LuminanceIntegration {
     }
 
     /**
-     * Play one-shot torch ignition or snuff cue at the token's spatial position.
+     * Play one-shot torch ignition or extinguish cue at the token's spatial position.
      * @param {string} eventKey
      * @param {TokenDocument} tokenDoc
      */
@@ -232,13 +208,13 @@ export class LuminanceIntegration {
         if (!game.user?.isGM || !tokenDoc) return false;
         const debounceKey = `${tokenDoc.id}:${eventKey}`;
         const now = Date.now();
-        const last = this._lastLitAt.get(debounceKey) ?? 0;
+        const last = this._lastCueAt.get(debounceKey) ?? 0;
         if (now - last < 1200) return false;
 
         const resolved = this.handler.resolver.resolveKeyDirect(eventKey);
         if (!resolved) return false;
 
-        this._lastLitAt.set(debounceKey, now);
+        this._lastCueAt.set(debounceKey, now);
         const origin = originFromToken(tokenDoc);
         Logger.log(`LuminanceIntegration | Playing ${eventKey} for token ${tokenDoc.name}`);
         this.handler.play(eventKey, origin ? { origin } : 0);
@@ -246,8 +222,7 @@ export class LuminanceIntegration {
     }
 
     /**
-     * Create or synchronize the 3 overlapping coprime AmbientSound emitters (`bed`, `flutter`, `crackle`)
-     * at the token's center coordinates.
+     * Create or synchronize the single AmbientSound torch loop emitter at the token's center coordinates.
      * @param {TokenDocument} tokenDoc
      */
     async _syncTorchEmittersForToken(tokenDoc) {
@@ -259,65 +234,54 @@ export class LuminanceIntegration {
         try {
             const { centerX, centerY } = this._getTokenCenter(tokenDoc);
             const existing = this._getTokenTorchEmitters(tokenDoc.id);
-            const existingByLayer = new Map();
-            for (const s of existing) {
-                const layerId = s.flags?.["ionrift-resonance"]?.torchLayer;
-                if (layerId) existingByLayer.set(layerId, s);
+
+            // If multiple legacy emitters exist on this token, remove extras and keep at most one
+            if (existing.length > 1) {
+                const extras = existing.slice(1).map(s => s.id);
+                await scene.deleteEmbeddedDocuments("AmbientSound", extras);
             }
 
-            const toCreate = [];
-            const toUpdate = [];
-
-            for (const layer of LuminanceIntegration.TORCH_LAYERS) {
-                const resolved = this.handler.resolver.resolveKey(layer.eventKey);
-                const isFilePath = typeof resolved === "string" && (resolved.includes("/") || /\.(wav|mp3|ogg|flac|webm)$/i.test(resolved));
-                if (!isFilePath) continue;
-
-                const currentEmitter = existingByLayer.get(layer.id);
-                if (currentEmitter) {
-                    if (currentEmitter.x !== centerX || currentEmitter.y !== centerY) {
-                        toUpdate.push({
-                            _id: currentEmitter.id,
-                            x: centerX,
-                            y: centerY
-                        });
-                    }
-                } else {
-                    toCreate.push({
-                        path: resolved,
+            const currentEmitter = existing[0] ?? null;
+            if (currentEmitter) {
+                if (currentEmitter.x !== centerX || currentEmitter.y !== centerY) {
+                    await scene.updateEmbeddedDocuments("AmbientSound", [{
+                        _id: currentEmitter.id,
                         x: centerX,
-                        y: centerY,
-                        radius: LuminanceIntegration.TORCH_AUDIO_RADIUS,
-                        easing: true,
-                        walls: true,
-                        repeat: true,
-                        volume: layer.volume,
-                        flags: {
-                            "ionrift-resonance": {
-                                isTorchEmitter: true,
-                                torchTokenId: tokenDoc.id,
-                                torchLayer: layer.id
-                            }
-                        }
-                    });
+                        y: centerY
+                    }]);
                 }
+                return;
             }
 
-            if (toUpdate.length > 0) {
-                await scene.updateEmbeddedDocuments("AmbientSound", toUpdate);
-            }
-            if (toCreate.length > 0) {
-                await scene.createEmbeddedDocuments("AmbientSound", toCreate);
-                Logger.log(`LuminanceIntegration | Spawned ${toCreate.length}-layer handheld torch loop on ${tokenDoc.name} at (${centerX}, ${centerY})`);
-            }
+            const resolved = this.handler.resolver.resolveKey(SOUND_EVENTS.LUMINANCE_TORCH_LOOP);
+            const isFilePath = typeof resolved === "string" && (resolved.includes("/") || /\.(wav|mp3|ogg|flac|webm)$/i.test(resolved));
+            if (!isFilePath) return;
+
+            await scene.createEmbeddedDocuments("AmbientSound", [{
+                path: resolved,
+                x: centerX,
+                y: centerY,
+                radius: LuminanceIntegration.TORCH_AUDIO_RADIUS,
+                easing: true,
+                walls: true,
+                repeat: true,
+                volume: LuminanceIntegration.TORCH_LOOP_VOLUME,
+                flags: {
+                    "ionrift-resonance": {
+                        isTorchEmitter: true,
+                        torchTokenId: tokenDoc.id
+                    }
+                }
+            }]);
+            Logger.log(`LuminanceIntegration | Spawned handheld torch loop (${resolved}) on ${tokenDoc.name} at (${centerX}, ${centerY})`);
         } finally {
             this._syncLocks.delete(tokenDoc.id);
         }
     }
 
     /**
-     * Smoothly move existing 3-layer torch emitters when a token moves on the canvas.
-     * Only updates `(x, y)` so the 3 coprime audio loops keep playing without restarting.
+     * Smoothly move existing torch emitter when a token moves on the canvas.
+     * Only updates `(x, y)` so the audio loop keeps playing without restarting.
      * @param {TokenDocument} tokenDoc
      */
     async _moveTorchEmittersForToken(tokenDoc) {
@@ -345,7 +309,7 @@ export class LuminanceIntegration {
     }
 
     /**
-     * Remove all 3 torch emitters associated with a token ID.
+     * Remove any torch emitter associated with a token ID.
      * @param {string} tokenId
      */
     async _removeTorchEmittersForToken(tokenId) {
@@ -355,7 +319,7 @@ export class LuminanceIntegration {
         const existing = this._getTokenTorchEmitters(tokenId);
         if (existing.length > 0) {
             await scene.deleteEmbeddedDocuments("AmbientSound", existing.map(s => s.id));
-            Logger.log(`LuminanceIntegration | Removed ${existing.length} torch loop layer(s) for token ${tokenId}`);
+            Logger.log(`LuminanceIntegration | Removed torch loop emitter for token ${tokenId}`);
         }
     }
 

@@ -1235,38 +1235,20 @@ export class SoundConfigApp extends FormApplication {
 
         const luminanceTaxonomy = [
             {
-                label: "Handheld Torch Loop (3-Layer Spatial)",
-                description: "Three coprime overlapping loops placed on tokens holding a lit torch so the flame never sounds repetitive.",
+                label: "Handheld Torch",
+                description: "Spatial ambient loop and ignition/extinguish cues attached to tokens carrying a lit torch.",
                 children: [
                     {
-                        id: "LUMINANCE_TORCH_BED",
-                        label: "Torch Layer 1: Warm Flame Bed",
-                        cardLabel: "Torch Bed",
-                        description: "Continuous low-mid flame warmth (~13.7s loop) following the torchbearer."
+                        id: "LUMINANCE_TORCH_LOOP",
+                        label: "Handheld Torch Loop",
+                        cardLabel: "Torch Loop",
+                        description: "Subtle flickering torch loop attached spatially to the torchbearer token."
                     },
-                    {
-                        id: "LUMINANCE_TORCH_FLUTTER",
-                        label: "Torch Layer 2: Cloth & Air Flutter",
-                        cardLabel: "Torch Flutter",
-                        description: "Soft pitch-soaked cloth and air movement in hand (~9.3s loop)."
-                    },
-                    {
-                        id: "LUMINANCE_TORCH_CRACKLE",
-                        label: "Torch Layer 3: Resin Micro-Pops",
-                        cardLabel: "Torch Crackle",
-                        description: "Sparse, delicate pine-resin and wood fiber pops (~16.1s loop)."
-                    }
-                ]
-            },
-            {
-                label: "Torch Ignition & Snuff",
-                description: "One-shot spatial cues when a handheld torch is kindled or extinguished.",
-                children: [
                     {
                         id: "LUMINANCE_TORCH_LIT",
                         label: "Torch Ignited",
                         cardLabel: "Torch Lit",
-                        description: "Plays at the token when a handheld torch catches fire."
+                        description: "Plays at the token when a handheld torch is kindled."
                     },
                     {
                         id: "LUMINANCE_TORCH_EXTINGUISH",
