@@ -1,7 +1,7 @@
 <div class="syrinscape-provider-panel">
 
     {{!-- Card A: Foundry Audio --}}
-    <div class="syrinscape-provider-card syrinscape-provider-card--foundry{{#if isFoundryActive}} is-active{{else}} is-inactive{{/if}}">
+    <div class="syrinscape-provider-card syrinscape-provider-card--foundry{{#if isFoundryActive}} is-active{{else}} is-inactive{{/if}}{{#if expandFoundry}} is-expanded{{/if}}">
 
         <div class="foundry-toggle syrinscape-provider-toggle" data-panel="foundry">
             <span class="syrinscape-provider-toggle-label">
@@ -44,7 +44,7 @@
     </div>
 
     {{!-- Card B: Syrinscape --}}
-    <div class="syrinscape-provider-card syrinscape-provider-card--syrin{{#if isSyrinscapeActive}} is-active{{else}} is-inactive{{/if}}">
+    <div class="syrinscape-provider-card syrinscape-provider-card--syrin{{#if isSyrinscapeActive}} is-active{{else}} is-inactive{{/if}}{{#if expandSyrin}} is-expanded{{/if}}">
 
         <div class="syrin-toggle syrinscape-provider-toggle syrinscape-provider-toggle--accent" data-panel="syrinscape">
             <span class="syrinscape-provider-toggle-label">

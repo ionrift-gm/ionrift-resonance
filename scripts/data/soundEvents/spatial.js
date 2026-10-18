@@ -13,6 +13,7 @@ import { VOICE_EVENTS } from "./voice.js";
 import { WEAPON_EVENTS } from "./weapons.js";
 import { TRIPWIRE_EVENTS } from "./tripwire.js";
 import { LUMINANCE_EVENTS } from "./luminance.js";
+import { WATERLINE_EVENTS } from "./waterline.js";
 
 const RESPITE_ORIGIN = new Set(["RESPITE_FIRE_LIT", "RESPITE_CAMPFIRE"]);
 const RESPITE_GLOBAL = new Set(["RESPITE_SLEEP_STARTED", "RESPITE_RESOLUTION"]);
@@ -25,7 +26,8 @@ const ORIGIN_GROUPS = [
     MONSTER_EVENTS,
     SFX_EVENTS,
     TRIPWIRE_EVENTS,
-    LUMINANCE_EVENTS
+    LUMINANCE_EVENTS,
+    WATERLINE_EVENTS
 ];
 
 const GLOBAL_GROUPS = [

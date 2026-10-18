@@ -79,16 +79,17 @@
     border: 1px solid rgba(155, 89, 182, 0.3);
 }
 
-.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive {
-    opacity: 0.5;
-}
-
-.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive .syrinscape-provider-toggle {
-    color: rgba(255, 255, 255, 0.55);
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive:not(.is-expanded):not(:has(.is-open)) .syrinscape-provider-toggle {
+    color: rgba(255, 255, 255, 0.65);
 }
 
 .ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-inactive .syrinscape-provider-toggle-icon {
     color: var(--ionrift-accent-soft, #d8b4e2);
+}
+
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card--syrin.is-expanded:not(.is-active),
+.ionrift-resonance-syrinscape-app .syrinscape-provider-card--syrin:has(.is-open):not(.is-active) {
+    border-color: rgba(155, 89, 182, 0.5);
 }
 
 .ionrift-resonance-syrinscape-app .syrinscape-provider-card.is-active {

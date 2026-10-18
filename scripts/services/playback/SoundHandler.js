@@ -13,6 +13,7 @@ import { CursewrightIntegration } from "../../integrations/CursewrightIntegratio
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 import { TripwireIntegration } from "../../integrations/TripwireIntegration.js";
 import { LuminanceIntegration } from "../../integrations/LuminanceIntegration.js";
+import { WaterlineIntegration } from "../../integrations/WaterlineIntegration.js";
 import { isLocalFileSource, pickSoundEntry, sourceId } from "./PlaybackSource.js";
 import { gatherSpatialDecision } from "./SpatialSettings.js";
 import { buildSpatialMessage, playSpatialClip } from "./SpatialPlayback.js";
@@ -539,6 +540,9 @@ export class SoundHandler {
 
         this.luminanceIntegration = new LuminanceIntegration(this);
         this.luminanceIntegration.registerHooks();
+
+        this.waterlineIntegration = new WaterlineIntegration(this);
+        this.waterlineIntegration.registerHooks();
 
         // v13: combatTurn/Round fire before DB update; use updateData.turn.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));

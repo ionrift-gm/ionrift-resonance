@@ -14,6 +14,7 @@ import { CursewrightIntegration } from "../../integrations/CursewrightIntegratio
 import { VoiceIntegration } from "../../integrations/VoiceIntegration.js";
 import { TripwireIntegration } from "../../integrations/TripwireIntegration.js";
 import { LuminanceIntegration } from "../../integrations/LuminanceIntegration.js";
+import { WaterlineIntegration } from "../../integrations/WaterlineIntegration.js";
 import { DEFAULT_POSITIONAL_CATEGORIES, positionalPanelData, voiceModuleActive } from "../../services/playback/SpatialSettings.js";
 
 const FEATURE_SHARED_MONSTER_VOICES = false;
@@ -1261,6 +1262,37 @@ export class SoundConfigApp extends FormApplication {
         ];
         const luminanceRoots = luminanceTaxonomy.map(node => processHierarchy(node));
 
+        // --- MODULE INTEGRATIONS: WATERLINE ---
+        const isWaterlineActive = WaterlineIntegration.isActive;
+
+        const waterlineTaxonomy = [
+            {
+                label: "Water Body Movement",
+                description: "Spatial water entry, wading footsteps, and shore exit cues when tokens move across Ionrift Waterline regions.",
+                children: [
+                    {
+                        id: "WATERLINE_ENTER",
+                        label: "Water Entry",
+                        cardLabel: "Water Enter",
+                        description: "Plays at the token when stepping from dry land into a water body."
+                    },
+                    {
+                        id: "WATERLINE_WADE",
+                        label: "Water Wade",
+                        cardLabel: "Water Wade",
+                        description: "Plays at the token as it wades or sloshes across flooded spaces."
+                    },
+                    {
+                        id: "WATERLINE_EXIT",
+                        label: "Water Exit",
+                        cardLabel: "Water Exit",
+                        description: "Plays at the token when stepping out of a water body onto dry land."
+                    }
+                ]
+            }
+        ];
+        const waterlineRoots = waterlineTaxonomy.map(node => processHierarchy(node));
+
         return {
             hasSyrinscape: getSyrinscapeProvider().isConfigured(),
             features: {
@@ -1268,7 +1300,7 @@ export class SoundConfigApp extends FormApplication {
                 spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER")
             },
             integrations: {
-                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive || isLuminanceActive,
+                hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive || isLuminanceActive || isWaterlineActive,
                 quizNight: {
                     installed: QuizNightIntegration.isInstalled,
                     active: QuizNightIntegration.isActive,
@@ -1310,6 +1342,13 @@ export class SoundConfigApp extends FormApplication {
                     compatible: LuminanceIntegration.isCompatible,
                     version: LuminanceIntegration.version,
                     minVersion: LuminanceIntegration.MIN_VERSION
+                },
+                waterline: {
+                    installed: WaterlineIntegration.isInstalled,
+                    active: WaterlineIntegration.isActive,
+                    compatible: WaterlineIntegration.isCompatible,
+                    version: WaterlineIntegration.version,
+                    minVersion: WaterlineIntegration.MIN_VERSION
                 }
             },
             tiers: {
@@ -1362,6 +1401,11 @@ export class SoundConfigApp extends FormApplication {
                     label: "Luminance",
                     active: false,
                     paramounts: luminanceRoots
+                },
+                waterline: {
+                    label: "Waterline",
+                    active: false,
+                    paramounts: waterlineRoots
                 },
                 auditor: {
                     label: "Auditor",
