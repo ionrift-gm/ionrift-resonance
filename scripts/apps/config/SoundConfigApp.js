@@ -1237,7 +1237,7 @@ export class SoundConfigApp extends FormApplication {
         const luminanceTaxonomy = [
             {
                 label: "Handheld Torch",
-                description: "Spatial ambient loop and ignition/extinguish cues attached to tokens carrying a lit torch.",
+                description: "Crackling torch sound that follows a token carrying a lit torch, plus a sound when it is lit or put out.",
                 children: [
                     {
                         id: "LUMINANCE_TORCH_LOOP",

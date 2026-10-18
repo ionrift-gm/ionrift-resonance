@@ -20,20 +20,20 @@ export class WaterlineIntegration {
     static STEP_CADENCE_MS = 320;
     /** Maximum queued water footsteps for a single multi-square drag move. */
     static MAX_DRAG_STEPS = 4;
-    /** Minimum interval between immediate single-step triggers on the same token. */
-    static DEBOUNCE_MS = 160;
+    /** Minimum interval between repeated identical cues on the same token. */
+    static DEBOUNCE_MS = 140;
 
     /**
      * @param {import("../services/playback/SoundHandler.js").SoundHandler} handler
      */
     constructor(handler) {
         this.handler = handler;
-        /** @type {Map<string, { x: number, y: number, elevation: number }>} tokenId -> center */
+        /** @type {Map<string, { x: number, y: number, elevation: number }>} tokenId -> canonical center */
         this._tokenPositions = new Map();
-        /** @type {Map<string, number>} tokenId -> timestamp */
-        this._lastStepAt = new Map();
-        /** @type {Map<string, Set<ReturnType<typeof setTimeout>>>} tokenId -> active timers */
-        this._stepTimers = new Map();
+        /** @type {Map<string, { x: number, y: number, elevation: number }>} tokenId -> pre-update center */
+        this._preUpdatePositions = new Map();
+        /** @type {Map<string, { at: number, key: string }>} tokenId -> last cue metadata */
+        this._lastStep = new Map();
     }
 
     static get isInstalled() {
@@ -73,7 +73,8 @@ export class WaterlineIntegration {
             this._snapshotSceneTokens();
         }
         Hooks.on("canvasReady", () => {
-            this._clearAllTimers();
+            this._preUpdatePositions.clear();
+            this._lastStep.clear();
             this._snapshotSceneTokens();
         });
 
@@ -85,16 +86,18 @@ export class WaterlineIntegration {
 
         Hooks.on("deleteToken", (tokenDoc) => {
             if (!tokenDoc?.id) return;
-            this._cancelTokenTimers(tokenDoc.id);
+            this._preUpdatePositions.delete(tokenDoc.id);
             this._tokenPositions.delete(tokenDoc.id);
-            this._lastStepAt.delete(tokenDoc.id);
+            this._lastStep.delete(tokenDoc.id);
         });
 
         Hooks.on("preUpdateToken", (tokenDoc, change) => {
             if (!tokenDoc?.id) return;
             if (change.x === undefined && change.y === undefined && change.elevation === undefined) return;
+            const prePos = this._getTokenCenter(tokenDoc);
+            this._preUpdatePositions.set(tokenDoc.id, prePos);
             if (!this._tokenPositions.has(tokenDoc.id)) {
-                this._tokenPositions.set(tokenDoc.id, this._getTokenCenter(tokenDoc));
+                this._tokenPositions.set(tokenDoc.id, prePos);
             }
         });
 
@@ -122,6 +125,9 @@ export class WaterlineIntegration {
 
     /**
      * Handle token position updates and emit appropriate Enter / Wade / Exit cues.
+     * Uses canonical document _source / change coordinates rather than tokenDoc.x/y,
+     * because Foundry resets tokenDoc.x/y to the pre-move origin at updateToken time
+     * to interpolate canvas movement animations.
      * @param {TokenDocument} tokenDoc
      * @param {object} change
      * @param {object} [options]
@@ -130,8 +136,10 @@ export class WaterlineIntegration {
         if (!tokenDoc?.id || !canvas?.scene) return;
         if (change.x === undefined && change.y === undefined && change.elevation === undefined) return;
 
-        const oldPos = this._tokenPositions.get(tokenDoc.id);
-        const newPos = this._getTokenCenter(tokenDoc);
+        const oldPos = this._preUpdatePositions.get(tokenDoc.id) ?? this._tokenPositions.get(tokenDoc.id);
+        this._preUpdatePositions.delete(tokenDoc.id);
+
+        const newPos = this._getTokenCenter(tokenDoc, change);
         this._tokenPositions.set(tokenDoc.id, newPos);
 
         // Only the active GM triggers broadcast playback so all clients hear a single unified cue
@@ -151,70 +159,47 @@ export class WaterlineIntegration {
         if (distPx < Math.max(4, gridSize * 0.15) && oldPos.elevation === newPos.elevation) return;
 
         // Ignore long teleports or non-animated jumps across the map
-        if (options?.teleport === true || distPx > gridSize * 10) {
-            this._cancelTokenTimers(tokenDoc.id);
+        if (options?.teleport === true || distPx > gridSize * 10) return;
+
+        const startWet = this._isPointInWater(oldPos.x, oldPos.y, oldPos.elevation);
+        const endWet = this._isPointInWater(newPos.x, newPos.y, newPos.elevation);
+
+        let cueKey = null;
+        let cueOrigin = newPos;
+
+        if (!startWet && endWet) {
+            // Stepped from dry land into water
+            cueKey = SOUND_EVENTS.WATERLINE_ENTER;
+            cueOrigin = newPos;
+        } else if (startWet && !endWet) {
+            // Stepped out of water onto dry land
+            cueKey = SOUND_EVENTS.WATERLINE_EXIT;
+            cueOrigin = newPos;
+        } else if (startWet && endWet) {
+            // Waded from one water position to another
+            cueKey = SOUND_EVENTS.WATERLINE_WADE;
+            cueOrigin = newPos;
+        } else if (distPx > gridSize * 1.75) {
+            // Multi-square drag from dry bank to dry bank across a narrow stream
+            const midX = Math.round((oldPos.x + newPos.x) / 2);
+            const midY = Math.round((oldPos.y + newPos.y) / 2);
+            if (this._isPointInWater(midX, midY, newPos.elevation)) {
+                cueKey = SOUND_EVENTS.WATERLINE_WADE;
+                cueOrigin = { x: midX, y: midY };
+            }
+        }
+
+        if (!cueKey) return;
+
+        // Only debounce rapid repeats of the same cue; never suppress Enter/Exit boundary transitions
+        const now = Date.now();
+        const prev = this._lastStep.get(tokenDoc.id);
+        if (prev && prev.key === cueKey && (now - prev.at) < WaterlineIntegration.DEBOUNCE_MS) {
             return;
         }
+        this._lastStep.set(tokenDoc.id, { at: now, key: cueKey });
 
-        const numSteps = Math.max(1, Math.min(8, Math.round(distPx / gridSize)));
-        let prevWet = this._isPointInWater(oldPos.x, oldPos.y, oldPos.elevation);
-
-        /** @type {Array<{ key: string, origin: { x: number, y: number } }>} */
-        const rawEvents = [];
-
-        for (let i = 1; i <= numSteps; i++) {
-            const t = i / numSteps;
-            const sx = Math.round(oldPos.x + dx * t);
-            const sy = Math.round(oldPos.y + dy * t);
-            const currWet = this._isPointInWater(sx, sy, newPos.elevation);
-
-            if (!prevWet && currWet) {
-                rawEvents.push({ key: SOUND_EVENTS.WATERLINE_ENTER, origin: { x: sx, y: sy } });
-            } else if (prevWet && currWet) {
-                rawEvents.push({ key: SOUND_EVENTS.WATERLINE_WADE, origin: { x: sx, y: sy } });
-            } else if (prevWet && !currWet) {
-                rawEvents.push({ key: SOUND_EVENTS.WATERLINE_EXIT, origin: { x: sx, y: sy } });
-            }
-            prevWet = currWet;
-        }
-
-        if (rawEvents.length === 0) return;
-
-        // Cancel any earlier queued steps from a previous move on this token
-        this._cancelTokenTimers(tokenDoc.id);
-
-        // Cap multi-step drag sequences so long drags stay discreet while preserving Enter/Exit transitions
-        const events = this._capDragEvents(rawEvents, WaterlineIntegration.MAX_DRAG_STEPS);
-
-        if (events.length === 1) {
-            const now = Date.now();
-            const last = this._lastStepAt.get(tokenDoc.id) ?? 0;
-            if (now - last < WaterlineIntegration.DEBOUNCE_MS) return;
-            this._lastStepAt.set(tokenDoc.id, now);
-            this._playWaterCue(events[0].key, events[0].origin);
-            return;
-        }
-
-        // Schedule multi-square drag steps along the token's movement cadence
-        const timerSet = new Set();
-        this._stepTimers.set(tokenDoc.id, timerSet);
-
-        events.forEach((ev, idx) => {
-            const delayMs = idx * WaterlineIntegration.STEP_CADENCE_MS;
-            if (delayMs === 0) {
-                this._lastStepAt.set(tokenDoc.id, Date.now());
-                this._playWaterCue(ev.key, ev.origin);
-            } else {
-                const timer = setTimeout(() => {
-                    timerSet.delete(timer);
-                    if (timerSet.size === 0) this._stepTimers.delete(tokenDoc.id);
-                    if (!canvas?.scene || tokenDoc.hidden) return;
-                    this._lastStepAt.set(tokenDoc.id, Date.now());
-                    this._playWaterCue(ev.key, ev.origin);
-                }, delayMs);
-                timerSet.add(timer);
-            }
-        });
+        this._playWaterCue(cueKey, cueOrigin);
     }
 
     /**
@@ -231,25 +216,6 @@ export class WaterlineIntegration {
         this.handler.play(key, {
             origin: origin ? { x: origin.x, y: origin.y } : undefined
         });
-    }
-
-    /**
-     * Trim a multi-step drag event list to at most `maxSteps`, preserving Enter and Exit boundary cues.
-     * @param {Array<{ key: string, origin: { x: number, y: number } }>} events
-     * @param {number} maxSteps
-     */
-    _capDragEvents(events, maxSteps) {
-        if (events.length <= maxSteps) return events;
-        const first = events[0];
-        const last = events[events.length - 1];
-        const middleBudget = Math.max(0, maxSteps - 2);
-        const middlePool = events.slice(1, -1);
-        const pickedMiddle = [];
-        for (let i = 0; i < middleBudget && i < middlePool.length; i++) {
-            const idx = Math.floor(((i + 0.5) / middleBudget) * middlePool.length);
-            pickedMiddle.push(middlePool[idx]);
-        }
-        return [first, ...pickedMiddle, last];
     }
 
     /**
@@ -290,7 +256,7 @@ export class WaterlineIntegration {
     }
 
     /**
-     * Snapshot current centers for all tokens on the active scene.
+     * Snapshot current canonical centers for all tokens on the active scene.
      */
     _snapshotSceneTokens() {
         this._tokenPositions.clear();
@@ -302,32 +268,33 @@ export class WaterlineIntegration {
     }
 
     /**
-     * Compute world-space pixel center and elevation for a TokenDocument.
+     * Compute world-space pixel center and elevation for a TokenDocument using canonical
+     * _source / change coordinates (never the animated tokenDoc.x/y interpolated by Foundry).
      * @param {TokenDocument} tokenDoc
+     * @param {object|null} [change=null]
      * @returns {{ x: number, y: number, elevation: number }}
      */
-    _getTokenCenter(tokenDoc) {
+    _getTokenCenter(tokenDoc, change = null) {
         const gs = canvas?.dimensions?.size ?? canvas?.grid?.size ?? 100;
-        const width = tokenDoc.width ?? 1;
-        const height = tokenDoc.height ?? 1;
+        const width = (change?.width !== undefined)
+            ? change.width
+            : (tokenDoc._source?.width ?? tokenDoc.width ?? 1);
+        const height = (change?.height !== undefined)
+            ? change.height
+            : (tokenDoc._source?.height ?? tokenDoc.height ?? 1);
+        const rawX = (change?.x !== undefined)
+            ? change.x
+            : (tokenDoc._source?.x ?? tokenDoc.x ?? 0);
+        const rawY = (change?.y !== undefined)
+            ? change.y
+            : (tokenDoc._source?.y ?? tokenDoc.y ?? 0);
+        const rawElev = (change?.elevation !== undefined)
+            ? change.elevation
+            : (tokenDoc._source?.elevation ?? tokenDoc.elevation ?? 0);
         return {
-            x: Math.round((tokenDoc.x ?? 0) + (width * gs) / 2),
-            y: Math.round((tokenDoc.y ?? 0) + (height * gs) / 2),
-            elevation: tokenDoc.elevation ?? 0
+            x: Math.round(rawX + (width * gs) / 2),
+            y: Math.round(rawY + (height * gs) / 2),
+            elevation: rawElev
         };
-    }
-
-    _cancelTokenTimers(tokenId) {
-        const timers = this._stepTimers.get(tokenId);
-        if (!timers) return;
-        for (const t of timers) clearTimeout(t);
-        this._stepTimers.delete(tokenId);
-    }
-
-    _clearAllTimers() {
-        for (const timers of this._stepTimers.values()) {
-            for (const t of timers) clearTimeout(t);
-        }
-        this._stepTimers.clear();
     }
 }
