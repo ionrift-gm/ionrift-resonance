@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.15.0] - 2026-10-18
+
+### Added
+- Sound triggers for Ionrift Tripwire: doors, locks, disarms and traps, with a Tripwire tab in Sound Configuration. Trap sounds can be set to silent.
+- Torch sounds for Ionrift Luminance: a crackling loop follows a token carrying a lit torch, with sounds for lighting and putting it out. New Luminance tab.
+- Water sounds for Ionrift Waterline when tokens enter, leave or wade through water.
+
+### Changed
+- Positional playback follows the global setting. Per-sound positional overrides are removed.
+
+### Fixed
+- Sounds with several variations now play one variation at a time, in previews and on the map.
+
 ## [2.14.1] - 2026-10-11
 
 ### Fixed
