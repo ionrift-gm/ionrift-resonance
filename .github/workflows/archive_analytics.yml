@@ -24,6 +24,11 @@ jobs:
         run: |
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           REPO_SLUG=$(echo $REPO_NAME | cut -d'/' -f2)
+
+          if [ -z "${GITHUB_TOKEN}" ]; then
+            echo "Releases archive failed: ANALYTICS_TOKEN is unset."
+            exit 1
+          fi
           
           # --- Traffic (14-day rolling window, lost if not archived) ---
           
@@ -55,11 +60,23 @@ jobs:
             | jq '{stars: .stargazers_count, forks: .forks_count, watchers: .watchers_count, open_issues: .open_issues_count, timestamp: now | todate}' \
             > "metrics_${TIMESTAMP}.json"
           
-          # Fetch release download counts (best proxy for active installs)
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/$REPO_NAME/releases" \
-            | jq '[.[] | {tag: .tag_name, published: .published_at, assets: [.assets[] | {name: .name, downloads: .download_count}]}]' \
-            > "releases_${TIMESTAMP}.json"
+          # Fetch release download counts (best proxy for active installs).
+          # /releases must be a JSON array. An error object (rejected ANALYTICS_TOKEN)
+          # is not, and jq then dies with "Cannot index string with string tag_name".
+          RELEASES_RAW="releases_raw_${TIMESTAMP}.json"
+          RELEASES_HTTP=$(curl -sS -o "${RELEASES_RAW}" -w "%{http_code}" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPO_NAME}/releases")
+          if ! jq -e 'type == "array"' "${RELEASES_RAW}" >/dev/null 2>&1; then
+            API_MSG=$(jq -r 'if type == "object" and (.message | type) == "string" then .message else "response was not a JSON array" end' "${RELEASES_RAW}" 2>/dev/null || echo "response was not valid JSON")
+            API_MSG=$(printf '%s' "${API_MSG}" | tr '\n' ' ' | sed 's/[[:space:]]*$//')
+            echo "Releases archive failed: GitHub /releases returned HTTP ${RELEASES_HTTP}: ${API_MSG}. Rotate ANALYTICS_TOKEN."
+            exit 1
+          fi
+          jq '[.[] | {tag: .tag_name, published: .published_at, assets: [.assets[] | {name: .name, downloads: .download_count}]}]' \
+            "${RELEASES_RAW}" > "releases_${TIMESTAMP}.json"
+          rm -f "${RELEASES_RAW}"
           
           # Fetch community health profile
           curl -s -H "Authorization: token $GITHUB_TOKEN" \
