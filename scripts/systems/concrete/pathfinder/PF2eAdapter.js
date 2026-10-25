@@ -55,15 +55,42 @@ export class PF2eAdapter extends SystemAdapter {
         });
 
         // Hero Point gain/spend sounds.
-        // Config slots (sound_hero_point_gain / sound_hero_point_use) exist in ActorSoundConfig
-        // but had no runtime hook - sounds were configurable but never played.
-        Hooks.on("preUpdateActor", (actor, changes, _options, _userId) => {
-            if (!game.user.isGM) return;
-            if (actor.type !== "character") return;
+        // Seed initial values and snapshot on preUpdateActor (when GM-initiated) so
+        // updateActor on the GM client detects both GM- and player-initiated changes.
+        this._heroPoints = new Map();
+        const seedHeroPoints = () => {
+            if (!game.actors) return;
+            for (const actor of game.actors) {
+                if (actor.type === "character") {
+                    this._heroPoints.set(actor.id, actor.system?.resources?.heroPoints?.value ?? 0);
+                }
+            }
+        };
+        if (game.ready) seedHeroPoints();
+        else Hooks.once("ready", seedHeroPoints);
+
+        Hooks.on("createActor", (actor) => {
+            if (!game.user.isGM || actor.type !== "character") return;
+            this._heroPoints.set(actor.id, actor.system?.resources?.heroPoints?.value ?? 0);
+        });
+
+        Hooks.on("deleteActor", (actor) => {
+            this._heroPoints?.delete(actor.id);
+        });
+
+        Hooks.on("preUpdateActor", (actor, changes) => {
+            if (!game.user.isGM || actor.type !== "character") return;
+            if (foundry.utils.getProperty(changes, "system.resources.heroPoints.value") === undefined) return;
+            this._heroPoints.set(actor.id, actor.system?.resources?.heroPoints?.value ?? 0);
+        });
+
+        Hooks.on("updateActor", (actor, changes) => {
+            if (!game.user.isGM || actor.type !== "character") return;
             const newVal = foundry.utils.getProperty(changes, "system.resources.heroPoints.value");
             if (newVal === undefined) return;
-            const oldVal = actor.system?.resources?.heroPoints?.value ?? 0;
-            if (newVal === oldVal) return;
+            const oldVal = this._heroPoints.get(actor.id);
+            this._heroPoints.set(actor.id, newVal);
+            if (oldVal === undefined || newVal === oldVal) return;
             Logger.log(`PF2e | Hero Points: ${oldVal} -> ${newVal}`);
             if (newVal > oldVal) {
                 const gainSound = actor.getFlag("ionrift-resonance", "sound_hero_point_gain");

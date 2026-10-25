@@ -457,10 +457,15 @@ export class SoundHandler {
     _onSpotlight(combat, updateData = {}) {
         if (!game.user.isGM) return;
 
-        // v13: turn index is in updateData; combat.combatant is still the outgoing one.
+        // v13+: turn index is in updateData; combat.combatant may still be the outgoing one during pre-update hooks.
         const newTurn = updateData.turn ?? combat.turn;
+        const newRound = updateData.round ?? combat.round;
         const combatant = combat.turns?.[newTurn];
         if (!combatant?.actor) return;
+
+        const turnKey = `${combat.id ?? "combat"}:${newRound ?? 0}:${newTurn ?? 0}`;
+        if (this._lastSpotlightTurnKey === turnKey) return;
+        this._lastSpotlightTurnKey = turnKey;
 
         const actor = combatant.actor;
         const override = actor.getFlag("ionrift-resonance", "sound_spotlight");
@@ -544,9 +549,14 @@ export class SoundHandler {
         this.waterlineIntegration = new WaterlineIntegration(this);
         this.waterlineIntegration.registerHooks();
 
-        // v13: combatTurn/Round fire before DB update; use updateData.turn.
+        // combatTurn/Round only fire on the initiating client; updateCombat ensures GM broadcasts when a player ends their turn.
         Hooks.on("combatTurn", (combat, updateData) => this._onSpotlight(combat, updateData));
         Hooks.on("combatRound", (combat, updateData) => this._onSpotlight(combat, updateData));
+        Hooks.on("updateCombat", (combat, changed) => {
+            if (!combat?.started) return;
+            if (!("turn" in (changed ?? {})) && !("round" in (changed ?? {}))) return;
+            this._onSpotlight(combat, changed);
+        });
 
         Hooks.on("createCombat", (combat) => this._onCombatStart(combat));
         Hooks.on("deleteCombat", (combat) => this._onCombatEnd(combat));
