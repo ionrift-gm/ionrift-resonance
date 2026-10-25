@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.15.1] - 2026-10-25
+
+### Fixed
+- Combat turn spotlight sounds now play when a player ends their turn, without repeating on the GM client.
+- Pathfinder 2e Hero Point gain and spend sounds trigger reliably when updated by either the GM or a player.
+
 ## [2.15.0] - 2026-10-18
 
 ### Added
