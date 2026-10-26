@@ -24,8 +24,8 @@ Hooks.once("init", async function () {
     registerSettings();
 
     game.settings.register("ionrift-resonance", "soundCompleteness", {
-        name: "Sound Preset Completeness (Internal)",
-        hint: "Tracks whether the user selected Core or Full library.",
+        name: "ionrift-resonance.settings.soundCompleteness.name",
+        hint: "ionrift-resonance.settings.soundCompleteness.hint",
         scope: "world",
         config: false,
         type: String,
@@ -44,15 +44,15 @@ Hooks.once("init", async function () {
 
     const { SettingsLayout } = await import("../../ionrift-library/scripts/utils/SettingsLayout.js");
     SettingsLayout.registerHeader("ionrift-resonance", SyrinscapeConfigApp, {
-        name: "Audio Mode",
-        label: "Configure Audio Mode",
-        hint: "Choose Foundry audio only or add Syrinscape for per-slot overrides in Calibration.",
+        name: "ionrift-resonance.settingsLayout.audioMode.name",
+        label: "ionrift-resonance.settingsLayout.audioMode.label",
+        hint: "ionrift-resonance.settingsLayout.audioMode.hint",
         icon: "fas fa-volume-up"
     });
 
     game.settings.registerMenu("ionrift-resonance", "soundConfigMenu", {
-        name: "Resonance Calibration",
-        label: "Open Calibration",
+        name: "ionrift-resonance.settingsMenu.soundConfig.name",
+        label: "ionrift-resonance.settingsMenu.soundConfig.label",
         hint: "",
         icon: "fas fa-sliders-h",
         type: SoundConfigApp,
@@ -73,7 +73,7 @@ Hooks.once("init", async function () {
         if (!isVoiceActive) {
             select.disabled = true;
             select.setAttribute("disabled", "disabled");
-            select.title = "Requires Ionrift Voice module to be installed and active.";
+            select.title = game.i18n.localize("ionrift-resonance.settings.hearPositionalSfx.voiceRequired");
             const formGroup = select.closest(".form-group");
             if (formGroup) {
                 formGroup.style.opacity = "0.55";
@@ -128,10 +128,10 @@ async function migrateStalePackBindings() {
             await game.settings.set("ionrift-resonance", "customSoundBindings", "{}");
             await game.settings.set("ionrift-resonance", "stalePackMigrated", true);
             Logger.log("Stale pack bindings cleared. Local sound pack provides sounds.");
-            ui.notifications.info("Ionrift Resonance: Sounds migrated to the installed local sound pack.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.soundsMigrated"));
         } else {
             ui.notifications.warn(
-                "Ionrift Resonance: Built-in sound files have been removed. Place a local sound pack on disk, then reload.",
+                game.i18n.localize("ionrift-resonance.notification.builtInSoundsRemoved"),
                 { permanent: true }
             );
         }
@@ -176,8 +176,8 @@ Hooks.on("renderPlaylistDirectory", (app, html) => {
         game.ionrift.hud.injectDirectoryButton("playlists", root, {
             id: "resonance-calibration",
             className: "ionrift-sound-manager-btn",
-            label: "Resonance",
-            title: "Resonance Calibration",
+            label: game.i18n.localize("ionrift-resonance.directory.resonanceLabel"),
+            title: game.i18n.localize("ionrift-resonance.directory.calibrationTitle"),
             icon: "fas fa-sliders-h",
             onClick: () => new SoundConfigApp().render(true),
             restricted: true,
@@ -189,7 +189,7 @@ Hooks.on("renderPlaylistDirectory", (app, html) => {
                 id: "resonance-viz",
                 className: "ionrift-viz-btn",
                 icon: "fas fa-wave-square",
-                title: "Toggle Audio Visualizer",
+                title: game.i18n.localize("ionrift-resonance.directory.visualizerTitle"),
                 compact: true,
                 onClick: () => game.ionrift?.devtools?.visualizer?.toggle(),
                 restricted: true,
@@ -214,8 +214,8 @@ Hooks.on("renderPlaylistDirectory", (app, html) => {
         btn.type = "button";
         btn.className = "ionrift-directory-btn ionrift-sound-manager-btn";
         btn.dataset.order = "10";
-        btn.title = "Resonance Calibration";
-        btn.innerHTML = '<i class="fas fa-sliders-h" aria-hidden="true"></i> <span class="ionrift-btn-label">Resonance</span>';
+        btn.title = game.i18n.localize("ionrift-resonance.directory.calibrationTitle");
+        btn.innerHTML = `<i class="fas fa-sliders-h" aria-hidden="true"></i> <span class="ionrift-btn-label">${game.i18n.localize("ionrift-resonance.directory.resonanceLabel")}</span>`;
         btn.addEventListener("click", (ev) => {
             ev.preventDefault();
             new SoundConfigApp().render(true);
@@ -228,7 +228,7 @@ Hooks.on("renderPlaylistDirectory", (app, html) => {
         vizBtn.type = "button";
         vizBtn.className = "ionrift-directory-btn ionrift-viz-btn is-compact";
         vizBtn.dataset.order = "90";
-        vizBtn.title = "Toggle Audio Visualizer";
+        vizBtn.title = game.i18n.localize("ionrift-resonance.directory.visualizerTitle");
         vizBtn.innerHTML = '<i class="fas fa-wave-square" aria-hidden="true"></i>';
         vizBtn.addEventListener("click", (ev) => {
             ev.preventDefault();

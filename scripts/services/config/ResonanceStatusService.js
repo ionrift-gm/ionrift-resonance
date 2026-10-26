@@ -13,8 +13,8 @@ export async function checkResonanceStatus() {
         const names = enabledPacks.map((p) => p.name).join(", ");
         return {
             status: STATUS.CONNECTED,
-            label: "Ready",
-            message: `Sound packs active (${names}). Local audio does not require Syrinscape.`
+            label: game.i18n.localize("ionrift-resonance.status.ready"),
+            message: game.i18n.format("ionrift-resonance.status.soundPacksActive", { names })
         };
     }
 
@@ -24,8 +24,8 @@ export async function checkResonanceStatus() {
     if (hasEmptyEnabledPack) {
         return {
             status: STATUS.WARNING,
-            label: "Pack bindings missing",
-            message: "A sound pack is active but Calibration has no pack bindings. Reload the world after the pack files are present on disk."
+            label: game.i18n.localize("ionrift-resonance.status.packBindingsMissing"),
+            message: game.i18n.localize("ionrift-resonance.status.packBindingsMissingDetail")
         };
     }
 
@@ -45,17 +45,21 @@ export async function checkResonanceStatus() {
             if (response.ok) {
                 return {
                     status: STATUS.WARNING,
-                    label: "Fallback Mode",
-                    message: "Token Mismatch: The tokens in Resonance and Syrinscape Control are out of sync.\nFalling back to Resonance configuration to ensure stability."
+                    label: game.i18n.localize("ionrift-resonance.status.fallbackMode"),
+                    message: game.i18n.localize("ionrift-resonance.status.tokenMismatchDetail")
                 };
             }
             return {
                 status: STATUS.OFFLINE,
-                label: "Auth Failed",
-                message: `Syrinscape Rejected Resonance Token (${response.status})`
+                label: game.i18n.localize("ionrift-resonance.status.authFailed"),
+                message: game.i18n.format("ionrift-resonance.status.syrinscapeRejectedResonanceToken", { status: response.status })
             };
         } catch (e) {
-            return { status: STATUS.OFFLINE, label: "Unreachable", message: "Network Error (Direct)" };
+            return {
+                status: STATUS.OFFLINE,
+                label: game.i18n.localize("ionrift-resonance.status.unreachable"),
+                message: game.i18n.localize("ionrift-resonance.status.networkErrorDirect")
+            };
         }
     }
 
@@ -64,13 +68,25 @@ export async function checkResonanceStatus() {
         const state = player?.state || "Idle";
 
         if (state === "Active") {
-            return { status: STATUS.CONNECTED, label: "Connected", message: "Syrinscape Online Ready (Control)" };
+            return {
+                status: STATUS.CONNECTED,
+                label: game.i18n.localize("ionrift-resonance.status.connected"),
+                message: game.i18n.localize("ionrift-resonance.status.syrinscapeOnlineReadyControl")
+            };
         }
         if (state === "Connecting") {
-            return { status: STATUS.WARNING, label: "Connecting", message: "Establishing Link..." };
+            return {
+                status: STATUS.WARNING,
+                label: game.i18n.localize("ionrift-resonance.status.connecting"),
+                message: game.i18n.localize("ionrift-resonance.status.establishingLink")
+            };
         }
         if (state === "Error") {
-            return { status: STATUS.OFFLINE, label: "Error", message: "Syrinscape Control Error" };
+            return {
+                status: STATUS.OFFLINE,
+                label: game.i18n.localize("ionrift-resonance.status.error"),
+                message: game.i18n.localize("ionrift-resonance.status.syrinscapeControlError")
+            };
         }
         try {
             const url = `https://syrinscape.com/online/frontend-api/elements/1035/?format=json&auth_token=${ionToken}`;
@@ -78,25 +94,29 @@ export async function checkResonanceStatus() {
             if (response.ok) {
                 return {
                     status: STATUS.CONNECTED,
-                    label: "Connected",
-                    message: `Syrinscape Online Ready (Direct check: ${state})`
+                    label: game.i18n.localize("ionrift-resonance.status.connected"),
+                    message: game.i18n.format("ionrift-resonance.status.syrinscapeOnlineReadyDirectCheck", { state })
                 };
             }
             return {
                 status: STATUS.OFFLINE,
-                label: "Offline",
-                message: `Syrinscape Control: ${state} (Auth Failed)`
+                label: game.i18n.localize("ionrift-resonance.status.offline"),
+                message: game.i18n.format("ionrift-resonance.status.syrinscapeControlAuthFailed", { state })
             };
         } catch (e) {
-            return { status: STATUS.OFFLINE, label: "Offline", message: `Syrinscape Control: ${state}` };
+            return {
+                status: STATUS.OFFLINE,
+                label: game.i18n.localize("ionrift-resonance.status.offline"),
+                message: game.i18n.format("ionrift-resonance.status.syrinscapeControlState", { state })
+            };
         }
     }
 
     if (!ionToken) {
         return {
             status: STATUS.WARNING,
-            label: "Setup needed",
-            message: "No local sound pack bindings found. Set Audio Mode to add a Syrinscape token, or install a sound pack outside this listed module."
+            label: game.i18n.localize("ionrift-resonance.status.setupNeeded"),
+            message: game.i18n.localize("ionrift-resonance.status.setupNeededDetail")
         };
     }
 
@@ -104,15 +124,23 @@ export async function checkResonanceStatus() {
         const url = `https://syrinscape.com/online/frontend-api/elements/1035/?format=json&auth_token=${ionToken}`;
         const response = await fetch(url, { method: "GET" });
         if (response.ok) {
-            return { status: STATUS.CONNECTED, label: "Connected", message: "Syrinscape Online Ready (Direct)" };
+            return {
+                status: STATUS.CONNECTED,
+                label: game.i18n.localize("ionrift-resonance.status.connected"),
+                message: game.i18n.localize("ionrift-resonance.status.syrinscapeOnlineReadyDirect")
+            };
         }
         return {
             status: STATUS.OFFLINE,
-            label: "Auth Failed",
-            message: `Syrinscape Rejected Token (${response.status})`
+            label: game.i18n.localize("ionrift-resonance.status.authFailed"),
+            message: game.i18n.format("ionrift-resonance.status.syrinscapeRejectedToken", { status: response.status })
         };
     } catch (e) {
-        return { status: STATUS.OFFLINE, label: "Unreachable", message: "Network Error" };
+        return {
+            status: STATUS.OFFLINE,
+            label: game.i18n.localize("ionrift-resonance.status.unreachable"),
+            message: game.i18n.localize("ionrift-resonance.status.networkError")
+        };
     }
 }
 

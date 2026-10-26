@@ -1,22 +1,21 @@
 <div class="sound-auditor-container">
     <header class="auditor-header">
         <p class="notes">
-            Below is a list of all Items in your world (and on Actors) that have custom <strong>Ionrift Sound</strong>
-            flags attached.
+            {{{localize "ionrift-resonance.soundAuditor.notes"}}}
         </p>
-        <button class="action-refresh"><i class="fas fa-sync"></i> Refresh List</button>
+        <button class="action-refresh"><i class="fas fa-sync"></i> {{localize "ionrift-resonance.soundAuditor.refreshList"}}</button>
     </header>
 
     <div class="table-container">
         <table class="ionrift-table">
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Owner (Actor)</th>
-                    <th title="Attack Sound">Atk</th>
-                    <th title="Use Sound">Use</th>
-                    <th title="Equip Sound">Eqp</th>
-                    <th>Actions</th>
+                    <th>{{localize "ionrift-resonance.soundAuditor.thItem"}}</th>
+                    <th>{{localize "ionrift-resonance.soundAuditor.thOwner"}}</th>
+                    <th title="{{localize "ionrift-resonance.soundAuditor.thAtkTitle"}}">{{localize "ionrift-resonance.soundAuditor.thAtk"}}</th>
+                    <th title="{{localize "ionrift-resonance.soundAuditor.thUseTitle"}}">{{localize "ionrift-resonance.soundAuditor.thUse"}}</th>
+                    <th title="{{localize "ionrift-resonance.soundAuditor.thEqpTitle"}}">{{localize "ionrift-resonance.soundAuditor.thEqp"}}</th>
+                    <th>{{localize "ionrift-resonance.soundAuditor.thActions"}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,16 +33,16 @@
                     <td class="cell-center">{{#if this.equip}}<i class="fas fa-check text-green"></i>{{/if}}</td>
 
                     <td class="cell-actions">
-                        <a class="action-open" data-uuid="{{this.uuid}}" title="Open Item Sheet"><i
+                        <a class="action-open" data-uuid="{{this.uuid}}" title="{{localize "ionrift-resonance.soundAuditor.openSheetTitle"}}"><i
                                 class="fas fa-edit"></i></a>
-                        <a class="action-clear" data-uuid="{{this.uuid}}" title="Clear Flags"
+                        <a class="action-clear" data-uuid="{{this.uuid}}" title="{{localize "ionrift-resonance.soundAuditor.clearFlagsTitle"}}"
                             style="color: #ef4444; margin-left: 8px;"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 {{else}}
                 <tr>
                     <td colspan="6" style="text-align: center; color: #888; padding: 20px;">
-                        No custom sound flags found. Use the Workshop or Sheet Injector to forge audio items.
+                        {{localize "ionrift-resonance.soundAuditor.noCustomFlags"}}
                     </td>
                 </tr>
                 {{/each}}

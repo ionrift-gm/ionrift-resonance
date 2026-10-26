@@ -3,11 +3,11 @@
     <header class="sheet-header" style="margin-bottom: 10px;">
         {{#if isWelcome}}
         <div style="text-align: center; margin-bottom: 10px;">
-            <h1 style="border: none; font-size: 1.5em; margin-bottom: 5px;">Ionrift Resonance</h1>
-            <p style="font-style: italic; color: #ccc;">Let's get your audio environment ready.</p>
+            <h1 style="border: none; font-size: 1.5em; margin-bottom: 5px;">{{localize "ionrift-resonance.setupApp.welcomeTitle"}}</h1>
+            <p style="font-style: italic; color: #ccc;">{{{localize "ionrift-resonance.setupApp.welcomeSubtitle"}}}</p>
         </div>
         {{else}}
-        <h1><i class="fas fa-cogs"></i> Resonance Calibration</h1>
+        <h1><i class="fas fa-cogs"></i> {{localize "ionrift-resonance.setupApp.calibrationTitle"}}</h1>
         {{/if}}
     </header>
 
@@ -54,13 +54,12 @@
 
         <!-- COLUMN 1: Connection (Left) -->
         <div style="flex: 1;">
-            <h2>1. Connect Syrinscape</h2>
+            <h2>{{localize "ionrift-resonance.setupApp.connectStepTitle"}}</h2>
             <p class="notes">
-                Please enter your <strong>Syrinscape Online Auth Token</strong> to enable sound control.
+                {{{localize "ionrift-resonance.setupApp.connectPrompt"}}}
             </p>
             <p class="notes" style="margin-bottom: 5px;">
-                Found at <a href="https://syrinscape.com/online/cp/" target="_blank">syrinscape.com/online/cp/</a>
-                ("Remote Control Links").
+                {{{localize "ionrift-resonance.setupApp.foundAtLink"}}}
             </p>
 
             <div
@@ -70,35 +69,34 @@
             </div>
 
             <div style="display: flex; width: 100%; gap: 5px; align-items: center;">
-                <input type="password" name="token" value="{{token}}" placeholder="e.g. 1234567890abcdef"
+                <input type="password" name="token" value="{{token}}" placeholder="{{localize "ionrift-resonance.setupApp.tokenPlaceholder"}}"
                     class="ionrift-setup-input" style="flex: 1;" />
                 <button type="button" data-action="verify" style="flex: 0 0 80px;">
-                    <i class="fas fa-check"></i> Verify
+                    <i class="fas fa-check"></i> {{localize "ionrift-resonance.setupApp.verifyBtn"}}
                 </button>
             </div>
 
             {{#if willSync}}
             <p style="font-size: 0.8em; color: var(--ionrift-accent, #9b59b6); margin-top: 5px; font-style: italic;">
-                <i class="fas fa-sync-alt"></i> Will also configure "Syrinscape Control" module.
+                <i class="fas fa-sync-alt"></i> {{{localize "ionrift-resonance.setupApp.willConfigureControl"}}}
             </p>
             {{/if}}
 
             {{#if tokenMismatch}}
             <div class="token-mismatch-warning"
                 style="margin-top: 10px; padding: 8px; background: rgba(234, 179, 8, 0.15); border: 1px solid #facc15; border-radius: 4px; color: #facc15; font-size: 0.9em;">
-                <i class="fas fa-exclamation-triangle"></i> <strong>Token Mismatch Detected</strong><br>
+                <i class="fas fa-exclamation-triangle"></i> <strong>{{localize "ionrift-resonance.setupApp.tokenMismatchDetected"}}</strong><br>
                 <p style="margin: 5px 0; font-size: 0.9em; color: #e0e0e0;">
-                    The tokens in <strong>Resonance</strong> and <strong>Syrinscape Control</strong> are out of sync.
+                    {{{localize "ionrift-resonance.setupApp.tokenMismatchDesc"}}}
                 </p>
                 <p
                     style="margin: 5px 0; font-size: 0.85em; color: #ffcc00; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 3px;">
-                    <strong>Fallback Mode Active:</strong> System is bypassing the Control module to prevent crash.
-                    Audio is routed via Direct API using the Resonance token.
+                    {{{localize "ionrift-resonance.setupApp.fallbackModeDesc"}}}
                 </p>
                 <div style="margin-top: 5px; display: flex; align-items: center; gap: 5px;">
-                    <span>Update Syrinscape Control with this token?</span>
+                    <span>{{localize "ionrift-resonance.setupApp.updateControlPrompt"}}</span>
                     <button type="button" data-action="sync" style="padding: 2px 8px; font-size: 0.9em;">
-                        <i class="fas fa-file-export"></i> Sync to Control
+                        <i class="fas fa-file-export"></i> {{localize "ionrift-resonance.setupApp.syncToControlBtn"}}
                     </button>
                 </div>
             </div>
@@ -112,28 +110,25 @@
 
         <!-- COLUMN 2: Education (Right) -->
         <div style="flex: 1;">
-            <h2>2. Audio Broadcasting</h2>
-            <p class="notes">How will your players hear the audio?</p>
+            <h2>{{localize "ionrift-resonance.setupApp.broadcastingStepTitle"}}</h2>
+            <p class="notes">{{localize "ionrift-resonance.setupApp.broadcastingPrompt"}}</p>
 
             <div
                 style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid var(--ionrift-accent, #9b59b6);">
-                <h3><i class="fas fa-plug"></i> Option A: Embedded</h3>
+                <h3><i class="fas fa-plug"></i> {{localize "ionrift-resonance.setupApp.optionAEmbedded"}}</h3>
                 <p style="font-size: 0.9em; margin: 5px 0;">
-                    Install the <strong><a href="https://foundryvtt.com/packages/syrinscape-control"
-                            target="_blank">Syrinscape Control</a></strong> module.
+                    {{{localize "ionrift-resonance.setupApp.installControlModule"}}}
                 </p>
                 <p style="font-size: 0.85em; color: #ccc;">
-                    <em>Note: This is the modern community-maintained module for embedded control.</em>
+                    <em>{{localize "ionrift-resonance.setupApp.controlModuleNote"}}</em>
                 </p>
             </div>
 
             <div
                 style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.1);">
-                <h3><i class="fas fa-external-link-alt"></i> Option B: Web Player</h3>
+                <h3><i class="fas fa-external-link-alt"></i> {{localize "ionrift-resonance.setupApp.optionBWebPlayer"}}</h3>
                 <p style="font-size: 0.9em; margin-top: 5px;">
-                    If not using the module, <strong>every player</strong> must open the <a
-                        href="https://syrinscape.com/download/" target="_blank">Syrinscape Web Player</a> in their
-                    browser manually.
+                    {{{localize "ionrift-resonance.setupApp.webPlayerPrompt"}}}
                 </p>
             </div>
         </div>
@@ -142,7 +137,7 @@
 
     <footer class="sheet-footer flexrow" style="margin-top: 20px;">
         <button type="submit" name="submit">
-            <i class="fas fa-save"></i> Save & Close
+            <i class="fas fa-save"></i> {{{localize "ionrift-resonance.setupApp.saveAndClose"}}}
         </button>
     </footer>
 </form>

@@ -3,7 +3,7 @@ import { Logger } from "../../utils/Logger.js";
 export class SetupGuide extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
-            title: "Resonance Setup",
+            title: "ionrift-resonance.setupGuide.title",
             id: "ionrift-resonance-setup",
             template: "modules/ionrift-resonance/templates/setup-guide.html",
             classes: ["ionrift-window", "ionrift"],
@@ -69,7 +69,7 @@ export class SetupGuide extends FormApplication {
             const token = input.val().trim();
 
             if (!token) {
-                ui.notifications.warn("Please enter a token first.");
+                ui.notifications.warn(game.i18n.localize("ionrift-resonance.setupGuide.warnEnterTokenFirst"));
                 return;
             }
 
@@ -82,14 +82,14 @@ export class SetupGuide extends FormApplication {
                     await game.settings.set("syrinscape-control", "authToken", token);
                     await game.settings.set("ionrift-resonance", "syrinToken", token);
 
-                    ui.notifications.info("Tokens Synchronized.");
+                    ui.notifications.info(game.i18n.localize("ionrift-resonance.setupGuide.infoTokensSynchronized"));
                     html.find('.token-mismatch-warning').slideUp();
                 } else {
-                    ui.notifications.warn("Syrinscape Control module not active.");
+                    ui.notifications.warn(game.i18n.localize("ionrift-resonance.setupGuide.warnControlNotActive"));
                 }
             } catch (err) {
                 Logger.error(err);
-                ui.notifications.error("Failed to sync tokens.");
+                ui.notifications.error(game.i18n.localize("ionrift-resonance.setupGuide.errorFailedToSyncTokens"));
             } finally {
                 icon.attr('class', originalIcon);
             }
@@ -111,7 +111,7 @@ export class SetupGuide extends FormApplication {
         this.testPerformed = true;
 
         if (!token) {
-            ui.notifications.warn("Please enter a token first.");
+            ui.notifications.warn(game.i18n.localize("ionrift-resonance.setupGuide.warnEnterTokenFirst"));
             return;
         }
         // Visual Loading State
@@ -129,11 +129,11 @@ export class SetupGuide extends FormApplication {
             });
 
             if (response.ok) {
-                ui.notifications.info("Syrinscape Connection Successful!");
+                ui.notifications.info(game.i18n.localize("ionrift-resonance.setupGuide.infoConnectionSuccessful"));
                 this.verifiedToken = token;
                 // Note: We do NOT update global status here. Global status reflects SAVED state.
             } else {
-                ui.notifications.error(`Connection Failed (${response.status}). Please check your token.`);
+                ui.notifications.error(game.i18n.format("ionrift-resonance.setupGuide.errorConnectionFailed", { status: response.status }));
                 this.verifiedToken = null;
             }
         } catch (error) {
@@ -169,7 +169,7 @@ export class SetupGuide extends FormApplication {
                 game.ionrift.integration.refresh();
             }
 
-            ui.notifications.info("Ionrift Sounds | Auth Token Saved!");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.setupGuide.infoAuthTokenSaved"));
 
 
         }

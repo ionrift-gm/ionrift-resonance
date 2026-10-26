@@ -2,7 +2,7 @@ export class SoundAuditor extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-auditor",
-            title: "Ionrift Sound Auditor",
+            title: "ionrift-resonance.soundAuditor.title",
             template: "modules/ionrift-resonance/templates/sound-auditor.hbs",
             width: 700,
             height: 600,
@@ -33,7 +33,7 @@ export class SoundAuditor extends FormApplication {
         // 1. World Items
         game.items.forEach(item => {
             if (this._hasAudioFlags(item)) {
-                items.push(this._formatEntry(item, "World Item", null));
+                items.push(this._formatEntry(item, game.i18n.localize("ionrift-resonance.soundAuditor.sourceWorldItem"), null));
             }
         });
 
@@ -41,7 +41,7 @@ export class SoundAuditor extends FormApplication {
         game.actors.forEach(actor => {
             actor.items.forEach(item => {
                 if (this._hasAudioFlags(item)) {
-                    items.push(this._formatEntry(item, "Owned Item", actor));
+                    items.push(this._formatEntry(item, game.i18n.localize("ionrift-resonance.soundAuditor.sourceOwnedItem"), actor));
                 }
             });
         });
@@ -55,7 +55,7 @@ export class SoundAuditor extends FormApplication {
                 if (tokenDoc.isLinked) continue;
                 actor.items.forEach(item => {
                     if (this._hasAudioFlags(item)) {
-                        items.push(this._formatEntry(item, `Token: ${tokenDoc.name}`, actor));
+                        items.push(this._formatEntry(item, game.i18n.format("ionrift-resonance.soundAuditor.sourceToken", { name: tokenDoc.name }), actor));
                     }
                 });
             }
@@ -75,11 +75,11 @@ export class SoundAuditor extends FormApplication {
             actorId: actor ? actor.id : null,
             source: source,
             // Flag Details (Concise)
-            attack: flags.sound_attack ? "Yes" : "",
-            hit: flags.sound_hit ? "Yes" : "",
-            miss: flags.sound_miss ? "Yes" : "",
-            use: flags.sound_use ? "Yes" : "",
-            equip: flags.sound_equip ? "Yes" : "",
+            attack: flags.sound_attack ? game.i18n.localize("ionrift-resonance.soundAuditor.flagYes") : "",
+            hit: flags.sound_hit ? game.i18n.localize("ionrift-resonance.soundAuditor.flagYes") : "",
+            miss: flags.sound_miss ? game.i18n.localize("ionrift-resonance.soundAuditor.flagYes") : "",
+            use: flags.sound_use ? game.i18n.localize("ionrift-resonance.soundAuditor.flagYes") : "",
+            equip: flags.sound_equip ? game.i18n.localize("ionrift-resonance.soundAuditor.flagYes") : "",
             rawFlags: JSON.stringify(flags)
         };
     }
@@ -99,8 +99,8 @@ export class SoundAuditor extends FormApplication {
             const doc = await fromUuid(uuid);
 
             Dialog.confirm({
-                title: "Clear Audio Flags?",
-                content: `<p>Remove all Ionrift Sound flags from <strong>${doc.name}</strong>?</p>`,
+                title: game.i18n.localize("ionrift-resonance.soundAuditor.dialogClearTitle"),
+                content: game.i18n.format("ionrift-resonance.soundAuditor.dialogClearContent", { name: doc.name }),
                 yes: async () => {
                     await doc.unsetFlag("ionrift-resonance", "sound_attack");
                     await doc.unsetFlag("ionrift-resonance", "sound_hit");
@@ -109,7 +109,7 @@ export class SoundAuditor extends FormApplication {
                     await doc.unsetFlag("ionrift-resonance", "sound_equip");
                     await doc.unsetFlag("ionrift-resonance", "sound_unequip");
                     this.render();
-                    ui.notifications.info(`Cleared audio from ${doc.name}`);
+                    ui.notifications.info(game.i18n.format("ionrift-resonance.soundAuditor.infoClearedAudio", { name: doc.name }));
                 }
             });
         });

@@ -1,8 +1,8 @@
 export const registerSettings = function () {
     // Debug Mode
     game.settings.register('ionrift-resonance', 'debug', {
-        name: "Enable Debug Logging",
-        hint: "Visible only in console. Useful for troubleshooting.",
+        name: "ionrift-resonance.settings.debug.name",
+        hint: "ionrift-resonance.settings.debug.hint",
         scope: "world",
         config: false,
         type: Boolean,
@@ -11,8 +11,8 @@ export const registerSettings = function () {
 
     // Auth Token
     game.settings.register('ionrift-resonance', 'syrinToken', {
-        name: "Auth Token",
-        hint: "Your Syrinscape Online Authentication Token.",
+        name: "ionrift-resonance.settings.syrinToken.name",
+        hint: "ionrift-resonance.settings.syrinToken.hint",
         scope: "world",
         config: false,
         type: String,
@@ -29,8 +29,8 @@ export const registerSettings = function () {
 
     // Setup Wizard Version Tracking (New)
     game.settings.register("ionrift-resonance", "setupVersion", {
-        name: "Setup Version",
-        hint: "Tracks the last setup version run.",
+        name: "ionrift-resonance.settings.setupVersion.name",
+        hint: "ionrift-resonance.settings.setupVersion.hint",
         scope: "world",
         config: false,
         type: String,
@@ -64,7 +64,7 @@ export const registerSettings = function () {
     // Audio Provider (Deprecated - routing is now per-sound based on ID format)
     // Kept hidden for migration; no longer user-configurable.
     game.settings.register('ionrift-resonance', 'provider', {
-        name: "Audio Provider",
+        name: "ionrift-resonance.settings.provider.name",
         scope: "world",
         config: false,
         type: String,
@@ -84,8 +84,8 @@ export const registerSettings = function () {
 
     // Orchestrator Config - per-category budget windows + per-key timing offsets (GM only)
     game.settings.register("ionrift-resonance", "orchestratorConfig", {
-        name: "Orchestrator Configuration",
-        hint: "Sound budget and timing settings. Managed via the Orchestration tab in Resonance Calibration.",
+        name: "ionrift-resonance.settings.orchestratorConfig.name",
+        hint: "ionrift-resonance.settings.orchestratorConfig.hint",
         scope: "world",
         config: false,
         type: String,
@@ -158,8 +158,8 @@ export const registerSettings = function () {
     // or a per-item override flag (ionrift-resonance.spellVocal = true).
     // Managed via the Orchestration tab in Resonance Calibration (GM only).
     game.settings.register("ionrift-resonance", "spellVocalLayer", {
-        name: "Spell Vocal Layer",
-        hint: "Play a vocal incantation sound slightly before each spell's effect triggers. Requires a sound pack that provides SPELL_VOCAL_CAST (or school variants).",
+        name: "ionrift-resonance.settings.spellVocalLayer.name",
+        hint: "ionrift-resonance.settings.spellVocalLayer.hint",
         scope: "world",
         config: false,
         type: Boolean,
@@ -167,8 +167,8 @@ export const registerSettings = function () {
     });
 
     game.settings.register("ionrift-resonance", "positionalSfx", {
-        name: "Positional sound effects",
-        hint: "Sounds with a place on the map are heard from that place, through walls and doors. Needs Ionrift Voice. Syrinscape sounds always play normally.",
+        name: "ionrift-resonance.settings.positionalSfx.name",
+        hint: "ionrift-resonance.settings.positionalSfx.hint",
         scope: "world",
         config: false,
         type: Boolean,
@@ -176,8 +176,8 @@ export const registerSettings = function () {
     });
 
     game.settings.register("ionrift-resonance", "positionalCategories", {
-        name: "Positional categories",
-        hint: "Which groups of sounds use a place on the map when positional sound effects are on.",
+        name: "ionrift-resonance.settings.positionalCategories.name",
+        hint: "ionrift-resonance.settings.positionalCategories.hint",
         scope: "world",
         config: false,
         type: Object,
@@ -191,15 +191,15 @@ export const registerSettings = function () {
     });
 
     game.settings.register("ionrift-resonance", "hearPositionalSfx", {
-        name: "Hear positional sound effects",
-        hint: "'Follow table' hears sounds from your token when enabled by the GM. Always play normally ignores token distance and walls. Needs Ionrift Voice. Does not affect Syrinscape.",
+        name: "ionrift-resonance.settings.hearPositionalSfx.name",
+        hint: "ionrift-resonance.settings.hearPositionalSfx.hint",
         scope: "world",
         restricted: true,
         config: true,
         type: String,
         choices: {
-            normal: "Always play normally",
-            follow: "Follow table"
+            normal: "ionrift-resonance.settings.hearPositionalSfx.choiceNormal",
+            follow: "ionrift-resonance.settings.hearPositionalSfx.choiceFollow"
         },
         default: "normal"
     });
