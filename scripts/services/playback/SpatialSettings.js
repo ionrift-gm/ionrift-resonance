@@ -8,11 +8,11 @@ const MODULE_ID = "ionrift-resonance";
 export const POSITIONAL_HINT = "Sounds with a place on the map are heard from that place, through walls and doors. Needs Ionrift Voice. Syrinscape sounds always play normally.";
 
 export const SPATIAL_CATEGORY_DEFS = [
-    { id: "weapons", label: "Weapons & impacts" },
-    { id: "spells", label: "Spells" },
-    { id: "creatures", label: "Creatures" },
-    { id: "vocals", label: "Character vocals" },
-    { id: "campfire", label: "Campfire" }
+    { id: "weapons", get label() { return game.i18n.localize("ionrift-resonance.spatial.category.weapons"); } },
+    { id: "spells", get label() { return game.i18n.localize("ionrift-resonance.spatial.category.spells"); } },
+    { id: "creatures", get label() { return game.i18n.localize("ionrift-resonance.spatial.category.creatures"); } },
+    { id: "vocals", get label() { return game.i18n.localize("ionrift-resonance.spatial.category.vocals"); } },
+    { id: "campfire", get label() { return game.i18n.localize("ionrift-resonance.spatial.category.campfire"); } }
 ];
 
 export const DEFAULT_POSITIONAL_CATEGORIES = {
@@ -59,7 +59,7 @@ export function positionalPanelData() {
     return {
         master: safeSetting("positionalSfx", false) === true,
         voiceActive,
-        hint: POSITIONAL_HINT,
+        hint: game.i18n.localize("ionrift-resonance.spatial.hint"),
         hearMode: !voiceActive ? "normal" : (mode === "follow" ? "follow" : "normal"),
         hearFollow: voiceActive && mode === "follow",
         hearNormal: !voiceActive || mode !== "follow",

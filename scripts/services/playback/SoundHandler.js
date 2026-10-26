@@ -160,12 +160,12 @@ export class SoundHandler {
             } else {
                 Logger.warn(`Connection Failed: ${response.status} ${response.statusText}`);
                 await game.settings.set("ionrift-resonance", "authVerified", false);
-                ui.notifications.error(`Ionrift Resonance: Connection Failed (${response.status}). Check your Auth Token.`, { permanent: true });
+                ui.notifications.error(game.i18n.format("ionrift-resonance.playback.handler.connectionFailed", { status: response.status }), { permanent: true });
             }
         } catch (e) {
             Logger.error("Validation Network Error", e);
             await game.settings.set("ionrift-resonance", "authVerified", false);
-            ui.notifications.warn("Ionrift Resonance: Could not reach Syrinscape (Network Error).");
+            ui.notifications.warn(game.i18n.localize("ionrift-resonance.playback.handler.couldNotReachSyrinscape"));
         }
     }
 
@@ -176,7 +176,7 @@ export class SoundHandler {
             if (externalToken) {
                 Logger.log("Found existing token in Syrinscape Control. Syncing...");
                 await game.settings.set("ionrift-resonance", "syrinToken", externalToken);
-                ui.notifications.info("Ionrift Resonance: Synced authentication from Syrinscape Control.");
+                ui.notifications.info(game.i18n.localize("ionrift-resonance.playback.handler.syncedAuthFromControl"));
                 this.checkConfiguration();
                 return;
             }
@@ -586,7 +586,7 @@ export class SoundHandler {
 
         // Context Menu
         const contextOption = {
-            name: "Configure Sounds",
+            name: game.i18n.localize("ionrift-resonance.playback.handler.configureSounds"),
             icon: '<i class="fas fa-music"></i>',
             condition: game.user.isGM,
             callback: async (li) => {
@@ -610,7 +610,7 @@ export class SoundHandler {
         if (!game.user.isGM) return;
         if (buttons.some(b => b.class === "ionrift-resonance")) return;
         buttons.unshift({
-            label: "Sounds",
+            label: game.i18n.localize("ionrift-resonance.playback.handler.sounds"),
             class: "ionrift-resonance",
             icon: "fas fa-music",
             onclick: () => this.openSoundConfig(app.document)
@@ -621,7 +621,7 @@ export class SoundHandler {
         if (!game.user.isGM) return;
         if (controls.some(c => c.action === "ionrift-resonance")) return;
         controls.push({
-            label: "Configure Sounds",
+            label: game.i18n.localize("ionrift-resonance.playback.handler.configureSounds"),
             icon: "fas fa-music",
             class: "ionrift-resonance",
             action: "ionrift-resonance",
@@ -645,7 +645,7 @@ export class SoundHandler {
             }
         } catch (err) {
             Logger.error("Failed to load Config App:", err);
-            ui.notifications.error("Ionrift: Failed to load configuration window.");
+            ui.notifications.error(game.i18n.localize("ionrift-resonance.playback.handler.failedToLoadConfig"));
         }
 
         // Note: Inline Hooks for Item updates removed/deprecated to avoid memory leak if called multiple times.
@@ -656,26 +656,26 @@ export class SoundHandler {
         // ... (Legacy helper, keeping for now) ...
         const current = actor.getFlag("ionrift-resonance", "identity") || "None";
         new Dialog({
-            title: `Sound Config: ${actor.name}`,
+            title: game.i18n.format("ionrift-resonance.playback.handler.dialogTitle", { name: actor.name }),
             content: `
                 <form>
                     <div class="form-group">
-                        <label>Vocal Identity:</label>
+                        <label>${game.i18n.localize("ionrift-resonance.playback.handler.vocalIdentity")}</label>
                         <select name="identity" style="width: 100%">
-                            <option value="masculine" ${current === "masculine" ? "selected" : ""}>Deep / Low (Masculine)</option>
-                            <option value="feminine" ${current === "feminine" ? "selected" : ""}>Bright / High (Feminine)</option>
+                            <option value="masculine" ${current === "masculine" ? "selected" : ""}>${game.i18n.localize("ionrift-resonance.playback.handler.deepLowMasculine")}</option>
+                            <option value="feminine" ${current === "feminine" ? "selected" : ""}>${game.i18n.localize("ionrift-resonance.playback.handler.brightHighFeminine")}</option>
                         </select>
                     </div>
                 </form>
             `,
             buttons: {
                 save: {
-                    label: "Save",
+                    label: game.i18n.localize("ionrift-resonance.playback.handler.save"),
                     icon: "<i class='fas fa-save'></i>",
                     callback: async (html) => {
                         const identity = html.find("[name='identity']").val();
                         await actor.setFlag("ionrift-resonance", "identity", identity);
-                        ui.notifications.info(`Ionrift Resonance: Set ${actor.name} Identity to ${identity}`);
+                        ui.notifications.info(game.i18n.format("ionrift-resonance.playback.handler.setIdentity", { name: actor.name, identity }));
                     }
                 }
             },

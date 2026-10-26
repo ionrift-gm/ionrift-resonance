@@ -108,7 +108,7 @@ export class SyrinscapeProvider extends SoundProvider {
         if (!token) {
             // Only warn if they strictly need it (no module)
             if (!globalThis.syrinscapeControl && !game.syrinscape) {
-                ui.notifications.warn("Ionrift: Syrinscape Token missing for Direct API.");
+                ui.notifications.warn(game.i18n.localize("ionrift-resonance.provider.syrinscape.tokenMissingDirectApi"));
             }
             return;
         }
@@ -181,7 +181,7 @@ export class SyrinscapeProvider extends SoundProvider {
                     Logger.log("Stop All | Direct API Request Sent.");
                 } catch (e) {
                     Logger.warn("Stop All failed via Direct API", e);
-                    ui.notifications.warn("Ionrift: Failed to stop sounds via API.");
+                    ui.notifications.warn(game.i18n.localize("ionrift-resonance.provider.syrinscape.failedToStopSoundsApi"));
                 }
             } else {
                 Logger.warn("Stop All | No Token for API Fallback.");
@@ -196,7 +196,7 @@ export class SyrinscapeProvider extends SoundProvider {
         const token = game.settings.get('ionrift-resonance', 'syrinToken');
         if (!token) {
             Logger.warn("Syrinscape Search: No Token Found in Settings.");
-            ui.notifications.warn("Syrinscape Token missing. Check Ionrift Sounds settings.");
+            ui.notifications.warn(game.i18n.localize("ionrift-resonance.provider.syrinscape.tokenMissingCheckSettings"));
             return [];
         }
 
@@ -381,7 +381,7 @@ export class SyrinscapeProvider extends SoundProvider {
 
         } catch (e) {
             Logger.error("Cache Verification Failed:", e);
-            ui.notifications.error("Syrinscape Library Sync Failed.");
+            ui.notifications.error(game.i18n.localize("ionrift-resonance.provider.syrinscape.librarySyncFailed"));
             return [];
         }
     } // end cacheLibrary
