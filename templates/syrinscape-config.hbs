@@ -3,10 +3,10 @@
         <header class="syrinscape-config-header">
             <p class="syrinscape-config-lead">
                 <i class="fas fa-volume-up syrinscape-config-lead-icon"></i>
-                Audio mode
+                {{localize "ionrift-resonance.syrinscape.leadTitle"}}
             </p>
             <p class="notes syrinscape-config-intro">
-                Local sound packs play through Foundry audio. Syrinscape is an add-on for per-slot overrides in Calibration.
+                {{localize "ionrift-resonance.syrinscape.introNotes"}}
             </p>
         </header>
 
@@ -14,12 +14,12 @@
 
         {{#if mismatch}}
         <div class="syrinscape-mismatch-banner token-mismatch-warning">
-            <i class="fas fa-exclamation-triangle"></i> <strong>Token mismatch</strong>
+            <i class="fas fa-exclamation-triangle"></i> <strong>{{localize "ionrift-resonance.syrinscape.tokenMismatchTitle"}}</strong>
             <p class="syrinscape-mismatch-detail">
-                Resonance and Syrinscape Control have different tokens. Playback uses the Resonance token until synced.
+                {{localize "ionrift-resonance.syrinscape.tokenMismatchDetail"}}
             </p>
             <button type="button" data-action="sync" class="syrinscape-sync-btn">
-                <i class="fas fa-sync-alt"></i> Sync to Control
+                <i class="fas fa-sync-alt"></i> {{localize "ionrift-resonance.syrinscape.syncToControlBtn"}}
             </button>
         </div>
         {{/if}}
@@ -27,7 +27,7 @@
 
     <footer class="sheet-footer syrinscape-config-footer flexrow">
         <button type="submit" name="submit" class="syrinscape-footer-btn">
-            <i class="fas fa-save"></i> Save &amp; Close
+            <i class="fas fa-save"></i> {{{localize "ionrift-resonance.syrinscape.saveAndClose"}}}
         </button>
     </footer>
 </form>

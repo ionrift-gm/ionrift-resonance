@@ -440,10 +440,10 @@
     <!-- TAB BAR -->
     <div class="picker-tabs">
         <div class="picker-tab {{#if localActive}}active{{/if}}" data-picker-tab="local">
-            <i class="fas fa-box-open"></i> Pack Sounds
+            <i class="fas fa-box-open"></i> {{localize "ionrift-resonance.picker.tabPackSounds"}}
         </div>
         <div class="picker-tab {{#unless localActive}}active{{/unless}}" data-picker-tab="syrinscape">
-            <i class="fas fa-cloud"></i> Syrinscape
+            <i class="fas fa-cloud"></i> {{localize "ionrift-resonance.picker.tabSyrinscape"}}
         </div>
     </div>
 
@@ -451,7 +451,7 @@
     <div class="tab-content {{#if localActive}}active{{/if}}" data-picker-tab-content="local">
         <div style="padding: 4px 10px; font-size: 0.78em; color: #666;">
             <i class="fas fa-info-circle" style="opacity: 0.5;"></i>
-            Pack sounds for this key. Click to add.
+            {{localize "ionrift-resonance.picker.packSoundsHelp"}}
         </div>
         <div class="results-area ionrift-list">
             <ul class="local-sounds-list results-list">
@@ -459,29 +459,28 @@
                 {{#each packSounds}}
                 <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
                     data-name="{{this.name}}" data-type="local" data-meta="Pack"
-                    title="{{#if this.alreadySelected}}Already added{{else}}Click to add{{/if}}">
+                    title="{{#if this.alreadySelected}}{{localize "ionrift-resonance.picker.alreadyAdded"}}{{else}}{{localize "ionrift-resonance.picker.clickToAdd"}}{{/if}}">
                     <i class="fas fa-plus add-icon"></i>
                     <div class="result-info">
-                        <span class="result-name">{{this.name}}<span class="added-tag">added</span></span>
+                        <span class="result-name">{{this.name}}<span class="added-tag">{{localize "ionrift-resonance.picker.tagAdded"}}</span></span>
                         <span class="result-meta">{{this.id}}</span>
                     </div>
-                    <span class="preview-icon action-preview-local" data-src="{{this.id}}" title="Preview"><i
+                    <span class="preview-icon action-preview-local" data-src="{{this.id}}" title="{{localize "ionrift-resonance.picker.preview"}}"><i
                             class="fas fa-play"></i></span>
                 </li>
                 {{/each}}
                 {{else}}
                 <div class="local-empty">
                     <i class="fas fa-box-open"></i>
-                    <div>No pack sounds for this key.</div>
-                    <div style="font-size: 0.85em; margin-top: 8px; color: #555;">Use <strong>Browse Files</strong>
-                        below to add your own local audio files.</div>
+                    <div>{{localize "ionrift-resonance.picker.noPackSounds"}}</div>
+                    <div style="font-size: 0.85em; margin-top: 8px; color: #555;">{{{localize "ionrift-resonance.picker.noPackSoundsHelp"}}}</div>
                 </div>
                 {{/if}}
             </ul>
         </div>
-        <button class="action-browse-local" title="Browse local audio files"
+        <button class="action-browse-local" title="{{localize "ionrift-resonance.picker.browseFilesTitle"}}"
             style="margin: 6px 0 0; width: auto !important;">
-            <i class="fas fa-folder-open"></i> Browse Files
+            <i class="fas fa-folder-open"></i> {{localize "ionrift-resonance.picker.browseFiles"}}
         </button>
     </div>
 
@@ -491,7 +490,7 @@
             <!-- Search Bar -->
             <div class="search-bar">
                 <input type="text" name="search" class="search-input" value="{{searchTerm}}"
-                    placeholder="Search Syrinscape sounds..." />
+                    placeholder="{{localize "ionrift-resonance.picker.searchPlaceholder"}}" />
                 <button class="action-search"
                     style="flex: 0 0 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.6); color: white; border: none; border-radius: 4px; cursor: pointer;"><i
                         class="fas fa-search"></i></button>
@@ -501,26 +500,26 @@
             <div class="status-strip">
                 <div class="status-left">
                     <div class="cache-info">
-                        <span style="font-weight: 600; text-transform: uppercase;">Global One-Shots:</span>
+                        <span style="font-weight: 600; text-transform: uppercase;">{{localize "ionrift-resonance.picker.globalOneShots"}}</span>
                         {{#if cacheCount}}
-                        <span style="color: #6ee7b7;">{{cacheCount}} cached</span>
+                        <span style="color: #6ee7b7;">{{cacheCount}} {{localize "ionrift-resonance.picker.cached"}}</span>
                         {{else}}
-                        <span style="color: #fca5a5;">Not Synced</span>
+                        <span style="color: #fca5a5;">{{localize "ionrift-resonance.picker.notSynced"}}</span>
                         {{/if}}
                     </div>
                     <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;"
-                        title="If checked, limits search to One-Shot sound effects only (hides Moods/Music).">
+                        title="{{localize "ionrift-resonance.picker.filterOneshotsTitle"}}">
                         <input type="checkbox" name="filterOneshots" id="filterOneshots" {{checked filterOneshots}}>
-                        <label for="filterOneshots">One-Shots Only</label>
+                        <label for="filterOneshots">{{localize "ionrift-resonance.picker.filterOneshots"}}</label>
                     </div>
                 </div>
 
                 <div class="cache-tools">
                     <button type="button" class="action-update-lib"
-                        title="Syncs your local cache with the latest Global One-Shots from Syrinscape.">
-                        <i class="fas fa-sync-alt"></i> <span>Sync Cache</span>
+                        title="{{localize "ionrift-resonance.picker.syncCacheTitle"}}">
+                        <i class="fas fa-sync-alt"></i> <span>{{localize "ionrift-resonance.picker.syncCache"}}</span>
                     </button>
-                    <button type="button" class="action-purge-lib" title="Clear local cache (Force Re-Sync)">
+                    <button type="button" class="action-purge-lib" title="{{localize "ionrift-resonance.picker.purgeCacheTitle"}}">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -532,35 +531,32 @@
             <ul class="results-list">
                 {{#if isLoading}}
                 <div class="loading" style="padding: 20px; text-align: center; color: #aaa;"><i
-                        class="fas fa-spinner fa-spin"></i> Searching...</div>
+                        class="fas fa-spinner fa-spin"></i> {{localize "ionrift-resonance.picker.searching"}}</div>
                 {{else}}
                 {{#each results}}
                 <li class="result-row {{#if this.alreadySelected}}already-selected{{/if}}" data-id="{{this.id}}"
                     data-name="{{this.name}}" data-type="{{this.type}}" data-meta="{{this.meta}}"
-                    title="{{#if this.alreadySelected}}Already added{{else}}Click to add{{/if}}"
+                    title="{{#if this.alreadySelected}}{{localize "ionrift-resonance.picker.alreadyAdded"}}{{else}}{{localize "ionrift-resonance.picker.clickToAdd"}}{{/if}}"
                     style="padding: 4px 8px; font-size: 0.88em;">
                     <i class="fas fa-plus add-icon"
                         style="color: rgba(139,92,246,0.6); width: 20px; text-align: center; font-size: 0.8em;"></i>
                     <div class="result-info">
-                        <span class="result-name">{{this.name}}<span class="added-tag">added</span></span>
+                        <span class="result-name">{{this.name}}<span class="added-tag">{{localize "ionrift-resonance.picker.tagAdded"}}</span></span>
                         {{#if this.meta}}<span class="result-meta"
                             style="font-size: 0.72em; opacity: 0.4;">{{this.meta}}</span>{{/if}}
                     </div>
-                    <span class="preview-icon" title="Preview"><i class="fas fa-play"></i></span>
+                    <span class="preview-icon" title="{{localize "ionrift-resonance.picker.preview"}}"><i class="fas fa-play"></i></span>
                 </li>
                 {{else}}
                 {{#if searchTerm}}
                 <div class="no-results" style="padding: 20px; text-align: center; color: #777;">
-                    <div>No results found.</div>
-                    {{#if filterOneshots}}<div style="font-size: 0.9em; margin-top: 5px;">Try unchecking
-                        <strong>"One-Shots
-                            Only"</strong>.
-                    </div>{{/if}}
+                    <div>{{localize "ionrift-resonance.picker.noResultsFound"}}</div>
+                    {{#if filterOneshots}}<div style="font-size: 0.9em; margin-top: 5px;">{{{localize "ionrift-resonance.picker.tryUncheckingOneshots"}}}</div>{{/if}}
                 </div>
                 {{else}}
                 <div class="empty-state" style="padding: 40px 20px; text-align: center; color: #888;">
                     <i class="fas fa-search" style="font-size: 2em; opacity: 0.2; margin-bottom: 15px;"></i>
-                    <div>Type above to search Syrinscape sounds.</div>
+                    <div>{{localize "ionrift-resonance.picker.emptySearchPrompt"}}</div>
                 </div>
                 {{/if}}
                 {{/each}}
@@ -587,18 +583,18 @@
             <div>
                 <h3
                     style="margin: 0; font-size: 0.85em; text-transform: uppercase; color: #c4b5fd; letter-spacing: 0.5px;">
-                    <i class="fas fa-list-check" style="margin-right: 4px; opacity: 0.7;"></i>Assigned
+                    <i class="fas fa-list-check" style="margin-right: 4px; opacity: 0.7;"></i>{{localize "ionrift-resonance.picker.assigned"}}
                     {{#if hasBindings}}<span
                         style="font-size: 0.85em; color: #888; font-weight: normal; text-transform: none;">
                         ({{currentBindings.length}})</span>{{/if}}
                 </h3>
-                <div style="font-size: 0.7em; color: #666; margin-top: 1px;">These sounds play in-game for this event.
+                <div style="font-size: 0.7em; color: #666; margin-top: 1px;">{{localize "ionrift-resonance.picker.assignedHelp"}}
                 </div>
             </div>
             <div class="delay-help"
-                title="Configures a random start delay (Min/Max). useful for syncing with animation latency."
+                title="{{localize "ionrift-resonance.picker.delayHelpTitle"}}"
                 style="font-size: 0.8em; color: #666; cursor: help; margin-right: 85px;">
-                <i class="fas fa-question-circle"></i> <span>Delay (Sec)</span>
+                <i class="fas fa-question-circle"></i> <span>{{localize "ionrift-resonance.picker.delayLabel"}}</span>
             </div>
         </div>
 
@@ -612,24 +608,24 @@
                     <div class="entity-meta">{{this.id}}</div>
                 </div>
 
-                <div class="sound-config-group" title="Min/Max Delay (Seconds)">
+                <div class="sound-config-group" title="{{localize "ionrift-resonance.picker.delayGroupTitle"}}">
                     <div class="config-input-col">
-                        <label>Min</label>
+                        <label>{{localize "ionrift-resonance.picker.min"}}</label>
                         <input type="number" name="delayMin" value="{{this.delayMin}}" step="0.1" min="0" max="10"
                             placeholder="0">
                     </div>
                     <span class="separator">-</span>
                     <div class="config-input-col">
-                        <label>Max</label>
+                        <label>{{localize "ionrift-resonance.picker.max"}}</label>
                         <input type="number" name="delayMax" value="{{this.delayMax}}" step="0.1" min="0" max="10"
                             placeholder="0">
                     </div>
                 </div>
 
                 <div class="entity-actions">
-                    <button type="button" class="action-test-current" data-id="{{this.id}}" title="Play Preview"><i
+                    <button type="button" class="action-test-current" data-id="{{this.id}}" title="{{localize "ionrift-resonance.picker.playPreview"}}"><i
                             class="fas fa-play"></i></button>
-                    <button type="button" class="action-remove-binding" data-index="{{@index}}" title="Remove"><i
+                    <button type="button" class="action-remove-binding" data-index="{{@index}}" title="{{localize "ionrift-resonance.picker.remove"}}"><i
                             class="fas fa-times"></i></button>
                 </div>
             </div>
@@ -639,22 +635,22 @@
             <div class="binding-row default-binding" style="opacity: 0.7;">
                 <div class="entity-info" style="flex: 1;">
                     <span style="font-weight: bold; font-style: italic;">{{defaultSoundName}}</span>
-                    <span style="display: block; font-size: 0.7em; color: #aaa;">Default Sound</span>
+                    <span style="display: block; font-size: 0.7em; color: #aaa;">{{localize "ionrift-resonance.picker.defaultSound"}}</span>
                 </div>
                 <div class="entity-actions">
-                    <button type="button" class="action-test-default" title="Play Default"><i
+                    <button type="button" class="action-test-default" title="{{localize "ionrift-resonance.picker.playDefault"}}"><i
                             class="fas fa-play"></i></button>
                 </div>
             </div>
             {{else}}
-            <div style="padding: 15px; text-align: center; color: #666; font-style: italic;">No sounds selected.</div>
+            <div style="padding: 15px; text-align: center; color: #666; font-style: italic;">{{localize "ionrift-resonance.picker.noSoundsSelected"}}</div>
             {{/if}}
             {{/if}}
         </div>
 
         <div class="footer-actions" style="display: flex; gap: 6px;">
             <button class="action-save" style="flex: 1;">
-                <i class="fas fa-check" style="margin-right: 5px;"></i> Save Changes
+                <i class="fas fa-check" style="margin-right: 5px;"></i> {{localize "ionrift-resonance.picker.saveChanges"}}
             </button>
         </div>
     </div>

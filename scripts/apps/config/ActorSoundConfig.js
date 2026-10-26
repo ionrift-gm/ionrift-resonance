@@ -4,7 +4,7 @@ export class ActorSoundConfig extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-actor-sound-config",
-            title: "Actor Sound Configuration",
+            title: "ionrift-resonance.actorConfig.title",
             template: "modules/ionrift-resonance/templates/actor-sound-config.hbs",
             width: 500,
             height: "auto",
@@ -35,33 +35,33 @@ export class ActorSoundConfig extends FormApplication {
         const identityEnabled = isPC || !!currentIdentity;
         const identity = currentIdentity || "masculine";
         const isFem = identity.toLowerCase() === "feminine";
-        const identityLabel = isFem ? "Feminine" : "Masculine";
+        const identityLabel = isFem ? game.i18n.localize("ionrift-resonance.actorConfig.identityFeminine") : game.i18n.localize("ionrift-resonance.actorConfig.identityMasculine");
         // Show voice selector if: PC, or monster that has explicitly opted in
         const showVoice = isPC || (isMonster && !!currentIdentity);
 
         const sharedSlots = [
-            { key: "sound_pain", label: "Vocal (Pain)", icon: "fas fa-heart-broken", hint: "Played when this character takes damage." },
-            { key: "sound_death", label: "Vocal (Death)", icon: "fas fa-skull", hint: "Played when this character dies." }
+            { key: "sound_pain", label: game.i18n.localize("ionrift-resonance.actorConfig.slotPainLabel"), icon: "fas fa-heart-broken", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotPainHint") },
+            { key: "sound_death", label: game.i18n.localize("ionrift-resonance.actorConfig.slotDeathLabel"), icon: "fas fa-skull", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotDeathHint") }
         ];
 
         let systemSlots = [];
         if (game.system.id === "daggerheart") {
             systemSlots = [
-                { key: "sound_hope_gain", label: "Hope Gained", icon: "fas fa-sun", hint: "Override the sound when this character gains Hope." },
-                { key: "sound_hope_use", label: "Hope Spent", icon: "fas fa-hand-holding-heart", hint: "Override the sound when this character spends Hope." },
-                { key: "sound_stress", label: "Stress Marked", icon: "fas fa-bolt", hint: "Override the sound when this character takes Stress." },
-                { key: "sound_stress_clear", label: "Stress Cleared", icon: "fas fa-feather-alt", hint: "Override the sound when this character recovers Stress." },
-                { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
+                { key: "sound_hope_gain", label: game.i18n.localize("ionrift-resonance.actorConfig.slotHopeGainLabel"), icon: "fas fa-sun", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotHopeGainHint") },
+                { key: "sound_hope_use", label: game.i18n.localize("ionrift-resonance.actorConfig.slotHopeUseLabel"), icon: "fas fa-hand-holding-heart", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotHopeUseHint") },
+                { key: "sound_stress", label: game.i18n.localize("ionrift-resonance.actorConfig.slotStressLabel"), icon: "fas fa-bolt", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotStressHint") },
+                { key: "sound_stress_clear", label: game.i18n.localize("ionrift-resonance.actorConfig.slotStressClearLabel"), icon: "fas fa-feather-alt", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotStressClearHint") },
+                { key: "sound_spotlight", label: game.i18n.localize("ionrift-resonance.actorConfig.slotSpotlightLabel"), icon: "fas fa-music", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotSpotlightHint") }
             ];
         } else if (game.system.id === "pf2e") {
             systemSlots = [
-                { key: "sound_hero_point_gain", label: "Hero Point Gained", icon: "fas fa-star", hint: "Override the sound when this character gains a Hero Point." },
-                { key: "sound_hero_point_use", label: "Hero Point Spent", icon: "fas fa-hand-sparkles", hint: "Override the sound when this character spends a Hero Point." },
-                { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
+                { key: "sound_hero_point_gain", label: game.i18n.localize("ionrift-resonance.actorConfig.slotHeroPointGainLabel"), icon: "fas fa-star", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotHeroPointGainHint") },
+                { key: "sound_hero_point_use", label: game.i18n.localize("ionrift-resonance.actorConfig.slotHeroPointUseLabel"), icon: "fas fa-hand-sparkles", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotHeroPointUseHint") },
+                { key: "sound_spotlight", label: game.i18n.localize("ionrift-resonance.actorConfig.slotSpotlightLabel"), icon: "fas fa-music", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotSpotlightHint") }
             ];
         } else {
             systemSlots = [
-                { key: "sound_spotlight", label: "Your Turn", icon: "fas fa-music", hint: "A fanfare or theme played when it's this character's turn in combat." }
+                { key: "sound_spotlight", label: game.i18n.localize("ionrift-resonance.actorConfig.slotSpotlightLabel"), icon: "fas fa-music", hint: game.i18n.localize("ionrift-resonance.actorConfig.slotSpotlightHint") }
             ];
         }
 
@@ -74,7 +74,7 @@ export class ActorSoundConfig extends FormApplication {
             isPC,
             isMonster,
             showVoice,
-            voiceOptions: { masculine: "Deep / Low (Masculine)", feminine: "Bright / High (Feminine)" },
+            voiceOptions: { masculine: game.i18n.localize("ionrift-resonance.actorConfig.voiceMasculine"), feminine: game.i18n.localize("ionrift-resonance.actorConfig.voiceFeminine") },
             slots: slots.map(slot => {
                 const val = this.actor.getFlag("ionrift-resonance", slot.key);
                 const name = this.actor.getFlag("ionrift-resonance", slot.key + "_name");
@@ -86,22 +86,22 @@ export class ActorSoundConfig extends FormApplication {
                 if (val && typeof val === "string" && val.includes(",")) {
                     const count = val.split(",").filter(s => s.trim()).length;
                     if (count > 1) {
-                        display = `${count} Sounds (Randomized)`;
+                        display = game.i18n.format("ionrift-resonance.actorConfig.randomizedSounds", { count });
                     }
                 }
 
                 if (!val) {
                     if (slot.key === "sound_pain" || slot.key === "sound_death") {
                         if (isPC) {
-                            display = `Default (${identityLabel})`;
+                            display = game.i18n.format("ionrift-resonance.actorConfig.defaultIdentity", { identity: identityLabel });
                         } else if (identityEnabled) {
                             // Monster with identity set â€” routes through humanoid voice chain
-                            display = `Default (${identityLabel} Humanoid)`;
+                            display = game.i18n.format("ionrift-resonance.actorConfig.defaultIdentityHumanoid", { identity: identityLabel });
                         } else {
-                            display = "Default (Monster)";
+                            display = game.i18n.localize("ionrift-resonance.actorConfig.defaultMonster");
                         }
                     } else {
-                        display = "Default (System)";
+                        display = game.i18n.localize("ionrift-resonance.actorConfig.defaultSystem");
                     }
                 }
 
@@ -145,7 +145,7 @@ export class ActorSoundConfig extends FormApplication {
         html.find(".action-save").click((ev) => {
             ev.preventDefault();
             this.close();
-            ui.notifications.info(`Ionrift Sounds: Configuration Saved for ${this.actor.name}.`);
+            ui.notifications.info(game.i18n.format("ionrift-resonance.notification.actorConfigSaved", { name: this.actor.name }));
         });
 
         // play
@@ -165,7 +165,7 @@ export class ActorSoundConfig extends FormApplication {
 
         // Resolve Default
         let defaultSoundId = null;
-        let defaultSoundName = "Default (System)";
+        let defaultSoundName = game.i18n.localize("ionrift-resonance.actorConfig.defaultSystem");
 
         if (game.ionrift?.resonance?.handler) {
             const h = game.ionrift.resonance.handler;
@@ -173,34 +173,34 @@ export class ActorSoundConfig extends FormApplication {
 
             if (isPC) {
                 const identity = this.actor.getFlag("ionrift-resonance", "identity") || "masculine";
-                const identityLabel = identity === "feminine" ? "Feminine" : "Masculine";
+                const identityLabel = identity === "feminine" ? game.i18n.localize("ionrift-resonance.actorConfig.identityFeminine") : game.i18n.localize("ionrift-resonance.actorConfig.identityMasculine");
 
                 if (key === "sound_pain") {
                     const keyId = h.getPCSound(this.actor, "PAIN");
                     defaultSoundId = h.resolveSound(keyId);
-                    defaultSoundName = `Default (${identityLabel} Pain)`;
+                    defaultSoundName = game.i18n.format("ionrift-resonance.actorConfig.defaultIdentityPain", { identity: identityLabel });
                 } else if (key === "sound_death") {
                     const keyId = h.getPCSound(this.actor, "DEATH");
                     defaultSoundId = h.resolveSound(keyId);
-                    defaultSoundName = `Default (${identityLabel} Death)`;
+                    defaultSoundName = game.i18n.format("ionrift-resonance.actorConfig.defaultIdentityDeath", { identity: identityLabel });
                 }
             } else {
                 // Monster/NPC â€” getMonsterSound routes through humanoid chain if identity is set
                 const identity = this.actor.getFlag("ionrift-resonance", "identity");
-                const identityLabel = identity === "feminine" ? "Feminine" : (identity === "masculine" ? "Masculine" : null);
+                const identityLabel = identity === "feminine" ? game.i18n.localize("ionrift-resonance.actorConfig.identityFeminine") : (identity === "masculine" ? game.i18n.localize("ionrift-resonance.actorConfig.identityMasculine") : null);
 
                 if (key === "sound_pain") {
                     const keyId = h.resolver.getMonsterSound(this.actor, "PAIN");
                     defaultSoundId = h.resolveSound(keyId);
                     defaultSoundName = identityLabel
-                        ? `Default (${identityLabel} Humanoid Pain)`
-                        : "Default (Monster Pain)";
+                        ? game.i18n.format("ionrift-resonance.actorConfig.defaultIdentityHumanoidPain", { identity: identityLabel })
+                        : game.i18n.localize("ionrift-resonance.actorConfig.defaultMonsterPain");
                 } else if (key === "sound_death") {
                     const keyId = h.resolver.getMonsterSound(this.actor, "DEATH");
                     defaultSoundId = h.resolveSound(keyId);
                     defaultSoundName = identityLabel
-                        ? `Default (${identityLabel} Humanoid Death)`
-                        : "Default (Monster Death)";
+                        ? game.i18n.format("ionrift-resonance.actorConfig.defaultIdentityHumanoidDeath", { identity: identityLabel })
+                        : game.i18n.localize("ionrift-resonance.actorConfig.defaultMonsterDeath");
                 }
             }
         }
@@ -239,7 +239,7 @@ export class ActorSoundConfig extends FormApplication {
             defaultSoundId: defaultSoundId,
             defaultSoundName: defaultSoundName,
             soundConfig: existingConfig,
-            title: `Pick Sound: ${slotLabel} (${this.actor.name})`
+            title: game.i18n.format("ionrift-resonance.actorConfig.pickerTitle", { slot: slotLabel, name: this.actor.name })
         }).render(true);
     }
 

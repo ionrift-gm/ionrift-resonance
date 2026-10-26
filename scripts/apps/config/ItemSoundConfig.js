@@ -4,7 +4,7 @@ export class ItemSoundConfig extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-item-sound-config",
-            title: "Item Sound Configuration",
+            title: "ionrift-resonance.itemConfig.title",
             template: "modules/ionrift-resonance/templates/item-sound-config.hbs",
             width: 500,
             height: "auto",
@@ -22,12 +22,12 @@ export class ItemSoundConfig extends FormApplication {
 
     getData() {
         const slots = [
-            { key: "sound_attack", label: "Attack / Cast", icon: "fas fa-khanda", hint: "Swing or cast sound (Phase 1)" },
-            { key: "sound_hit", label: "Impact", icon: "fas fa-burst", hint: "Replaces the default hit sound on a landed strike" },
-            { key: "sound_miss", label: "Miss", icon: "fas fa-wind", hint: "Replaces the default whoosh on a miss" },
-            { key: "sound_use", label: "Use / Generic", icon: "fas fa-hand-sparkles", hint: "Non-attack item use (potions, scrolls)" },
-            { key: "sound_equip", label: "Equip", icon: "fas fa-tshirt", hint: "Played when item is equipped" },
-            { key: "sound_unequip", label: "Unequip", icon: "fas fa-box-open", hint: "Played when item is unequipped" }
+            { key: "sound_attack", label: game.i18n.localize("ionrift-resonance.itemConfig.slotAttackLabel"), icon: "fas fa-khanda", hint: game.i18n.localize("ionrift-resonance.itemConfig.slotAttackHint") },
+            { key: "sound_hit", label: game.i18n.localize("ionrift-resonance.itemConfig.slotHitLabel"), icon: "fas fa-burst", hint: game.i18n.localize("ionrift-resonance.itemConfig.slotHitHint") },
+            { key: "sound_miss", label: game.i18n.localize("ionrift-resonance.itemConfig.slotMissLabel"), icon: "fas fa-wind", hint: game.i18n.localize("ionrift-resonance.itemConfig.slotMissHint") },
+            { key: "sound_use", label: game.i18n.localize("ionrift-resonance.itemConfig.slotUseLabel"), icon: "fas fa-hand-sparkles", hint: game.i18n.localize("ionrift-resonance.itemConfig.slotUseHint") },
+            { key: "sound_equip", label: game.i18n.localize("ionrift-resonance.itemConfig.slotEquipLabel"), icon: "fas fa-tshirt", hint: game.i18n.localize("ionrift-resonance.itemConfig.slotEquipHint") },
+            { key: "sound_unequip", label: game.i18n.localize("ionrift-resonance.itemConfig.slotUnequipLabel"), icon: "fas fa-box-open", hint: game.i18n.localize("ionrift-resonance.itemConfig.slotUnequipHint") }
         ];
 
         // Spell Vocal Layer — shown for spell items (or items with the flag already set) when feature flag enabled
@@ -121,7 +121,7 @@ export class ItemSoundConfig extends FormApplication {
             currentSoundName: currentSoundName,
             currentSoundMeta: currentSoundMeta,
             soundConfig: existingConfig,
-            title: `Pick Sound: ${slotLabel} (${this.item.name})`
+            title: game.i18n.format("ionrift-resonance.itemConfig.pickerTitle", { slot: slotLabel, name: this.item.name })
         }).render(true);
     }
 
@@ -188,7 +188,7 @@ export class ItemSoundConfig extends FormApplication {
         }, {
             currentSoundId: currentId,
             currentSoundName: currentName,
-            title: `Pick Vocal Override: ${this.item.name}`
+            title: game.i18n.format("ionrift-resonance.itemConfig.pickerVocalOverrideTitle", { name: this.item.name })
         }).render(true);
     }
 

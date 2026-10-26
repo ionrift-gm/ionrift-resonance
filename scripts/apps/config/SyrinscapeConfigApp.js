@@ -12,7 +12,7 @@ export class SyrinscapeConfigApp extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-resonance-syrinscape",
-            title: "Audio Mode",
+            title: "ionrift-resonance.syrinscape.title",
             template: "modules/ionrift-resonance/templates/syrinscape-config.hbs",
             width: 520,
             height: "auto",
@@ -156,7 +156,7 @@ export class SyrinscapeConfigApp extends FormApplication {
 
         const onLocalOnly = async () => {
             await this._saveToken("");
-            ui.notifications.info("Resonance | Local-only mode. Syrinscape token cleared.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.syrinLocalOnly"));
             this.pendingToken = "";
             this.expandedPanel = "foundry";
             await this.render(false);
@@ -181,7 +181,7 @@ export class SyrinscapeConfigApp extends FormApplication {
                 const inputEl = html.find(".attunement-token-input");
                 const token = inputEl.val()?.trim() ?? "";
                 if (!token) {
-                    ui.notifications.warn("Enter a Syrinscape token, or use Foundry Audio Only to clear the stored token.");
+                    ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.enterSyrinTokenOrClear"));
                     return;
                 }
                 await this._verifyAndSave(token);
@@ -190,7 +190,7 @@ export class SyrinscapeConfigApp extends FormApplication {
                 await this.render(false);
             } catch (err) {
                 Logger.error("SyrinscapeConfig | verify failed", err);
-                ui.notifications.error(`Resonance | ${err.message}`);
+                ui.notifications.error(game.i18n.format("ionrift-resonance.notification.syrinErrorPrefix", { message: err.message }));
             } finally {
                 btn.prop("disabled", false);
                 icon.attr("class", originalIcon);
@@ -202,17 +202,17 @@ export class SyrinscapeConfigApp extends FormApplication {
             const token = html.find(".attunement-token-input").val()?.trim()
                 || game.settings.get("ionrift-resonance", "syrinToken") || "";
             if (!token) {
-                ui.notifications.warn("Enter a token before syncing to Syrinscape Control.");
+                ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.enterTokenBeforeSync"));
                 return;
             }
             if (!game.modules.get("syrinscape-control")?.active) {
-                ui.notifications.warn("Syrinscape Control module is not active.");
+                ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.syrinControlNotActive"));
                 return;
             }
             await game.settings.set("syrinscape-control", "authToken", token);
             await game.settings.set("ionrift-resonance", "syrinToken", token);
             this.reloadRequired = true;
-            ui.notifications.info("Tokens synchronized with Syrinscape Control.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.tokensSynced"));
             await this.render(false);
             game.ionrift?.resonance?.handler?.checkConfiguration();
             if (game.ionrift?.integration) game.ionrift.integration._runImmediateCheck?.();
@@ -223,7 +223,7 @@ export class SyrinscapeConfigApp extends FormApplication {
         const url = `https://syrinscape.com/online/frontend-api/elements/1035/?format=json&auth_token=${token}`;
         const response = await fetch(url, { method: "GET" });
         if (!response.ok) {
-            throw new Error(`Connection failed (${response.status}). Check the token.`);
+            throw new Error(game.i18n.format("ionrift-resonance.notification.connectionFailedStatus", { status: response.status }));
         }
 
         await this._saveToken(token);
@@ -232,9 +232,9 @@ export class SyrinscapeConfigApp extends FormApplication {
         if (game.modules.get("syrinscape-control")?.active) {
             await game.settings.set("syrinscape-control", "authToken", token);
             this.reloadRequired = true;
-            ui.notifications.info("Token verified and synced to Syrinscape Control.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.tokenVerifiedAndSynced"));
         } else {
-            ui.notifications.info("Syrinscape token verified and saved.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.tokenVerifiedAndSaved"));
         }
 
         game.ionrift?.resonance?.handler?.checkConfiguration();
@@ -250,7 +250,7 @@ export class SyrinscapeConfigApp extends FormApplication {
         const token = (formData.authToken ?? formData.token ?? "").trim();
         await this._saveToken(token);
         if (token) {
-            ui.notifications.info("Syrinscape configuration saved.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.syrinConfigSaved"));
         }
         game.ionrift?.resonance?.handler?.checkConfiguration();
     }
@@ -258,8 +258,8 @@ export class SyrinscapeConfigApp extends FormApplication {
     async close(options = {}) {
         if (this.reloadRequired) {
             const confirm = await Dialog.confirm({
-                title: "Reload Required",
-                content: "<p><strong>Syrinscape Control</strong> requires a reload to pick up the new auth token.</p><p>Reload the world now?</p>",
+                title: game.i18n.localize("ionrift-resonance.syrinscape.dialogReloadTitle"),
+                content: game.i18n.localize("ionrift-resonance.syrinscape.dialogReloadContent"),
                 defaultYes: true
             });
             if (confirm) {

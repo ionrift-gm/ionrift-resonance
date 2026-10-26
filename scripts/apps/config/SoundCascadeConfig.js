@@ -2,7 +2,7 @@ export class SoundCascadeConfig extends Application {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-cascade",
-            title: "Reactive Sound Engine: Logic Cascade",
+            title: "ionrift-resonance.cascade.title",
             template: "modules/ionrift-resonance/templates/sound-cascade.hbs",
             width: 900,
             height: 600,

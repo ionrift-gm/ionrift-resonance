@@ -11,7 +11,7 @@ export class SoundPickerApp extends BaseApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-picker",
-            title: "Sound Library",
+            title: "ionrift-resonance.picker.title",
             template: "modules/ionrift-resonance/templates/sound-picker.hbs",
             width: 500,
             height: 700,
@@ -291,28 +291,28 @@ export class SoundPickerApp extends BaseApplication {
         event.preventDefault();
 
         new Dialog({
-            title: "Purge Cache?",
+            title: game.i18n.localize("ionrift-resonance.picker.dialogPurgeTitle"),
             content: `
                 <div style="text-align: center; padding: 10px;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #f87171; margin-bottom: 10px;"></i>
-                    <p style="font-size: 1.1em; margin-bottom: 5px;">Clear your local One-Shot cache?</p>
-                    <p style="font-size: 0.9em; color: #aaa;">You will need to Sync again to see Global One-Shots.</p>
+                    <p style="font-size: 1.1em; margin-bottom: 5px;">${game.i18n.localize("ionrift-resonance.picker.dialogPurgePrompt")}</p>
+                    <p style="font-size: 0.9em; color: #aaa;">${game.i18n.localize("ionrift-resonance.picker.dialogPurgeHelp")}</p>
                 </div>
             `,
             buttons: {
                 purge: {
-                    label: `<i class="fas fa-trash"></i> Purge`,
+                    label: `<i class="fas fa-trash"></i> ${game.i18n.localize("ionrift-resonance.picker.dialogPurgeBtn")}`,
                     callback: async () => {
                         await game.settings.set('ionrift-resonance', 'oneshotCache', { results: [] });
                         this._cacheCountOverride = 0;
                         this.results = [];
                         this.searchTerm = "";
                         this.render();
-                        ui.notifications.info("Ionrift: Cache Purged.");
+                        ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.cachePurged"));
                     }
                 },
                 cancel: {
-                    label: "Cancel"
+                    label: game.i18n.localize("ionrift-resonance.picker.dialogCancelBtn")
                 }
             },
             default: "cancel"
@@ -330,17 +330,17 @@ export class SoundPickerApp extends BaseApplication {
         // Visual Feedback
         const btn = this.element.find(".action-update-lib");
         const originalContent = btn.html();
-        btn.html('<i class="fas fa-spinner fa-spin"></i> Syncing...');
+        btn.html(`<i class="fas fa-spinner fa-spin"></i> ${game.i18n.localize("ionrift-resonance.picker.syncing")}`);
         btn.prop('disabled', true);
 
         try {
-            ui.notifications.info("Ionrift: Syncing Global One-Shots...");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.syncingGlobalOneshots"));
             const results = await manager.syrinscapeProvider.cacheLibrary({
                 onProgress: (count) => {
                     // console.log(`Fetched ${count} items...`);
                 }
             });
-            ui.notifications.info(`Ionrift: Sync Complete (${results.length} Global One-Shots).`);
+            ui.notifications.info(game.i18n.format("ionrift-resonance.notification.syncComplete", { count: results.length }));
 
             // Override cache count for this session to ensure UI updates immediately
             this._cacheCountOverride = results.length;
@@ -354,7 +354,7 @@ export class SoundPickerApp extends BaseApplication {
 
         } catch (e) {
             Logger.error(e);
-            ui.notifications.error("Update Failed.");
+            ui.notifications.error(game.i18n.localize("ionrift-resonance.notification.updateFailed"));
             btn.html(originalContent);
             btn.prop('disabled', false);
         }
@@ -393,7 +393,7 @@ export class SoundPickerApp extends BaseApplication {
             // Manual Entry
             this.results = [{
                 id: id,
-                name: `Manual Entry: ${id}`,
+                name: game.i18n.format("ionrift-resonance.picker.manualEntry", { id }),
                 meta: "Syrinscape Element",
                 icon: "fas fa-link" // Icon to indicate link
             }];
@@ -425,7 +425,7 @@ export class SoundPickerApp extends BaseApplication {
             }
         } catch (err) {
             Logger.error(err);
-            ui.notifications.warn("Search failed.");
+            ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.searchFailed"));
         } finally {
             this.isLoading = false;
             this.render();
@@ -441,7 +441,7 @@ export class SoundPickerApp extends BaseApplication {
 
         // Check duplicates
         if (this.currentBindings.some(b => b.id === id)) {
-            ui.notifications.warn("Sound already in list.");
+            ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.soundAlreadyInList"));
             return;
         }
 
@@ -581,7 +581,7 @@ export class SoundPickerApp extends BaseApplication {
 
                 // Check for duplicates
                 if (this.currentBindings.some(b => b.id === path)) {
-                    ui.notifications.warn("Sound already in list.");
+                    ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.soundAlreadyInList"));
                     return;
                 }
 
