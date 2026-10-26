@@ -654,21 +654,41 @@ export class DaggerheartAdapter extends SystemAdapter {
                 }
             }
 
-            // 2. Exact name match on the colon-split prefix
-            if (!item) {
+            // 2. Direct Item ID via message flags or roll options
+            const itemId = message.flags?.daggerheart?.itemId
+                || message.flags?.["ionrift-resonance"]?.itemId
+                || roll.options?.itemId;
+            if (!item && itemId && actor.items?.get) {
+                item = actor.items.get(itemId) || null;
+                if (item) itemResolutionPath = "item-id";
+            }
+
+            // 3. Match by identifier, slug, or itemId against itemName / rawTitle
+            if (!item && itemName && itemName !== "Generic" && actor.items?.find) {
+                const lower = itemName.toLowerCase();
+                item = actor.items.find(i =>
+                    (i.system?.identifier && i.system.identifier.toLowerCase() === lower)
+                    || (i.system?.slug && i.system.slug.toLowerCase() === lower)
+                    || i.id === itemName
+                ) || null;
+                if (item) itemResolutionPath = "identifier";
+            }
+
+            // 4. Exact name match on the colon-split prefix
+            if (!item && actor.items?.getName) {
                 item = actor.items.getName(itemName) || null;
                 if (item) itemResolutionPath = "exact-name";
             }
 
-            // 3. Fuzzy: item name starts with the extracted prefix (handles "Scepter" vs "Scepter (Magic)" etc.)
-            if (!item && itemName !== "Generic") {
+            // 5. Fuzzy: item name starts with the extracted prefix (handles "Scepter" vs "Scepter (Magic)" etc.)
+            if (!item && itemName && itemName !== "Generic" && actor.items?.find) {
                 const lower = itemName.toLowerCase();
-                item = actor.items.find(i => i.name.toLowerCase().startsWith(lower)) || null;
+                item = actor.items.find(i => i.name && i.name.toLowerCase().startsWith(lower)) || null;
                 if (item) itemResolutionPath = "fuzzy-prefix";
             }
 
-            // 4. Full raw title match (catches format where no colon present)
-            if (!item && rawTitle && rawTitle !== itemName) {
+            // 6. Full raw title match (catches format where no colon present)
+            if (!item && rawTitle && rawTitle !== itemName && actor.items?.getName) {
                 item = actor.items.getName(rawTitle) || null;
                 if (item) itemResolutionPath = "raw-title";
             }

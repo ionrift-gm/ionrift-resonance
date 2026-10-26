@@ -17,7 +17,12 @@ export class ActorSoundConfig extends FormApplication {
 
     _getHeaderButtons() {
         // Filter out "Voice" button (likely from another module or core) as per user request
-        return super._getHeaderButtons().filter(b => b.label !== "Voice");
+        return super._getHeaderButtons().filter(b =>
+            b.class !== "ionrift-voice-btn"
+            && b.id !== "ionrift-voice"
+            && b.label !== "Voice"
+            && b.label !== game.i18n?.localize?.("ionrift-resonance.actorConfig.voiceHeaderBtn")
+        );
     }
 
     constructor(actor) {

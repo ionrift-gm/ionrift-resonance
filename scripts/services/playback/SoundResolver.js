@@ -41,6 +41,20 @@ export class SoundResolver {
         // 3. Check Global Weapon/Spell Mappings
         if (mappings.weapons && mappings.weapons[itemName]) return mappings.weapons[itemName];
         if (mappings.spells && mappings.spells[itemName]) return mappings.spells[itemName];
+        if (item) {
+            const identifier = item.system?.identifier;
+            const slug = item.system?.slug;
+            const baseItem = item.system?.type?.baseItem;
+            if (mappings.weapons) {
+                if (identifier && mappings.weapons[identifier]) return mappings.weapons[identifier];
+                if (slug && mappings.weapons[slug]) return mappings.weapons[slug];
+                if (baseItem && mappings.weapons[baseItem]) return mappings.weapons[baseItem];
+            }
+            if (mappings.spells) {
+                if (identifier && mappings.spells[identifier]) return mappings.spells[identifier];
+                if (slug && mappings.spells[slug]) return mappings.spells[slug];
+            }
+        }
 
         // 3.5. System-specific resolution (e.g. DH domains)
         const adapter = game.ionrift?.handler?.system;
@@ -83,8 +97,23 @@ export class SoundResolver {
         return this.detectSoundKey(itemName, item ? item.type : null, item) ||
             (mappings.default || SOUND_EVENTS.WHOOSH);
     }
-    detectSoundKey(name, type = null, item = null) {
-        const lower = name.toLowerCase();
+    detectSoundKey(nameOrItem, type = null, item = null) {
+        let name = nameOrItem;
+        if (typeof nameOrItem === "object" && nameOrItem !== null) {
+            item = item ?? nameOrItem;
+            name = item.name ?? "";
+            type = type ?? item.type;
+        }
+
+        const searchParts = [
+            typeof name === "string" ? name : "",
+            item?.system?.type?.baseItem,
+            item?.system?.identifier,
+            item?.system?.slug,
+            item?.system?.weaponType,
+            item?.system?.actionType
+        ].filter(Boolean).map(s => String(s).toLowerCase());
+        const lower = searchParts.join(" ");
 
         // 5e System Metadata Checks (if Item object provided)
         if (item && item.system) {

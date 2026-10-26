@@ -330,10 +330,22 @@ export class DnD5eAdapter extends SystemAdapter {
         if (item.type === "spell") return SOUND_EVENTS.CORE_MISS_MAGIC;
 
         if (item.type === "weapon") {
-            const lower = item.name.toLowerCase();
+            const searchParts = [
+                item.system?.type?.baseItem,
+                item.system?.identifier,
+                item.system?.slug,
+                item.system?.weaponType,
+                item.system?.actionType,
+                item.name
+            ].filter(Boolean).map(s => String(s).toLowerCase());
+            const lower = searchParts.join(" ");
+
             const isRanged = lower.includes("bow") || lower.includes("crossbow")
                 || lower.includes("sling") || lower.includes("javelin")
                 || lower.includes("dart") || lower.includes("gun")
+                || item.system?.actionType === "rwak"
+                || item.system?.weaponType === "simpleR"
+                || item.system?.weaponType === "martialR"
                 || item.system?.range?.long > 0;
             if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
         }

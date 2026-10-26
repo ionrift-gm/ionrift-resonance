@@ -398,7 +398,15 @@ export class SoundHandler {
         // Resolver expects Actor object mostly, but existing signature supports name string.
         let actor = null;
         if (typeof actorOrName === "string") {
-            actor = game.actors.getName(actorOrName);
+            actor = (actorOrName.startsWith("Actor.") && typeof globalThis.fromUuidSync === "function")
+                ? globalThis.fromUuidSync(actorOrName)
+                : null;
+            if (!actor && game.actors?.get) {
+                actor = game.actors.get(actorOrName);
+            }
+            if (!actor && game.actors?.getName) {
+                actor = game.actors.getName(actorOrName);
+            }
         } else {
             actor = actorOrName;
         }

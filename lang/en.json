@@ -45,6 +45,7 @@
     "ionrift-resonance.actorConfig.title": "Actor Sound Configuration",
     "ionrift-resonance.actorConfig.vocalDefaultsMonster": "Vocal defaults resolve from monster type.",
     "ionrift-resonance.actorConfig.voiceFeminine": "Bright / High (Feminine)",
+    "ionrift-resonance.actorConfig.voiceHeaderBtn": "Voice",
     "ionrift-resonance.actorConfig.voiceMasculine": "Deep / Low (Masculine)",
     "ionrift-resonance.actorConfig.voiceToneLabel": "Voice Tone:",
     "ionrift-resonance.auditorList.colActions": "Actions",

@@ -199,10 +199,22 @@ export class RespiteIntegration {
      * @param {TokenDocument} tokenDoc
      * @returns {boolean}
      */
-    _isCampfireToken(tokenDoc) {
-        if (!tokenDoc) return false;
-        if (tokenDoc.flags?.["ionrift-respite"]?.isCampfireToken === true) return true;
-        const name = (tokenDoc.name ?? "").toLowerCase();
+    _isCampfireToken(tokenDocOrToken) {
+        if (!tokenDocOrToken) return false;
+        const doc = tokenDocOrToken.document ?? tokenDocOrToken;
+        const actor = doc.actor ?? tokenDocOrToken.actor;
+
+        const isCampfireByFlag =
+            Boolean(doc?.getFlag?.("ionrift-respite", "isCampfireToken"))
+            || Boolean(doc?.flags?.["ionrift-respite"]?.isCampfireToken)
+            || doc?.getFlag?.("ionrift-respite", "propKey") === "campfire-base"
+            || doc?.flags?.["ionrift-respite"]?.propKey === "campfire-base"
+            || actor?.getFlag?.("ionrift-respite", "propKey") === "campfire-base"
+            || actor?.flags?.["ionrift-respite"]?.propKey === "campfire-base";
+
+        if (isCampfireByFlag) return true;
+
+        const name = (doc.name ?? tokenDocOrToken.name ?? "").toLowerCase();
         return name === "campfire";
     }
 

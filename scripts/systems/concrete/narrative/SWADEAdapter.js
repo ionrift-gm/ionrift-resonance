@@ -159,7 +159,22 @@ export class SWADEAdapter extends SystemAdapter {
     _getMissKey(item) {
         if (item?.type === "power") return SOUND_EVENTS.CORE_MISS_MAGIC;
         if (item?.type === "weapon") {
-            const isRanged = item.system?.range?.includes?.("r") || item.name?.toLowerCase().includes("bow");
+            const searchParts = [
+                item.system?.type?.baseItem,
+                item.system?.identifier,
+                item.system?.slug,
+                item.system?.weaponType,
+                item.system?.actionType,
+                item.name
+            ].filter(Boolean).map(s => String(s).toLowerCase());
+            const lower = searchParts.join(" ");
+            const isRanged = item.system?.range?.includes?.("r")
+                || lower.includes("bow")
+                || lower.includes("crossbow")
+                || lower.includes("sling")
+                || lower.includes("gun")
+                || lower.includes("pistol")
+                || lower.includes("rifle");
             if (isRanged) return SOUND_EVENTS.CORE_MISS_RANGED;
         }
         return SOUND_EVENTS.MISS;
