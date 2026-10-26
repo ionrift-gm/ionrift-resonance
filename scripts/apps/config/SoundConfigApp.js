@@ -36,7 +36,7 @@ export class SoundConfigApp extends FormApplication {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             id: "ionrift-sound-config",
-            title: "Resonance Calibration",
+            title: "ionrift-resonance.config.title",
             template: "modules/ionrift-resonance/templates/sound-config.hbs",
             width: 900,
             height: 750,
@@ -101,12 +101,12 @@ export class SoundConfigApp extends FormApplication {
                     let soundType = "";
 
                     if (soundLabel.includes("[OneshotElement]")) {
-                        soundType = "One-Shot";
+                        soundType = game.i18n.localize("ionrift-resonance.config.auditor.typeOneshot");
                         soundLabel = soundLabel.replace("[OneshotElement]", "").trim();
                     } else if (soundLabel.includes("GLOBAL:")) {
-                        soundType = "Global";
+                        soundType = game.i18n.localize("ionrift-resonance.config.auditor.typeGlobal");
                     } else if (soundLabel.match(/^\d+$/)) {
-                        soundType = "ID";
+                        soundType = game.i18n.localize("ionrift-resonance.config.auditor.typeId");
                     }
 
                     auditorItems.push({
@@ -166,9 +166,9 @@ export class SoundConfigApp extends FormApplication {
         // --- Helpers ---
         // 1. Resolve effective value (Cascade: Custom -> Default -> Inherited)
         /* 
-           Note: "Inherited" means "Inherited from Parent Node in Hierarchy".
-           We pass the parent's resolved state down during processing.
-        */
+         * Note: "Inherited" means "Inherited from Parent Node in Hierarchy".
+         * We pass the parent's resolved state down during processing.
+         */
         const resolveValue = (key, loopCheck = []) => {
             if (!key) return null;
             if (loopCheck.includes(key)) return null;
@@ -306,32 +306,32 @@ export class SoundConfigApp extends FormApplication {
 
         const actionTaxonomy = [
             {
-                label: "Attacks (Melee)",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.coreMelee.label"),
                 id: "CORE_MELEE",
-                description: "Weapon swing sound for melee attacks in motion. Impact sounds are set under Core Mechanics.",
+                description: game.i18n.localize("ionrift-resonance.taxonomy.coreMelee.description"),
                 children: [
-                    { label: "Bludgeoning (Mace/Hammer)", id: "ATTACK_BLUDGEON", description: "Swing sound for maces, hammers, and clubs. Plays on attack; impact is Strike Landed." },
-                    { label: "Slashing (Sword/Axe)", id: "ATTACK_SWORD", description: "Slash sound for swords and axes. Dagger/spear shares this by default (blade is blade)." },
-                    { label: "Piercing (Dagger/Spear)", id: "ATTACK_DAGGER", description: "Thrust sound for daggers and spears. Defaults to the blade slash sound." },
-                    { label: "Natural (Claw/Bite)", id: "ATTACK_CLAW", description: "Claw rake or bite attack from feral creatures" },
-                    { label: "Unarmed (Punch)", id: "CORE_BRAWL", description: "Punch, shove, or grapple. Plays on attack; impact is Strike Landed." }
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackBludgeon.label"), id: "ATTACK_BLUDGEON", description: game.i18n.localize("ionrift-resonance.taxonomy.attackBludgeon.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackSword.label"), id: "ATTACK_SWORD", description: game.i18n.localize("ionrift-resonance.taxonomy.attackSword.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackDagger.label"), id: "ATTACK_DAGGER", description: game.i18n.localize("ionrift-resonance.taxonomy.attackDagger.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackClaw.label"), id: "ATTACK_CLAW", description: game.i18n.localize("ionrift-resonance.taxonomy.attackClaw.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.coreBrawl.label"), id: "CORE_BRAWL", description: game.i18n.localize("ionrift-resonance.taxonomy.coreBrawl.description") }
                 ]
             },
             {
-                label: "Attacks (Ranged)",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.coreRanged.label"),
                 id: "CORE_RANGED",
-                description: "Projectile release sound for ranged attacks. Impact is Strike Landed (Ranged).",
+                description: game.i18n.localize("ionrift-resonance.taxonomy.coreRanged.description"),
                 children: [
-                    { label: "Bow", id: "ATTACK_BOW", description: "Bowstring release and arrow flight. Impact is Strike Landed (Ranged)." },
-                    { label: "Crossbow", id: "ATTACK_CROSSBOW", description: "Crossbow bolt release." },
-                    { label: "Sling", id: "ATTACK_SLING", description: "Sling whip and stone release. Defaults to ranged master if unset." }
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackBow.label"), id: "ATTACK_BOW", description: game.i18n.localize("ionrift-resonance.taxonomy.attackBow.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackCrossbow.label"), id: "ATTACK_CROSSBOW", description: game.i18n.localize("ionrift-resonance.taxonomy.attackCrossbow.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.attackSling.label"), id: "ATTACK_SLING", description: game.i18n.localize("ionrift-resonance.taxonomy.attackSling.description") }
                     // Firearm? Thrown?
                 ]
             },
             {
-                label: "Magic (Spells)",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.coreMagic.label"),
                 id: "CORE_MAGIC",
-                description: "Master catch-all for all spell sounds. Schools, domains, and effect types fall back here if unset.",
+                description: game.i18n.localize("ionrift-resonance.taxonomy.coreMagic.description"),
                 children: []
             }
         ];
@@ -339,29 +339,29 @@ export class SoundConfigApp extends FormApplication {
         // System-specific spell traditions
         if (game.system.id === 'dnd5e' || game.system.id === 'pf2e') {
             actionTaxonomy[actionTaxonomy.length - 1].children = [
-                { label: "Fire / Heat", id: "SPELL_FIRE" },
-                { label: "Ice / Cold", id: "SPELL_ICE" },
-                { label: "Lightning / Storm", id: "SPELL_LIGHTNING" },
-                { label: "Acid / Poison", id: "SPELL_ACID" },
-                { label: "Healing / Radiant", id: "SPELL_HEAL" },
-                { label: "Psychic / Sonic", id: "SPELL_PSYCHIC" },
-                { label: "Void / Negative", id: "SPELL_VOID" }
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellFire.label"), id: "SPELL_FIRE" },
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellIce.label"), id: "SPELL_ICE" },
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellLightning.label"), id: "SPELL_LIGHTNING" },
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellAcid.label"), id: "SPELL_ACID" },
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellHeal.label"), id: "SPELL_HEAL" },
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellPsychic.label"), id: "SPELL_PSYCHIC" },
+                { label: game.i18n.localize("ionrift-resonance.taxonomy.spellVoid.label"), id: "SPELL_VOID" }
             ];
 
             if (game.system.id === 'dnd5e') {
                 actionTaxonomy.push({
-                    label: "Spell Schools",
+                    label: game.i18n.localize("ionrift-resonance.taxonomy.coreSchool.label"),
                     id: "CORE_SCHOOL",
-                    description: "Matched by arcane tradition. Unset schools fall back to Magic (Spells).",
+                    description: game.i18n.localize("ionrift-resonance.taxonomy.coreSchool.description"),
                     children: [
-                        { label: "Abjuration", id: "SCHOOL_ABJURATION", description: "Protective wards and barriers." },
-                        { label: "Conjuration", id: "SCHOOL_CONJURATION", description: "Summoning creatures and objects." },
-                        { label: "Divination", id: "SCHOOL_DIVINATION", description: "Perceiving hidden truths." },
-                        { label: "Enchantment", id: "SCHOOL_ENCHANTMENT", description: "Influencing minds." },
-                        { label: "Evocation", id: "SCHOOL_EVOCATION", description: "Raw elemental energy." },
-                        { label: "Illusion", id: "SCHOOL_ILLUSION", description: "Deceptive phantasms." },
-                        { label: "Necromancy", id: "SCHOOL_NECROMANCY", description: "Death and undeath magic." },
-                        { label: "Transmutation", id: "SCHOOL_TRANSMUTATION", description: "Altering physical properties." }
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolAbjuration.label"), id: "SCHOOL_ABJURATION", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolAbjuration.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolConjuration.label"), id: "SCHOOL_CONJURATION", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolConjuration.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolDivination.label"), id: "SCHOOL_DIVINATION", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolDivination.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolEnchantment.label"), id: "SCHOOL_ENCHANTMENT", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolEnchantment.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolEvocation.label"), id: "SCHOOL_EVOCATION", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolEvocation.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolIllusion.label"), id: "SCHOOL_ILLUSION", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolIllusion.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolNecromancy.label"), id: "SCHOOL_NECROMANCY", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolNecromancy.description") },
+                        { label: game.i18n.localize("ionrift-resonance.taxonomy.schoolTransmutation.label"), id: "SCHOOL_TRANSMUTATION", description: game.i18n.localize("ionrift-resonance.taxonomy.schoolTransmutation.description") }
                     ]
                 });
             }
@@ -369,217 +369,217 @@ export class SoundConfigApp extends FormApplication {
 
         if (game.system.id === 'daggerheart') {
             actionTaxonomy.push({
-                label: "Domains",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.coreDomain.label"),
                 id: "CORE_DOMAIN",
-                description: "Matched by domain tradition. Unset domains fall back to Magic (Spells).",
+                description: game.i18n.localize("ionrift-resonance.taxonomy.coreDomain.description"),
                 children: [
-                    { label: "Arcana", id: "DOMAIN_ARCANA", description: "Innate, instinctual magic." },
-                    { label: "Blade", id: "DOMAIN_BLADE", description: "Mastery of weapons." },
-                    { label: "Blood", id: "DOMAIN_BLOOD", description: "Vitality and life force." },
-                    { label: "Bone", id: "DOMAIN_BONE", description: "Swiftness and tactical agility." },
-                    { label: "Codex", id: "DOMAIN_CODEX", description: "Intensive magical study." },
-                    { label: "Dread", id: "DOMAIN_DREAD", description: "Terror and dark power." },
-                    { label: "Grace", id: "DOMAIN_GRACE", description: "Charisma and persuasion." },
-                    { label: "Midnight", id: "DOMAIN_MIDNIGHT", description: "Shadows and secrecy." },
-                    { label: "Sage", id: "DOMAIN_SAGE", description: "Natural world magic." },
-                    { label: "Splendor", id: "DOMAIN_SPLENDOR", description: "Life, healing, and death." },
-                    { label: "Valor", id: "DOMAIN_VALOR", description: "Protection and defense." },
-                    { label: "Wonder", id: "DOMAIN_WONDER", description: "Awe, illusion, and the extraordinary." }
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainArcana.label"), id: "DOMAIN_ARCANA", description: game.i18n.localize("ionrift-resonance.taxonomy.domainArcana.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainBlade.label"), id: "DOMAIN_BLADE", description: game.i18n.localize("ionrift-resonance.taxonomy.domainBlade.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainBlood.label"), id: "DOMAIN_BLOOD", description: game.i18n.localize("ionrift-resonance.taxonomy.domainBlood.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainBone.label"), id: "DOMAIN_BONE", description: game.i18n.localize("ionrift-resonance.taxonomy.domainBone.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainCodex.label"), id: "DOMAIN_CODEX", description: game.i18n.localize("ionrift-resonance.taxonomy.domainCodex.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainDread.label"), id: "DOMAIN_DREAD", description: game.i18n.localize("ionrift-resonance.taxonomy.domainDread.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainGrace.label"), id: "DOMAIN_GRACE", description: game.i18n.localize("ionrift-resonance.taxonomy.domainGrace.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainMidnight.label"), id: "DOMAIN_MIDNIGHT", description: game.i18n.localize("ionrift-resonance.taxonomy.domainMidnight.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainSage.label"), id: "DOMAIN_SAGE", description: game.i18n.localize("ionrift-resonance.taxonomy.domainSage.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainSplendor.label"), id: "DOMAIN_SPLENDOR", description: game.i18n.localize("ionrift-resonance.taxonomy.domainSplendor.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainValor.label"), id: "DOMAIN_VALOR", description: game.i18n.localize("ionrift-resonance.taxonomy.domainValor.description") },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.domainWonder.label"), id: "DOMAIN_WONDER", description: game.i18n.localize("ionrift-resonance.taxonomy.domainWonder.description") }
                 ]
             });
         }
 
         const monsterTaxonomy = [
             {
-                label: "Humanoids",
-                id: "MONSTER_HUMANOID", cardLabel: "Vocal / Pain Sound",
-                description: "Standard bipedal folk (Humans, Elves, Dwarves).",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterHumanoid.label"),
+                id: "MONSTER_HUMANOID", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterHumanoid.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_HUMANOID_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_HUMANOID_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Goblinoids (Goblin/Hobgoblin)", id: "MONSTER_GOBLIN", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_GOBLIN_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterGoblin.label"), id: "MONSTER_GOBLIN", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_GOBLIN_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Lycanthropes (Were-creatures)", id: "MONSTER_LYCANTHROPE", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_LYCANTHROPE_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterLycanthrope.label"), id: "MONSTER_LYCANTHROPE", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_LYCANTHROPE_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Undead",
-                id: "MONSTER_UNDEAD", cardLabel: "Vocal / Pain Sound",
-                description: "Zombies, Skeletons, Ghosts.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterUndead.label"),
+                id: "MONSTER_UNDEAD", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterUndead.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_UNDEAD_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_UNDEAD_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Zombie / Ghoul (Flesh)", id: "MONSTER_ZOMBIE", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_ZOMBIE_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterZombie.label"), id: "MONSTER_ZOMBIE", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_ZOMBIE_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Skeleton / Lich (Bone)", id: "MONSTER_SKELETON", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_SKELETON_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterSkeleton.label"), id: "MONSTER_SKELETON", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_SKELETON_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Ghost / Spirit / Wraith", id: "MONSTER_GHOST", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_GHOST_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterGhost.label"), id: "MONSTER_GHOST", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_GHOST_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Beasts & Animals",
-                id: "MONSTER_BEAST", cardLabel: "Vocal / Pain Sound",
-                description: "Natural creatures.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterBeast.label"),
+                id: "MONSTER_BEAST", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterBeast.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_BEAST_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_BEAST_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Ursine (Bear / Owlbear)", id: "MONSTER_BEAR", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_BEAR_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterBear.label"), id: "MONSTER_BEAR", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_BEAR_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Canine (Wolf / Dog)", id: "MONSTER_WOLF", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_WOLF_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterWolf.label"), id: "MONSTER_WOLF", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_WOLF_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Feline (Cat / Lion)", id: "MONSTER_CAT", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_CAT_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterCat.label"), id: "MONSTER_CAT", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_CAT_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Avian (Bird / Harpy)", id: "MONSTER_BIRD", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_BIRD_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterBird.label"), id: "MONSTER_BIRD", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_BIRD_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Equine (Horse)", id: "MONSTER_HORSE", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_HORSE_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterHorse.label"), id: "MONSTER_HORSE", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_HORSE_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Reptiles (Lizard/Snake)", id: "MONSTER_REPTILE", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_REPTILE_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterReptile.label"), id: "MONSTER_REPTILE", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_REPTILE_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Insects / Spiders", id: "SFX_INSECT", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "SFX_INSECT_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.sfxInsect.label"), id: "SFX_INSECT", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "SFX_INSECT_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Fiends (Demons & Devils)",
-                id: "MONSTER_FIEND", cardLabel: "Vocal / Pain Sound",
-                description: "Extraplanar entities.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterFiend.label"),
+                id: "MONSTER_FIEND", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterFiend.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_FIEND_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_FIEND_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Demon (Chaotic)", id: "MONSTER_DEMON", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "MONSTER_DEMON_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.monsterDemon.label"), id: "MONSTER_DEMON", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_DEMON_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Dragons",
-                id: "MONSTER_DRAGON", cardLabel: "Vocal / Pain Sound",
-                description: "Chromatics, Metallics, Wyverns.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterDragon.label"),
+                id: "MONSTER_DRAGON", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterDragon.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_DRAGON_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_DRAGON_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Wyvern", id: "dragon_wyvern", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "dragon_wyvern_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.dragonWyvern.label"), id: "dragon_wyvern", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "dragon_wyvern_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Giants",
-                id: "MONSTER_GIANT", cardLabel: "Vocal / Pain Sound",
-                description: "Ogres, Trolls, Giants.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterGiant.label"),
+                id: "MONSTER_GIANT", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterGiant.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_GIANT_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_GIANT_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }
                 ]
             },
             {
-                label: "Constructs",
-                id: "MONSTER_CONSTRUCT", cardLabel: "Vocal / Pain Sound",
-                description: "Golems, Animated Objects.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterConstruct.label"),
+                id: "MONSTER_CONSTRUCT", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterConstruct.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_CONSTRUCT_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_CONSTRUCT_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Golems (Generic)", id: "construct_golem", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "construct_golem_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.constructGolem.label"), id: "construct_golem", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "construct_golem_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Animated Objects", id: "construct_animated_object", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "construct_animated_object_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.constructAnimatedObject.label"), id: "construct_animated_object", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "construct_animated_object_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Elementals",
-                id: "MONSTER_ELEMENTAL", cardLabel: "Vocal / Pain Sound",
-                description: "Beings of raw elemental matter.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterElemental.label"),
+                id: "MONSTER_ELEMENTAL", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterElemental.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_ELEMENTAL_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_ELEMENTAL_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Fire Elemental", id: "SFX_FIRE", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "SFX_FIRE_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.sfxFire.label"), id: "SFX_FIRE", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "SFX_FIRE_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Water Elemental", id: "SFX_WATER_ENTITY", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "SFX_WATER_ENTITY_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.sfxWaterEntity.label"), id: "SFX_WATER_ENTITY", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "SFX_WATER_ENTITY_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Air Elemental", id: "SFX_WIND", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "SFX_WIND_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.sfxWind.label"), id: "SFX_WIND", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "SFX_WIND_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Earth Elemental", id: "elemental_earth", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "elemental_earth_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.elementalEarth.label"), id: "elemental_earth", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "elemental_earth_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Aberrations",
-                id: "MONSTER_ALIEN", cardLabel: "Vocal / Pain Sound",
-                description: "Beholders, Mind Flayers, Aliens.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterAlien.label"),
+                id: "MONSTER_ALIEN", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterAlien.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_ALIEN_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_ALIEN_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Beholder", id: "aberration_beholder", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "aberration_beholder_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.aberrationBeholder.label"), id: "aberration_beholder", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "aberration_beholder_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Mind Flayer", id: "aberration_mind_flayer", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "aberration_mind_flayer_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.aberrationMindFlayer.label"), id: "aberration_mind_flayer", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "aberration_mind_flayer_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Chuul / Aquatic", id: "aberration_chuul", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "aberration_chuul_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.aberrationChuul.label"), id: "aberration_chuul", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "aberration_chuul_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Plants & Fungi",
-                id: "MONSTER_PLANT", cardLabel: "Vocal / Pain Sound",
-                description: "Treants, Myconids.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.monsterPlant.label"),
+                id: "MONSTER_PLANT", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.monsterPlant.description"),
                 children: [
-                    { label: "Default Attack", id: "MONSTER_PLANT_ATTACK", description: "Creature attack override. Unset uses weapon sounds." },
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "MONSTER_PLANT_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") },
                     {
-                        label: "Treants", id: "plant_treant", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "plant_treant_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.plantTreant.label"), id: "plant_treant", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "plant_treant_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Myconids / Fungi", id: "plant_myconid", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "plant_myconid_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.plantMyconid.label"), id: "plant_myconid", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "plant_myconid_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     },
                     {
-                        label: "Shambling Mound", id: "plant_shambling_mound", cardLabel: "Vocal / Pain Sound",
-                        children: [{ label: "Default Attack", id: "plant_shambling_mound_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }]
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.plantShamblingMound.label"), id: "plant_shambling_mound", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                        children: [{ label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "plant_shambling_mound_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }]
                     }
                 ]
             },
             {
-                label: "Oozes & Slimes",
-                id: "SFX_SLIME", cardLabel: "Vocal / Pain Sound",
-                description: "Gelatinous Cubes, Puddings.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.sfxSlime.label"),
+                id: "SFX_SLIME", cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.sfxSlime.description"),
                 children: [
-                    { label: "Default Attack", id: "SFX_SLIME_ATTACK", description: "Creature attack override. Unset uses weapon sounds." }
+                    { label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: "SFX_SLIME_ATTACK", description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description") }
                 ]
             }
         ];
@@ -654,12 +654,12 @@ export class SoundConfigApp extends FormApplication {
                         .join(" ");
 
                     parent.children.push({
-                        label: label, id: soundKey, cardLabel: "Vocal / Pain Sound",
+                        label: label, id: soundKey, cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.vocalPainSoundCardLabel"),
                         packName: packName,
                         packIcon: packIcon,
                         children: [{
-                            label: "Default Attack", id: `${soundKey}_ATTACK`,
-                            description: "Creature attack override. Unset uses weapon sounds."
+                            label: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.label"), id: `${soundKey}_ATTACK`,
+                            description: game.i18n.localize("ionrift-resonance.taxonomy.defaultAttack.description")
                         }]
                     });
 
@@ -671,53 +671,53 @@ export class SoundConfigApp extends FormApplication {
         // --- CORE TAXONOMY (Tier 1: Results Only) ---
         const coreTaxonomy = [
             {
-                label: "Strike Results",
-                description: "What plays when an attack hits or misses its target.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupStrikeResults.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupStrikeResults.description"),
                 children: [
                     {
-                        id: "CORE_HIT", label: "Strike Landed", description: "Default impact sound when an attack hits.",
+                        id: "CORE_HIT", label: game.i18n.localize("ionrift-resonance.taxonomy.coreHit.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreHit.description"),
                         children: [
-                            { id: "CORE_HIT_RANGED", label: "Strike Landed (Ranged)", description: "Arrow/bolt impact. Falls back to default hit if unset." },
-                            { id: "CORE_HIT_MAGIC", label: "Strike Landed (Spell)", description: "Magical burst on spell hit. Falls back to default hit if unset." }
+                            { id: "CORE_HIT_RANGED", label: game.i18n.localize("ionrift-resonance.taxonomy.coreHitRanged.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreHitRanged.description") },
+                            { id: "CORE_HIT_MAGIC", label: game.i18n.localize("ionrift-resonance.taxonomy.coreHitMagic.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreHitMagic.description") }
                         ]
                     },
                     {
-                        id: "CORE_MISS", label: "Strike Missed", description: "Default whoosh/whiff when an attack misses.",
+                        id: "CORE_MISS", label: game.i18n.localize("ionrift-resonance.taxonomy.coreMiss.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreMiss.description"),
                         children: [
-                            { id: "CORE_MISS_RANGED", label: "Strike Missed (Ranged)", description: "Arrow whiff/ricochet. Falls back to default miss if unset." },
-                            { id: "CORE_MISS_MAGIC", label: "Strike Missed (Spell)", description: "Fizzle/dissipate on spell miss. Falls back to default miss if unset." }
+                            { id: "CORE_MISS_RANGED", label: game.i18n.localize("ionrift-resonance.taxonomy.coreMissRanged.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreMissRanged.description") },
+                            { id: "CORE_MISS_MAGIC", label: game.i18n.localize("ionrift-resonance.taxonomy.coreMissMagic.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreMissMagic.description") }
                         ]
                     }
                 ]
             },
             {
-                label: "Weapon Extras",
-                description: "Weapon swing fallbacks and critical impact sounds.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupWeaponExtras.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupWeaponExtras.description"),
                 children: [
-                    { id: "CORE_WHOOSH", label: "Swing (Fallback)", description: "Generic swing for weapons without a specific attack sound." },
-                    { id: "CORE_CRIT", label: "Critical Hit (Impact)", description: "Extra layer on critical hits. For roll sounds, see Roll Stingers." },
-                    { id: "CORE_FUMBLE", label: "Critical Miss (Whiff)", description: "Extra whiff sound on critical misses. For roll sounds, see Roll Stingers." }
+                    { id: "CORE_WHOOSH", label: game.i18n.localize("ionrift-resonance.taxonomy.coreWhoosh.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreWhoosh.description") },
+                    { id: "CORE_CRIT", label: game.i18n.localize("ionrift-resonance.taxonomy.coreCrit.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreCrit.description") },
+                    { id: "CORE_FUMBLE", label: game.i18n.localize("ionrift-resonance.taxonomy.coreFumble.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreFumble.description") }
                 ]
             },
             {
-                label: "Vocals",
-                description: "Pain and death sounds for damage and defeat.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupVocals.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupVocals.description"),
                 children: [
-                    { id: "CORE_PAIN_MASCULINE", label: "Pain (Masculine)", description: "Played when a masculine-presenting humanoid takes damage." },
-                    { id: "CORE_PAIN_FEMININE", label: "Pain (Feminine)", description: "Played when a feminine-presenting humanoid takes damage." },
-                    { id: "CORE_DEATH_MASCULINE", label: "Death (Masculine)", description: "Played when a masculine-presenting humanoid actor dies." },
-                    { id: "CORE_DEATH_FEMININE", label: "Death (Feminine)", description: "Played when a feminine-presenting humanoid actor dies." },
-                    { id: "CORE_MONSTER_PAIN", label: "Monster Pain", description: "Reaction growl/grunt when a non-humanoid creature takes a hit." },
-                    { id: "CORE_MONSTER_DEATH", label: "Monster Death", description: "Death sound for non-humanoid creatures. Falls back when no type-specific death is set." }
+                    { id: "CORE_PAIN_MASCULINE", label: game.i18n.localize("ionrift-resonance.taxonomy.corePainMasculine.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.corePainMasculine.description") },
+                    { id: "CORE_PAIN_FEMININE", label: game.i18n.localize("ionrift-resonance.taxonomy.corePainFeminine.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.corePainFeminine.description") },
+                    { id: "CORE_DEATH_MASCULINE", label: game.i18n.localize("ionrift-resonance.taxonomy.coreDeathMasculine.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreDeathMasculine.description") },
+                    { id: "CORE_DEATH_FEMININE", label: game.i18n.localize("ionrift-resonance.taxonomy.coreDeathFeminine.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreDeathFeminine.description") },
+                    { id: "CORE_MONSTER_PAIN", label: game.i18n.localize("ionrift-resonance.taxonomy.coreMonsterPain.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreMonsterPain.description") },
+                    { id: "CORE_MONSTER_DEATH", label: game.i18n.localize("ionrift-resonance.taxonomy.coreMonsterDeath.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.coreMonsterDeath.description") }
                 ]
             },
             {
-                label: "Encounter",
-                description: "Session milestones for combat and progression.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupEncounter.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupEncounter.description"),
                 children: [
-                    { id: "COMBAT_START", label: "Battle Started", description: "Plays once when a new encounter begins and the combat tracker is created." },
-                    { id: "COMBAT_END", label: "Battle Resolved", description: "Plays once when an encounter ends and the combat tracker closes." },
-                    { id: "LEVEL_UP", label: "Level Up", description: "Plays when a character earns enough XP to level up." }
+                    { id: "COMBAT_START", label: game.i18n.localize("ionrift-resonance.taxonomy.combatStart.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.combatStart.description") },
+                    { id: "COMBAT_END", label: game.i18n.localize("ionrift-resonance.taxonomy.combatEnd.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.combatEnd.description") },
+                    { id: "LEVEL_UP", label: game.i18n.localize("ionrift-resonance.taxonomy.levelUp.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.levelUp.description") }
                 ]
             }
         ];
@@ -727,74 +727,74 @@ export class SoundConfigApp extends FormApplication {
         if (game.system.id === 'daggerheart') {
             // Group 1: Duality Dice (Roll Outcomes)
             coreTaxonomy.push({
-                label: "Daggerheart: Duality Dice",
-                description: "Roll outcome stingers. Hope/Fear resource sounds are handled separately by actor hooks.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupDhDualityDice.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupDhDualityDice.description"),
                 children: [
-                    { id: "ROLL_CRIT", label: "Critical Success (Doubles)", description: "Rolled doubles on Duality Dice (automatic success)." },
-                    { id: "DAGGERHEART_SUCCESS", label: "Roll Success", description: "Action succeeded (any Duality roll that beats DC)." },
-                    { id: "DAGGERHEART_FAIL", label: "Roll Fail", description: "Action failed (any Duality roll that misses DC)." }
+                    { id: "ROLL_CRIT", label: game.i18n.localize("ionrift-resonance.taxonomy.rollCrit.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.rollCrit.description") },
+                    { id: "DAGGERHEART_SUCCESS", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartSuccess.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartSuccess.description") },
+                    { id: "DAGGERHEART_FAIL", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFail.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFail.description") }
                 ]
             });
 
             // Group 2: Player Resources
             coreTaxonomy.push({
-                label: "Daggerheart: Player Resources",
-                description: "Hope, Stress, and Armor mechanics.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupDhPlayerResources.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupDhPlayerResources.description"),
                 children: [
                     // Hope
-                    { id: "DAGGERHEART_HOPE", label: "Hope Resource (Gain)", description: "Triggered when a player gains a Hope token." },
-                    { id: "DAGGERHEART_HOPE_USE", label: "Hope Resource (Use)", description: "Triggered when a player spends a Hope token." },
+                    { id: "DAGGERHEART_HOPE", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartHope.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartHope.description") },
+                    { id: "DAGGERHEART_HOPE_USE", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartHopeUse.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartHopeUse.description") },
 
                     // Stress
-                    { id: "DAGGERHEART_STRESS", label: "Take Stress", description: "Played when a character marks Stress." },
-                    { id: "DAGGERHEART_STRESS_CLEAR", label: "Clear Stress", description: "Played when a character recovers Stress." },
+                    { id: "DAGGERHEART_STRESS", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartStress.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartStress.description") },
+                    { id: "DAGGERHEART_STRESS_CLEAR", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartStressClear.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartStressClear.description") },
 
                     // Armor
-                    { id: "DAGGERHEART_ARMOR_USE", label: "Armor Block/Deplete", description: "Played when Armor slots are reduced." },
-                    { id: "DAGGERHEART_ARMOR_REPAIR", label: "Armor Repair", description: "Played when Armor slots are restored." }
+                    { id: "DAGGERHEART_ARMOR_USE", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartArmorUse.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartArmorUse.description") },
+                    { id: "DAGGERHEART_ARMOR_REPAIR", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartArmorRepair.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartArmorRepair.description") }
                 ]
             });
 
             // Group 3: Fear System (GM Only)
             coreTaxonomy.push({
-                label: "Daggerheart: Fear Tracker (GM)",
-                description: "GM Fear mechanics (Spending & Gaining).",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupDhFearTracker.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupDhFearTracker.description"),
                 children: [
                     // Fear Spend
-                    { id: "DAGGERHEART_FEAR_USE_LOW", label: "GM Fear Spend (1)", description: "Triggered when GM spends 1 Fear." },
-                    { id: "DAGGERHEART_FEAR_USE_MED", label: "GM Fear Spend (2-4)", description: "Triggered when GM spends 2-4 Fear." },
-                    { id: "DAGGERHEART_FEAR_USE_HIGH", label: "GM Fear Spend (5+)", description: "Triggered when GM spends 5+ Fear." },
+                    { id: "DAGGERHEART_FEAR_USE_LOW", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearUseLow.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearUseLow.description") },
+                    { id: "DAGGERHEART_FEAR_USE_MED", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearUseMed.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearUseMed.description") },
+                    { id: "DAGGERHEART_FEAR_USE_HIGH", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearUseHigh.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearUseHigh.description") },
 
                     // Fear Gain (Tracker Thresholds)
-                    { id: "DAGGERHEART_FEAR_LOW", label: "GM Fear Increases (to 1-4)", description: "Triggered when GM Fear pool reaches 1-4." },
-                    { id: "DAGGERHEART_FEAR_MED", label: "GM Fear Increases (to 5-8)", description: "Triggered when GM Fear pool reaches 5-8." },
-                    { id: "DAGGERHEART_FEAR_HIGH", label: "GM Fear Increases (to 9+)", description: "Triggered when GM Fear pool reaches 9 or more." }
+                    { id: "DAGGERHEART_FEAR_LOW", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearLow.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearLow.description") },
+                    { id: "DAGGERHEART_FEAR_MED", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearMed.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearMed.description") },
+                    { id: "DAGGERHEART_FEAR_HIGH", label: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearHigh.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.daggerheartFearHigh.description") }
                 ]
             });
         } else if (game.system.id === 'dnd5e') {
             coreTaxonomy.push({
-                label: "D&D 5e: Roll Stingers",
-                description: "Celebratory/failure stingers for natural 20s and natural 1s.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupDnd5eRollStingers.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupDnd5eRollStingers.description"),
                 children: [
-                    { id: "ROLL_CRIT", label: "Natural 20", description: "Stinger played when a d20 rolls a natural 20." },
-                    { id: "ROLL_FUMBLE", label: "Natural 1", description: "Stinger played when a d20 rolls a natural 1." }
+                    { id: "ROLL_CRIT", label: game.i18n.localize("ionrift-resonance.taxonomy.rollCrit.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.rollCrit.description") },
+                    { id: "ROLL_FUMBLE", label: game.i18n.localize("ionrift-resonance.taxonomy.rollFumble.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.rollFumble.description") }
                 ]
             });
         } else if (game.system.id === 'pf2e') {
             coreTaxonomy.push({
-                label: "PF2e: Roll Stingers",
-                description: "Outcome stingers for Critical Success and Critical Failure (Degrees of Success).",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupPf2eRollStingers.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupPf2eRollStingers.description"),
                 children: [
-                    { id: "ROLL_CRIT", label: "Critical Success", description: "Stinger played on a Critical Success result." },
-                    { id: "ROLL_FUMBLE", label: "Critical Failure", description: "Stinger played on a Critical Failure result." }
+                    { id: "ROLL_CRIT", label: game.i18n.localize("ionrift-resonance.taxonomy.rollCrit.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.rollCrit.description") },
+                    { id: "ROLL_FUMBLE", label: game.i18n.localize("ionrift-resonance.taxonomy.rollFumble.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.rollFumble.description") }
                 ]
             });
             coreTaxonomy.push({
-                label: "PF2e: Hero Points",
-                description: "Sounds for Hero Point gain and spend.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupPf2eHeroPoints.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupPf2eHeroPoints.description"),
                 children: [
-                    { id: "HERO_POINT_GAIN", label: "Hero Point Gained", description: "Played when a character gains a Hero Point." },
-                    { id: "HERO_POINT_USE", label: "Hero Point Spent", description: "Played when a character spends a Hero Point." }
+                    { id: "HERO_POINT_GAIN", label: game.i18n.localize("ionrift-resonance.taxonomy.heroPointGain.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.heroPointGain.description") },
+                    { id: "HERO_POINT_USE", label: game.i18n.localize("ionrift-resonance.taxonomy.heroPointUse.label"), description: game.i18n.localize("ionrift-resonance.taxonomy.heroPointUse.description") }
                 ]
             });
         }
@@ -811,38 +811,38 @@ export class SoundConfigApp extends FormApplication {
         // pack source automatically.
         const sharedMonsterTaxonomy = [
             {
-                label: "Humanoid Masculine",
-                description: "Fallback voices used by monsters with a Masculine voice identity set.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupSharedMonsterMasculine.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupSharedMonsterMasculine.description"),
                 children: [
                     {
                         id: "CORE_HUMANOID_PAIN_MASCULINE",
-                        label: "Pain (Masculine)",
-                        cardLabel: "Humanoid Pain (Masculine)",
-                        description: "Played when a masculine-voiced humanoid monster takes damage."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidPainMasculine.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidPainMasculine.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidPainMasculine.description")
                     },
                     {
                         id: "CORE_HUMANOID_DEATH_MASCULINE",
-                        label: "Death (Masculine)",
-                        cardLabel: "Humanoid Death (Masculine)",
-                        description: "Played when a masculine-voiced humanoid monster dies."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidDeathMasculine.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidDeathMasculine.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidDeathMasculine.description")
                     }
                 ]
             },
             {
-                label: "Humanoid Feminine",
-                description: "Fallback voices used by monsters with a Feminine voice identity set.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupSharedMonsterFeminine.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupSharedMonsterFeminine.description"),
                 children: [
                     {
                         id: "CORE_HUMANOID_PAIN_FEMININE",
-                        label: "Pain (Feminine)",
-                        cardLabel: "Humanoid Pain (Feminine)",
-                        description: "Played when a feminine-voiced humanoid monster takes damage."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidPainFeminine.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidPainFeminine.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidPainFeminine.description")
                     },
                     {
                         id: "CORE_HUMANOID_DEATH_FEMININE",
-                        label: "Death (Feminine)",
-                        cardLabel: "Humanoid Death (Feminine)",
-                        description: "Played when a feminine-voiced humanoid monster dies."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidDeathFeminine.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidDeathFeminine.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.coreHumanoidDeathFeminine.description")
                     }
                 ]
             }
@@ -857,50 +857,50 @@ export class SoundConfigApp extends FormApplication {
 
         const quizNightTaxonomy = [
             {
-                label: "Quiz Match & Round Flow",
-                description: "Audio cues for round starts, countdowns, and locking answers.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupQuizFlow.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupQuizFlow.description"),
                 children: [
                     {
                         id: "QUIZ_ROUND_START",
-                        label: "Round Jingle",
-                        cardLabel: "Round Start",
-                        description: "Played when a new quiz round begins."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.quizRoundStart.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.quizRoundStart.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.quizRoundStart.description")
                     },
                     {
                         id: "QUIZ_PENS_DOWN",
-                        label: "Pens Down",
-                        cardLabel: "Pens Down",
-                        description: "Played when answers are locked for marking."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.quizPensDown.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.quizPensDown.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.quizPensDown.description")
                     },
                     {
                         id: "QUIZ_TIMER_EXPIRED",
-                        label: "Timer Expired",
-                        cardLabel: "Timer Expired",
-                        description: "Played when the round countdown timer runs out."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.quizTimerExpired.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.quizTimerExpired.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.quizTimerExpired.description")
                     }
                 ]
             },
             {
-                label: "Marking & Final Standings",
-                description: "Personal answer feedback and grand finale celebration.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupQuizMarking.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupQuizMarking.description"),
                 children: [
                     {
                         id: "QUIZ_ANSWER_CORRECT",
-                        label: "Correct Answer",
-                        cardLabel: "Correct Answer (Ding)",
-                        description: "Played in player's headphones when their answer is marked correct."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.quizAnswerCorrect.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.quizAnswerCorrect.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.quizAnswerCorrect.description")
                     },
                     {
                         id: "QUIZ_ANSWER_INCORRECT",
-                        label: "Incorrect Answer",
-                        cardLabel: "Incorrect Answer (Thud)",
-                        description: "Played in player's headphones when their answer is marked incorrect."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.quizAnswerIncorrect.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.quizAnswerIncorrect.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.quizAnswerIncorrect.description")
                     },
                     {
                         id: "QUIZ_END",
-                        label: "Quiz Finale",
-                        cardLabel: "Victory Fanfare",
-                        description: "Played when the final podium and prize ceremony is revealed."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.quizEnd.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.quizEnd.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.quizEnd.description")
                     }
                 ]
             }
@@ -913,32 +913,32 @@ export class SoundConfigApp extends FormApplication {
 
         const respiteTaxonomy = [
             {
-                label: "Camp & Rest",
-                description: "Audio cues for resting and camping.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupRespiteCampRest.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupRespiteCampRest.description"),
                 children: [
                     {
                         id: "RESPITE_FIRE_LIT",
-                        label: "Lights the Fire",
-                        cardLabel: "Lights the Fire",
-                        description: "One-shot when the fire catches. Stays silent until a sound is bound."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.respiteFireLit.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.respiteFireLit.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.respiteFireLit.description")
                     },
                     {
                         id: "RESPITE_CAMPFIRE",
-                        label: "Campfire Crackle",
-                        cardLabel: "Campfire",
-                        description: "Crackling campfire loop for camp scenes and resting."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.respiteCampfire.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.respiteCampfire.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.respiteCampfire.description")
                     },
                     {
                         id: "RESPITE_SLEEP_STARTED",
-                        label: "Nightfall",
-                        cardLabel: "Sleep Begun",
-                        description: "Plays when the party beds down to sleep."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.respiteSleepStarted.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.respiteSleepStarted.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.respiteSleepStarted.description")
                     },
                     {
                         id: "RESPITE_RESOLUTION",
-                        label: "Morning Resolution",
-                        cardLabel: "Dawn Call",
-                        description: "Morning stinger played when the rest concludes."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.respiteResolution.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.respiteResolution.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.respiteResolution.description")
                     }
                 ]
             }
@@ -950,116 +950,116 @@ export class SoundConfigApp extends FormApplication {
 
         const cursewrightTaxonomy = [
             {
-                label: "Curse Progress",
-                description: "Cues as a curse takes hold. Most are heard only by the bearer or the GM.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupCursewrightProgress.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupCursewrightProgress.description"),
                 children: [
                     {
                         id: "CURSEWRIGHT_REMOVAL_ATTEMPTED",
-                        label: "Item Resists Removal",
-                        cardLabel: "Resists Removal",
-                        description: "Bearer only. Plays when the bearer tries to take off a locked item. The GM hears it if no player owns the bearer (actor)."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightRemovalAttempted.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightRemovalAttempted.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightRemovalAttempted.description")
                     },
                     {
                         id: "CURSEWRIGHT_WHISPER_SENT",
-                        label: "Curse Whisper",
-                        cardLabel: "Whisper",
-                        description: "Bearer only. Plays when the curse whispers to its bearer. The GM hears it if no player owns the bearer (actor)."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightWhisperSent.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightWhisperSent.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightWhisperSent.description")
                     },
                     {
                         id: "CURSEWRIGHT_CURSE_LOCKED",
-                        label: "Curse Locks On",
-                        cardLabel: "Locked",
-                        description: "GM only. Plays when the item first binds to its bearer."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseLocked.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseLocked.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseLocked.description")
                     },
                     {
                         id: "CURSEWRIGHT_PHASE_ADVANCED",
-                        label: "Curse Deepens",
-                        cardLabel: "Phase Advanced",
-                        description: "GM only. Plays each time a curse moves to its next phase."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightPhaseAdvanced.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightPhaseAdvanced.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightPhaseAdvanced.description")
                     },
                     {
                         id: "CURSEWRIGHT_CURSE_ACTIVATED",
-                        label: "Curse Revealed",
-                        cardLabel: "Activated",
-                        description: "Everyone. Plays when a curse shows its true nature."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseActivated.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseActivated.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseActivated.description")
                     }
                 ]
             },
             {
-                label: "Devouring Container",
-                description: "Cues for bags and chests that eat what is put inside.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupCursewrightDevour.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupCursewrightDevour.description"),
                 children: [
                     {
                         id: "CURSEWRIGHT_DEVOUR_REVEAL_FIRST",
-                        label: "First Reveal",
-                        cardLabel: "Maw Opens",
-                        description: "Everyone. Plays when the container first shows what it is."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevourRevealFirst.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevourRevealFirst.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevourRevealFirst.description")
                     },
                     {
                         id: "CURSEWRIGHT_DEVOUR_REVEAL_FULL",
-                        label: "Full Reveal",
-                        cardLabel: "Maw Fully Revealed",
-                        description: "Everyone. Plays when the container reveals its full form."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevourRevealFull.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevourRevealFull.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevourRevealFull.description")
                     },
                     {
                         id: "CURSEWRIGHT_ARM_GRIP",
-                        label: "Arm Gripped",
-                        cardLabel: "Grip",
-                        description: "Everyone. Plays when something inside grabs a reaching arm."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmGrip.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmGrip.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmGrip.description")
                     },
                     {
                         id: "CURSEWRIGHT_ARM_CAUGHT",
-                        label: "Arm Caught",
-                        cardLabel: "Caught",
-                        description: "Everyone. Plays when the first save fails and the wrist is held fast."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmCaught.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmCaught.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmCaught.description")
                     },
                     {
                         id: "CURSEWRIGHT_ARM_PULLED",
-                        label: "Arm Pulled In",
-                        cardLabel: "Pulled",
-                        description: "Everyone. Plays when the grip drags the arm inside."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmPulled.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmPulled.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightArmPulled.description")
                     },
                     {
                         id: "CURSEWRIGHT_DEVOURED",
-                        label: "Item Devoured",
-                        cardLabel: "Devoured",
-                        description: "GM only. Plays when the container eats an item during a rest."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevoured.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevoured.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDevoured.description")
                     }
                 ]
             },
             {
-                label: "Tribute & Release",
-                description: "Cues for payment demands, violent endings and Remove Curse.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupCursewrightTribute.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupCursewrightTribute.description"),
                 children: [
                     {
                         id: "CURSEWRIGHT_TRIBUTE_DEMANDED",
-                        label: "Tribute Demanded",
-                        cardLabel: "Tribute Demanded",
-                        description: "Everyone. Plays when a curse demands payment."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightTributeDemanded.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightTributeDemanded.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightTributeDemanded.description")
                     },
                     {
                         id: "CURSEWRIGHT_TRIBUTE_MISSED",
-                        label: "Tribute Missed",
-                        cardLabel: "Tribute Missed",
-                        description: "Everyone. Plays when a demanded payment goes unpaid."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightTributeMissed.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightTributeMissed.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightTributeMissed.description")
                     },
                     {
                         id: "CURSEWRIGHT_DETONATION",
-                        label: "Detonation",
-                        cardLabel: "Detonation",
-                        description: "Everyone. Plays when a curse ends violently."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDetonation.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDetonation.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightDetonation.description")
                     },
                     {
                         id: "CURSEWRIGHT_CURSE_BROKEN",
-                        label: "Curse Broken",
-                        cardLabel: "Broken",
-                        description: "Everyone. Plays when Remove Curse breaks at least one curse."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseBroken.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseBroken.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseBroken.description")
                     },
                     {
                         id: "CURSEWRIGHT_CURSE_RESISTED",
-                        label: "Curse Resists",
-                        cardLabel: "Resisted",
-                        description: "Everyone. Plays when every curse resists Remove Curse."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseResisted.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseResisted.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.cursewrightCurseResisted.description")
                     }
                 ]
             }
@@ -1072,26 +1072,26 @@ export class SoundConfigApp extends FormApplication {
 
         const voiceTaxonomy = [
             {
-                label: "Whisper Ambients",
-                description: "Background audio played to the GM and recipient during private whispers.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupVoiceWhisperAmbients.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupVoiceWhisperAmbients.description"),
                 children: [
                     {
                         id: "VOICE_WHISPER_LIGHT",
-                        label: "Light Whisper Ambient",
-                        cardLabel: "Light Whisper",
-                        description: "Harmonic tone for celestial or benevolent whispers."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperLight.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperLight.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperLight.description")
                     },
                     {
                         id: "VOICE_WHISPER_NEUTRAL",
-                        label: "Neutral Whisper Ambient",
-                        cardLabel: "Neutral Whisper",
-                        description: "Subtle room tone for direct mind whispers."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperNeutral.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperNeutral.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperNeutral.description")
                     },
                     {
                         id: "VOICE_WHISPER_DARK",
-                        label: "Dark Whisper Ambient",
-                        cardLabel: "Dark Whisper",
-                        description: "Low drone for sinister or menacing whispers."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperDark.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperDark.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.voiceWhisperDark.description")
                     }
                 ]
             }
@@ -1103,128 +1103,128 @@ export class SoundConfigApp extends FormApplication {
 
         const tripwireTaxonomy = [
             {
-                label: "Doors & Passages",
-                description: "Audio cues for opening and closing wood, iron, and stone dungeon doors.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupTripwireDoors.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupTripwireDoors.description"),
                 children: [
                     {
                         id: "DOOR_WOOD_OPEN",
-                        label: "Wood Door Opens",
-                        cardLabel: "Wood Open",
-                        description: "Plays when a wooden door swings open."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.doorWoodOpen.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.doorWoodOpen.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.doorWoodOpen.description")
                     },
                     {
                         id: "DOOR_WOOD_CLOSE",
-                        label: "Wood Door Closes",
-                        cardLabel: "Wood Close",
-                        description: "Plays when a wooden door swings shut."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.doorWoodClose.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.doorWoodClose.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.doorWoodClose.description")
                     },
                     {
                         id: "DOOR_IRON_OPEN",
-                        label: "Iron Door Opens",
-                        cardLabel: "Iron Open",
-                        description: "Plays when an iron gate, cell door, or metal vault opens."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.doorIronOpen.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.doorIronOpen.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.doorIronOpen.description")
                     },
                     {
                         id: "DOOR_IRON_CLOSE",
-                        label: "Iron Door Closes",
-                        cardLabel: "Iron Close",
-                        description: "Plays when an iron gate or reinforced metal door shuts."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.doorIronClose.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.doorIronClose.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.doorIronClose.description")
                     },
                     {
                         id: "DOOR_STONE_OPEN",
-                        label: "Stone Door Opens",
-                        cardLabel: "Stone Open",
-                        description: "Plays when a stone slab or secret masonry door grinds open."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.doorStoneOpen.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.doorStoneOpen.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.doorStoneOpen.description")
                     },
                     {
                         id: "DOOR_STONE_CLOSE",
-                        label: "Stone Door Closes",
-                        cardLabel: "Stone Close",
-                        description: "Plays when a heavy stone door grinds shut and seals."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.doorStoneClose.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.doorStoneClose.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.doorStoneClose.description")
                     }
                 ]
             },
             {
-                label: "Locks & Mechanisms",
-                description: "Audio cues for turning keys, tumblers clicking, locking, and picking locks.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupTripwireLocks.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupTripwireLocks.description"),
                 children: [
                     {
                         id: "LOCK_LOCKED",
-                        label: "Lock Turned (Locked)",
-                        cardLabel: "Locked",
-                        description: "Plays when a door, chest, or mechanism is locked."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.lockLocked.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.lockLocked.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.lockLocked.description")
                     },
                     {
                         id: "LOCK_UNLOCKED",
-                        label: "Key Turned (Unlocked)",
-                        cardLabel: "Unlocked",
-                        description: "Plays when a lock is unlocked with a key, spell, or toggle."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.lockUnlocked.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.lockUnlocked.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.lockUnlocked.description")
                     },
                     {
                         id: "LOCK_PICK_SUCCESS",
-                        label: "Lockpick Check Succeeded",
-                        cardLabel: "Lockpick Success",
-                        description: "Plays when a character picks a lock (tumbler release with a hopeful chime)."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.lockPickSuccess.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.lockPickSuccess.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.lockPickSuccess.description")
                     }
                 ]
             },
             {
-                label: "Traps & Hazards",
-                description: "Audio cues when traps are disarmed or when specific hazard mechanisms spring.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupTripwireTraps.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupTripwireTraps.description"),
                 children: [
                     {
                         id: "TRAP_DISARM_SUCCESS",
-                        label: "Trap Disarm Succeeded",
-                        cardLabel: "Disarm Success",
-                        description: "Plays when a character disarms a trap or hazard (mechanism release with a hopeful chime)."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapDisarmSuccess.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapDisarmSuccess.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapDisarmSuccess.description")
                     },
                     {
                         id: "TRIPWIRE_TRAP_SPRING",
-                        label: "Generic Trap Springs",
-                        cardLabel: "Trap Spring",
-                        description: "Default cue when a tripwire snaps, pressure plate clicks, or general hazard triggers."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.tripwireTrapSpring.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.tripwireTrapSpring.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.tripwireTrapSpring.description")
                     },
                     {
                         id: "TRAP_DARTS",
-                        label: "Poison Darts",
-                        cardLabel: "Darts",
-                        description: "Plays when a dart or needle volley trap fires."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapDarts.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapDarts.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapDarts.description")
                     },
                     {
                         id: "TRAP_PIT",
-                        label: "Pit Trap",
-                        cardLabel: "Pit Trap",
-                        description: "Plays when a false floor or trapdoor gives way over a pit."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapPit.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapPit.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapPit.description")
                     },
                     {
                         id: "TRAP_ROCKFALL",
-                        label: "Rockfall / Collapse",
-                        cardLabel: "Rockfall",
-                        description: "Plays when a ceiling collapses or boulders crash down."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapRockfall.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapRockfall.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapRockfall.description")
                     },
                     {
                         id: "TRAP_SPEARS",
-                        label: "Spears / Blades",
-                        cardLabel: "Spears",
-                        description: "Plays when wall spears, spikes, or scything blades thrust out."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapSpears.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapSpears.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapSpears.description")
                     },
                     {
                         id: "TRAP_SNAPPING",
-                        label: "Snapping Jaws / Snare",
-                        cardLabel: "Snapping",
-                        description: "Plays when a steel jaw trap, wire snare, or spring clamp snaps shut."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapSnapping.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapSnapping.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapSnapping.description")
                     },
                     {
                         id: "TRAP_TELEPORT",
-                        label: "Teleportation Trap",
-                        cardLabel: "Teleport",
-                        description: "Plays when a spatial rift or teleportation ward displaces a creature."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapTeleport.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapTeleport.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapTeleport.description")
                     },
                     {
                         id: "TRAP_MAGICAL",
-                        label: "Arcane / Glyph Trap",
-                        cardLabel: "Magical Trap",
-                        description: "Plays when a magical rune, glyph of warding, or arcane hazard detonates."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.trapMagical.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.trapMagical.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.trapMagical.description")
                     }
                 ]
             }
@@ -1236,26 +1236,26 @@ export class SoundConfigApp extends FormApplication {
 
         const luminanceTaxonomy = [
             {
-                label: "Handheld Torch",
-                description: "Crackling torch sound that follows a token carrying a lit torch, plus a sound when it is lit or put out.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupLuminanceTorch.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupLuminanceTorch.description"),
                 children: [
                     {
                         id: "LUMINANCE_TORCH_LOOP",
-                        label: "Handheld Torch Loop",
-                        cardLabel: "Torch Loop",
-                        description: "Subtle flickering torch loop attached spatially to the torchbearer token."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchLoop.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchLoop.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchLoop.description")
                     },
                     {
                         id: "LUMINANCE_TORCH_LIT",
-                        label: "Torch Ignited",
-                        cardLabel: "Torch Lit",
-                        description: "Plays at the token when a handheld torch is kindled."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchLit.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchLit.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchLit.description")
                     },
                     {
                         id: "LUMINANCE_TORCH_EXTINGUISH",
-                        label: "Torch Extinguished",
-                        cardLabel: "Torch Snuffed",
-                        description: "Plays at the token when a handheld torch is doused or snuffed."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchExtinguish.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchExtinguish.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.luminanceTorchExtinguish.description")
                     }
                 ]
             }
@@ -1267,26 +1267,26 @@ export class SoundConfigApp extends FormApplication {
 
         const waterlineTaxonomy = [
             {
-                label: "Water Body Movement",
-                description: "Spatial water entry, wading footsteps, and shore exit cues when tokens move across Ionrift Waterline regions.",
+                label: game.i18n.localize("ionrift-resonance.taxonomy.groupWaterlineMovement.label"),
+                description: game.i18n.localize("ionrift-resonance.taxonomy.groupWaterlineMovement.description"),
                 children: [
                     {
                         id: "WATERLINE_ENTER",
-                        label: "Water Entry",
-                        cardLabel: "Water Enter",
-                        description: "Plays at the token when stepping from dry land into a water body."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.waterlineEnter.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.waterlineEnter.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.waterlineEnter.description")
                     },
                     {
                         id: "WATERLINE_WADE",
-                        label: "Water Wade",
-                        cardLabel: "Water Wade",
-                        description: "Plays at the token as it wades or sloshes across flooded spaces."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.waterlineWade.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.waterlineWade.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.waterlineWade.description")
                     },
                     {
                         id: "WATERLINE_EXIT",
-                        label: "Water Exit",
-                        cardLabel: "Water Exit",
-                        description: "Plays at the token when stepping out of a water body onto dry land."
+                        label: game.i18n.localize("ionrift-resonance.taxonomy.waterlineExit.label"),
+                        cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.waterlineExit.cardLabel"),
+                        description: game.i18n.localize("ionrift-resonance.taxonomy.waterlineExit.description")
                     }
                 ]
             }
@@ -1353,67 +1353,67 @@ export class SoundConfigApp extends FormApplication {
             },
             tiers: {
                 tier1: {
-                    label: "Essentials",
+                    label: game.i18n.localize("ionrift-resonance.config.tabEssentials"),
                     active: true,
                     paramounts: tier1Roots
                 },
                 tier2: {
-                    label: "Tier 2: Actions",
+                    label: game.i18n.localize("ionrift-resonance.config.tabCombatActions"),
                     active: false,
                     paramounts: tier2Roots
                 },
                 tier3: {
-                    label: "Tier 3: Monsters",
+                    label: game.i18n.localize("ionrift-resonance.config.tabMonsters"),
                     active: false,
                     paramounts: tier3Roots
                 },
                 sharedMonster: {
-                    label: "Shared Monster Voices",
+                    label: game.i18n.localize("ionrift-resonance.config.tabSharedMonsterVoices"),
                     active: false,
                     paramounts: sharedMonsterRoots
                 },
                 quizNight: {
-                    label: "Quiz Night",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabQuizNight"),
                     active: false,
                     paramounts: quizNightRoots
                 },
                 respite: {
-                    label: "Respite",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabRespite"),
                     active: false,
                     paramounts: respiteRoots
                 },
                 cursewright: {
-                    label: "Cursewright",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabCursewright"),
                     active: false,
                     paramounts: cursewrightRoots
                 },
                 voice: {
-                    label: "Voice",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabVoice"),
                     active: false,
                     paramounts: voiceRoots
                 },
                 tripwire: {
-                    label: "Tripwire",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabTripwire"),
                     active: false,
                     paramounts: tripwireRoots
                 },
                 luminance: {
-                    label: "Luminance",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabLuminance"),
                     active: false,
                     paramounts: luminanceRoots
                 },
                 waterline: {
-                    label: "Waterline",
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabWaterline"),
                     active: false,
                     paramounts: waterlineRoots
                 },
                 auditor: {
-                    label: "Auditor",
+                    label: game.i18n.localize("ionrift-resonance.config.tabSoundAuditor"),
                     active: false,
                     items: this._getAuditorData()
                 },
                 players: {
-                    label: "Players",
+                    label: game.i18n.localize("ionrift-resonance.config.tabPlayers"),
                     active: false,
                     players: configOverrides.players || []
                 },
@@ -1478,17 +1478,17 @@ export class SoundConfigApp extends FormApplication {
      */
     _getOrchestratorData() {
         const CATEGORY_LABELS = {
-            FEAR_STINGER: "Fear Stingers",
-            FEAR_USE: "Fear Spent",
-            DH_HOPE_GAIN: "Hope Gained",
-            DH_HOPE_USE: "Hope Spent",
-            DH_STRESS_GAIN: "Stress Applied",
-            DH_STRESS_CLEAR: "Stress Cleared",
-            DH_ARMOR_USE: "Armor Used",
-            DH_ARMOR_REPAIR: "Armor Repaired",
-            DH_OUTCOME: "Outcome Stingers",
-            MONSTER_VOCAL: "Monster Vocals",
-            PC_VOCAL: "PC Vocals"
+            FEAR_STINGER: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryFearStinger"),
+            FEAR_USE: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryFearUse"),
+            DH_HOPE_GAIN: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhHopeGain"),
+            DH_HOPE_USE: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhHopeUse"),
+            DH_STRESS_GAIN: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhStressGain"),
+            DH_STRESS_CLEAR: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhStressClear"),
+            DH_ARMOR_USE: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhArmorUse"),
+            DH_ARMOR_REPAIR: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhArmorRepair"),
+            DH_OUTCOME: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryDhOutcome"),
+            MONSTER_VOCAL: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryMonsterVocal"),
+            PC_VOCAL: game.i18n.localize("ionrift-resonance.config.orchestrator.categoryPcVocal")
         };
 
         let budgets = {};
@@ -1505,7 +1505,7 @@ export class SoundConfigApp extends FormApplication {
                 id,
                 label: CATEGORY_LABELS[id] ?? id,
                 defaultMs,
-                defaultLabel: defaultMs === 0 ? "Unlimited" : `${defaultMs}ms`,
+                defaultLabel: defaultMs === 0 ? game.i18n.localize("ionrift-resonance.config.orchestrator.unlimited") : `${defaultMs}ms`,
                 placeholderLabel: defaultMs === 0 ? "\u221e" : String(defaultMs),
                 overrideMs: override !== undefined ? String(override) : "",
                 hasOverride: override !== undefined,
@@ -1862,7 +1862,7 @@ export class SoundConfigApp extends FormApplication {
 
         const list = this.element.find(".auditor-list");
         list.html(html);
-        this.element.find(".auditor-page-info").text(`Page ${data.page} of ${data.totalPages}`);
+        this.element.find(".auditor-page-info").text(game.i18n.format("ionrift-resonance.config.auditorPageInfo", { page: data.page, totalPages: data.totalPages }));
 
         // Re-bind listeners if needed (actions delegated to root)
     }
@@ -1882,7 +1882,7 @@ export class SoundConfigApp extends FormApplication {
                 new ItemSoundConfig(doc).render(true);
             }
         } catch (e) {
-            ui.notifications.error("Ionrift: Could not load Sound Config for editing.");
+            ui.notifications.error(game.i18n.localize("ionrift-resonance.notification.couldNotLoadConfigForEditing"));
         }
     }
 
@@ -1901,7 +1901,7 @@ export class SoundConfigApp extends FormApplication {
             await doc.unsetFlag("ionrift-resonance", key);
             await doc.unsetFlag("ionrift-resonance", key + "_name");
             await doc.unsetFlag("ionrift-resonance", key + "_meta");
-            ui.notifications.info(`Reset sound override for ${doc.name}`);
+            ui.notifications.info(game.i18n.format("ionrift-resonance.notification.resetOverrideForActor", { name: doc.name }));
         } else {
             Logger.warn(`Auditor | Could not resolve UUID: ${uuid}`);
         }
@@ -2121,7 +2121,7 @@ export class SoundConfigApp extends FormApplication {
                 })(),
                 currentSoundId: "", // bindings takes precedence
                 soundKey: key,
-                title: `Pick Sound: ${humanLabel}`,
+                title: game.i18n.format("ionrift-resonance.config.pickSoundTitle", { label: humanLabel }),
                 soundConfig: (() => {
                     try {
                         const v = currentValue.trim();
@@ -2137,7 +2137,7 @@ export class SoundConfigApp extends FormApplication {
 
         } catch (e) {
             console.error("Ionrift Sound Config | Failed to load SoundPickerApp:", e);
-            ui.notifications.error("Ionrift Sound Config required for Search.");
+            ui.notifications.error(game.i18n.localize("ionrift-resonance.notification.soundConfigRequiredForSearch"));
         }
     }
 
@@ -2226,24 +2226,24 @@ export class SoundConfigApp extends FormApplication {
         }
 
         this._importDialog = new Dialog({
-            title: "Import Configuration",
+            title: game.i18n.localize("ionrift-resonance.config.importDialogTitle"),
             content: `
                 <div class="form-group">
-                    <label>Paste JSON or Upload File content here:</label>
+                    <label>${game.i18n.localize("ionrift-resonance.config.importDialogLabel")}</label>
                     <textarea name="json" style="width:100%; height: 200px; font-family: monospace;"></textarea>
                 </div>
-                <p class="notes">This will <strong>overwrite</strong> your current "User Sound Bindings" and "Campaign Overrides".</p>
+                <p class="notes">${game.i18n.localize("ionrift-resonance.config.importDialogNotes")}</p>
             `,
             buttons: {
                 import: {
-                    label: "Import",
+                    label: game.i18n.localize("ionrift-resonance.config.importBtn"),
                     icon: "<i class='fas fa-file-import'></i>",
                     callback: async (html) => {
                         const jsonStr = html.find("[name='json']").val();
 
                         // Fix: Check for empty input
                         if (!jsonStr || jsonStr.trim() === "") {
-                            ui.notifications.warn("Ionrift Sounds | Import cancelled: Input was empty.");
+                            ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.importCancelledEmpty"));
                             return;
                         }
 
@@ -2252,7 +2252,7 @@ export class SoundConfigApp extends FormApplication {
 
                             // 0. Version / Schema Check
                             if (!data.version || !data.version.startsWith("1.")) {
-                                ui.notifications.warn("Ionrift Sounds | Importing legacy or incompatible config version. Some settings may not apply.");
+                                ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.importLegacyVersion"));
                             }
 
                             // Validation checks
@@ -2263,11 +2263,11 @@ export class SoundConfigApp extends FormApplication {
                                 await game.settings.set("ionrift-resonance", "configOverrides", data.overrides);
                             }
 
-                            ui.notifications.info("Ionrift Sounds | Configuration Imported Successfully.");
+                            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.configImportedSuccessfully"));
                             this.render(true);
                             game.ionrift.resonance?.handler?.loadConfig(); // Reload
                         } catch (e) {
-                            ui.notifications.error("Ionrift Sounds | Import Failed: Invalid JSON.");
+                            ui.notifications.error(game.i18n.localize("ionrift-resonance.notification.importFailedInvalidJson"));
                             console.error(e);
                         }
                     }
@@ -2347,7 +2347,7 @@ export class SoundConfigApp extends FormApplication {
                 if (fromRow) {
                     idToPlay = fromRow;
                 } else if (semanticKey.endsWith("_ATTACK")) {
-                    ui.notifications.warn("No preview audio for this attack slot. It is unbound; combat uses weapon sounds instead.");
+                    ui.notifications.warn(game.i18n.localize("ionrift-resonance.notification.noPreviewAudioUnboundAttack"));
                     return;
                 } else {
                     const resolved = game.ionrift.resonance.handler.resolveSound(idToPlay);
@@ -2427,7 +2427,7 @@ export class SoundConfigApp extends FormApplication {
         event.preventDefault();
         if (game.ionrift.resonance?.manager) {
             game.ionrift.resonance?.manager?.stopAll();
-            ui.notifications.info("Syrinscape: Stop signal sent.");
+            ui.notifications.info(game.i18n.localize("ionrift-resonance.notification.syrinscapeStopSignalSent"));
         }
     }
 
@@ -2466,7 +2466,7 @@ export class SoundConfigApp extends FormApplication {
                         new ItemSoundConfig(doc).render(true);
                     }
                 } catch (e) {
-                    ui.notifications.error("Ionrift: Could not load Sound Config.");
+                    ui.notifications.error(game.i18n.localize("ionrift-resonance.notification.couldNotLoadConfig"));
                 }
             }
         }

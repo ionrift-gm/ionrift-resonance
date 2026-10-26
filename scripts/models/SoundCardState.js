@@ -82,12 +82,12 @@ export class SoundCardState {
 
         // 3. Process Tags
         this.displayTags = rawList.map(entry => {
-            let label = "Unknown";
+            let label = game.i18n.localize("ionrift-resonance.config.cardState.unknown");
             let id = "";
             let type = "ID"; // Default type
 
             if (typeof entry === 'object') {
-                label = entry.name || entry.id || "Sound";
+                label = entry.name || entry.id || game.i18n.localize("ionrift-resonance.config.cardState.sound");
                 id = entry.id;
                 if (entry.type) type = entry.type;
             } else if (typeof entry === 'string') {

@@ -9,13 +9,13 @@
 
             <!-- Top Group: Tiers -->
             <div class="sidebar-group tiers" style="flex: 0 0 auto;">
-                <div class="header">Calibration Tiers</div>
+                <div class="header">{{localize "ionrift-resonance.config.tiersHeader"}}</div>
                 <div class="group-items" style="display: flex; flex-direction: column; gap: 2px;">
-                    <a class="item" data-tab="tier1"><i class="fas fa-cube"></i> Essentials</a>
-                    <a class="item" data-tab="tier2"><i class="fas fa-hammer"></i> Combat Actions</a>
-                    <a class="item" data-tab="tier3"><i class="fas fa-skull"></i> Monsters</a>
+                    <a class="item" data-tab="tier1"><i class="fas fa-cube"></i> {{localize "ionrift-resonance.config.tabEssentials"}}</a>
+                    <a class="item" data-tab="tier2"><i class="fas fa-hammer"></i> {{localize "ionrift-resonance.config.tabCombatActions"}}</a>
+                    <a class="item" data-tab="tier3"><i class="fas fa-skull"></i> {{localize "ionrift-resonance.config.tabMonsters"}}</a>
                     {{#if features.sharedMonsterVoices}}
-                    <a class="item" data-tab="shared-monster"><i class="fas fa-users"></i> Shared Monster Voices</a>
+                    <a class="item" data-tab="shared-monster"><i class="fas fa-users"></i> {{localize "ionrift-resonance.config.tabSharedMonsterVoices"}}</a>
                     {{/if}}
                     <!-- <a class="item" data-tab="tier4"><i class="fas fa-cloud-showers-heavy"></i> Weather</a> -->
                 </div>
@@ -23,76 +23,76 @@
 
             <!-- Module Integrations -->
             <div class="sidebar-group integrations" style="flex: 0 0 auto; margin-top: 10px;">
-                <div class="header {{#unless integrations.hasActive}}dimmed-header{{/unless}}">Module Integrations</div>
+                <div class="header {{#unless integrations.hasActive}}dimmed-header{{/unless}}">{{localize "ionrift-resonance.config.integrationsHeader"}}</div>
                 <div class="group-items" style="display: flex; flex-direction: column; gap: 2px;">
                     <a class="item {{#unless integrations.quizNight.active}}disabled-tab{{/unless}}" 
                        data-tab="quiz-night" 
-                       {{#unless integrations.quizNight.active}}title="Ionrift Quiz Night is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-question-circle"></i> Quiz Night
+                       {{#unless integrations.quizNight.active}}title="{{localize "ionrift-resonance.config.integration.quizNightNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-question-circle"></i> {{localize "ionrift-resonance.config.integration.tabQuizNight"}}
                         {{#unless integrations.quizNight.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.quizNight.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.quizNight.version}} installed, v{{integrations.quizNight.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.quizNight.version minVersion=integrations.quizNight.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                     <a class="item {{#unless integrations.respite.active}}disabled-tab{{/unless}}" 
                        data-tab="respite" 
-                       {{#unless integrations.respite.active}}title="Ionrift Respite is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-campground"></i> Respite
+                       {{#unless integrations.respite.active}}title="{{localize "ionrift-resonance.config.integration.respiteNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-campground"></i> {{localize "ionrift-resonance.config.integration.tabRespite"}}
                         {{#unless integrations.respite.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.respite.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.respite.version}} installed, v{{integrations.respite.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.respite.version minVersion=integrations.respite.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                     <a class="item {{#unless integrations.cursewright.active}}disabled-tab{{/unless}}" 
                        data-tab="cursewright" 
-                       {{#unless integrations.cursewright.active}}title="Ionrift Cursewright is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-ring"></i> Cursewright
+                       {{#unless integrations.cursewright.active}}title="{{localize "ionrift-resonance.config.integration.cursewrightNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-ring"></i> {{localize "ionrift-resonance.config.integration.tabCursewright"}}
                         {{#unless integrations.cursewright.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.cursewright.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.cursewright.version}} installed, v{{integrations.cursewright.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.cursewright.version minVersion=integrations.cursewright.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                     <a class="item {{#unless integrations.voice.active}}disabled-tab{{/unless}}" 
                        data-tab="voice" 
-                       {{#unless integrations.voice.active}}title="Ionrift Voice is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-comment-dots"></i> Voice
+                       {{#unless integrations.voice.active}}title="{{localize "ionrift-resonance.config.integration.voiceNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-comment-dots"></i> {{localize "ionrift-resonance.config.integration.tabVoice"}}
                         {{#unless integrations.voice.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.voice.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.voice.version}} installed, v{{integrations.voice.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.voice.version minVersion=integrations.voice.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                     <a class="item {{#unless integrations.tripwire.active}}disabled-tab{{/unless}}" 
                        data-tab="tripwire" 
-                       {{#unless integrations.tripwire.active}}title="Ionrift Tripwire is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-dungeon"></i> Tripwire
+                       {{#unless integrations.tripwire.active}}title="{{localize "ionrift-resonance.config.integration.tripwireNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-dungeon"></i> {{localize "ionrift-resonance.config.integration.tabTripwire"}}
                         {{#unless integrations.tripwire.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.tripwire.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.tripwire.version}} installed, v{{integrations.tripwire.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.tripwire.version minVersion=integrations.tripwire.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                     <a class="item {{#unless integrations.luminance.active}}disabled-tab{{/unless}}" 
                        data-tab="luminance" 
-                       {{#unless integrations.luminance.active}}title="Ionrift Luminance is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-fire-flame-simple"></i> Luminance
+                       {{#unless integrations.luminance.active}}title="{{localize "ionrift-resonance.config.integration.luminanceNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-fire-flame-simple"></i> {{localize "ionrift-resonance.config.integration.tabLuminance"}}
                         {{#unless integrations.luminance.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.luminance.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.luminance.version}} installed, v{{integrations.luminance.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.luminance.version minVersion=integrations.luminance.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                     <a class="item {{#unless integrations.waterline.active}}disabled-tab{{/unless}}" 
                        data-tab="waterline" 
-                       {{#unless integrations.waterline.active}}title="Ionrift Waterline is not installed or active in this world"{{/unless}}>
-                        <i class="fas fa-water"></i> Waterline
+                       {{#unless integrations.waterline.active}}title="{{localize "ionrift-resonance.config.integration.waterlineNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-water"></i> {{localize "ionrift-resonance.config.integration.tabWaterline"}}
                         {{#unless integrations.waterline.active}}
-                        <span class="integration-status-tag">Inactive</span>
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
                         {{else unless integrations.waterline.compatible}}
-                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Update required: v{{integrations.waterline.version}} installed, v{{integrations.waterline.minVersion}} required">Outdated</span>
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.waterline.version minVersion=integrations.waterline.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
                 </div>
@@ -102,10 +102,10 @@
 
             <!-- Bottom Group: Tools -->
             <div class="sidebar-group tools" style="flex: 0 0 auto; margin-bottom: 10px;">
-                <div class="header">Tools</div>
+                <div class="header">{{localize "ionrift-resonance.config.toolsHeader"}}</div>
                 <div class="group-items">
-                    <a class="item auditor-tab" data-tab="auditor"><i class="fas fa-search"></i> Sound Auditor</a>
-                    <a class="item" data-tab="orchestrator"><i class="fas fa-sliders-h"></i> Orchestration</a>
+                    <a class="item auditor-tab" data-tab="auditor"><i class="fas fa-search"></i> {{localize "ionrift-resonance.config.tabSoundAuditor"}}</a>
+                    <a class="item" data-tab="orchestrator"><i class="fas fa-sliders-h"></i> {{localize "ionrift-resonance.config.tabOrchestration"}}</a>
                 </div>
             </div>
         </nav>
@@ -116,7 +116,7 @@
             <!-- TIER 1: CORE (Hierarchical) -->
             <div class="tab" data-tab="tier1">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-cube"></i> Essentials</div>
+                    <div class="ionrift-list-header"><i class="fas fa-cube"></i> {{localize "ionrift-resonance.config.tabEssentials"}}</div>
 
                     {{#each tiers.tier1.paramounts as |group|}}
                     {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
@@ -127,7 +127,7 @@
             <!-- TIER 2: ACTIONS (Hierarchical) -->
             <div class="tab" data-tab="tier2">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-hammer"></i> Action Taxonomy</div>
+                    <div class="ionrift-list-header"><i class="fas fa-hammer"></i> {{localize "ionrift-resonance.config.actionTaxonomyHeader"}}</div>
 
                     {{#each tiers.tier2.paramounts as |group|}}
                     {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
@@ -138,7 +138,7 @@
             <!-- TIER 3: MONSTERS (Hierarchical) -->
             <div class="tab" data-tab="tier3">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-skull"></i> Monster Taxonomy</div>
+                    <div class="ionrift-list-header"><i class="fas fa-skull"></i> {{localize "ionrift-resonance.config.monsterTaxonomyHeader"}}</div>
 
                     {{#each tiers.tier3.paramounts as |group|}}
                     {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
@@ -150,12 +150,11 @@
             {{#if features.sharedMonsterVoices}}
             <div class="tab" data-tab="shared-monster">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-users"></i> Shared Monster Voices</div>
+                    <div class="ionrift-list-header"><i class="fas fa-users"></i> {{localize "ionrift-resonance.config.tabSharedMonsterVoices"}}</div>
 
                     <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                         <i class="fas fa-info-circle"></i>
-                        These sounds play for monsters with a <strong>Voice Identity</strong> set in their Sound Configuration.
-                        They currently inherit from PC pain/death sounds.
+                        {{{localize "ionrift-resonance.config.sharedMonsterVoicesDesc"}}}
                     </p>
 
                     {{#each tiers.sharedMonster.paramounts as |group|}}
@@ -168,13 +167,13 @@
             <!-- QUIZ NIGHT INTEGRATION -->
             <div class="tab" data-tab="quiz-night">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-question-circle"></i> Quiz Night Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-question-circle"></i> {{localize "ionrift-resonance.config.integration.headerQuizNight"}}</div>
 
                     {{#if integrations.quizNight.active}}
                         {{#if integrations.quizNight.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Audio cues for Quiz Night sessions. Round starts, timers, and locks play to the table, while answer feedback plays in player headphones.
+                            {{localize "ionrift-resonance.config.integration.quizNightDesc"}}
                         </p>
 
                         {{#each tiers.quizNight.paramounts as |group|}}
@@ -183,18 +182,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Quiz Night Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.quizNightUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Quiz Night</strong> v{{integrations.quizNight.version}} is installed, but v{{integrations.quizNight.minVersion}} or newer is required for automatic sound triggers. Please update Quiz Night to activate these audio cues.
+                                {{{localize "ionrift-resonance.config.integration.quizNightUpdateDesc" version=integrations.quizNight.version minVersion=integrations.quizNight.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Quiz Night Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.quizNightNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Quiz Night</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these game show sound triggers.
+                            {{{localize "ionrift-resonance.config.integration.quizNightNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -204,13 +203,13 @@
             <!-- RESPITE INTEGRATION -->
             <div class="tab" data-tab="respite">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-campground"></i> Respite Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-campground"></i> {{localize "ionrift-resonance.config.integration.headerRespite"}}</div>
 
                     {{#if integrations.respite.active}}
                         {{#if integrations.respite.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Audio cues for Ionrift Respite rests. Campfire crackle plays at the fire or in the background, nightfall stingers signal sleep, and morning calls mark resolution.
+                            {{localize "ionrift-resonance.config.integration.respiteDesc"}}
                         </p>
 
                         {{#each tiers.respite.paramounts as |group|}}
@@ -219,18 +218,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Respite Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.respiteUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Respite</strong> v{{integrations.respite.version}} is installed, but v{{integrations.respite.minVersion}} or newer is required for automatic sound triggers. Please update Respite to activate these audio cues.
+                                {{{localize "ionrift-resonance.config.integration.respiteUpdateDesc" version=integrations.respite.version minVersion=integrations.respite.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Respite Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.respiteNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Respite</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these rest sound triggers.
+                            {{{localize "ionrift-resonance.config.integration.respiteNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -240,13 +239,13 @@
             <!-- CURSEWRIGHT INTEGRATION -->
             <div class="tab" data-tab="cursewright">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-ring"></i> Cursewright Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-ring"></i> {{localize "ionrift-resonance.config.integration.headerCursewright"}}</div>
 
                     {{#if integrations.cursewright.active}}
                         {{#if integrations.cursewright.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Audio cues for Ionrift Cursewright curses. Each cue says who hears it: the bearer, the GM, or everyone. Empty slots stay silent.
+                            {{localize "ionrift-resonance.config.integration.cursewrightDesc"}}
                         </p>
 
                         {{#each tiers.cursewright.paramounts as |group|}}
@@ -255,18 +254,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Cursewright Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.cursewrightUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Cursewright</strong> v{{integrations.cursewright.version}} is installed, but v{{integrations.cursewright.minVersion}} or newer is required for automatic sound triggers. Please update Cursewright to activate these audio cues.
+                                {{{localize "ionrift-resonance.config.integration.cursewrightUpdateDesc" version=integrations.cursewright.version minVersion=integrations.cursewright.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Cursewright Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.cursewrightNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Cursewright</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate these curse sound triggers.
+                            {{{localize "ionrift-resonance.config.integration.cursewrightNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -276,13 +275,13 @@
             <!-- VOICE INTEGRATION -->
             <div class="tab" data-tab="voice">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-comment-dots"></i> Voice Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-comment-dots"></i> {{localize "ionrift-resonance.config.integration.headerVoice"}}</div>
 
                     {{#if integrations.voice.active}}
                         {{#if integrations.voice.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Background audio for Ionrift Voice private whispers. Plays to the GM and recipient while a whisper is active.
+                            {{localize "ionrift-resonance.config.integration.voiceDesc"}}
                         </p>
 
                         {{#each tiers.voice.paramounts as |group|}}
@@ -291,18 +290,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Voice Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.voiceUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Voice</strong> v{{integrations.voice.version}} is installed, but v{{integrations.voice.minVersion}} or newer is required for automatic whisper ambients. Please update Ionrift Voice to activate these soundscapes.
+                                {{{localize "ionrift-resonance.config.integration.voiceUpdateDesc" version=integrations.voice.version minVersion=integrations.voice.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Ionrift Voice Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.voiceNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Voice</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate telepathic whisper ambients.
+                            {{{localize "ionrift-resonance.config.integration.voiceNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -312,13 +311,13 @@
             <!-- TRIPWIRE INTEGRATION -->
             <div class="tab" data-tab="tripwire">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-dungeon"></i> Tripwire Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-dungeon"></i> {{localize "ionrift-resonance.config.integration.headerTripwire"}}</div>
 
                     {{#if integrations.tripwire.active}}
                         {{#if integrations.tripwire.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Audio cues for doors, locks, mechanisms, and traps managed by Ionrift Tripwire. All cues support positional 3D audio when coordinates are available.
+                            {{localize "ionrift-resonance.config.integration.tripwireDesc"}}
                         </p>
 
                         {{#each tiers.tripwire.paramounts as |group|}}
@@ -327,18 +326,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Tripwire Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.tripwireUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Tripwire</strong> v{{integrations.tripwire.version}} is installed, but v{{integrations.tripwire.minVersion}} or newer is required for automatic door, lock, and trap triggers. Please update Ionrift Tripwire to activate these sound hooks.
+                                {{{localize "ionrift-resonance.config.integration.tripwireUpdateDesc" version=integrations.tripwire.version minVersion=integrations.tripwire.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Ionrift Tripwire Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.tripwireNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Tripwire</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate dungeon doors, locks, and trap audio.
+                            {{{localize "ionrift-resonance.config.integration.tripwireNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -348,13 +347,13 @@
             <!-- LUMINANCE INTEGRATION -->
             <div class="tab" data-tab="luminance">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-fire-flame-simple"></i> Luminance Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-fire-flame-simple"></i> {{localize "ionrift-resonance.config.integration.headerLuminance"}}</div>
 
                     {{#if integrations.luminance.active}}
                         {{#if integrations.luminance.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Handheld torch loop and ignition cues for Ionrift Luminance. Follows the torchbearer token spatially on the canvas.
+                            {{localize "ionrift-resonance.config.integration.luminanceDesc"}}
                         </p>
 
                         {{#each tiers.luminance.paramounts as |group|}}
@@ -363,18 +362,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Luminance Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.luminanceUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Luminance</strong> v{{integrations.luminance.version}} is installed, but v{{integrations.luminance.minVersion}} or newer is required for automatic torch audio triggers. Please update Ionrift Luminance to activate these sound hooks.
+                                {{{localize "ionrift-resonance.config.integration.luminanceUpdateDesc" version=integrations.luminance.version minVersion=integrations.luminance.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Ionrift Luminance Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.luminanceNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Luminance</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate spatial handheld torch loops.
+                            {{{localize "ionrift-resonance.config.integration.luminanceNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -384,13 +383,13 @@
             <!-- WATERLINE INTEGRATION -->
             <div class="tab" data-tab="waterline">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-water"></i> Waterline Integration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-water"></i> {{localize "ionrift-resonance.config.integration.headerWaterline"}}</div>
 
                     {{#if integrations.waterline.active}}
                         {{#if integrations.waterline.compatible}}
                         <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
                             <i class="fas fa-info-circle"></i>
-                            Gentle spatial water entry, wading footsteps, and shore exit cues when tokens move across Ionrift Waterline regions.
+                            {{localize "ionrift-resonance.config.integration.waterlineDesc"}}
                         </p>
 
                         {{#each tiers.waterline.paramounts as |group|}}
@@ -399,18 +398,18 @@
                         {{else}}
                         <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
                             <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
-                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">Waterline Update Required</h3>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.waterlineUpdateTitle"}}</h3>
                             <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
-                                <strong>Ionrift Waterline</strong> v{{integrations.waterline.version}} is installed, but v{{integrations.waterline.minVersion}} or newer is required for automatic water movement audio triggers. Please update Ionrift Waterline to activate these sound hooks.
+                                {{{localize "ionrift-resonance.config.integration.waterlineUpdateDesc" version=integrations.waterline.version minVersion=integrations.waterline.minVersion}}}
                             </p>
                         </div>
                         {{/if}}
                     {{else}}
                     <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
                         <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
-                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">Ionrift Waterline Not Active</h3>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.waterlineNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
-                            The <strong>Ionrift Waterline</strong> module is not installed or enabled in this world. Enable it in Manage Modules to activate water movement audio.
+                            {{{localize "ionrift-resonance.config.integration.waterlineNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}
@@ -421,27 +420,25 @@
             <div class="tab" data-tab="auditor">
                 <p class="auditor-description"
                     style="margin: 0 0 10px 0; font-style: italic; opacity: 0.7; font-size: 0.9em; padding: 0 4px;">
-                    <i class="fas fa-info-circle"></i> <strong>Central Registry:</strong> Manage all individual sound
-                    overrides
-                    applied directly to specific Actors or Items.
+                    <i class="fas fa-info-circle"></i> {{{localize "ionrift-resonance.config.auditorDescription"}}}
                 </p>
                 <div class="auditor-controls"
                     style="display: flex; gap: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; align-items: center;">
                     <div style="flex: 1; position: relative;">
                         <i class="fas fa-search"
                             style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
-                        <input type="text" class="auditor-search-input" placeholder="Search by Name, Sound, or Slot..."
+                        <input type="text" class="auditor-search-input" placeholder="{{localize "ionrift-resonance.config.auditorSearchPlaceholder"}}"
                             value="{{tiers.auditor.items.search}}"
                             style="padding-left: 30px; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; width: 100%;">
                     </div>
                     <div class="pagination" style="display: flex; align-items: center; gap: 5px;">
-                        <button type="button" class="auditor-control-btn" data-action="prev" title="Previous Page"
+                        <button type="button" class="auditor-control-btn" data-action="prev" title="{{localize "ionrift-resonance.config.auditorPrevPage"}}"
                             style="width: 30px; line-height: 24px;"><i class="fas fa-chevron-left"></i></button>
                         <span class="auditor-page-info"
                             style="font-family: monospace; white-space: nowrap; font-size: 0.9em; min-width: 80px; text-align: center;">
-                            Page {{tiers.auditor.items.page}} of {{tiers.auditor.items.totalPages}}
+                            {{localize "ionrift-resonance.config.auditorPage"}} {{tiers.auditor.items.page}} {{localize "ionrift-resonance.config.auditorOf"}} {{tiers.auditor.items.totalPages}}
                         </span>
-                        <button type="button" class="auditor-control-btn" data-action="next" title="Next Page"
+                        <button type="button" class="auditor-control-btn" data-action="next" title="{{localize "ionrift-resonance.config.auditorNextPage"}}"
                             style="width: 30px; line-height: 24px;"><i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
@@ -455,41 +452,38 @@
             <!-- ORCHESTRATOR -->
             <div class="tab" data-tab="orchestrator">
                 <div class="ionrift-hierarchy">
-                    <div class="ionrift-list-header"><i class="fas fa-sliders-h"></i> Orchestration</div>
+                    <div class="ionrift-list-header"><i class="fas fa-sliders-h"></i> {{localize "ionrift-resonance.config.tabOrchestration"}}</div>
 
                     <p style="font-size:0.85em; opacity:0.7; margin: 0 0 16px 0; padding: 0 4px;">
                         <i class="fas fa-info-circle"></i>
-                        Budget windows prevent sound spam: sounds in the same category share one window.
-                        Leave blank to use the built-in default. Set to <code
-                            style="background:rgba(255,255,255,0.12); color:#e0d8ff; padding:1px 5px; border-radius:3px; font-size:0.95em; border:1px solid rgba(255,255,255,0.2);">0</code>
-                        to disable throttling.
+                        {{{localize "ionrift-resonance.config.orchestrationBudgetDesc"}}}
                     </p>
 
                     <!-- Feature Toggles -->
                     {{#if features.spellVocalLayer}}
                     <div style="margin-bottom: 24px;">
                         <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">
-                            Feature Toggles</div>
+                            {{localize "ionrift-resonance.config.featureToggles"}}</div>
 
                         <div class="ionrift-list-item" id="spell-vocal-layer-toggle-row"
                             style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-bottom: 4px;">
                             <div class="entity-info" style="flex: 0 0 auto; display:flex; align-items:center; gap:8px;"
-                                title="Play a caster incantation before each spell effect (requires SPELL_VOCAL_CAST binding in a sound pack)">
+                                title="{{localize "ionrift-resonance.config.spellVocalLayerTooltip"}}">
                                 <i class="fas fa-microphone-lines" style="width:16px; text-align:center; opacity:0.8;"></i>
                                 <div>
-                                    <span class="entity-name" style="display:block;">Spell Vocal Layer</span>
-                                    <span style="font-size:0.75em; opacity:0.55;">Plays an incantation before spell effects. Configure timing via Spell Vocal Lead-in below.</span>
+                                    <span class="entity-name" style="display:block;">{{localize "ionrift-resonance.config.spellVocalLayerName"}}</span>
+                                    <span style="font-size:0.75em; opacity:0.55;">{{localize "ionrift-resonance.config.spellVocalLayerDesc"}}</span>
                                 </div>
                             </div>
                             <div style="flex:1;"></div>
                             <div class="entity-actions" style="flex:0 0 auto; display:flex; align-items:center; gap:8px;">
                                 <span class="ionrift-badge {{#if tiers.spellVocalLayer}}success{{else}}loading{{/if}}"
                                     style="font-size:0.8em;">
-                                    {{#if tiers.spellVocalLayer}}On{{else}}Off{{/if}}
+                                    {{#if tiers.spellVocalLayer}}{{localize "ionrift-resonance.config.toggleOn"}}{{else}}{{localize "ionrift-resonance.config.toggleOff"}}{{/if}}
                                 </span>
                                 <button type="button" class="orchestrator-toggle-setting" id="spell-vocal-layer-btn"
                                     data-setting="ionrift-resonance.spellVocalLayer"
-                                    title="{{#if tiers.spellVocalLayer}}Disable Spell Vocal Layer{{else}}Enable Spell Vocal Layer{{/if}}"
+                                    title="{{#if tiers.spellVocalLayer}}{{localize "ionrift-resonance.config.disableSpellVocalLayer"}}{{else}}{{localize "ionrift-resonance.config.enableSpellVocalLayer"}}{{/if}}"
                                     style="{{#if tiers.spellVocalLayer}}background:rgba(124,58,237,0.2); border-color:rgba(124,58,237,0.4);{{/if}}">
                                     <i class="fas {{#if tiers.spellVocalLayer}}fa-toggle-on{{else}}fa-toggle-off{{/if}}"
                                         style="{{#if tiers.spellVocalLayer}}color:rgba(180,160,255,0.9);{{/if}}"></i>
@@ -501,19 +495,19 @@
 
                     <div style="margin-bottom: 24px;">
                         <div style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">
-                            Positional sound effects</div>
+                            {{localize "ionrift-resonance.config.positionalSfxHeader"}}</div>
                         <div class="ionrift-list-item"
                             style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-bottom: 8px;">
                             <div class="entity-info" style="flex:1;">
-                                <span class="entity-name" style="display:block;">Positional sound effects</span>
+                                <span class="entity-name" style="display:block;">{{localize "ionrift-resonance.config.positionalSfxHeader"}}</span>
                                 <span style="font-size:0.75em; opacity:0.7;">{{positional.hint}}</span>
                                 {{#unless positional.voiceActive}}
-                                <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">Ionrift Voice is not active.</span>
+                                <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">{{localize "ionrift-resonance.config.voiceNotActive"}}</span>
                                 {{/unless}}
                             </div>
                             <div class="entity-actions" style="flex:0 0 auto; display:flex; align-items:center;">
                                 <input type="checkbox" class="positional-master" {{#if positional.master}}checked{{/if}} {{#unless positional.voiceActive}}disabled{{/unless}}
-                                    title="Positional sound effects">
+                                    title="{{localize "ionrift-resonance.config.positionalSfxHeader"}}">
                             </div>
                         </div>
                         {{#each positional.categories}}
@@ -530,17 +524,17 @@
                         <div class="ionrift-list-item"
                             style="border: 1px solid rgba(255,255,255,0.07); border-radius:4px; background:rgba(0,0,0,0.15); padding: 8px 10px; margin-top: 8px; {{#unless positional.voiceActive}}opacity:0.6;{{/unless}}">
                             <div class="entity-info" style="flex:1;">
-                                <span class="entity-name" style="display:block;">Hear positional sound effects</span>
-                                <span style="font-size:0.75em; opacity:0.7;">'Follow table' hears sounds from your token when enabled by the GM. Always play normally ignores token distance and walls. Needs Ionrift Voice. Does not affect Syrinscape.</span>
+                                <span class="entity-name" style="display:block;">{{localize "ionrift-resonance.config.hearPositionalSfx"}}</span>
+                                <span style="font-size:0.75em; opacity:0.7;">{{{localize "ionrift-resonance.config.hearPositionalSfxDesc"}}}</span>
                                 {{#unless positional.voiceActive}}
-                                <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">Requires Ionrift Voice to be active.</span>
+                                <span style="display:block; font-size:0.75em; opacity:0.7; margin-top:4px;">{{localize "ionrift-resonance.config.requiresVoiceActive"}}</span>
                                 {{/unless}}
                             </div>
                             <div class="entity-actions" style="flex:0 0 auto;">
                                 <select class="hear-positional" {{#unless positional.voiceActive}}disabled{{/unless}}
                                     style="background:rgba(0,0,0,0.35); color:#e8e4f0; border:1px solid rgba(255,255,255,0.18); border-radius:4px; padding:2px 4px;">
-                                    <option value="normal" {{#if positional.hearNormal}}selected{{/if}}>Always play normally</option>
-                                    <option value="follow" {{#if positional.hearFollow}}selected{{/if}}>Follow table</option>
+                                    <option value="normal" {{#if positional.hearNormal}}selected{{/if}}>{{localize "ionrift-resonance.config.alwaysPlayNormally"}}</option>
+                                    <option value="follow" {{#if positional.hearFollow}}selected{{/if}}>{{localize "ionrift-resonance.config.followTable"}}</option>
                                 </select>
                             </div>
                         </div>
@@ -551,15 +545,15 @@
                     <div style="margin-bottom: 24px;">
                         <div
                             style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:8px;">
-                            Sound Budgets</div>
+                            {{localize "ionrift-resonance.config.soundBudgetsHeader"}}</div>
                         <table style="width:100%; border-collapse:collapse; font-size:0.88em;">
                             <thead>
                                 <tr style="opacity:0.5; font-size:0.8em;">
-                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">Category</th>
+                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">{{localize "ionrift-resonance.config.colCategory"}}</th>
                                     <th style="text-align:center; padding:4px 6px; font-weight:normal; width:90px;">
-                                        Default</th>
+                                        {{localize "ionrift-resonance.config.colDefault"}}</th>
                                     <th style="text-align:center; padding:4px 6px; font-weight:normal; width:100px;">
-                                        Override (ms)</th>
+                                        {{localize "ionrift-resonance.config.colOverrideMs"}}</th>
                                     <th style="width:34px;"></th>
                                 </tr>
                             </thead>
@@ -577,7 +571,7 @@
                                     </td>
                                     <td style="text-align:center; padding: 4px 6px;">
                                         <button type="button" class="orchestrator-reset-category"
-                                            data-category="{{this.id}}" title="Reset to default"
+                                            data-category="{{this.id}}" title="{{localize "ionrift-resonance.config.resetToDefaultLower"}}"
                                             style="display:{{#if this.hasOverride}}inline-block{{else}}none{{/if}}; width:26px; height:26px; padding:0; font-size:0.8em; background:rgba(200,120,80,0.2); border:1px solid rgba(200,120,80,0.3); color:#c84; border-radius:3px; cursor:pointer;">
                                             <i class="fas fa-undo"></i>
                                         </button>
@@ -592,18 +586,18 @@
                     <div style="margin-bottom: 24px;">
                         <div
                             style="font-size:0.8em; text-transform:uppercase; letter-spacing:0.08em; opacity:0.5; margin-bottom:6px;">
-                            Sound Timing</div>
+                            {{localize "ionrift-resonance.config.soundTimingHeader"}}</div>
                         <p style="font-size:0.8em; opacity:0.55; margin:0 0 10px 0;">
-                            Controls the delay between layered sounds (e.g. impact → vocal). Leave blank for defaults.
+                            {{{localize "ionrift-resonance.config.soundTimingDesc"}}}
                         </p>
                         <table style="width:100%; border-collapse:collapse; font-size:0.88em;">
                             <thead>
                                 <tr style="opacity:0.5; font-size:0.8em;">
-                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">Offset</th>
+                                    <th style="text-align:left; padding:4px 6px; font-weight:normal;">{{localize "ionrift-resonance.config.colOffset"}}</th>
                                     <th style="text-align:center; padding:4px 6px; font-weight:normal; width:90px;">
-                                        Default</th>
+                                        {{localize "ionrift-resonance.config.colDefault"}}</th>
                                     <th style="text-align:center; padding:4px 6px; font-weight:normal; width:100px;">
-                                        Override (ms)</th>
+                                        {{localize "ionrift-resonance.config.colOverrideMs"}}</th>
                                     <th style="width:34px;"></th>
                                 </tr>
                             </thead>
@@ -621,7 +615,7 @@
                                     </td>
                                     <td style="text-align:center; padding: 4px 6px;">
                                         <button type="button" class="orchestrator-reset-offset"
-                                            data-offset="{{this.id}}" title="Reset to default"
+                                            data-offset="{{this.id}}" title="{{localize "ionrift-resonance.config.resetToDefaultLower"}}"
                                             style="display:{{#if this.hasOverride}}inline-block{{else}}none{{/if}}; width:26px; height:26px; padding:0; font-size:0.8em; background:rgba(200,120,80,0.2); border:1px solid rgba(200,120,80,0.3); color:#c84; border-radius:3px; cursor:pointer;">
                                             <i class="fas fa-undo"></i>
                                         </button>
@@ -636,7 +630,7 @@
                     <div style="text-align:right; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
                         <button type="button" class="orchestrator-reset-all"
                             style="background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); color:rgba(180,160,255,0.65); padding:4px 12px; border-radius:3px; font-size:0.85em; cursor:pointer;">
-                            <i class="fas fa-undo"></i> Reset All to Defaults
+                            <i class="fas fa-undo"></i> {{localize "ionrift-resonance.config.resetAllToDefaults"}}
                         </button>
                     </div>
 
@@ -650,27 +644,27 @@
         style="flex: 0 0 auto; background: rgba(20, 20, 30, 0.95); padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; min-height: 46px; width: 100%; box-sizing: border-box;">
         <div class="sheet-footer-left" style="display: flex; flex-direction: row; align-items: center; gap: 8px; width: auto; flex: 0 0 auto;">
             {{#if hasSyrinscape}}
-            <button type="button" class="stop-all-sounds" title="Signal Syrinscape to Stop All playing sounds."
+            <button type="button" class="stop-all-sounds" title="{{localize "ionrift-resonance.config.stopAllTitle"}}"
                 style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 12px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(185, 28, 28, 0.2); border: 1px solid rgba(185, 28, 28, 0.5); color: #fca5a5; border-radius: 4px; cursor: pointer; flex: 0 0 auto;">
-                <i class="fas fa-stop-circle"></i> Stop All
+                <i class="fas fa-stop-circle"></i> {{localize "ionrift-resonance.config.stopAllBtn"}}
             </button>
             <div class="sheet-footer-divider" style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.12); margin: 0 2px; flex: 0 0 auto;"></div>
             {{/if}}
-            <button type="button" class="load-preset" title="Configure Audio Mode"
+            <button type="button" class="load-preset" title="{{localize "ionrift-resonance.config.audioModeTitle"}}"
                 style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 10px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); border-radius: 4px; cursor: pointer; flex: 0 0 auto; transition: all 0.15s ease;">
-                <i class="fas fa-volume-up"></i> Audio Mode
+                <i class="fas fa-volume-up"></i> {{localize "ionrift-resonance.config.audioModeBtn"}}
             </button>
-            <button type="button" class="import-config" title="Import"
+            <button type="button" class="import-config" title="{{localize "ionrift-resonance.config.importTitle"}}"
                 style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 10px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); border-radius: 4px; cursor: pointer; flex: 0 0 auto; transition: all 0.15s ease;">
-                <i class="fas fa-file-import"></i> Import
+                <i class="fas fa-file-import"></i> {{localize "ionrift-resonance.config.importBtn"}}
             </button>
-            <button type="button" class="export-config" title="Export"
+            <button type="button" class="export-config" title="{{localize "ionrift-resonance.config.exportTitle"}}"
                 style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 10px; font-size: 0.85em; white-space: nowrap; width: auto; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); border-radius: 4px; cursor: pointer; flex: 0 0 auto; transition: all 0.15s ease;">
-                <i class="fas fa-file-export"></i> Export
+                <i class="fas fa-file-export"></i> {{localize "ionrift-resonance.config.exportBtn"}}
             </button>
         </div>
         <button type="submit" class="ionrift-save-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; line-height: 1; padding: 0 18px; font-size: 0.85em; white-space: nowrap; width: auto; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: 1px solid rgba(139, 92, 246, 0.6); color: #ffffff; border-radius: 4px; font-weight: 600; cursor: pointer; flex: 0 0 auto;">
-            <i class="fas fa-check"></i> Close
+            <i class="fas fa-check"></i> {{localize "ionrift-resonance.config.closeBtn"}}
         </button>
     </footer>
 </form>
