@@ -159,7 +159,11 @@ export class WaterlineIntegration {
         if (distPx < Math.max(4, gridSize * 0.15) && oldPos.elevation === newPos.elevation) return;
 
         // Ignore long teleports or non-animated jumps across the map
-        if (options?.teleport === true || distPx > gridSize * 10) return;
+        const isTeleport = Boolean(
+            (options && Object.prototype.hasOwnProperty.call(options, "teleport") && options.teleport === true)
+            || options?.movement?.[tokenDoc.id]?.method === "teleport"
+        );
+        if (isTeleport || distPx > gridSize * 10) return;
 
         const startWet = this._isPointInWater(oldPos.x, oldPos.y, oldPos.elevation);
         const endWet = this._isPointInWater(newPos.x, newPos.y, newPos.elevation);
