@@ -95,6 +95,28 @@
                         <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.waterline.version minVersion=integrations.waterline.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
                         {{/unless}}
                     </a>
+                    <a class="item {{#unless integrations.qol.active}}disabled-tab{{/unless}}" 
+                       data-tab="qol" 
+                       {{#unless integrations.qol.active}}title="{{localize "ionrift-resonance.config.integration.qolNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-clapperboard"></i> {{localize "ionrift-resonance.config.integration.tabQol"}}
+                        {{#unless integrations.qol.active}}
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
+                        {{else unless integrations.qol.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.qol.version minVersion=integrations.qol.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
+                        {{/unless}}
+                    </a>
+                    {{#if features.puzzlesIncubation}}
+                    <a class="item {{#unless integrations.puzzles.active}}disabled-tab{{/unless}}" 
+                       data-tab="puzzles" 
+                       {{#unless integrations.puzzles.active}}title="{{localize "ionrift-resonance.config.integration.puzzlesNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-puzzle-piece"></i> {{localize "ionrift-resonance.config.integration.tabPuzzles"}}
+                        {{#unless integrations.puzzles.active}}
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
+                        {{else unless integrations.puzzles.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.puzzles.version minVersion=integrations.puzzles.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
+                        {{/unless}}
+                    </a>
+                    {{/if}}
                 </div>
             </div>
 
@@ -415,6 +437,80 @@
                     {{/if}}
                 </div>
             </div>
+
+            <!-- QOL INTEGRATION -->
+            <div class="tab" data-tab="qol">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-clapperboard"></i> {{localize "ionrift-resonance.config.integration.headerQol"}}</div>
+
+                    {{#if integrations.qol.active}}
+                        {{#if integrations.qol.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            {{localize "ionrift-resonance.config.integration.qolDesc"}}
+                        </p>
+
+                        {{#each tiers.qol.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.qolUpdateTitle"}}</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                {{{localize "ionrift-resonance.config.integration.qolUpdateDesc" version=integrations.qol.version minVersion=integrations.qol.minVersion}}}
+                            </p>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.qolNotActiveHeading"}}</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            {{{localize "ionrift-resonance.config.integration.qolNotActiveDesc"}}}
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            {{#if features.puzzlesIncubation}}
+            <!-- PUZZLES INTEGRATION (INCUBATED) -->
+            <div class="tab" data-tab="puzzles">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-puzzle-piece"></i> {{localize "ionrift-resonance.config.integration.headerPuzzles"}}</div>
+
+                    {{#if integrations.puzzles.active}}
+                        {{#if integrations.puzzles.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            {{localize "ionrift-resonance.config.integration.puzzlesDesc"}}
+                        </p>
+
+                        {{#each tiers.puzzles.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.puzzlesUpdateTitle"}}</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                {{{localize "ionrift-resonance.config.integration.puzzlesUpdateDesc" version=integrations.puzzles.version minVersion=integrations.puzzles.minVersion}}}
+                            </p>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.puzzlesNotActiveHeading"}}</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            {{{localize "ionrift-resonance.config.integration.puzzlesNotActiveDesc"}}}
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
 
             <!-- AUDITOR -->
             <div class="tab" data-tab="auditor">

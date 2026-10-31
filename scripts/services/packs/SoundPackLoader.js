@@ -1,4 +1,5 @@
 import { Logger } from "../../utils/Logger.js";
+import { isFeatureFlagEnabled } from "../../data/featureFlags.js";
 
 const PACK_ROOT = "ionrift-data/resonance/packs";
 const OVERLAY_ROOT = "ionrift-data/overlays/ionrift-resonance";
@@ -185,6 +186,8 @@ export class SoundPackLoader {
 
         for (const [, entry] of this._packs) {
             const id = entry.manifest.id;
+            const isIncubationPack = entry.sublayer === "incubation" || entry.manifest?.incubation === true || String(entry.manifest?.tier || "").toLowerCase() === "incubation";
+            if (isIncubationPack && !isFeatureFlagEnabled("PUZZLES_INCUBATION")) continue;
             if (entry.source === "overlay") {
                 const state = overlayActive[entry.overlayId];
                 if (state?.active !== false) enabled.add(id);
@@ -206,6 +209,9 @@ export class SoundPackLoader {
         this._packs.set(manifest.id, { manifest, bindings, source: "legacy", path: basePath });
     }
     static async _loadOverlayPack(sublayer, overlayActive) {
+        if (sublayer === "incubation" && !isFeatureFlagEnabled("PUZZLES_INCUBATION")) {
+            return;
+        }
         const basePath = `${OVERLAY_ROOT}/${sublayer}`;
         const overlay = game.ionrift?.library?.overlay;
 

@@ -14,6 +14,8 @@ import { WEAPON_EVENTS } from "./weapons.js";
 import { TRIPWIRE_EVENTS } from "./tripwire.js";
 import { LUMINANCE_EVENTS } from "./luminance.js";
 import { WATERLINE_EVENTS } from "./waterline.js";
+import { PUZZLES_EVENTS } from "./puzzles.js";
+import { QOL_EVENTS } from "./qol.js";
 
 const RESPITE_ORIGIN = new Set(["RESPITE_FIRE_LIT", "RESPITE_CAMPFIRE"]);
 const RESPITE_GLOBAL = new Set(["RESPITE_SLEEP_STARTED", "RESPITE_RESOLUTION"]);
@@ -27,7 +29,8 @@ const ORIGIN_GROUPS = [
     SFX_EVENTS,
     TRIPWIRE_EVENTS,
     LUMINANCE_EVENTS,
-    WATERLINE_EVENTS
+    WATERLINE_EVENTS,
+    PUZZLES_EVENTS
 ];
 
 const GLOBAL_GROUPS = [
@@ -35,7 +38,8 @@ const GLOBAL_GROUPS = [
     MILESTONE_EVENTS,
     QUIZ_NIGHT_EVENTS,
     CURSEWRIGHT_EVENTS,
-    VOICE_EVENTS
+    VOICE_EVENTS,
+    QOL_EVENTS
 ];
 
 const CLASS_BY_KEY = new Map();

@@ -14,6 +14,8 @@ import { VOICE_EVENTS } from "./voice.js";
 import { TRIPWIRE_EVENTS } from "./tripwire.js";
 import { LUMINANCE_EVENTS } from "./luminance.js";
 import { WATERLINE_EVENTS } from "./waterline.js";
+import { PUZZLES_EVENTS } from "./puzzles.js";
+import { QOL_EVENTS } from "./qol.js";
 
 export const SOUND_EVENTS = {
     ...COMBAT_EVENTS,
@@ -31,7 +33,9 @@ export const SOUND_EVENTS = {
     ...VOICE_EVENTS,
     ...TRIPWIRE_EVENTS,
     ...LUMINANCE_EVENTS,
-    ...WATERLINE_EVENTS
+    ...WATERLINE_EVENTS,
+    ...PUZZLES_EVENTS,
+    ...QOL_EVENTS
 };
 
 export {
@@ -50,5 +54,7 @@ export {
     VOICE_EVENTS,
     TRIPWIRE_EVENTS,
     LUMINANCE_EVENTS,
-    WATERLINE_EVENTS
+    WATERLINE_EVENTS,
+    PUZZLES_EVENTS,
+    QOL_EVENTS
 };
