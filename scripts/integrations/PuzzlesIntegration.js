@@ -81,14 +81,30 @@ export class PuzzlesIntegration {
             this.handler.play(key, { origin });
         });
 
-        // Starlight Clavier sequence solved (5th note completes phrase -> piano levitates aside)
+        // Puzzle solved: Starlight Clavier plays PUZZLE_PIANO_SOLVED; mechanical/lock/lift puzzles play PUZZLE_MECH_SOLVED
         on("solved", (data = {}) => {
-            const isPiano = data.archetype === "arcane-piano" || data.puzzleId === "unlit-star-piano";
-            if (!isPiano) return;
+            if (data.archetype === "tarnished-mirror") return;
             const origin = data.origin || data.anchorWorldPt || undefined;
-            Logger.log("PuzzlesIntegration | solved (arcane-piano) -> PUZZLE_PIANO_SOLVED", data);
-            this.handler.play(SOUND_EVENTS.PUZZLE_PIANO_SOLVED, {
-                delay: 380,
+            const isPiano = data.archetype === "arcane-piano" || data.puzzleId === "unlit-star-piano";
+            if (isPiano) {
+                Logger.log("PuzzlesIntegration | solved (arcane-piano) -> PUZZLE_PIANO_SOLVED", data);
+                this.handler.play(SOUND_EVENTS.PUZZLE_PIANO_SOLVED, {
+                    delay: 380,
+                    origin
+                });
+                return;
+            }
+            Logger.log(`PuzzlesIntegration | solved (${data.archetype ?? "mechanical"}) -> PUZZLE_MECH_SOLVED`, data);
+            this.handler.play(SOUND_EVENTS.PUZZLE_MECH_SOLVED, {
+                origin
+            });
+        });
+
+        // Puzzle failed / malfunctioned: plays PUZZLE_MECH_FAILED from the puzzle's map coordinate
+        on("failed", (data = {}) => {
+            const origin = data.origin || data.anchorWorldPt || undefined;
+            Logger.log(`PuzzlesIntegration | failed (${data.archetype ?? "mechanical"}) -> PUZZLE_MECH_FAILED`, data);
+            this.handler.play(SOUND_EVENTS.PUZZLE_MECH_FAILED, {
                 origin
             });
         });
