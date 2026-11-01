@@ -36,15 +36,15 @@ export class QolIntegration {
     }
 
     static get isInstalled() {
-        return game.modules.has(this.MODULE_ID);
+        return game.modules.has(this.MODULE_ID) || game.modules.has("ionrift-director");
     }
 
     static get isActive() {
-        return game.modules.get(this.MODULE_ID)?.active ?? false;
+        return Boolean(game.modules.get(this.MODULE_ID)?.active || game.modules.get("ionrift-director")?.active);
     }
 
     static get version() {
-        return game.modules.get(this.MODULE_ID)?.version ?? null;
+        return game.modules.get("ionrift-director")?.version ?? game.modules.get(this.MODULE_ID)?.version ?? null;
     }
 
     static get isCompatible() {
