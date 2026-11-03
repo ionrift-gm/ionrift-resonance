@@ -12,6 +12,7 @@ import { LuminanceIntegration } from "../../integrations/LuminanceIntegration.js
 import { WaterlineIntegration } from "../../integrations/WaterlineIntegration.js";
 import { PuzzlesIntegration } from "../../integrations/PuzzlesIntegration.js";
 import { QolIntegration } from "../../integrations/QolIntegration.js";
+import { DirectorIntegration } from "../../integrations/DirectorIntegration.js";
 
 /**
  * Build core (tier1), combat action (tier2), and monster (tier3) taxonomies.
@@ -745,6 +746,36 @@ export function buildIntegrationTaxonomies() {
         }
     ];
 
+    const directorTaxonomy = [
+        {
+            id: "DIRECTOR_REVEAL_GENERIC",
+            label: game.i18n.localize("ionrift-resonance.taxonomy.groupDirectorReveal.label"),
+            cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealGeneric.cardLabel"),
+            description: game.i18n.localize("ionrift-resonance.taxonomy.groupDirectorReveal.description"),
+            children: [
+                { id: "DIRECTOR_REVEAL_BRAMBLE", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealBramble.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealBramble.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealBramble.description") },
+                { id: "DIRECTOR_REVEAL_SPECTRAL", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSpectral.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSpectral.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSpectral.description") },
+                { id: "DIRECTOR_REVEAL_SKITTER", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSkitter.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSkitter.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSkitter.description") },
+                { id: "DIRECTOR_REVEAL_BONES", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealBones.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealBones.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealBones.description") },
+                { id: "DIRECTOR_REVEAL_SLIME", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSlime.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSlime.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealSlime.description") },
+                { id: "DIRECTOR_REVEAL_WINGS", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealWings.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealWings.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealWings.description") },
+                { id: "DIRECTOR_REVEAL_EMBER", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealEmber.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealEmber.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealEmber.description") },
+                { id: "DIRECTOR_REVEAL_HEAVY", label: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealHeavy.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealHeavy.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorRevealHeavy.description") }
+            ]
+        },
+        {
+            label: game.i18n.localize("ionrift-resonance.taxonomy.groupDirectorSense.label"),
+            description: game.i18n.localize("ionrift-resonance.taxonomy.groupDirectorSense.description"),
+            children: [
+                { id: "DIRECTOR_SENSE_PRESENCE", label: game.i18n.localize("ionrift-resonance.taxonomy.directorSensePresence.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorSensePresence.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorSensePresence.description") },
+                { id: "DIRECTOR_SENSE_SEEK_PINPOINT", label: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseSeekPinpoint.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseSeekPinpoint.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseSeekPinpoint.description") },
+                { id: "DIRECTOR_SENSE_HIDE_SLIP", label: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseHideSlip.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseHideSlip.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseHideSlip.description") },
+                { id: "DIRECTOR_SENSE_POINT_OUT", label: game.i18n.localize("ionrift-resonance.taxonomy.directorSensePointOut.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorSensePointOut.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorSensePointOut.description") },
+                { id: "DIRECTOR_SENSE_FLAT_WHIFF", label: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseFlatWhiff.label"), cardLabel: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseFlatWhiff.cardLabel"), description: game.i18n.localize("ionrift-resonance.taxonomy.directorSenseFlatWhiff.description") }
+            ]
+        }
+    ];
+
     const isQuizNightActive = game.modules.get("ionrift-quiz-night")?.active ?? false;
     const isRespiteActive = game.modules.get("ionrift-respite")?.active ?? false;
     const isCursewrightActive = CursewrightIntegration.isActive;
@@ -755,9 +786,11 @@ export function buildIntegrationTaxonomies() {
     const isQolActive = QolIntegration.isActive;
     const isPuzzlesIncubationEnabled = PuzzlesIntegration.isIncubationEnabled;
     const isPuzzlesActive = PuzzlesIntegration.isActive;
+    const isDirectorIncubationEnabled = DirectorIntegration.isIncubationEnabled;
+    const isDirectorActive = DirectorIntegration.isActive;
 
     const integrations = {
-        hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive || isLuminanceActive || isWaterlineActive || isQolActive || isPuzzlesActive,
+        hasActive: isQuizNightActive || isRespiteActive || isCursewrightActive || isVoiceActive || isTripwireActive || isLuminanceActive || isWaterlineActive || isQolActive || isPuzzlesActive || isDirectorActive,
         quizNight: {
             installed: QuizNightIntegration.isInstalled,
             active: QuizNightIntegration.isActive,
@@ -820,6 +853,13 @@ export function buildIntegrationTaxonomies() {
             compatible: PuzzlesIntegration.isCompatible,
             version: PuzzlesIntegration.version,
             minVersion: PuzzlesIntegration.MIN_VERSION
+        },
+        director: {
+            installed: DirectorIntegration.isInstalled,
+            active: DirectorIntegration.isActive,
+            compatible: DirectorIntegration.isCompatible,
+            version: DirectorIntegration.version,
+            minVersion: DirectorIntegration.MIN_VERSION
         }
     };
 
@@ -833,7 +873,9 @@ export function buildIntegrationTaxonomies() {
         waterlineTaxonomy,
         qolTaxonomy,
         puzzlesTaxonomy,
+        directorTaxonomy,
         isPuzzlesIncubationEnabled,
+        isDirectorIncubationEnabled,
         integrations
     };
 }

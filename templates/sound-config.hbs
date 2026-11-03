@@ -117,6 +117,18 @@
                         {{/unless}}
                     </a>
                     {{/if}}
+                    {{#if features.directorIncubation}}
+                    <a class="item {{#unless integrations.director.active}}disabled-tab{{/unless}}" 
+                       data-tab="director" 
+                       {{#unless integrations.director.active}}title="{{localize "ionrift-resonance.config.integration.directorNotActiveTitle"}}"{{/unless}}>
+                        <i class="fas fa-compass"></i> {{localize "ionrift-resonance.config.integration.tabDirector"}}
+                        {{#unless integrations.director.active}}
+                        <span class="integration-status-tag">{{localize "ionrift-resonance.config.integration.statusInactive"}}</span>
+                        {{else unless integrations.director.compatible}}
+                        <span class="integration-status-tag" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="{{localize "ionrift-resonance.config.integration.updateRequiredTooltip" version=integrations.director.version minVersion=integrations.director.minVersion}}">{{localize "ionrift-resonance.config.integration.statusOutdated"}}</span>
+                        {{/unless}}
+                    </a>
+                    {{/if}}
                 </div>
             </div>
 
@@ -505,6 +517,44 @@
                         <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.puzzlesNotActiveHeading"}}</h3>
                         <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
                             {{{localize "ionrift-resonance.config.integration.puzzlesNotActiveDesc"}}}
+                        </p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+
+            {{#if features.directorIncubation}}
+            <!-- DIRECTOR INTEGRATION (INCUBATED) -->
+            <div class="tab" data-tab="director">
+                <div class="ionrift-hierarchy">
+                    <div class="ionrift-list-header"><i class="fas fa-compass"></i> {{localize "ionrift-resonance.config.integration.headerDirector"}}</div>
+
+                    {{#if integrations.director.active}}
+                        {{#if integrations.director.compatible}}
+                        <p style="font-size:0.85em; opacity:0.65; margin: 0 0 14px 0; padding: 0 4px;">
+                            <i class="fas fa-info-circle"></i>
+                            {{localize "ionrift-resonance.config.integration.directorDesc"}}
+                        </p>
+
+                        {{#each tiers.director.paramounts as |group|}}
+                        {{> "modules/ionrift-resonance/templates/partials/sound-group.hbs" group}}
+                        {{/each}}
+                        {{else}}
+                        <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(245, 158, 11, 0.1); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; text-align: center; max-width: 480px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 2.2em; color: #f59e0b; margin-bottom: 12px; display: block;"></i>
+                            <h3 style="margin: 0 0 8px 0; opacity: 0.95; font-size: 1.1em; color: #fbbf24;">{{localize "ionrift-resonance.config.integration.directorUpdateTitle"}}</h3>
+                            <p style="margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.4;">
+                                {{{localize "ionrift-resonance.config.integration.directorUpdateDesc" version=integrations.director.version minVersion=integrations.director.minVersion}}}
+                            </p>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="integration-inactive-banner" style="margin: 30px auto; padding: 24px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; text-align: center; max-width: 480px;">
+                        <i class="fas fa-plug" style="font-size: 2.2em; opacity: 0.35; margin-bottom: 12px; display: block;"></i>
+                        <h3 style="margin: 0 0 8px 0; opacity: 0.9; font-size: 1.1em;">{{localize "ionrift-resonance.config.integration.directorNotActiveHeading"}}</h3>
+                        <p style="margin: 0; font-size: 0.88em; opacity: 0.65; line-height: 1.4;">
+                            {{{localize "ionrift-resonance.config.integration.directorNotActiveDesc"}}}
                         </p>
                     </div>
                     {{/if}}

@@ -16,6 +16,7 @@ import { LUMINANCE_EVENTS } from "./luminance.js";
 import { WATERLINE_EVENTS } from "./waterline.js";
 import { PUZZLES_EVENTS } from "./puzzles.js";
 import { QOL_EVENTS } from "./qol.js";
+import { DIRECTOR_EVENTS } from "./director.js";
 
 const RESPITE_ORIGIN = new Set(["RESPITE_FIRE_LIT", "RESPITE_CAMPFIRE"]);
 const RESPITE_GLOBAL = new Set(["RESPITE_SLEEP_STARTED", "RESPITE_RESOLUTION"]);
@@ -30,7 +31,8 @@ const ORIGIN_GROUPS = [
     TRIPWIRE_EVENTS,
     LUMINANCE_EVENTS,
     WATERLINE_EVENTS,
-    PUZZLES_EVENTS
+    PUZZLES_EVENTS,
+    DIRECTOR_EVENTS
 ];
 
 const GLOBAL_GROUPS = [

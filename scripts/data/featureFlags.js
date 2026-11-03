@@ -4,7 +4,8 @@
  */
 export const FEATURE_FLAGS = {
     SPELL_VOCAL_LAYER: false,
-    PUZZLES_INCUBATION: false
+    PUZZLES_INCUBATION: false,
+    DIRECTOR_INCUBATION: false
 };
 
 /**
@@ -12,7 +13,8 @@ export const FEATURE_FLAGS = {
  * while remaining disabled (hidden/unregistered) for production users unless explicitly overridden.
  */
 const DEVTOOLS_INCUBATION_FLAGS = new Set([
-    "PUZZLES_INCUBATION"
+    "PUZZLES_INCUBATION",
+    "DIRECTOR_INCUBATION"
 ]);
 
 /**

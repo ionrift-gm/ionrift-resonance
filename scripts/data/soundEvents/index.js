@@ -16,6 +16,7 @@ import { LUMINANCE_EVENTS } from "./luminance.js";
 import { WATERLINE_EVENTS } from "./waterline.js";
 import { PUZZLES_EVENTS } from "./puzzles.js";
 import { QOL_EVENTS } from "./qol.js";
+import { DIRECTOR_EVENTS } from "./director.js";
 
 export const SOUND_EVENTS = {
     ...COMBAT_EVENTS,
@@ -35,7 +36,8 @@ export const SOUND_EVENTS = {
     ...LUMINANCE_EVENTS,
     ...WATERLINE_EVENTS,
     ...PUZZLES_EVENTS,
-    ...QOL_EVENTS
+    ...QOL_EVENTS,
+    ...DIRECTOR_EVENTS
 };
 
 export {
@@ -56,5 +58,6 @@ export {
     LUMINANCE_EVENTS,
     WATERLINE_EVENTS,
     PUZZLES_EVENTS,
-    QOL_EVENTS
+    QOL_EVENTS,
+    DIRECTOR_EVENTS
 };

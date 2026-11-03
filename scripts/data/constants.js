@@ -15,6 +15,7 @@ export {
     CURSEWRIGHT_EVENTS,
     VOICE_EVENTS,
     PUZZLES_EVENTS,
-    QOL_EVENTS
+    QOL_EVENTS,
+    DIRECTOR_EVENTS
 } from "./soundEvents/index.js";
 export { FEATURE_FLAGS, isFeatureFlagEnabled } from "./featureFlags.js";

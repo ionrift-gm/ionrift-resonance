@@ -277,7 +277,9 @@ export class SoundConfigApp extends FormApplication {
             waterlineTaxonomy,
             qolTaxonomy,
             puzzlesTaxonomy,
+            directorTaxonomy,
             isPuzzlesIncubationEnabled,
+            isDirectorIncubationEnabled,
             integrations
         } = buildIntegrationTaxonomies();
 
@@ -294,13 +296,17 @@ export class SoundConfigApp extends FormApplication {
         const puzzlesRoots = isPuzzlesIncubationEnabled
             ? puzzlesTaxonomy.map(node => processHierarchy(node))
             : [];
+        const directorRoots = isDirectorIncubationEnabled
+            ? directorTaxonomy.map(node => processHierarchy(node))
+            : [];
 
         return {
             hasSyrinscape: getSyrinscapeProvider().isConfigured(),
             features: {
                 sharedMonsterVoices: FEATURE_SHARED_MONSTER_VOICES,
                 spellVocalLayer: isFeatureFlagEnabled("SPELL_VOCAL_LAYER"),
-                puzzlesIncubation: isPuzzlesIncubationEnabled
+                puzzlesIncubation: isPuzzlesIncubationEnabled,
+                directorIncubation: isDirectorIncubationEnabled
             },
             integrations,
             tiers: {
@@ -368,6 +374,11 @@ export class SoundConfigApp extends FormApplication {
                     label: game.i18n.localize("ionrift-resonance.config.integration.tabPuzzles"),
                     active: false,
                     paramounts: puzzlesRoots
+                },
+                director: {
+                    label: game.i18n.localize("ionrift-resonance.config.integration.tabDirector"),
+                    active: false,
+                    paramounts: directorRoots
                 },
                 auditor: {
                     label: game.i18n.localize("ionrift-resonance.config.tabSoundAuditor"),
