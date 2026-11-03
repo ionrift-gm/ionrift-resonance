@@ -34,5 +34,11 @@ export function isFeatureFlagEnabled(flag) {
     if (DEVTOOLS_INCUBATION_FLAGS.has(flag) && globalThis.game?.modules?.get?.("ionrift-devtools")?.active) {
         return true;
     }
+    if (flag === "DIRECTOR_INCUBATION" && globalThis.game?.modules?.get?.("ionrift-director")?.active) {
+        return true;
+    }
+    if (flag === "PUZZLES_INCUBATION" && globalThis.game?.modules?.get?.("ionrift-puzzles")?.active) {
+        return true;
+    }
     return !!FEATURE_FLAGS[flag];
 }

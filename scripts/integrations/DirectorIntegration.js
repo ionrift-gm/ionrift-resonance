@@ -90,30 +90,13 @@ export class DirectorIntegration {
 
         // Creature Emergence & Ambush Reveal (`EncounterRevealChoreographer`)
         on("encounterReveal", (data = {}) => {
-            const cascade = Array.isArray(data.soundCascade) && data.soundCascade.length > 0
-                ? data.soundCascade
-                : [
-                    data.primaryKey || SOUND_EVENTS.DIRECTOR_REVEAL_GENERIC,
-                    SOUND_EVENTS.DIRECTOR_REVEAL_GENERIC,
-                    SOUND_EVENTS.CORE_WHOOSH
-                ];
-            const resolvedFoleyKey = this.resolveCascadeKey(cascade);
+            const primaryKey = data.primaryKey
+                || (Array.isArray(data.soundCascade) && data.soundCascade[0])
+                || SOUND_EVENTS.DIRECTOR_REVEAL_GENERIC;
             const origin = data.origin || undefined;
 
-            if (resolvedFoleyKey) {
-                Logger.log(`DirectorIntegration | encounterReveal (${data.archetype ?? "generic"} / ${data.mode ?? "ambush"}) -> ${resolvedFoleyKey}`, data);
-                this.handler.play(resolvedFoleyKey, { origin });
-            }
-
-            // On full Observed emergence (not shrouded Area/Echo), layer the creature's vocal accent slightly after the cover rustle
-            if (data.mode !== "shroud" && data.vocalKey && data.vocalKey !== resolvedFoleyKey) {
-                if (this.handler.resolver?.resolveKey(data.vocalKey)) {
-                    this.handler.play(data.vocalKey, {
-                        delay: 160,
-                        origin
-                    });
-                }
-            }
+            Logger.log(`DirectorIntegration | encounterReveal (${data.archetype ?? "generic"} / ${data.mode ?? "ambush"}) -> ${primaryKey}`, data);
+            this.handler.play(primaryKey, { origin });
         });
 
         // 4 Degrees of Detection & Stealth Cues (`ionrift-pf2e` Sense)
