@@ -19,7 +19,7 @@ export class LuminanceIntegration {
     /** Default audible radius in scene grid units (matches 20 ft torch bright light). */
     static TORCH_AUDIO_RADIUS = 20;
     /** Default AmbientSound volume for the handheld torch loop emitter. */
-    static TORCH_LOOP_VOLUME = 0.85;
+    static TORCH_LOOP_VOLUME = 0.42;
 
     /**
      * @param {import("../services/playback/SoundHandler.js").SoundHandler} handler

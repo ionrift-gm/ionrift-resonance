@@ -85,16 +85,16 @@ export class SoundConfigApp extends FormApplication {
                         isCustom ? check.value : null,
                         displayDefault,
                         node.cardLabel || node.label,
-                        node.description
+                        node.cardDescription || node.description
                     );
                     if (!isCustom) myState.value = check.value;
                 } else {
                     if (parentState && parentState.value) {
                         myResolved = { value: parentState.value, source: "inherited" };
-                        myState = new SoundCardState(node.id, null, parentState.value, node.cardLabel || node.label, node.description, parentState.label);
+                        myState = new SoundCardState(node.id, null, parentState.value, node.cardLabel || node.label, node.cardDescription || node.description, parentState.label);
                         myState.value = myResolved.value;
                     } else {
-                        myState = new SoundCardState(node.id, null, null, node.cardLabel || node.label, node.description);
+                        myState = new SoundCardState(node.id, null, null, node.cardLabel || node.label, node.cardDescription || node.description);
                     }
                 }
             } else {
