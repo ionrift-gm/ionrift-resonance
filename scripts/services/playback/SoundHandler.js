@@ -499,10 +499,21 @@ export class SoundHandler {
         Logger.log("Combat started, playing COMBAT_START");
         this.play(SOUND_EVENTS.COMBAT_START);
     }
-    _onCombatEnd(combat) {
+    _onCombatEnd(combat, options = {}) {
         if (!game.user.isGM) return;
-        Logger.log("Combat ended, playing COMBAT_END");
-        this.play(SOUND_EVENTS.COMBAT_END);
+        if (options?.ionriftResetRoom) return;
+        const hasDirectorOrSymphony =
+            Boolean(game.modules?.get?.("ionrift-director")?.active) ||
+            Boolean(game.modules?.get?.("ionrift-symphony")?.active);
+        const playingMusic = Boolean(
+            game.ionrift?.symphony?.bus?.getBusState?.()?.activeMusic ||
+            Array.from(game.playlists ?? []).some((p) =>
+                Array.from(p.sounds ?? []).some((s) => s.playing)
+            )
+        );
+        const graceDelayMs = hasDirectorOrSymphony || playingMusic ? 950 : 0;
+        Logger.log(`Combat ended, playing COMBAT_END (grace delay: ${graceDelayMs}ms)`);
+        this.play(SOUND_EVENTS.COMBAT_END, { delay: graceDelayMs });
     }
     _cacheXpBeforeUpdate(actor, changed) {
         if (!game.user.isGM) return;
@@ -582,7 +593,7 @@ export class SoundHandler {
         });
 
         Hooks.on("createCombat", (combat) => this._onCombatStart(combat));
-        Hooks.on("deleteCombat", (combat) => this._onCombatEnd(combat));
+        Hooks.on("deleteCombat", (combat, options) => this._onCombatEnd(combat, options));
 
         // Level-up: preUpdate caches XP; update fires once on first threshold cross.
         Hooks.on("preUpdateActor", (actor, changed) => this._cacheXpBeforeUpdate(actor, changed));
