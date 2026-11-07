@@ -1,6 +1,44 @@
 import { SOUND_EVENTS } from "../data/constants.js";
 import { Logger } from "../utils/Logger.js";
 
+const AIRBORNE_STATUS_IDS = new Set([
+    "flying",
+    "fly",
+    "hover",
+    "hovering",
+    "levitate",
+    "levitating",
+    "airborne",
+    "flight",
+    "incorporeal",
+    "ethereal"
+]);
+
+const AIRBORNE_MOVEMENT_ACTIONS = new Set([
+    "fly",
+    "hover",
+    "blink",
+    "teleport",
+    "burrow"
+]);
+
+const FLYER_NAME_RE = /\b(butterfly|moth|flickerfly|wasp|bee|hornet|dragonfly|mosquito|stirge|bat|eagle|hawk|falcon|owl|raven|crow|vulture|roc|gull|seagull|albatross|harpy|griffon|hippogriff|pegasus|peryton|manticore|wyvern|dragon|drake|wyrm|pseudodragon|faerie dragon|dragonnel|pteranodon|quetzalcoatlus|cockatrice|couatl|gargoyle|pixie|sprite|angel|deva|planetar|solar|mephit|flameskull|demilich|beholder|spectator|gauth|death tyrant|wraith|ghost|specter|spectre|poltergeist|banshee|wisp|phantom|air elemental|djinni|invisible stalker|flying sword|cloaker|darkmantle|imp|quasit|spined devil|erinyes|vrock|chasme|aarakocra|owlin)\b/i;
+
+const FLIGHTLESS_NAME_RE = /\b(penguin|ostrich|cassowary|emu|kiwi|dragon turtle|sea drake|river drake)\b/i;
+
+const PASSIVE_FLIGHT_ITEM_RE = /^(fly|flight|flying|hover|hovering|incorporeal movement|air form|wings|winged|aerial\b)/i;
+
+const NON_INNATE_ITEM_TYPES = new Set([
+    "spell",
+    "consumable",
+    "loot",
+    "equipment",
+    "weapon",
+    "container",
+    "backpack",
+    "tool"
+]);
+
 /**
  * WaterlineIntegration
  * Couples Ionrift Waterline regions with Ionrift Resonance spatial water movement foley:
@@ -110,8 +148,10 @@ export class WaterlineIntegration {
         const onExplicit = (name, key) => {
             const handler = (data = {}) => {
                 if (!game.user?.isGM) return;
+                const tokenDoc = data.tokenDoc ?? data.token?.document ?? data.token ?? null;
+                if (tokenDoc && !this._canTokenInteractWithWater(tokenDoc)) return;
                 const origin = data.origin
-                    || (data.tokenDoc ? this._getTokenCenter(data.tokenDoc) : undefined);
+                    || (tokenDoc ? this._getTokenCenter(tokenDoc) : undefined);
                 this._playWaterCue(key, origin);
             };
             Hooks.on(`${WaterlineIntegration.HOOK_PREFIX}.${name}`, handler);
@@ -146,9 +186,9 @@ export class WaterlineIntegration {
         if (!game.user?.isGM) return;
         if (!oldPos) return;
 
-        // Do not leak splash audio for GM-hidden tokens or tokens opting out of water ripples (e.g. flying / boats)
-        if (tokenDoc.hidden) return;
-        if (tokenDoc.getFlag?.(WaterlineIntegration.MODULE_ID, "noRipple")) return;
+        // Flying / airborne creatures, elevated tokens, hidden tokens, and noRipple tokens never interact with water bodies
+        if (!this._canTokenInteractWithWater(tokenDoc, change, options)) return;
+        if ((Number(oldPos.elevation) || 0) > 0 && (Number(newPos.elevation) || 0) > 0) return;
 
         const dx = newPos.x - oldPos.x;
         const dy = newPos.y - oldPos.y;
@@ -223,18 +263,168 @@ export class WaterlineIntegration {
     }
 
     /**
+     * Determine whether a token is eligible to interact with water bodies.
+     * Flying/airborne creatures, elevated tokens, hidden tokens, and noRipple tokens return false.
+     * @param {TokenDocument|Token|object} tokenOrDoc
+     * @param {object|null} [change=null]
+     * @param {object|null} [options=null]
+     * @returns {boolean}
+     */
+    _canTokenInteractWithWater(tokenOrDoc, change = null, options = null) {
+        if (!tokenOrDoc) return false;
+        const tokenDoc = tokenOrDoc.document ?? tokenOrDoc;
+
+        if (tokenDoc.hidden) return false;
+        if (tokenDoc.getFlag?.(WaterlineIntegration.MODULE_ID, "noRipple") || tokenDoc.flags?.[WaterlineIntegration.MODULE_ID]?.noRipple) {
+            return false;
+        }
+
+        const rawElev = change?.elevation
+            ?? tokenDoc._source?.elevation
+            ?? tokenDoc.elevation
+            ?? tokenOrDoc.elevation
+            ?? 0;
+        const elev = Number(rawElev) || 0;
+        if (elev > 0) return false;
+
+        const tokenId = tokenDoc.id ?? tokenDoc._id;
+        const moveMethod = String(
+            (tokenId && options?.movement?.[tokenId]?.method)
+            || (tokenId && options?.movement?.[tokenId]?.action)
+            || change?.movementAction
+            || tokenDoc.movementAction
+            || tokenDoc._source?.movementAction
+            || ""
+        ).toLowerCase();
+        if (moveMethod && AIRBORNE_MOVEMENT_ACTIONS.has(moveMethod)) return false;
+
+        const wm = game?.ionrift?.waterManager ?? globalThis.WaterManager;
+        if (typeof wm?.canTokenInteractWithWater === "function") {
+            if (!wm.canTokenInteractWithWater(tokenDoc, change)) return false;
+        }
+
+        const libIsFlying = game?.ionrift?.library?.isFlyingCreature;
+        if (typeof libIsFlying === "function") {
+            if (libIsFlying(tokenDoc, { changes: change, elevation: elev, movementAction: moveMethod })) return false;
+        }
+
+        const actor = tokenDoc.actor ?? tokenOrDoc.actor ?? null;
+        if (this._isAirborneTokenOrActor(tokenDoc, actor)) return false;
+
+        return true;
+    }
+
+    /**
+     * Fallback check for airborne status effects, actor fly/hover speeds, or innate flyer classification
+     * when running without WaterManager.canTokenInteractWithWater or ionrift-library.isFlyingCreature.
+     * @param {TokenDocument|object} tokenDoc
+     * @param {Actor|object|null} actor
+     * @returns {boolean}
+     */
+    _isAirborneTokenOrActor(tokenDoc, actor) {
+        const checkStatuses = (col) => {
+            if (!col) return false;
+            const iter = col instanceof Set || Array.isArray(col) ? col : null;
+            if (!iter) return false;
+            for (const s of iter) {
+                if (typeof s === "string" && AIRBORNE_STATUS_IDS.has(s.toLowerCase())) return true;
+                if (s && typeof s === "object" && AIRBORNE_STATUS_IDS.has(String(s.id ?? s.statusId ?? s.name ?? "").toLowerCase())) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (checkStatuses(actor?.statuses) || checkStatuses(tokenDoc?.statuses)) return true;
+
+        const checkEffects = (effects) => {
+            const list = effects?.contents ?? (Array.isArray(effects) ? effects : null);
+            if (!list) return false;
+            for (const eff of list) {
+                if (!eff || eff.disabled || eff.isSuppressed) continue;
+                if (checkStatuses(eff.statuses)) return true;
+                const statusId = String(eff.statusId ?? eff.flags?.core?.statusId ?? "").toLowerCase();
+                if (statusId && AIRBORNE_STATUS_IDS.has(statusId)) return true;
+                const name = String(eff.name ?? eff.label ?? "").trim().toLowerCase();
+                if (AIRBORNE_STATUS_IDS.has(name)) return true;
+            }
+            return false;
+        };
+        if (checkEffects(actor?.effects) || checkEffects(tokenDoc?.effects)) return true;
+
+        const sys = actor?.system;
+        if (sys) {
+            const mov = sys.attributes?.movement;
+            if (mov && (Number(mov.fly) > 0 || Boolean(mov.hover))) return true;
+
+            const otherSpeeds = sys.attributes?.speed?.otherSpeeds;
+            if (Array.isArray(otherSpeeds) && otherSpeeds.some(s => String(s?.type || "").toLowerCase() === "fly" && (Number(s?.value) > 0 || Number(s?.total) > 0))) {
+                return true;
+            }
+            const pf2eFly = sys.movement?.speeds?.fly;
+            if (pf2eFly && (Number(pf2eFly.value) > 0 || Number(pf2eFly.total) > 0 || Number(pf2eFly) > 0)) return true;
+            if (String(sys.attributes?.speed?.type || "").toLowerCase() === "fly") return true;
+
+            const pf1eFly = sys.attributes?.speed?.fly;
+            if (pf1eFly && (Number(pf1eFly.total) > 0 || Number(pf1eFly.base) > 0 || Number(pf1eFly) > 0)) return true;
+
+            if (sys.movement && (Number(sys.movement.fly) > 0 || Boolean(sys.movement.hover))) return true;
+            if (sys.speed && (Number(sys.speed.fly) > 0 || Boolean(sys.speed.hover))) return true;
+            if (Number(sys.flyingSpeed) > 0) return true;
+        }
+
+        const creatureDetail = sys?.details?.creature?.value ?? "";
+        const typeValue = typeof sys?.details?.type?.value === "string" ? sys.details.type.value : "";
+        const subtypeValue = typeof sys?.details?.type?.subtype === "string" ? sys.details.type.subtype : "";
+        const combinedName = `${tokenDoc?.name ?? ""} ${actor?.name ?? ""} ${creatureDetail} ${typeValue} ${subtypeValue}`.trim();
+
+        if (FLIGHTLESS_NAME_RE.test(combinedName)) return false;
+        if (sys?.attributes?.movement && Number(sys.attributes.movement.swim) > 0 && Number(sys.attributes.movement.fly ?? 0) === 0 && !sys.attributes.movement.hover) {
+            return false;
+        }
+
+        if (FLYER_NAME_RE.test(combinedName)) return true;
+        if (actor?.type === "character") return false;
+
+        const rawTraits = sys?.traits?.value;
+        if (Array.isArray(rawTraits) || rawTraits instanceof Set) {
+            const sysTraits = new Set(Array.from(rawTraits).map(t => String(t).toLowerCase()));
+            if (sysTraits.has("incorporeal")) return true;
+            if (sysTraits.has("air") && (sysTraits.has("elemental") || sysTraits.has("spirit"))) return true;
+        }
+
+        const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : null);
+        if (items) {
+            const mov = sys?.attributes?.movement;
+            const hasExplicitGroundedWalkOnly = Boolean(mov && Number(mov.walk) > 0 && Number(mov.fly ?? 0) === 0 && !mov.hover);
+            if (!hasExplicitGroundedWalkOnly) {
+                for (const item of items) {
+                    if (!item || NON_INNATE_ITEM_TYPES.has(String(item.type ?? "").toLowerCase())) continue;
+                    if (PASSIVE_FLIGHT_ITEM_RE.test(String(item.name ?? "").trim())) return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Test whether a canvas world point is inside an active Waterline water body.
      * Uses WaterManager.isPointInWater first, falling back to RegionDocument#testPoint
-     * if WaterManager polygons are still initializing after canvasReady.
+     * only if WaterManager polygons are still initializing after canvasReady.
      * @param {number} x
      * @param {number} y
      * @param {number} [elevation=0]
      * @returns {boolean}
      */
     _isPointInWater(x, y, elevation = 0) {
+        const elev = Number(elevation) || 0;
+        if (elev > 0) return false;
+
         const wm = game.ionrift?.waterManager ?? globalThis.WaterManager;
         if (typeof wm?.isPointInWater === "function") {
-            if (wm.isPointInWater(x, y, elevation)) return true;
+            if (wm.isPointInWater(x, y, elev)) return true;
+            if (wm.hasActiveZones) return false;
         }
 
         // Synchronous fallback via scene RegionDocuments with active waterFX behaviors
@@ -250,9 +440,22 @@ export class WaterlineIntegration {
                 }
             }
             if (!hasWaterBehavior) continue;
+
+            // Enforce Waterline vertical bounds (null top bound caps at 0 surface level)
+            const rElev = regionDoc.elevation;
+            if (typeof rElev === "number") {
+                if (elev !== rElev) continue;
+            } else if (rElev && typeof rElev === "object") {
+                const minEl = rElev.bottom ?? -Infinity;
+                const maxEl = Number.isFinite(rElev.top)
+                    ? rElev.top
+                    : (Number.isFinite(rElev.bottom) && rElev.bottom > 0 ? rElev.bottom : 0);
+                if (elev < minEl || elev > maxEl) continue;
+            }
+
             if (typeof regionDoc.testPoint === "function") {
                 try {
-                    if (regionDoc.testPoint({ x, y, elevation: elevation ?? 0 })) return true;
+                    if (regionDoc.testPoint({ x, y, elevation: elev })) return true;
                 } catch { /* ignore */ }
             }
         }
