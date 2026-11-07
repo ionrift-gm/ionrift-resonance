@@ -19,7 +19,9 @@ export class LuminanceIntegration {
     /** Default audible radius in scene grid units (matches 20 ft torch bright light). */
     static TORCH_AUDIO_RADIUS = 20;
     /** Default AmbientSound volume for the handheld torch loop emitter. */
-    static TORCH_LOOP_VOLUME = 0.42;
+    static TORCH_LOOP_VOLUME = 0.25;
+    /** Default volume for one-shot torch ignition and extinguish stings. */
+    static TORCH_STING_VOLUME = 0.65;
 
     /**
      * @param {import("../services/playback/SoundHandler.js").SoundHandler} handler
@@ -227,7 +229,9 @@ export class LuminanceIntegration {
         this._lastCueAt.set(debounceKey, now);
         const origin = originFromToken(tokenDoc);
         Logger.log(`LuminanceIntegration | Playing ${eventKey} for token ${tokenDoc.name}`);
-        this.handler.play(eventKey, origin ? { origin } : 0);
+        const playOpts = { volume: LuminanceIntegration.TORCH_STING_VOLUME };
+        if (origin) playOpts.origin = origin;
+        this.handler.play(eventKey, playOpts);
         return true;
     }
 
