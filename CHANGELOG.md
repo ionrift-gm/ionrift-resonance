@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.15.2] - 2026-11-08
+
+### Added
+- Localized interface labels, settings, and calibration dialogs for translation support.
+
+### Changed
+- Lowered the default volume of the carried torch loop for Ionrift Luminance.
+
+### Fixed
+- Flying and elevated tokens no longer trigger wading or splash sounds when passing over water zones.
+- Actor, item, and campfire sound bindings now match by ID and flags before falling back to names, preserving bindings on translated worlds.
+
 ## [2.15.1] - 2026-10-25
 
 ### Fixed
