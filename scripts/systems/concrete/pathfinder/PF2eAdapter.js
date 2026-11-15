@@ -45,12 +45,14 @@ export class PF2eAdapter extends SystemAdapter {
             if (!pf2e) return;
 
             const context = pf2e.context;
-            if (!context?.type) return;
+            const ctxType = context?.type ?? null;
 
-            if (context.type === "attack-roll" || context.type === "strike-attack-roll" || context.type === "spell-attack-roll") {
+            if (ctxType === "attack-roll" || ctxType === "strike-attack-roll" || ctxType === "spell-attack-roll") {
                 this._handleAttackRoll(message, context);
-            } else if (context.type === "damage-roll") {
+            } else if (ctxType === "damage-roll") {
                 this._handleDamageRoll(message, context);
+            } else if (ctxType === "spell-cast" || (!ctxType && (pf2e.casting || pf2e.origin?.type === "spell"))) {
+                this._handleSpellCast(message, context);
             }
         });
 
@@ -107,48 +109,67 @@ export class PF2eAdapter extends SystemAdapter {
 
     // Phase 1 + 2: Attack roll (ASK swing + ANSWER outcome) ───────────
 
+    _playSpellCastSound(item, actor, cooldownMs = 2500) {
+        if (!item || item.type !== "spell") return false;
+        this._recentSpellCastAt ??= new Map();
+        const dedupKey = `${actor?.id ?? "no-actor"}:${item.id ?? item.slug ?? item.name}`;
+        const now = Date.now();
+        const lastAt = this._recentSpellCastAt.get(dedupKey) ?? 0;
+        if (now - lastAt < cooldownMs) {
+            Logger.log(`PF2e | Skipping duplicate spell cast sound for ${item.name} (${now - lastAt}ms < ${cooldownMs}ms)`);
+            return false;
+        }
+        if (this._recentSpellCastAt.size > 100) this._recentSpellCastAt.clear();
+        this._recentSpellCastAt.set(dedupKey, now);
+
+        const soundKey = this.handler.pickSound(item, actor?.name, actor);
+        const resolver = this.handler?.resolver;
+        const overrideSpellEffect = resolver?._lastSpellAttackOverride ?? false;
+
+        const vocalDelay = VocalLayerService.shouldTrigger(item)
+            ? VocalLayerService.playAndGetDelay(this.handler, item)
+            : 0;
+
+        const traitKey = this._getSpellTraitKey(item);
+        const effectKey = traitKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
+
+        const caster = originFromActor(actor);
+        const burst = originFromToken(game.user?.targets?.first?.()) || caster;
+        if (overrideSpellEffect) {
+            Logger.log(`PF2e | NPC spell override, ${soundKey} only (no effect sound)`);
+            this.handler.playItemSound(soundKey, item, vocalDelay, 1000, caster);
+        } else if (soundKey && soundKey !== effectKey && resolver?.resolveKey(soundKey)) {
+            const orch = this.handler?.orchestrator;
+            const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
+            Logger.log(`PF2e | NPC spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
+            this.handler.playItemSound(soundKey, item, vocalDelay, 1000, caster);
+            this.handler.playItemSound(effectKey, item, effectDelay, 1000, burst);
+        } else if (traitKey) {
+            Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
+            this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay, burst);
+        } else {
+            this.handler.playItemSound(soundKey, item, vocalDelay, 1000, burst);
+        }
+        return true;
+    }
+
+    _handleSpellCast(message, _context) {
+        const item = this._getItemFromMessage(message);
+        if (!item || item.type !== "spell") return;
+        const actor = message.actor ?? (item?.actor || null);
+        this._playSpellCastSound(item, actor, 2500);
+    }
+
     _handleAttackRoll(message, context) {
         const item = this._getItemFromMessage(message);
         const actor = message.actor ?? (item?.actor || null);
 
         // Phase 1 (ASK): weapon swing / spell cast
         if (item) {
-            const soundKey = this.handler.pickSound(item, actor?.name, actor);
-
             if (item.type === "spell") {
-                const resolver = this.handler?.resolver;
-                const overrideSpellEffect = resolver?._lastSpellAttackOverride ?? false;
-
-                const vocalDelay = VocalLayerService.shouldTrigger(item)
-                    ? VocalLayerService.playAndGetDelay(this.handler, item)
-                    : 0;
-
-                const traitKey = this._getSpellTraitKey(item);
-                const effectKey = traitKey ?? SOUND_EVENTS.ASK_GENERIC_MAGIC;
-
-                const caster = originFromActor(actor);
-                const burst = originFromToken(game.user?.targets?.first?.()) || caster;
-                if (overrideSpellEffect) {
-                    Logger.log(`PF2e | NPC spell override, ${soundKey} only (no effect sound)`);
-                    this.handler.playItemSound(soundKey, item, vocalDelay, 1000, caster);
-
-                } else if (soundKey && soundKey !== effectKey
-                           && resolver?.resolveKey(soundKey)) {
-                    const orch = this.handler?.orchestrator;
-                    const effectDelay = (orch?.getNamedOffset?.("MONSTER_SPELL_EFFECT_DELAY") ?? 250) + vocalDelay;
-                    Logger.log(`PF2e | NPC spell vocal ${soundKey} + effect ${effectKey} (+${effectDelay}ms)`);
-                    this.handler.playItemSound(soundKey, item, vocalDelay, 1000, caster);
-                    this.handler.playItemSound(effectKey, item, effectDelay, 1000, burst);
-
-                } else {
-                    if (traitKey) {
-                        Logger.log(`PF2e | Spell trait key: ${traitKey} (vocalDelay: ${vocalDelay}ms)`);
-                        this.handler.playItemSoundWithFallback(soundKey, traitKey, item, vocalDelay, burst);
-                    } else {
-                        this.handler.playItemSound(soundKey, item, vocalDelay, 1000, burst);
-                    }
-                }
+                this._playSpellCastSound(item, actor, 2500);
             } else {
+                const soundKey = this.handler.pickSound(item, actor?.name, actor);
                 this.handler.playItemSound(soundKey, item, 0, 500);
             }
         } else {
@@ -215,11 +236,19 @@ export class PF2eAdapter extends SystemAdapter {
 
     _handleDamageRoll(message, context) {
         const item = this._getItemFromMessage(message);
+        const actor = message.actor ?? (item?.actor || null);
 
-        // Skip healing
+        // Skip hit/blood damage sounds for healing, but ensure spell cast SFX plays if not already triggered
         if (this._isHealing(message, item)) {
+            if (item?.type === "spell") {
+                this._playSpellCastSound(item, actor, 8000);
+            }
             Logger.log("PF2e | Skipping damage sounds for healing effect");
             return;
+        }
+
+        if (item?.type === "spell") {
+            this._playSpellCastSound(item, actor, 8000);
         }
 
         // Deduplicate: track last processed message

@@ -94,9 +94,14 @@ export class TripwireIntegration {
 
         Logger.log("TripwireIntegration | Registering Tripwire sound hooks.");
 
+        const lastFiredByEvent = new Map();
         const on = (name, fn) => {
             const wrapped = (...args) => {
                 if (!game.user?.isGM) return;
+                const now = Date.now();
+                const prev = lastFiredByEvent.get(name) ?? 0;
+                if (now - prev < 50) return;
+                lastFiredByEvent.set(name, now);
                 fn(...args);
             };
             Hooks.on(`${TripwireIntegration.HOOK_PREFIX}.${name}`, wrapped);
