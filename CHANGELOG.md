@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.15.3] - 2026-11-16
+
+### Fixed
+- Pathfinder 2e non-attack spells now trigger spell-cast sound effects.
+- Prevented duplicate lock sound listeners when Ionrift Tripwire initializes.
+
 ## [2.15.2] - 2026-11-08
 
 ### Added
